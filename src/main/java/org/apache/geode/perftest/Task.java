@@ -1,4 +1,4 @@
-package test;
+package org.apache.geode.perftest;
 
 import java.io.Serializable;
 

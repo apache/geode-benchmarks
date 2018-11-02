@@ -1,16 +1,13 @@
 package infrastructure.jclouds;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.charset.Charset;
 import java.util.Set;
 
 import com.google.common.base.Supplier;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.io.Files;
 import com.google.inject.Module;
-import infrastructure.InfraManager;
-import infrastructure.Infrastructure;
+import org.apache.geode.perftest.infrastructure.InfraManager;
+import org.apache.geode.perftest.infrastructure.Infrastructure;
 import org.jclouds.ContextBuilder;
 import org.jclouds.compute.ComputeService;
 import org.jclouds.compute.ComputeServiceContext;
@@ -41,7 +38,7 @@ public class JCloudsInfraManager implements InfraManager {
   }
 
   @Override
-  public Infrastructure create() throws RunNodesException, IOException {
+  public Infrastructure create(int numNodes) throws RunNodesException, IOException {
     ComputeServiceContext context = ContextBuilder.newBuilder(cloud)
         .modules(ImmutableSet.<Module> of(new SshjSshClientModule() ))
         .credentialsSupplier(credentials)
@@ -55,8 +52,6 @@ public class JCloudsInfraManager implements InfraManager {
             .imageNameMatches("yardstick-tester.*")
             .locationId("us-central1-c")
             .minCores(8)
-//            .options(client.templateOptions().authorizePublicKey(Files.toString(new File("/Users/dsmith/.ssh/id_rsa.pub"), Charset
-//                .defaultCharset())))
             .build();
 
     Set<? extends NodeMetadata>
@@ -78,11 +73,16 @@ public class JCloudsInfraManager implements InfraManager {
     }
 
     @Override
-    public Set<? extends NodeMetadata> getNodes() {
-      return this.nodes;
+    public Set<Node> getNodes() {
+//      return this.nodes;
+      return null;
     }
 
     @Override
+    public void onNode(Node node, String[] shellCommand) throws IOException {
+
+    }
+
     public String onNode(NodeMetadata node, String script) {
 
       ExecResponse
