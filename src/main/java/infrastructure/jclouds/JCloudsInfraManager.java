@@ -1,5 +1,6 @@
 package infrastructure.jclouds;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Set;
@@ -96,6 +97,11 @@ public class JCloudsInfraManager implements InfraManager {
     @Override
     public void delete() {
       nodes.forEach(node -> client.destroyNode(node.getMetadata().getId()));
+    }
+
+    @Override
+    public void copyFiles(Iterable<File> files, String destDir) throws IOException {
+
     }
   }
 

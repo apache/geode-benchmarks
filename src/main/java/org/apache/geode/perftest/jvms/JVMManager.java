@@ -37,6 +37,11 @@ public class JVMManager {
 
     List<JVMMapping> mapping = mapRolesToNodes(roles, nodes);
 
+    String classpath = System.getProperty("java.class.path");
+    System.out.println("classpath=" + classpath);
+    ClassPathCopier copier = new ClassPathCopier(classpath);
+    copier.copyToNodes(infra);
+
     for(JVMMapping entry : mapping) {
       infra.onNode(entry.node, buildCommand(InetAddress.getLocalHost().getHostAddress(), rmiPort, entry.getId()));
     }
@@ -48,12 +53,11 @@ public class JVMManager {
 
   private String[] buildCommand(String rmiHost, int rmiPort, int id) {
     String cmd = System.getProperty("java.home") + File.separator + "bin" + File.separator + "java";
-    String classpath = System.getProperty("java.class.path");
 
     List<String> command = new ArrayList<String>();
     command.add(cmd);
     command.add("-classpath");
-    command.add(classpath);
+    command.add("libs/*");
     command.add("-D" + RMI_HOST + "=" + rmiHost);
     command.add("-D" + RMI_PORT + "=" + rmiPort);
     command.add("-D" + JVM_ID + "=" + id);
