@@ -10,6 +10,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.io.FileUtils;
+
 import org.apache.geode.perftest.infrastructure.Infrastructure;
 
 public class LocalInfrastructure implements Infrastructure {
@@ -31,24 +33,25 @@ public class LocalInfrastructure implements Infrastructure {
 
   @Override
   public void onNode(Node node, String[] shellCommand) throws IOException {
-    //Ignore the node parameter, everything is created locally
-
-
     ProcessBuilder builder = new ProcessBuilder();
     builder.command(shellCommand);
     builder.inheritIO();
     builder.directory(((LocalNode)node).getWorkingDir());
 
+    System.out.println(String.format("Lauching %s>%s", ((LocalNode) node).getWorkingDir(), String.join(" ", shellCommand)));
     Process process = builder.start();
     processList.add(process);
   }
 
   @Override
-  public void delete() throws InterruptedException {
+  public void delete() throws InterruptedException, IOException {
     for(Process process : processList) {
       process.destroyForcibly();
       process.waitFor();
-      //TODO - delete directory
+    }
+
+    for(LocalNode node : nodes) {
+      FileUtils.deleteDirectory(node.getWorkingDir());
     }
   }
 
@@ -57,6 +60,7 @@ public class LocalInfrastructure implements Infrastructure {
     for(LocalNode node : nodes) {
       Path destDir = new File(node.getWorkingDir(), destDirName).toPath();
       destDir.toFile().mkdir();
+
       for(File file : files) {
         Files.copy(file.toPath(), destDir.resolve(file.getName()));
       }

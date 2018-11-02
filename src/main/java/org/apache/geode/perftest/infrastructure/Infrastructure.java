@@ -13,7 +13,7 @@ public interface Infrastructure {
 
   void onNode(Node node, String[] shellCommand) throws IOException;
 
-  void delete() throws InterruptedException;
+  void delete() throws InterruptedException, IOException;
 
   void copyFiles(Iterable<File> files, String destDir) throws IOException;
 

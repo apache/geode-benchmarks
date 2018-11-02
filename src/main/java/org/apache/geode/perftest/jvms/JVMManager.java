@@ -52,12 +52,11 @@ public class JVMManager {
   }
 
   private String[] buildCommand(String rmiHost, int rmiPort, int id) {
-    String cmd = System.getProperty("java.home") + File.separator + "bin" + File.separator + "java";
 
     List<String> command = new ArrayList<String>();
-    command.add(cmd);
+    command.add("java");
     command.add("-classpath");
-    command.add("libs/*");
+    command.add("lib/*");
     command.add("-D" + RMI_HOST + "=" + rmiHost);
     command.add("-D" + RMI_PORT + "=" + rmiPort);
     command.add("-D" + JVM_ID + "=" + id);
