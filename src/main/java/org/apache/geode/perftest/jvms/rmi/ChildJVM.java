@@ -1,4 +1,4 @@
-package org.apache.geode.perftest.jvms;
+package org.apache.geode.perftest.jvms.rmi;
 
 import java.net.MalformedURLException;
 import java.rmi.Naming;
@@ -6,10 +6,11 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 
 import org.apache.geode.perftest.TestContext;
+import org.apache.geode.perftest.jvms.JVMManager;
 
-import org.apache.geode.perftest.jvms.rmi.ControllerRemote;
-import org.apache.geode.perftest.jvms.rmi.Worker;
-
+/**
+ * Main method for a JVM running on a remote node
+ */
 public class ChildJVM {
 
   public static void main(String[] args)

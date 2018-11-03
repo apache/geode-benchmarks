@@ -6,6 +6,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Declarative configuration of a test. Used by
+ * {@link PerformanceTest} to define the test.
+ */
 public class TestConfig implements Serializable {
 
   private Map<String, Integer> roles = new HashMap<>();

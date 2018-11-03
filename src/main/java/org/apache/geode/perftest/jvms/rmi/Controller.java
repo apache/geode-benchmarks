@@ -9,6 +9,9 @@ import java.util.function.Consumer;
 
 import org.apache.geode.perftest.Task;
 
+/**
+ * RMI object that lives on the main controller JVM
+ */
 public class Controller extends UnicastRemoteObject implements ControllerRemote {
   Map<Integer, WorkerRemote> workers = new HashMap<>();
   private Consumer<WorkerRemote> callback;

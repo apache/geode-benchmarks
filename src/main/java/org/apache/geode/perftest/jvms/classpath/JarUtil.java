@@ -1,4 +1,4 @@
-package org.apache.geode.perftest.jvms;
+package org.apache.geode.perftest.jvms.classpath;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -15,7 +15,14 @@ import java.util.jar.Manifest;
 
 import org.apache.commons.io.IOUtils;
 
+/**
+ * Utility for manipulating jar files
+ */
 public class JarUtil {
+
+  /**
+   * Jar up the contents of a directory.
+   */
   static void jar(File file, File outputFile) throws IOException {
     Manifest manifest = new Manifest();
     try (JarOutputStream outputStream = new JarOutputStream(new FileOutputStream(outputFile), manifest)) {
@@ -38,8 +45,6 @@ public class JarUtil {
         }
       });
     }
-
-    System.out.println("Contents = " + outputFile.getPath());
   }
 
 }

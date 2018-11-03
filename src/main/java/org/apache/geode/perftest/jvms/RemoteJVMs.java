@@ -10,6 +10,9 @@ import org.apache.geode.perftest.Task;
 
 import org.apache.geode.perftest.jvms.rmi.Controller;
 
+/**
+ * Interface for accessing remote JVMs are running tasks on them.
+ */
 public class RemoteJVMs {
   private final List<JVMManager.JVMMapping> jvmMappings;
   private final Controller controller;
@@ -20,6 +23,9 @@ public class RemoteJVMs {
     this.controller = controller;
   }
 
+  /**
+   * Run a task in parallel on all JVMs with the given roles.
+   */
   public void execute(Task task, String[] roleArray) {
 
     HashSet<String> roles = new HashSet<>(Arrays.asList(roleArray));

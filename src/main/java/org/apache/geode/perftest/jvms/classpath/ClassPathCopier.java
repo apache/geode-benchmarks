@@ -1,4 +1,4 @@
-package org.apache.geode.perftest.jvms;
+package org.apache.geode.perftest.jvms.classpath;
 
 import java.io.File;
 import java.io.IOException;
@@ -8,6 +8,10 @@ import java.util.stream.Collectors;
 
 import org.apache.geode.perftest.infrastructure.Infrastructure;
 
+/**
+ * Utility for making sure that all nodes in the infrastructure can have the same classpath
+ * that the controller JVM has.
+ */
 public class ClassPathCopier {
   public String classpath;
 
@@ -15,6 +19,9 @@ public class ClassPathCopier {
     this.classpath = classpath;
   }
 
+  /**
+   * Copy the current classpath to a lib directory on all of the nodes in the infrastructure
+   */
   public void copyToNodes(Infrastructure infrastructure) throws IOException {
     String[] fileArray = classpath.split(File.pathSeparator);
 

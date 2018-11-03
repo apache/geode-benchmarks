@@ -5,14 +5,26 @@ import java.util.Map;
 
 import org.apache.geode.perftest.infrastructure.InfraManager;
 import org.apache.geode.perftest.infrastructure.Infrastructure;
-import org.apache.geode.perftest.infrastructure.local.LocalInfraManager;
 import org.apache.geode.perftest.jvms.JVMManager;
 import org.apache.geode.perftest.jvms.RemoteJVMs;
 
+/**
+ * Runner that executes a {@link PerformanceTest}, using
+ * a provided {@link InfraManager}.
+ *
+ * This is the main entry point for running tests. Users should
+ * implement {@link PerformanceTest} to define there tests in
+ * a declarative fashion and then execute them this runner.
+ */
 public class TestRunner {
 
-  private InfraManager infraManager = new LocalInfraManager();
-  private JVMManager jvmManager = new JVMManager();
+  private final InfraManager infraManager;
+  private final JVMManager jvmManager;
+
+  public TestRunner(InfraManager infraManager, JVMManager jvmManager) {
+    this.infraManager = infraManager;
+    this.jvmManager = jvmManager;
+  }
 
   public void runTest(PerformanceTest test, int nodes) throws Exception {
     Infrastructure infra = infraManager.create(nodes);

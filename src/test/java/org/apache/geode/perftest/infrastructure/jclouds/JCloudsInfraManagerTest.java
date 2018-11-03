@@ -1,16 +1,4 @@
-package infrastructure.jclouds;
-
-import java.io.File;
-import java.io.IOException;
-import java.nio.charset.Charset;
-
-import com.google.common.io.Files;
-import org.apache.geode.perftest.infrastructure.Infrastructure;
-import org.jclouds.compute.RunNodesException;
-import org.jclouds.compute.domain.NodeMetadata;
-import org.jclouds.domain.Credentials;
-import org.jclouds.googlecloud.GoogleCredentialsFromJson;
-import org.junit.Test;
+package org.apache.geode.perftest.infrastructure.jclouds;
 
 public class JCloudsInfraManagerTest {
 

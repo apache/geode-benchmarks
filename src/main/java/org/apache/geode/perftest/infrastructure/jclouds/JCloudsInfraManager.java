@@ -1,8 +1,9 @@
-package infrastructure.jclouds;
+package org.apache.geode.perftest.infrastructure.jclouds;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -17,27 +18,44 @@ import org.jclouds.compute.domain.ExecResponse;
 import org.jclouds.compute.domain.NodeMetadata;
 import org.jclouds.compute.domain.Template;
 import org.jclouds.domain.Credentials;
+import org.jclouds.io.payloads.FilePayload;
+import org.jclouds.ssh.SshClient;
 import org.jclouds.sshj.config.SshjSshClientModule;
 
 import org.apache.geode.perftest.infrastructure.InfraManager;
 import org.apache.geode.perftest.infrastructure.Infrastructure;
 
+/**
+ * {@link InfraManager} that uses jclouds to launch instances
+ * on the given cloud provider.
+ */
 public class JCloudsInfraManager implements InfraManager {
 
 
   private final String cloud;
   private final String image;
   private final Supplier<Credentials> credentials;
+  private final String group;
+  private final boolean reuseExisting;
+  private final boolean deleteAfterComplete;
 
 
-  public JCloudsInfraManager(String cloud, String image, Supplier<Credentials> credentials) {
+  public JCloudsInfraManager(String cloud,
+                             String image,
+                             Supplier<Credentials> credentials,
+                             String group,
+                             boolean reuseExisting,
+                             boolean deleteAfterComplete) {
     this.cloud = cloud;
     this.image = image;
     this.credentials = credentials;
+    this.group = group;
+    this.reuseExisting = reuseExisting;
+    this.deleteAfterComplete = deleteAfterComplete;
   }
 
   @Override
-  public Infrastructure create(int numNodes) throws RunNodesException, IOException {
+  public Infrastructure create(int numNodes) throws RunNodesException {
     ComputeServiceContext context = ContextBuilder.newBuilder(cloud)
         .modules(ImmutableSet.<Module> of(new SshjSshClientModule() ))
         .credentialsSupplier(credentials)
@@ -45,28 +63,42 @@ public class JCloudsInfraManager implements InfraManager {
 
     ComputeService client = context.getComputeService();
 
+
+    Set<NodeMetadata> nodes = new HashSet<>();
+    if(reuseExisting) {
+       nodes.addAll(client.listNodesDetailsMatching(node -> node.getGroup().equals(group)));
+    }
+
+    int remaining = numNodes - nodes.size();
+
+    if(remaining > 0) {
+      createAdditionalNodes(client, nodes, remaining);
+    }
+
+    return new TestInfraStructure(context, client, nodes);
+  }
+
+  private void createAdditionalNodes(ComputeService client, Set<NodeMetadata> nodes, int remaining)
+      throws RunNodesException {
     Template
         template =
         client.templateBuilder()
-            .imageNameMatches("yardstick-tester.*")
+            .imageNameMatches(image)
             .locationId("us-central1-c")
             .minCores(8)
             .build();
-
-    Set<? extends NodeMetadata>
-        nodes =
-        client.createNodesInGroup("group", 1, template);
-
-
-    return new TestInfraStructure(client, nodes);
+    nodes.addAll(client.createNodesInGroup(group, remaining, template));
   }
 
-  private static class TestInfraStructure implements Infrastructure {
+  private class TestInfraStructure implements Infrastructure {
     private final Set<JCloudsNode> nodes;
+    private ComputeServiceContext context;
     private final ComputeService client;
 
-    public TestInfraStructure(ComputeService client,
-        Set<? extends NodeMetadata> nodes) {
+    public TestInfraStructure(ComputeServiceContext context,
+                              ComputeService client,
+                              Set<? extends NodeMetadata> nodes) {
+      this.context = context;
       this.client = client;
       this.nodes = nodes.stream().map(JCloudsNode::new).collect(Collectors.toSet());
     }
@@ -96,12 +128,21 @@ public class JCloudsInfraManager implements InfraManager {
 
     @Override
     public void delete() {
-      nodes.forEach(node -> client.destroyNode(node.getMetadata().getId()));
+      if(deleteAfterComplete) {
+        nodes.forEach(node -> client.destroyNode(node.getMetadata().getId()));
+      }
     }
 
     @Override
     public void copyFiles(Iterable<File> files, String destDir) throws IOException {
-
+      for(JCloudsNode node : nodes) {
+        SshClient ssh = context.utils().sshForNode().apply(node.getMetadata());
+        ssh.connect();
+        ssh.exec("mkdir " + destDir);
+        for(File file : files) {
+          ssh.put(destDir + "/" + file.getName(), new FilePayload(file));
+        }
+      }
     }
   }
 

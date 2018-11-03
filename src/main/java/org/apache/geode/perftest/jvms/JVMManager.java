@@ -1,6 +1,5 @@
 package org.apache.geode.perftest.jvms;
 
-import java.io.File;
 import java.net.InetAddress;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -12,8 +11,14 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.geode.perftest.infrastructure.Infrastructure;
+import org.apache.geode.perftest.jvms.classpath.ClassPathCopier;
+import org.apache.geode.perftest.jvms.rmi.ChildJVM;
 import org.apache.geode.perftest.jvms.rmi.Controller;
 
+/**
+ * Manager for launching JVMs and a given infrastructure and setting up RMI
+ * access to all JVMs.
+ */
 public class JVMManager {
 
   public static final String RMI_HOST = "RMI_HOST";
@@ -21,6 +26,14 @@ public class JVMManager {
   public static final String CONTROLLER = "CONTROLLER";
   public static final String JVM_ID = "JVM_ID";
 
+  /**
+   * Start all requested JVMs on the infrastructure
+   * @param infra The infrastructure to use
+   * @param roles The JVMs to start. Keys a roles and values are the number
+   * of JVMs in that role.
+   *
+   * @return a {@link RemoteJVMs} object used to access the JVMs through RMI
+   */
   public RemoteJVMs launch(Infrastructure infra,
                            Map<String, Integer> roles) throws Exception {
 
@@ -38,7 +51,6 @@ public class JVMManager {
     List<JVMMapping> mapping = mapRolesToNodes(roles, nodes);
 
     String classpath = System.getProperty("java.class.path");
-    System.out.println("classpath=" + classpath);
     ClassPathCopier copier = new ClassPathCopier(classpath);
     copier.copyToNodes(infra);
 
@@ -56,7 +68,7 @@ public class JVMManager {
     List<String> command = new ArrayList<String>();
     command.add("java");
     command.add("-classpath");
-    command.add("lib/*");
+    command.add("'lib/*'");
     command.add("-D" + RMI_HOST + "=" + rmiHost);
     command.add("-D" + RMI_PORT + "=" + rmiPort);
     command.add("-D" + JVM_ID + "=" + id);
@@ -78,7 +90,6 @@ public class JVMManager {
       for(int i = 0; i < roleEntry.getValue(); i++) {
         Infrastructure.Node node = firstNode;
         mapping.add(new JVMMapping(node, roleEntry.getKey(), id++));
-
       }
 
     }

@@ -1,4 +1,4 @@
-package infrastructure.jclouds;
+package org.apache.geode.perftest.infrastructure.jclouds;
 
 import java.io.File;
 import java.io.IOException;
