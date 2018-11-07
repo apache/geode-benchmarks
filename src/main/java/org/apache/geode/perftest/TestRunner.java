@@ -46,8 +46,6 @@ public class TestRunner {
     } finally {
       infra.delete();
     }
-
-
   }
 
   private void runTasks(List<TestConfig.TestStep> steps,

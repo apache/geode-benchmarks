@@ -15,6 +15,7 @@ import org.jclouds.compute.RunNodesException;
 import org.jclouds.compute.domain.ExecResponse;
 import org.jclouds.compute.domain.NodeMetadata;
 import org.jclouds.compute.domain.Template;
+import org.jclouds.compute.options.TemplateOptions;
 import org.jclouds.domain.Credentials;
 import org.jclouds.googlecloud.GoogleCredentialsFromJson;
 import org.jclouds.sshj.config.SshjSshClientModule;
@@ -34,6 +35,7 @@ public class JCloudsTest {
         "google-compute-engine",
         "yardstick-tester.*",
         "us-central1-c",
+        null,
         "hostname");
   }
 
@@ -41,28 +43,30 @@ public class JCloudsTest {
   public void runCommandLocally() throws IOException, RunNodesException {
 
 
-    Supplier<Credentials> credentials = () -> new Credentials("username", "password");
+    Supplier<Credentials> credentials = () -> new Credentials("root", "root");
     launchRunAndShutdown(credentials,
-        "stub",
-        "UBUNTU",
-        "stub",
+        "docker",
+        "geode-tester",
+        "docker",
+              "http://127.0.0.1:1234",
         "hostname");
   }
 
   private void launchRunAndShutdown(Supplier<Credentials> credentials, String provider,
-                                    String imageNameRegex, String zone, String script) throws IOException, RunNodesException {
+                                    String imageNameRegex, String zone, String endpoint, String script) throws IOException, RunNodesException {
 
     ComputeServiceContext context = ContextBuilder.newBuilder(provider)
         .modules(ImmutableSet.<Module> of(new SshjSshClientModule() ))
         .credentialsSupplier(credentials)
+        .endpoint(endpoint)
         .buildView(ComputeServiceContext.class);
 
     ComputeService client = context.getComputeService();
 
     Template template = client.templateBuilder()
             .imageNameMatches(imageNameRegex)
-            .locationId(zone)
-            .minCores(8)
+//            .locationId(zone)
+//            .minCores(8)
             .build();
 
     NodeMetadata node = client.createNodesInGroup("jclcouds-tester", 1, template).iterator().next();

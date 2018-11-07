@@ -13,6 +13,10 @@ repositories {
 
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
+    // https://mvnrepository.com/artifact/org.apache.geode/geode-core
+    testCompile group: 'org.apache.geode', name: 'geode-core', version: '1.7.0'
     compile group: 'org.apache.jclouds', name: 'jclouds-allcompute', version: '2.1.1'
     compile group: 'commons-io', name: 'commons-io', version: '2.6'
+    compile group: 'org.yardstickframework', name: 'yardstick', version: '0.8.3'
+
 }
