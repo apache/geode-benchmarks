@@ -74,7 +74,7 @@ public class LocalInfrastructure implements Infrastructure {
     }
   }
 
-  private static class LocalNode implements Node {
+  static class LocalNode implements Node {
     File workingDir;
 
     public LocalNode(File workingDir) {
