@@ -32,8 +32,6 @@ public class ClassPathCopier {
         .map(this::jarDir)
         .collect(Collectors.toSet());
 
-
-
     infrastructure.copyFiles(files, destDir);
   }
 
@@ -43,9 +41,9 @@ public class ClassPathCopier {
     }
 
     try {
-      File
-          outputFile =
+      File outputFile =
           new File(System.getProperty("java.io.tmpdir"), Math.abs(file.hashCode()) + "_" + file.getName() + ".jar");
+
       outputFile.deleteOnExit();
 
       JarUtil.jar(file, outputFile);
