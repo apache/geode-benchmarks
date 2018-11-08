@@ -1,2 +1,4 @@
 rootProject.name = 'play-perf-framework'
 
+include 'harness'
+include 'geode-benchmarks'

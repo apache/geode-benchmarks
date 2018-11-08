@@ -1,0 +1,22 @@
+plugins {
+    id 'java'
+}
+
+group 'org.upthewaterspout'
+version '1.0-SNAPSHOT'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+    compile group: 'org.apache.jclouds', name: 'jclouds-allcompute', version: '2.1.1'
+    compile group: 'commons-io', name: 'commons-io', version: '2.6'
+    compile group: 'org.yardstickframework', name: 'yardstick', version: '0.8.3'
+    testCompile group: 'org.mockito', name: 'mockito-all', version: '1.10.19'
+
+
+}

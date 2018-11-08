@@ -1,0 +1,19 @@
+plugins {
+    id 'java'
+}
+
+group 'org.upthewaterspout'
+version '1.0-SNAPSHOT'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile group: 'junit', name: 'junit', version: '4.12'
+    compile group: 'org.apache.geode', name: 'geode-core', version: '1.7.0'
+    compile project(":harness")
+
+}
