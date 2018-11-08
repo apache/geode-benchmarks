@@ -23,6 +23,7 @@ import org.jclouds.io.payloads.FilePayload;
 import org.jclouds.ssh.SshClient;
 import org.jclouds.sshj.config.SshjSshClientModule;
 
+import org.apache.geode.perftest.infrastructure.CommandResult;
 import org.apache.geode.perftest.infrastructure.InfraManager;
 import org.apache.geode.perftest.infrastructure.Infrastructure;
 
@@ -30,7 +31,7 @@ import org.apache.geode.perftest.infrastructure.Infrastructure;
  * {@link InfraManager} that uses jclouds to launch instances
  * on the given cloud provider.
  */
-public class JCloudsInfraManager implements InfraManager {
+public class JCloudsInfraManagerOldDeleteMe implements InfraManager {
 
 
   private final String cloud;
@@ -41,12 +42,12 @@ public class JCloudsInfraManager implements InfraManager {
   private final boolean deleteAfterComplete;
 
 
-  public JCloudsInfraManager(String cloud,
-                             String image,
-                             Supplier<Credentials> credentials,
-                             String group,
-                             boolean reuseExisting,
-                             boolean deleteAfterComplete) {
+  public JCloudsInfraManagerOldDeleteMe(String cloud,
+                                        String image,
+                                        Supplier<Credentials> credentials,
+                                        String group,
+                                        boolean reuseExisting,
+                                        boolean deleteAfterComplete) {
     this.cloud = cloud;
     this.image = image;
     this.credentials = credentials;
@@ -110,7 +111,7 @@ public class JCloudsInfraManager implements InfraManager {
     }
 
     @Override
-    public void onNode(Node node, String[] shellCommand) throws IOException {
+    public CommandResult onNode(Node node, String[] shellCommand) throws IOException {
       NodeMetadata metadata = ((JCloudsNode) node).getMetadata();
 
       String script = String.join(" ", shellCommand);
@@ -125,6 +126,7 @@ public class JCloudsInfraManager implements InfraManager {
       System.out.println(result.getOutput());
       System.err.println(result.getError());
 
+      return null;
     }
 
     @Override

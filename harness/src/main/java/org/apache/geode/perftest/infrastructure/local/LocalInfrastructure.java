@@ -16,6 +16,7 @@ import java.util.Set;
 import org.apache.commons.io.FileUtils;
 
 import org.apache.geode.perftest.infrastructure.Infrastructure;
+import org.apache.geode.perftest.infrastructure.CommandResult;
 
 /**
  * Implementation of infrastructure that just runs commands
@@ -39,7 +40,7 @@ public class LocalInfrastructure implements Infrastructure {
   }
 
   @Override
-  public void onNode(Node node, String[] shellCommand) throws IOException {
+  public CommandResult onNode(Node node, String[] shellCommand) throws IOException {
     ProcessBuilder builder = new ProcessBuilder();
     builder.command(shellCommand);
     builder.inheritIO();
@@ -48,6 +49,8 @@ public class LocalInfrastructure implements Infrastructure {
     System.out.println(String.format("Lauching %s>%s", ((LocalNode) node).getWorkingDir(), String.join(" ", shellCommand)));
     Process process = builder.start();
     processList.add(process);
+
+    return null;
   }
 
   @Override

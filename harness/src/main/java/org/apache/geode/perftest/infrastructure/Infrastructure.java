@@ -19,7 +19,7 @@ public interface Infrastructure {
   /**
    * Execute a shell command on a given node
    */
-  void onNode(Node node, String[] shellCommand) throws IOException;
+  CommandResult onNode(Node node, String[] shellCommand) throws IOException;
 
   /**
    * Delete the nodes
