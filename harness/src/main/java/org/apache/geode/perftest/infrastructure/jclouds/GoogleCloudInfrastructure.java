@@ -62,7 +62,6 @@ public class GoogleCloudInfrastructure implements Infrastructure {
     Iterator<? extends NodeMetadata> nodeItr = nodeMetadata.iterator();
     for(int i = 0; i < nodeCount; i++) {
       NodeMetadata metadata = nodeItr.next();
-      client.
       nodes.add(new GoogleCloudNode(metadata));
     }
   }
