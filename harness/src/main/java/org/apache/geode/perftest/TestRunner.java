@@ -1,5 +1,6 @@
 package org.apache.geode.perftest;
 
+import java.io.File;
 import java.util.List;
 import java.util.Map;
 
@@ -43,6 +44,13 @@ public class TestRunner {
       runTasks(config.getBefore(), remoteJVMs);
       runTasks(config.getWorkload(), remoteJVMs);
       runTasks(config.getAfter(), remoteJVMs);
+
+      File outputDir = new File("output");
+      int nodeId = 0;
+      for(Infrastructure.Node node : infra.getNodes()) {
+        infra.copyFromNode(node, "output", new File(outputDir, "node-" + nodeId++));
+      }
+
     } finally {
       infra.delete();
     }

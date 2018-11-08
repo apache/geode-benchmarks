@@ -37,6 +37,11 @@ public class YardstickUtil {
         public long warmup() {
           return warmUpSeconds;
         }
+
+        @Override
+        public String outputFolder() {
+          return "output";
+        }
       };
       cfg.output(System.out);
 

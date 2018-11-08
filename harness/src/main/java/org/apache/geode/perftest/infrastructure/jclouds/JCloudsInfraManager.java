@@ -135,7 +135,7 @@ public class JCloudsInfraManager implements InfraManager {
     }
 
     @Override
-    public void copyFiles(Iterable<File> files, String destDir) throws IOException {
+    public void copyToNodes(Iterable<File> files, String destDir) throws IOException {
       for(JCloudsNode node : nodes) {
         SshClient ssh = context.utils().sshForNode().apply(node.getMetadata());
         ssh.connect();
@@ -144,6 +144,11 @@ public class JCloudsInfraManager implements InfraManager {
           ssh.put(destDir + "/" + file.getName(), new FilePayload(file));
         }
       }
+    }
+
+    @Override
+    public void copyFromNode(Node node, String directory, File destDir) {
+      throw new IllegalStateException("Not yet implemented");
     }
   }
 

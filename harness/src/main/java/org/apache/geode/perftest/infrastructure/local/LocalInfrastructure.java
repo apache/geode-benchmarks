@@ -63,7 +63,7 @@ public class LocalInfrastructure implements Infrastructure {
   }
 
   @Override
-  public void copyFiles(Iterable<File> files, String destDirName) throws IOException {
+  public void copyToNodes(Iterable<File> files, String destDirName) throws IOException {
     for(LocalNode node : nodes) {
       Path destDir = new File(node.getWorkingDir(), destDirName).toPath();
       destDir.toFile().mkdir();
@@ -72,6 +72,17 @@ public class LocalInfrastructure implements Infrastructure {
         Files.copy(file.toPath(), destDir.resolve(file.getName()));
       }
     }
+  }
+
+  @Override
+  public void copyFromNode(Node node, String directory, File destDir) throws IOException {
+    File nodeDir = new File(((LocalNode) node).workingDir, directory);
+
+    if(!nodeDir.exists()) {
+      return;
+    }
+
+    FileUtils.copyDirectory(nodeDir, destDir);
   }
 
   static class LocalNode implements Node {

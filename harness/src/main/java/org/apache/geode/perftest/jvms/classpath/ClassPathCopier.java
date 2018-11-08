@@ -32,7 +32,7 @@ public class ClassPathCopier {
         .map(this::jarDir)
         .collect(Collectors.toSet());
 
-    infrastructure.copyFiles(files, destDir);
+    infrastructure.copyToNodes(files, destDir);
   }
 
   private File jarDir(File file) {

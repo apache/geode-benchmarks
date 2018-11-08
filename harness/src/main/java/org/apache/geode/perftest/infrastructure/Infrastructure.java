@@ -29,7 +29,9 @@ public interface Infrastructure {
   /**
    * Copy a list of files to a directory on the node
    */
-  void copyFiles(Iterable<File> files, String destDir) throws IOException;
+  void copyToNodes(Iterable<File> files, String destDir) throws IOException;
+
+  void copyFromNode(Node node, String directory, File destDir) throws IOException;
 
   interface Node extends Serializable {
 

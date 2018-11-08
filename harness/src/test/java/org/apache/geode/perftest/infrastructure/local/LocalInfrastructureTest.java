@@ -17,10 +17,12 @@ public class LocalInfrastructureTest {
   @Rule
   public TemporaryFolder temporaryFolder = new TemporaryFolder();
   private LocalInfrastructure infra;
+  private LocalInfrastructure.LocalNode node;
 
   @Before
   public void createInfra() throws IOException {
     infra = new LocalInfrastructure(1);
+    node = (LocalInfrastructure.LocalNode) infra.getNodes().iterator().next();
   }
 
   @After
@@ -30,9 +32,7 @@ public class LocalInfrastructureTest {
 
 
   @Test
-  public void copyToFilePutsFileOnNode() throws IOException, InterruptedException {
-    LocalInfrastructure.LocalNode node =
-        (LocalInfrastructure.LocalNode) infra.getNodes().iterator().next();
+  public void copyToNodesPutsFileOnNode() throws IOException, InterruptedException {
 
     File nodedir = node.workingDir;
 
@@ -40,7 +40,7 @@ public class LocalInfrastructureTest {
 
     File expectedDir = new File(nodedir, "lib");
     assertFalse(expectedDir.exists());
-    infra.copyFiles(Arrays.asList(someFile), "lib");
+    infra.copyToNodes(Arrays.asList(someFile), "lib");
     assertTrue(expectedDir.exists());
     assertTrue(new File(expectedDir, someFile.getName()).exists());
 
@@ -52,9 +52,6 @@ public class LocalInfrastructureTest {
 
   @Test
   public void onNodeExecutesShellCommand() throws IOException, InterruptedException {
-    LocalInfrastructure.LocalNode node =
-        (LocalInfrastructure.LocalNode) infra.getNodes().iterator().next();
-
     File nodedir = node.workingDir;
 
     File expectedFile = new File(nodedir, "tmpFile");
@@ -64,6 +61,19 @@ public class LocalInfrastructureTest {
 
     //On node is asynchronous
     Awaitility.await().until(() -> expectedFile.exists());
+  }
+
+  @Test
+  public void copyFromNodeCopiesFileFromNode() throws IOException {
+
+    File newFile = new File(node.workingDir, "someFile");
+    newFile.createNewFile();
+
+    File destDirectory = temporaryFolder.newFolder();
+    infra.copyFromNode(node, ".", destDirectory);
+
+    assertTrue(new File(destDirectory, "someFile").exists());
+
   }
 
 }
