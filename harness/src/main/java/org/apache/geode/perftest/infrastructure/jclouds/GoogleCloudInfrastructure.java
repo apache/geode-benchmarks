@@ -20,8 +20,11 @@ import org.jclouds.compute.ComputeService;
 import org.jclouds.compute.ComputeServiceContext;
 import org.jclouds.compute.domain.ExecResponse;
 import org.jclouds.compute.domain.NodeMetadata;
+import org.jclouds.compute.options.RunScriptOptions;
 import org.jclouds.domain.Credentials;
 import org.jclouds.googlecloud.GoogleCredentialsFromJson;
+import org.jclouds.googlecomputeengine.GoogleComputeEngineApi;
+import org.jclouds.googlecomputeengine.domain.Metadata;
 import org.jclouds.sshj.config.SshjSshClientModule;
 
 import org.apache.geode.perftest.infrastructure.CommandResult;
@@ -76,9 +79,14 @@ public class GoogleCloudInfrastructure implements Infrastructure {
     NodeMetadata metadata = ((GoogleCloudNode) node).metadata;
 
     String script = String.join(" ", shellCommand);
-    ExecResponse
-        result =
-        client.runScriptOnNode(metadata.getId(), script);
+
+    String key = FileUtils.readFileToString(new File(System.getProperty("user.home"), ".ssh/id_rsa"), Charset.defaultCharset());
+    System.err.println("key=" + key);
+    RunScriptOptions
+        runScriptOptions =
+        new RunScriptOptions().overrideLoginPrivateKey(key).overrideLoginUser("geode");
+
+    ExecResponse result = client.runScriptOnNode(metadata.getId(), script, runScriptOptions);
 
     return new CommandResult(result.getOutput(), result.getExitStatus());
   }
