@@ -10,17 +10,15 @@ import org.yardstickframework.BenchmarkConfiguration;
 import org.yardstickframework.BenchmarkDriver;
 import org.yardstickframework.BenchmarkProbe;
 import org.yardstickframework.BenchmarkProbePoint;
-import org.yardstickframework.BenchmarkUtils;
 import org.yardstickframework.impl.BenchmarkLoader;
 import org.yardstickframework.impl.BenchmarkProbeSet;
 import org.yardstickframework.impl.BenchmarkRunner;
 import org.yardstickframework.probes.ThroughputLatencyProbe;
 
 import org.apache.geode.perftest.Task;
-import org.apache.geode.perftest.TestContext;
 
 public class YardstickUtil {
-  public static Task toTask(BenchmarkDriver benchmark) {
+  public static Task toTask(BenchmarkDriver benchmark, long warmUpSeconds, long durationSeconds) {
 
     return (Task) context -> {
 
@@ -32,12 +30,12 @@ public class YardstickUtil {
 
         @Override
         public long duration() {
-          return 10;
+          return durationSeconds;
         }
 
         @Override
         public long warmup() {
-          return 10;
+          return warmUpSeconds;
         }
       };
       cfg.output(System.out);

@@ -17,10 +17,8 @@ public class PartitionedPutBenchmark {
 
   @Test
   public void run() throws Exception {
-
     new TestRunner(new LocalInfraManager(), new JVMManager())
         .runTest(this::configure,3);
-
   }
 
   public void configure(TestConfig config) {
@@ -33,6 +31,6 @@ public class PartitionedPutBenchmark {
     config.before(new StartLocator(locatorPort), "locator");
     config.before(new StartServer(locatorPort), "server");
     config.before(new StartClient(locatorPort), "client");
-    config.workload(new PutTask(), "client");
+    config.workload(new PutTask(), 10, 10, "client");
   }
 }

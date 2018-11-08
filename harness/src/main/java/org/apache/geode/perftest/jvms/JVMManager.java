@@ -5,6 +5,7 @@ import java.net.InetAddress;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -38,16 +39,20 @@ public class JVMManager {
   public RemoteJVMs launch(Infrastructure infra,
                            Map<String, Integer> roles) throws Exception {
 
+    Set<Infrastructure.Node> nodes = infra.getNodes();
+    int numWorkers = roles.values().stream().mapToInt(Integer::intValue).sum();
+
+    if(nodes.size() < numWorkers) {
+      throw new IllegalStateException("Too few nodes for test. Need " + numWorkers + ", have " + nodes.size());
+    }
+
     int rmiPort = 33333;
     Registry registry = LocateRegistry.createRegistry(rmiPort);
 
-    int numWorkers = roles.values().stream().mapToInt(Integer::intValue).sum();
     CountDownLatch workersStarted = new CountDownLatch(numWorkers);
 
     Controller controller = new Controller(worker -> workersStarted.countDown());
     registry.bind(CONTROLLER, controller);
-
-    Set<Infrastructure.Node> nodes = infra.getNodes();
 
     List<JVMMapping> mapping = mapRolesToNodes(roles, nodes);
 
@@ -82,14 +87,13 @@ public class JVMManager {
                                            Set<Infrastructure.Node> nodes) {
 
 
-    //TODO - this currently only places all JVMs on the first node
     List<JVMMapping> mapping = new ArrayList<>();
-    Infrastructure.Node firstNode = nodes.iterator().next();
+    Iterator<Infrastructure.Node> nodeItr = nodes.iterator();
 
     int id = 0;
     for(Map.Entry<String, Integer> roleEntry : roles.entrySet()) {
       for(int i = 0; i < roleEntry.getValue(); i++) {
-        Infrastructure.Node node = firstNode;
+        Infrastructure.Node node = nodeItr.next();
         mapping.add(new JVMMapping(node, roleEntry.getKey(), id++));
       }
 

@@ -1,7 +1,6 @@
 package org.apache.geode.perftest.yardstick;
 
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
@@ -9,7 +8,6 @@ import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.yardstickframework.BenchmarkDriver;
 import org.yardstickframework.BenchmarkDriverAdapter;
 
 import org.apache.geode.perftest.Task;
@@ -19,12 +17,14 @@ public class YardstickUtilTest {
   @Test
   public void testExecuteBenchmark() throws Exception {
     EmptyBenchmark benchmark = new EmptyBenchmark();
-    Task task = YardstickUtil.toTask(benchmark);
+    Task task = YardstickUtil.toTask(benchmark, 1, 1);
     task.run(null);
 
-    Assert.assertEquals(0, benchmark.invocations);
+    Assert.assertTrue(1 >= benchmark.invocations);
 
-//    verify(benchmark, atLeast(1)).test(any());
+    //TODO -verify probes are shutdown
+    //TODO -verify benchmark is shutdown
+    //TODO - pass in probes to yardstick util, turn it into a real class
 
   }
 

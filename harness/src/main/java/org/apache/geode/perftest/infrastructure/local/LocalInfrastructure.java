@@ -17,6 +17,10 @@ import org.apache.commons.io.FileUtils;
 
 import org.apache.geode.perftest.infrastructure.Infrastructure;
 
+/**
+ * Implementation of infrastructure that just runs commands
+ * on the local computer, in their own working directories.
+ */
 public class LocalInfrastructure implements Infrastructure {
 
   private final Set<LocalNode> nodes = new HashSet<>();
@@ -54,7 +58,7 @@ public class LocalInfrastructure implements Infrastructure {
     }
 
     for(LocalNode node : nodes) {
-//      FileUtils.deleteDirectory(node.getWorkingDir());
+      FileUtils.deleteDirectory(node.getWorkingDir());
     }
   }
 

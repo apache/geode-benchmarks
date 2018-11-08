@@ -45,8 +45,8 @@ public class TestConfig implements Serializable {
     before.add(new TestStep(task, roles));
   }
 
-  public void workload(BenchmarkDriver benchmark, String ... roles) {
-    workload.add(new TestStep(YardstickUtil.toTask(benchmark), roles));
+  public void workload(BenchmarkDriver benchmark, long warmUpSeconds, long durationSeconds, String ... roles) {
+    workload.add(new TestStep(YardstickUtil.toTask(benchmark, warmUpSeconds, durationSeconds), roles));
   }
 
   public void after(Task task, String ... roles) {
