@@ -6,12 +6,8 @@ import org.apache.geode.benchmark.tasks.PutTask;
 import org.apache.geode.benchmark.tasks.StartClient;
 import org.apache.geode.benchmark.tasks.StartLocator;
 import org.apache.geode.benchmark.tasks.StartServer;
-import org.apache.geode.internal.cache.tier.sockets.command.CreateRegion;
-import org.apache.geode.internal.cache.tier.sockets.command.Put;
 import org.apache.geode.perftest.TestConfig;
 import org.apache.geode.perftest.TestRunner;
-import org.apache.geode.perftest.infrastructure.jclouds.GoogleCloudInfraManager;
-import org.apache.geode.perftest.infrastructure.local.LocalInfraManager;
 import org.apache.geode.perftest.infrastructure.ssh.SshInfraManager;
 import org.apache.geode.perftest.jvms.JVMManager;
 

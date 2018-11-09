@@ -5,6 +5,7 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -20,7 +21,7 @@ public class YardstickUtilTest {
     Task task = YardstickUtil.toTask(benchmark, 1, 1);
     task.run(null);
 
-    Assert.assertTrue(1 >= benchmark.invocations);
+    Assert.assertTrue(1 <= benchmark.invocations.get());
 
     //TODO -verify probes are shutdown
     //TODO -verify benchmark is shutdown
@@ -29,11 +30,11 @@ public class YardstickUtilTest {
   }
 
   private static class EmptyBenchmark extends BenchmarkDriverAdapter {
-    private int invocations;
+    private AtomicInteger invocations = new AtomicInteger();
 
     @Override
     public boolean test(Map<Object, Object> ctx) throws Exception {
-      invocations++;
+      invocations.incrementAndGet();
       return true;
     }
 

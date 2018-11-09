@@ -1,11 +1,5 @@
 package org.apache.geode.perftest;
 
-import java.io.File;
-import java.nio.charset.Charset;
-
-import com.google.common.io.Files;
-
-import org.jclouds.googlecloud.GoogleCredentialsFromJson;
 import org.junit.Test;
 
 import org.apache.geode.perftest.infrastructure.local.LocalInfraManager;
