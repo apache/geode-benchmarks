@@ -14,7 +14,7 @@ import org.apache.geode.perftest.TestContext;
  * RMI object that lives on the main controller JVM
  */
 public class Controller extends UnicastRemoteObject implements ControllerRemote {
-  Map<Integer, WorkerRemote> workers = new HashMap<>();
+  private Map<Integer, WorkerRemote> workers = new HashMap<>();
   private Consumer<WorkerRemote> callback;
 
   public Controller(Consumer<WorkerRemote> callback) throws RemoteException {
@@ -34,6 +34,9 @@ public class Controller extends UnicastRemoteObject implements ControllerRemote 
 
   public CompletableFuture<Void> onWorker(int id, Task task, TestContext context) {
     WorkerRemote worker = workers.get(id);
+    if(worker == null) {
+      throw new IllegalStateException("Worker number " + id + " is not set");
+    }
 
     return CompletableFuture.runAsync(() -> {
       try {

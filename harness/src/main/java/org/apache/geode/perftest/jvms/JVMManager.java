@@ -9,9 +9,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.geode.perftest.infrastructure.CommandResult;
 import org.apache.geode.perftest.infrastructure.Infrastructure;
 import org.apache.geode.perftest.jvms.classpath.ClassPathCopier;
 import org.apache.geode.perftest.jvms.rmi.ChildJVM;
@@ -61,10 +63,16 @@ public class JVMManager {
     copier.copyToNodes(infra);
 
     for(JVMMapping entry : mapping) {
-      infra.onNode(entry.node, buildCommand(InetAddress.getLocalHost().getHostAddress(), rmiPort, entry.getId()));
+      String[] shellCommand = buildCommand(InetAddress.getLocalHost().getHostAddress(), rmiPort, entry.getId());
+      CompletableFuture<CommandResult> result = infra.onNode(entry.node, shellCommand);
+      result.thenAccept(commandResult -> {
+        System.err.println("ChildJVM exited with code " + commandResult.getExitStatus() + ", output\n" + commandResult.getOutput());
+      });
     }
 
-    workersStarted.await(1, TimeUnit.MINUTES);
+    if(!workersStarted.await(1, TimeUnit.MINUTES)) {
+      throw new IllegalStateException("Workers failed to start in 1 minute");
+    }
 
     return new RemoteJVMs(mapping, controller);
   }

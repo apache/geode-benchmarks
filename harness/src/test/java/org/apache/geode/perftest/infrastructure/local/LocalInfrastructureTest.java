@@ -5,6 +5,8 @@ import static org.junit.Assert.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 import org.awaitility.Awaitility;
 import org.junit.After;
@@ -12,6 +14,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+
+import org.apache.geode.perftest.infrastructure.CommandResult;
 
 public class LocalInfrastructureTest {
   @Rule
@@ -51,16 +55,20 @@ public class LocalInfrastructureTest {
   }
 
   @Test
-  public void onNodeExecutesShellCommand() throws IOException, InterruptedException {
+  public void onNodeExecutesShellCommand()
+      throws IOException, InterruptedException, ExecutionException {
     File nodedir = node.workingDir;
 
     File expectedFile = new File(nodedir, "tmpFile");
     assertFalse(expectedFile.exists());
 
-    infra.onNode(node, new String[] {"touch", "tmpFile"});
+    CompletableFuture<CommandResult> future = infra.onNode(node, new String[] {"touch", "tmpFile"});
 
-    //On node is asynchronous
-    Awaitility.await().until(() -> expectedFile.exists());
+    CommandResult result = future.get();
+
+    assertEquals(0, result.getExitStatus());
+
+    expectedFile.exists();
   }
 
   @Test

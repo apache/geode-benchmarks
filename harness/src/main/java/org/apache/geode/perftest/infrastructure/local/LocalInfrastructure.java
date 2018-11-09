@@ -12,6 +12,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 
 import org.apache.commons.io.FileUtils;
 
@@ -40,7 +41,7 @@ public class LocalInfrastructure implements Infrastructure {
   }
 
   @Override
-  public CommandResult onNode(Node node, String[] shellCommand) throws IOException {
+  public CompletableFuture<CommandResult> onNode(Node node, String[] shellCommand) throws IOException {
     ProcessBuilder builder = new ProcessBuilder();
     builder.command(shellCommand);
     builder.inheritIO();
@@ -50,7 +51,18 @@ public class LocalInfrastructure implements Infrastructure {
     Process process = builder.start();
     processList.add(process);
 
-    return null;
+    CompletableFuture<CommandResult> future = CompletableFuture.supplyAsync(() -> {
+      int exitCode = 0;
+      try {
+        exitCode = process.waitFor();
+      } catch (InterruptedException e) {
+        throw new RuntimeException(e);
+      }
+
+      return new CommandResult("", exitCode);
+    });
+
+    return future;
   }
 
   @Override

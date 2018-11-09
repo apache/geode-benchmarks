@@ -10,6 +10,7 @@ import org.apache.geode.internal.cache.tier.sockets.command.CreateRegion;
 import org.apache.geode.internal.cache.tier.sockets.command.Put;
 import org.apache.geode.perftest.TestConfig;
 import org.apache.geode.perftest.TestRunner;
+import org.apache.geode.perftest.infrastructure.jclouds.GoogleCloudInfraManager;
 import org.apache.geode.perftest.infrastructure.local.LocalInfraManager;
 import org.apache.geode.perftest.jvms.JVMManager;
 

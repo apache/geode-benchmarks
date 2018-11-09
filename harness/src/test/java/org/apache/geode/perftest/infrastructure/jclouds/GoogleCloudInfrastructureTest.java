@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -31,7 +32,8 @@ public class GoogleCloudInfrastructureTest {
     GoogleCloudInfrastructure infra = new GoogleCloudInfrastructure(1);
     Infrastructure.Node node1 = infra.getNodes().iterator().next();
 
-    CommandResult result = infra.onNode(node1, new String[] {"echo", "hello"});
+    CompletableFuture<CommandResult> future = infra.onNode(node1, new String[] {"echo", "hello"});
+    CommandResult result = future.get();
 
     assertEquals(0, result.getExitStatus());
     assertTrue(result.getOutput().contains("hello"));

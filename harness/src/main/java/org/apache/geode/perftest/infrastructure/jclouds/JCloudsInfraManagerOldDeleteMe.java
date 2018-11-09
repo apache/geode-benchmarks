@@ -6,6 +6,7 @@ import java.net.InetAddress;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import com.google.common.base.Supplier;
@@ -111,7 +112,7 @@ public class JCloudsInfraManagerOldDeleteMe implements InfraManager {
     }
 
     @Override
-    public CommandResult onNode(Node node, String[] shellCommand) throws IOException {
+    public CompletableFuture<CommandResult> onNode(Node node, String[] shellCommand) throws IOException {
       NodeMetadata metadata = ((JCloudsNode) node).getMetadata();
 
       String script = String.join(" ", shellCommand);

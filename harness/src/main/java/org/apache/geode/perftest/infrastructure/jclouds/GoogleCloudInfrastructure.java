@@ -2,6 +2,9 @@ package org.apache.geode.perftest.infrastructure.jclouds;
 
 import com.google.common.base.Supplier;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
 import com.google.inject.Module;
 import org.apache.commons.io.FileUtils;
 import org.apache.geode.perftest.infrastructure.CommandResult;
@@ -35,6 +38,8 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ForkJoinPool;
 
 public class GoogleCloudInfrastructure implements Infrastructure {
 
@@ -44,17 +49,9 @@ public class GoogleCloudInfrastructure implements Infrastructure {
   private final ComputeServiceContext context;
 
   public GoogleCloudInfrastructure(int nodeCount) throws IOException {
-    final LoginCredentials sshCredentials;
-    final String key = FileUtils.readFileToString(new File(System.getProperty("user.home"), ".ssh/google_compute_engine"), Charset.defaultCharset());
 
-    String credentialsFile = System.getenv(CREDENTIALS_ENV);
-    if(credentialsFile == null) {
-      throw new IllegalStateException("Must set the environment variable " + CREDENTIALS_ENV + " to a valid google cloud json credentials file.");
-    }
+    Supplier<Credentials> credentials = getGoogleCredentials();
 
-    String fileContents = FileUtils.readFileToString(new File(credentialsFile), Charset.defaultCharset());
-
-    Supplier<Credentials> credentials = new GoogleCredentialsFromJson(fileContents);
     context = ContextBuilder.newBuilder("google-compute-engine")
         .modules(ImmutableSet.<Module> of(new SshjSshClientModule()))
         .credentialsSupplier(credentials)
@@ -69,14 +66,37 @@ public class GoogleCloudInfrastructure implements Infrastructure {
     if(nodeMetadata.size() < nodeCount) {
       throw new IllegalStateException("Need at least " + nodeCount + " nodes. Have " + nodeMetadata.size());
     }
-    sshCredentials = LoginCredentials.builder().user("geode").privateKey(key).build();
+
+    final String key = getSshPrivateKey();
+    LoginCredentials sshCredentials = LoginCredentials.builder().user("geode").privateKey(key).build();
 
     nodes = new HashSet<>();
     Iterator<? extends NodeMetadata> nodeItr = nodeMetadata.iterator();
     for(int i = 0; i < nodeCount; i++) {
       NodeMetadata metadata = nodeItr.next();
-      nodes.add(new GoogleCloudNode(NodeMetadataBuilder.fromNodeMetadata(metadata).credentials(sshCredentials).build()));
+      nodes.add(new GoogleCloudNode(addCredentials(sshCredentials, metadata)));
     }
+  }
+
+  private NodeMetadata addCredentials(LoginCredentials sshCredentials, NodeMetadata metadata) {
+    return NodeMetadataBuilder.fromNodeMetadata(metadata).credentials(sshCredentials).build();
+  }
+
+  private String getSshPrivateKey() throws IOException {
+    File keyFile = new File(System.getProperty("user.home"), ".ssh/google_compute_engine");
+    return FileUtils.readFileToString(keyFile, Charset .defaultCharset());
+  }
+
+  private Supplier<Credentials> getGoogleCredentials() throws IOException {
+    String credentialsFile = System.getenv(CREDENTIALS_ENV);
+    if(credentialsFile == null) {
+      throw new IllegalStateException("Must set the environment variable "
+          + CREDENTIALS_ENV
+          + " to a valid google cloud json credentials file.");
+    }
+    String fileContents = FileUtils.readFileToString(new File(credentialsFile), Charset.defaultCharset());
+
+    return new GoogleCredentialsFromJson(fileContents);
   }
 
   @Override
@@ -85,19 +105,25 @@ public class GoogleCloudInfrastructure implements Infrastructure {
   }
 
   @Override
-  public CommandResult onNode(Node node, String[] shellCommand) throws IOException {
+  public CompletableFuture<CommandResult> onNode(Node node, String[] shellCommand) throws IOException {
     NodeMetadata metadata = ((GoogleCloudNode) node).metadata;
 
-    String script = String.join(" ", shellCommand);
+    String script = "'" + String.join("' '", shellCommand) + "'";
 
-    String key = FileUtils.readFileToString(new File(System.getProperty("user.home"), ".ssh/google_compute_engine"), Charset.defaultCharset());
+    String key = getSshPrivateKey();
     RunScriptOptions
         runScriptOptions =
         new RunScriptOptions().overrideLoginPrivateKey(key).overrideLoginUser("geode");
 
-    ExecResponse result = client.runScriptOnNode(metadata.getId(), script, runScriptOptions);
+    System.out.println("Running " + script);
+    ListenableFuture<ExecResponse>
+        result = client.submitScriptOnNode(metadata.getId(), script, runScriptOptions);
 
-    return new CommandResult(result.getOutput(), result.getExitStatus());
+    CompletableFuture<CommandResult> completableFuture = FutureUtil.toCompletableFuture(result)
+       .thenApply(execResponse -> new CommandResult(execResponse.getOutput() +
+           '\n' + execResponse.getError(), execResponse.getExitStatus()));
+
+    return completableFuture;
   }
 
   @Override
