@@ -32,8 +32,7 @@ public class GoogleCloudInfrastructureTest {
     GoogleCloudInfrastructure infra = new GoogleCloudInfrastructure(1);
     Infrastructure.Node node1 = infra.getNodes().iterator().next();
 
-    CompletableFuture<CommandResult> future = infra.onNode(node1, new String[] {"echo", "hello"});
-    CommandResult result = future.get();
+    CommandResult result = infra.onNode(node1, new String[] {"echo", "hello"});
 
     assertEquals(0, result.getExitStatus());
     assertTrue(result.getOutput().contains("hello"));

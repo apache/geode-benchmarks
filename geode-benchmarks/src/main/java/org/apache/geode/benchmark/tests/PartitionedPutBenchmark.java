@@ -12,6 +12,7 @@ import org.apache.geode.perftest.TestConfig;
 import org.apache.geode.perftest.TestRunner;
 import org.apache.geode.perftest.infrastructure.jclouds.GoogleCloudInfraManager;
 import org.apache.geode.perftest.infrastructure.local.LocalInfraManager;
+import org.apache.geode.perftest.infrastructure.ssh.SshInfraManager;
 import org.apache.geode.perftest.jvms.JVMManager;
 
 public class PartitionedPutBenchmark {

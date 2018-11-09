@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.net.InetAddress;
 import java.util.Set;
-import java.util.concurrent.CompletableFuture;
 
 /**
  * Some deployed infrastructure that the test is running on
@@ -20,7 +19,7 @@ public interface Infrastructure {
   /**
    * Execute a shell command on a given node
    */
-  CompletableFuture<CommandResult> onNode(Node node, String[] shellCommand) throws IOException;
+  CommandResult onNode(Node node, String[] shellCommand) throws IOException, InterruptedException;
 
   /**
    * Delete the nodes

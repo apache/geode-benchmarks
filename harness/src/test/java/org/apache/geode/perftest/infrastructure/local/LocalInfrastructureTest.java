@@ -62,9 +62,7 @@ public class LocalInfrastructureTest {
     File expectedFile = new File(nodedir, "tmpFile");
     assertFalse(expectedFile.exists());
 
-    CompletableFuture<CommandResult> future = infra.onNode(node, new String[] {"touch", "tmpFile"});
-
-    CommandResult result = future.get();
+    CommandResult result = infra.onNode(node, new String[] {"touch", "tmpFile"});
 
     assertEquals(0, result.getExitStatus());
 

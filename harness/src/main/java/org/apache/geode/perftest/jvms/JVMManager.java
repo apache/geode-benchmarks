@@ -1,6 +1,8 @@
 package org.apache.geode.perftest.jvms;
 
+import java.io.IOException;
 import java.io.Serializable;
+import java.io.UncheckedIOException;
 import java.net.InetAddress;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -60,11 +62,17 @@ public class JVMManager {
 
     String classpath = System.getProperty("java.class.path");
     ClassPathCopier copier = new ClassPathCopier(classpath);
-    copier.copyToNodes(infra);
+//    copier.copyToNodes(infra);
 
     for(JVMMapping entry : mapping) {
       String[] shellCommand = buildCommand(InetAddress.getLocalHost().getHostAddress(), rmiPort, entry.getId());
-      CompletableFuture<CommandResult> result = infra.onNode(entry.node, shellCommand);
+      CompletableFuture<CommandResult> result = CompletableFuture.supplyAsync(() -> {
+        try {
+          return infra.onNode(entry.node, shellCommand);
+        } catch (Exception e) {
+          throw new RuntimeException(e);
+        }
+      });
       result.thenAccept(commandResult -> {
         System.err.println("ChildJVM exited with code " + commandResult.getExitStatus() + ", output\n" + commandResult.getOutput());
       });

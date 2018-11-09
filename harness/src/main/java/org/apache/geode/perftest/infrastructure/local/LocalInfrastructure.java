@@ -41,7 +41,8 @@ public class LocalInfrastructure implements Infrastructure {
   }
 
   @Override
-  public CompletableFuture<CommandResult> onNode(Node node, String[] shellCommand) throws IOException {
+  public CommandResult onNode(Node node, String[] shellCommand)
+      throws IOException, InterruptedException {
     ProcessBuilder builder = new ProcessBuilder();
     builder.command(shellCommand);
     builder.inheritIO();
@@ -51,18 +52,8 @@ public class LocalInfrastructure implements Infrastructure {
     Process process = builder.start();
     processList.add(process);
 
-    CompletableFuture<CommandResult> future = CompletableFuture.supplyAsync(() -> {
-      int exitCode = 0;
-      try {
-        exitCode = process.waitFor();
-      } catch (InterruptedException e) {
-        throw new RuntimeException(e);
-      }
-
-      return new CommandResult("", exitCode);
-    });
-
-    return future;
+    int exitCode = process.waitFor();
+    return new CommandResult("", exitCode);
   }
 
   @Override

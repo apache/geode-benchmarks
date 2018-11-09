@@ -2,8 +2,6 @@ package org.apache.geode.perftest.infrastructure.jclouds;
 
 import com.google.common.base.Supplier;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.inject.Module;
 import org.apache.commons.io.FileUtils;
@@ -39,7 +37,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.ExecutionException;
 
 public class GoogleCloudInfrastructure implements Infrastructure {
 
@@ -105,7 +103,7 @@ public class GoogleCloudInfrastructure implements Infrastructure {
   }
 
   @Override
-  public CompletableFuture<CommandResult> onNode(Node node, String[] shellCommand) throws IOException {
+  public CommandResult onNode(Node node, String[] shellCommand) throws IOException {
     NodeMetadata metadata = ((GoogleCloudNode) node).metadata;
 
     String script = "'" + String.join("' '", shellCommand) + "'";
@@ -123,7 +121,11 @@ public class GoogleCloudInfrastructure implements Infrastructure {
        .thenApply(execResponse -> new CommandResult(execResponse.getOutput() +
            '\n' + execResponse.getError(), execResponse.getExitStatus()));
 
-    return completableFuture;
+    try {
+      return completableFuture.get();
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
   }
 
   @Override
