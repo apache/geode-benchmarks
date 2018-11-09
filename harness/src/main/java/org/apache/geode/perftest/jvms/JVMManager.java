@@ -62,7 +62,7 @@ public class JVMManager {
 
     String classpath = System.getProperty("java.class.path");
     ClassPathCopier copier = new ClassPathCopier(classpath);
-//    copier.copyToNodes(infra);
+    copier.copyToNodes(infra);
 
     for(JVMMapping entry : mapping) {
       String[] shellCommand = buildCommand(InetAddress.getLocalHost().getHostAddress(), rmiPort, entry.getId());
