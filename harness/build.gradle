@@ -19,4 +19,6 @@ dependencies {
     compile group: 'org.yardstickframework', name: 'yardstick', version: '0.8.3'
     testCompile group: 'org.mockito', name: 'mockito-all', version: '1.10.19'
     testCompile group: 'org.awaitility', name: 'awaitility', version: '3.0.0'
+    testCompile group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.25'
+
 }
