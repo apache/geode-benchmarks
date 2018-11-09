@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.nio.charset.Charset;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
@@ -12,9 +13,9 @@ import java.util.stream.Collectors;
 
 
 import net.schmizz.sshj.SSHClient;
-import net.schmizz.sshj.common.IOUtils;
 import net.schmizz.sshj.connection.channel.direct.Session;
 import net.schmizz.sshj.xfer.FileSystemFile;
+import org.apache.commons.io.IOUtils;
 
 import org.apache.geode.perftest.infrastructure.CommandResult;
 import org.apache.geode.perftest.infrastructure.Infrastructure;
@@ -46,7 +47,7 @@ public class SshInfrastructure implements Infrastructure {
       try (Session session = client.startSession()) {
         final Session.Command cmd = session.exec(script);
         cmd.join();
-        return new CommandResult(IOUtils.readFully(cmd.getInputStream()).toString(), cmd.getExitStatus());
+        return new CommandResult(IOUtils.readLines(cmd.getInputStream(), Charset.defaultCharset()).toString(), cmd.getExitStatus());
       }
     }
   }

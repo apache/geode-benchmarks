@@ -5,6 +5,7 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
 import org.apache.geode.perftest.Task;
@@ -14,7 +15,7 @@ import org.apache.geode.perftest.TestContext;
  * RMI object that lives on the main controller JVM
  */
 public class Controller extends UnicastRemoteObject implements ControllerRemote {
-  private Map<Integer, WorkerRemote> workers = new HashMap<>();
+  private Map<Integer, WorkerRemote> workers = new ConcurrentHashMap<>();
   private Consumer<WorkerRemote> callback;
 
   public Controller(Consumer<WorkerRemote> callback) throws RemoteException {

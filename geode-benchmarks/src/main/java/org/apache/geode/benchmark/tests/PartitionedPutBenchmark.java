@@ -19,7 +19,7 @@ public class PartitionedPutBenchmark {
 
   @Test
   public void run() throws Exception {
-    new TestRunner(new LocalInfraManager(), new JVMManager())
+    new TestRunner(new SshInfraManager(System.getProperty("user.name"), "localhost", "localhost", "localhost"), new JVMManager())
         .runTest(this::configure,3);
   }
 

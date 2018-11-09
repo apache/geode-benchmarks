@@ -32,5 +32,7 @@ public class ChildJVM {
     while(controller.ping()) {
       Thread.sleep(1000);
     }
+
+    System.exit(0);
   }
 }
