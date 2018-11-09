@@ -29,7 +29,7 @@ public class RemoteJVMs {
   /**
    * Run a task in parallel on all JVMs with the given roles.
    */
-  public void execute(Task task, String[] roleArray) {
+  public void execute(Task task, String ... roleArray) {
 
     HashSet<String> roles = new HashSet<>(Arrays.asList(roleArray));
 
