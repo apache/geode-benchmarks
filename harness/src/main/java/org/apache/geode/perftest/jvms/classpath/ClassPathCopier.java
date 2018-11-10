@@ -30,6 +30,7 @@ public class ClassPathCopier {
         .stream()
         .map(File::new)
         .map(this::jarDir)
+        .filter(File::exists)
         .collect(Collectors.toSet());
 
     infrastructure.copyToNodes(files, destDir);

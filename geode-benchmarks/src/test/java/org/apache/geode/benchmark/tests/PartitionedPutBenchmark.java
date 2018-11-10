@@ -7,15 +7,13 @@ import org.apache.geode.benchmark.tasks.StartClient;
 import org.apache.geode.benchmark.tasks.StartLocator;
 import org.apache.geode.benchmark.tasks.StartServer;
 import org.apache.geode.perftest.TestConfig;
-import org.apache.geode.perftest.TestRunner;
-import org.apache.geode.perftest.infrastructure.ssh.SshInfraManager;
-import org.apache.geode.perftest.jvms.JVMManager;
+import org.apache.geode.perftest.TestRunners;
 
 public class PartitionedPutBenchmark {
 
   @Test
   public void run() throws Exception {
-    new TestRunner(new SshInfraManager(System.getProperty("user.name"), "localhost", "localhost", "localhost"), new JVMManager())
+    TestRunners.defaultRunner()
         .runTest(this::configure,3);
   }
 

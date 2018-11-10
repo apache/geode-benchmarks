@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 
 import net.schmizz.sshj.SSHClient;
 import net.schmizz.sshj.connection.channel.direct.Session;
+import net.schmizz.sshj.transport.verification.PromiscuousVerifier;
 import net.schmizz.sshj.xfer.FileSystemFile;
 import org.apache.commons.io.IOUtils;
 
@@ -29,6 +30,15 @@ public class SshInfrastructure implements Infrastructure {
     this.user = user;
   }
 
+  SSHClient getSSHClient(Node node) throws IOException {
+    SSHClient client = new SSHClient();
+    client.addHostKeyVerifier(new PromiscuousVerifier());
+    client.loadKnownHosts();
+    client.connect(node.getAddress());
+    client.authPublickey(user);
+    return client;
+  }
+
   @Override
   public Set<Node> getNodes() {
     return Collections.unmodifiableSet(hosts);
@@ -37,10 +47,7 @@ public class SshInfrastructure implements Infrastructure {
   @Override
   public CommandResult onNode(Node node, String[] shellCommand)
       throws IOException {
-    try (SSHClient client = new SSHClient()) {
-      client.loadKnownHosts();
-      client.connect(node.getAddress());
-      client.authPublickey(user);
+    try (SSHClient client = getSSHClient(node)) {
 
       String script = "'" + String.join("' '", shellCommand) + "'";
 
@@ -60,11 +67,7 @@ public class SshInfrastructure implements Infrastructure {
   @Override
   public void copyToNodes(Iterable<File> files, String destDir) throws IOException {
     for(Node node : getNodes()) {
-      try (SSHClient client = new SSHClient()) {
-        client.loadKnownHosts();
-        client.connect(node.getAddress());
-        client.authPublickey(user);
-
+      try (SSHClient client = getSSHClient(node)) {
         try (Session session = client.startSession()) {
           client.useCompression();
 
@@ -82,10 +85,7 @@ public class SshInfrastructure implements Infrastructure {
 
   @Override
   public void copyFromNode(Node node, String directory, File destDir) throws IOException {
-    try (SSHClient client = new SSHClient()) {
-      client.loadKnownHosts();
-      client.connect(node.getAddress());
-      client.authPublickey(user);
+    try (SSHClient client = getSSHClient(node)) {
 
       try (Session session = client.startSession()) {
         client.useCompression();
