@@ -13,6 +13,7 @@ import org.apache.geode.perftest.infrastructure.Infrastructure;
  * that the controller JVM has.
  */
 public class ClassPathCopier {
+
   public String classpath;
 
   public ClassPathCopier(String classpath) {

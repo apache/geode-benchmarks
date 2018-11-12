@@ -16,10 +16,14 @@ import net.schmizz.sshj.SSHClient;
 import net.schmizz.sshj.connection.channel.direct.Session;
 import net.schmizz.sshj.transport.verification.PromiscuousVerifier;
 import net.schmizz.sshj.xfer.FileSystemFile;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.apache.geode.perftest.infrastructure.Infrastructure;
 
 public class SshInfrastructure implements Infrastructure {
+  private static final Logger logger = LoggerFactory.getLogger(SshInfrastructure.class);
+
   private final Set<SshNode> hosts;
   private final String user;
 
@@ -81,6 +85,7 @@ public class SshInfrastructure implements Infrastructure {
           final Session.Command cmd = session.exec(script);
           cmd.join();
           for (File file : files) {
+            logger.info("Copying " + file + " to " + node.getAddress());
             client.newSCPFileTransfer().upload(new FileSystemFile(file), destDir);
           }
           return;

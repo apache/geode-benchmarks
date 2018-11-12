@@ -21,7 +21,7 @@ import org.apache.geode.perftest.jvms.RemoteJVMs;
  * a declarative fashion and then execute them this runner.
  */
 public class TestRunner {
-  Logger logger = LoggerFactory.getLogger(TestRunner.class);
+  private static final Logger logger = LoggerFactory.getLogger(TestRunner.class);
 
 
   private final InfraManager infraManager;
