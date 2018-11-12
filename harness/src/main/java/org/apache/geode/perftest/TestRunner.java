@@ -33,9 +33,7 @@ public class TestRunner {
   }
 
   public void runTest(PerformanceTest test, int nodes) throws Exception {
-    Infrastructure infra = infraManager.create(nodes);
-
-    try {
+    try (Infrastructure infra = infraManager.create(nodes)){
       TestConfig config = new TestConfig();
       test.configure(config);
 
@@ -43,26 +41,24 @@ public class TestRunner {
 
       logger.info("Lauching JVMs...");
       //launch JVMs in parallel, hook them up
-      RemoteJVMs remoteJVMs = jvmManager.launch(infra, roles);
+      try (RemoteJVMs remoteJVMs = jvmManager.launch(infra, roles)) {
 
-      logger.info("Starting before tasks...");
-      runTasks(config.getBefore(), remoteJVMs);
+        logger.info("Starting before tasks...");
+        runTasks(config.getBefore(), remoteJVMs);
 
-      logger.info("Starting workload tasks...");
-      runTasks(config.getWorkload(), remoteJVMs);
+        logger.info("Starting workload tasks...");
+        runTasks(config.getWorkload(), remoteJVMs);
 
-      logger.info("Starting after tasks...");
-      runTasks(config.getAfter(), remoteJVMs);
+        logger.info("Starting after tasks...");
+        runTasks(config.getAfter(), remoteJVMs);
 
-      logger.info("Copying results...");
-      File outputDir = new File("output");
-      int nodeId = 0;
-      for(Infrastructure.Node node : infra.getNodes()) {
-        infra.copyFromNode(node, "output", new File(outputDir, "node-" + nodeId++));
+        logger.info("Copying results...");
+        File outputDir = new File("output");
+        int nodeId = 0;
+        for (Infrastructure.Node node : infra.getNodes()) {
+          infra.copyFromNode(node, "output", new File(outputDir, "node-" + nodeId++));
+        }
       }
-
-    } finally {
-      infra.delete();
     }
   }
 

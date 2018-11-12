@@ -9,22 +9,21 @@ import java.util.Set;
 /**
  * Some deployed infrastructure that the test is running on
  */
-public interface Infrastructure {
+public interface Infrastructure extends AutoCloseable {
 
   /**
    * Get the nodes that the test is running on
    */
   Set<Node> getNodes();
 
-  /**
-   * Execute a shell command on a given node
-   */
-  CommandResult onNode(Node node, String[] shellCommand) throws IOException, InterruptedException;
+
+  int onNode(Node node, String[] shellCommand)
+      throws IOException, InterruptedException;
 
   /**
    * Delete the nodes
    */
-  void delete() throws InterruptedException, IOException;
+  void close() throws InterruptedException, IOException;
 
   /**
    * Copy a list of files to a directory on the node

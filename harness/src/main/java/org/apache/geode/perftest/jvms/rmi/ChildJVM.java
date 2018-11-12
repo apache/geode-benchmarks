@@ -1,5 +1,8 @@
 package org.apache.geode.perftest.jvms.rmi;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.PrintStream;
 import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
@@ -15,9 +18,15 @@ public class ChildJVM {
 
   public static void main(String[] args) {
     try {
+
       String RMI_HOST = System.getProperty(JVMManager.RMI_HOST);
       String RMI_PORT = System.getProperty(JVMManager.RMI_PORT);
       int id = Integer.getInteger(JVMManager.JVM_ID);
+      File outputDir = new File("output");
+      outputDir.mkdirs();
+      PrintStream out = new PrintStream(new File(outputDir, "ChildJVM-" + id + ".txt"));
+      System.setOut(out);
+      System.setErr(out);
 
       ControllerRemote controller = (ControllerRemote) Naming
           .lookup("//" + RMI_HOST + ":" + RMI_PORT + "/" + JVMManager.CONTROLLER);

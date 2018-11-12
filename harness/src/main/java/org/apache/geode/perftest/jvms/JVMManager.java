@@ -1,9 +1,8 @@
 package org.apache.geode.perftest.jvms;
 
-import java.io.IOException;
 import java.io.Serializable;
-import java.io.UncheckedIOException;
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.ArrayList;
@@ -15,7 +14,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.geode.perftest.infrastructure.CommandResult;
 import org.apache.geode.perftest.infrastructure.Infrastructure;
 import org.apache.geode.perftest.jvms.classpath.ClassPathCopier;
 import org.apache.geode.perftest.jvms.rmi.ChildJVM;
@@ -64,25 +62,38 @@ public class JVMManager {
     ClassPathCopier copier = new ClassPathCopier(classpath);
     copier.copyToNodes(infra);
 
-    for(JVMMapping entry : mapping) {
-      String[] shellCommand = buildCommand(InetAddress.getLocalHost().getHostAddress(), rmiPort, entry.getId());
-      CompletableFuture<CommandResult> result = CompletableFuture.supplyAsync(() -> {
-        try {
-          return infra.onNode(entry.node, shellCommand);
-        } catch (Exception e) {
-          throw new RuntimeException(e);
-        }
-      });
-      result.thenAccept(commandResult -> {
-        System.err.println("ChildJVM exited with code " + commandResult.getExitStatus() + ", output\n" + commandResult.getOutput());
-      });
-    }
+    CompletableFuture<Void> processesExited = launchProcesses(infra, rmiPort, mapping);
 
     if(!workersStarted.await(1, TimeUnit.MINUTES)) {
       throw new IllegalStateException("Workers failed to start in 1 minute");
     }
 
-    return new RemoteJVMs(mapping, controller);
+    return new RemoteJVMs(mapping, controller, registry, processesExited);
+  }
+
+  private CompletableFuture<Void> launchProcesses(Infrastructure infra, int rmiPort,
+                                                  List<JVMMapping> mapping)
+      throws UnknownHostException {
+    List<CompletableFuture<Void>> futures = new ArrayList<>();
+    for(JVMMapping entry : mapping) {
+      futures.add(launchWorker(infra, rmiPort, entry));
+    }
+    return CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]));
+  }
+
+  private CompletableFuture<Void> launchWorker(Infrastructure infra, int rmiPort, JVMMapping entry)
+      throws UnknownHostException {
+    String[] shellCommand = buildCommand(InetAddress.getLocalHost().getHostAddress(), rmiPort, entry.getId());
+    CompletableFuture<Integer> result = CompletableFuture.supplyAsync(() -> {
+      try {
+        return infra.onNode(entry.node, shellCommand);
+      } catch (Exception e) {
+        throw new RuntimeException(e);
+      }
+    });
+    return result.thenAccept(commandResult -> {
+      System.err.println("ChildJVM exited with code " + commandResult + ", output");
+    });
   }
 
   private String[] buildCommand(String rmiHost, int rmiPort, int id) {

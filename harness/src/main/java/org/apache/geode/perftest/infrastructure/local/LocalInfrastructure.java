@@ -12,12 +12,10 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.CompletableFuture;
 
 import org.apache.commons.io.FileUtils;
 
 import org.apache.geode.perftest.infrastructure.Infrastructure;
-import org.apache.geode.perftest.infrastructure.CommandResult;
 
 /**
  * Implementation of infrastructure that just runs commands
@@ -41,7 +39,7 @@ public class LocalInfrastructure implements Infrastructure {
   }
 
   @Override
-  public CommandResult onNode(Node node, String[] shellCommand)
+  public int onNode(Node node, String[] shellCommand)
       throws IOException, InterruptedException {
     ProcessBuilder builder = new ProcessBuilder();
     builder.command(shellCommand);
@@ -53,11 +51,11 @@ public class LocalInfrastructure implements Infrastructure {
     processList.add(process);
 
     int exitCode = process.waitFor();
-    return new CommandResult("", exitCode);
+    return exitCode;
   }
 
   @Override
-  public void delete() throws InterruptedException, IOException {
+  public void close() throws InterruptedException, IOException {
     for(Process process : processList) {
       process.destroyForcibly();
       process.waitFor();

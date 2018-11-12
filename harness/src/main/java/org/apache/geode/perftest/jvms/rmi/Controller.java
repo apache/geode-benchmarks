@@ -24,6 +24,10 @@ public class Controller extends UnicastRemoteObject implements ControllerRemote 
     this.callback = callback;
   }
 
+  public void close() {
+    isClosed = true;
+  }
+
   @Override
   public void addWorker(int id, WorkerRemote worker) throws RemoteException {
     this.workers.put(id, worker);

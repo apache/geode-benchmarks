@@ -15,7 +15,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import org.apache.geode.perftest.infrastructure.CommandResult;
 import org.apache.geode.perftest.infrastructure.Infrastructure;
 
 public class SshInfrastructureTest {
@@ -33,14 +32,17 @@ public class SshInfrastructureTest {
 
   @Test
   public void canExecuteACommandOnNode()
-      throws IOException, ExecutionException, InterruptedException {
+      throws IOException {
     SshInfrastructure infra = new SshInfrastructure(HOSTS, USER);
     Infrastructure.Node node1 = infra.getNodes().iterator().next();
 
-    CommandResult result = infra.onNode(node1, new String[] {"echo", "hello"});
+    File folder = temporaryFolder.newFolder();
+    File expectedFile = new File(folder, "somefile.txt").getAbsoluteFile();
+    int result = infra.onNode(node1, new String[] {"touch", expectedFile.getPath()}
+    );
 
-    assertEquals(0, result.getExitStatus());
-    assertTrue(result.getOutput().contains("hello"));
+    assertEquals(0, result);
+    assertTrue(expectedFile.exists());
   }
 
   @Test

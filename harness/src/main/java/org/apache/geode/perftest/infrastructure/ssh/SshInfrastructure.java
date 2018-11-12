@@ -2,23 +2,21 @@ package org.apache.geode.perftest.infrastructure.ssh;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintStream;
 import java.io.UncheckedIOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.nio.charset.Charset;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-
 import net.schmizz.sshj.SSHClient;
 import net.schmizz.sshj.connection.channel.direct.Session;
 import net.schmizz.sshj.transport.verification.PromiscuousVerifier;
 import net.schmizz.sshj.xfer.FileSystemFile;
-import org.apache.commons.io.IOUtils;
 
-import org.apache.geode.perftest.infrastructure.CommandResult;
 import org.apache.geode.perftest.infrastructure.Infrastructure;
 
 public class SshInfrastructure implements Infrastructure {
@@ -45,7 +43,7 @@ public class SshInfrastructure implements Infrastructure {
   }
 
   @Override
-  public CommandResult onNode(Node node, String[] shellCommand)
+  public int onNode(Node node, String[] shellCommand)
       throws IOException {
     try (SSHClient client = getSSHClient(node)) {
 
@@ -54,13 +52,21 @@ public class SshInfrastructure implements Infrastructure {
       try (Session session = client.startSession()) {
         final Session.Command cmd = session.exec(script);
         cmd.join();
-        return new CommandResult(IOUtils.readLines(cmd.getInputStream(), Charset.defaultCharset()).toString(), cmd.getExitStatus());
+        copyStream(cmd.getInputStream(), System.out);
+        copyStream(cmd.getErrorStream(), System.err);
+
+        cmd.join();
+        return cmd.getExitStatus();
       }
     }
   }
 
+  private void copyStream(InputStream inputStream, PrintStream out) throws IOException {
+    org.apache.commons.io.IOUtils.copy(inputStream, out);
+  }
+
   @Override
-  public void delete() throws InterruptedException, IOException {
+  public void close() throws InterruptedException, IOException {
 
   }
 

@@ -5,17 +5,13 @@ import static org.junit.Assert.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
-import org.awaitility.Awaitility;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-
-import org.apache.geode.perftest.infrastructure.CommandResult;
 
 public class LocalInfrastructureTest {
   @Rule
@@ -31,7 +27,7 @@ public class LocalInfrastructureTest {
 
   @After
   public void deleteInfra() throws IOException, InterruptedException {
-    infra.delete();
+    infra.close();
   }
 
 
@@ -49,7 +45,7 @@ public class LocalInfrastructureTest {
     assertTrue(new File(expectedDir, someFile.getName()).exists());
 
 
-    infra.delete();
+    infra.close();
 
     assertFalse(expectedDir.exists());
   }
@@ -62,9 +58,9 @@ public class LocalInfrastructureTest {
     File expectedFile = new File(nodedir, "tmpFile");
     assertFalse(expectedFile.exists());
 
-    CommandResult result = infra.onNode(node, new String[] {"touch", "tmpFile"});
+    int result = infra.onNode(node, new String[] {"touch", "tmpFile"});
 
-    assertEquals(0, result.getExitStatus());
+    assertEquals(0, result);
 
     expectedFile.exists();
   }

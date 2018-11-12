@@ -7,14 +7,17 @@ import org.apache.geode.benchmark.tasks.StartClient;
 import org.apache.geode.benchmark.tasks.StartLocator;
 import org.apache.geode.benchmark.tasks.StartServer;
 import org.apache.geode.perftest.TestConfig;
+import org.apache.geode.perftest.TestRunner;
 import org.apache.geode.perftest.TestRunners;
+import org.apache.geode.perftest.infrastructure.local.LocalInfraManager;
+import org.apache.geode.perftest.infrastructure.ssh.SshInfraManager;
+import org.apache.geode.perftest.jvms.JVMManager;
 
 public class PartitionedPutBenchmark {
 
   @Test
   public void run() throws Exception {
-    TestRunners.defaultRunner()
-        .runTest(this::configure,3);
+    TestRunners.defaultRunner().runTest(this::configure,3);
   }
 
   public void configure(TestConfig config) {
@@ -27,6 +30,6 @@ public class PartitionedPutBenchmark {
     config.before(new StartLocator(locatorPort), "locator");
     config.before(new StartServer(locatorPort), "server");
     config.before(new StartClient(locatorPort), "client");
-    config.workload(new PutTask(), 10, 10, "client");
+    config.workload(new PutTask(), 1, 1, "client");
   }
 }
