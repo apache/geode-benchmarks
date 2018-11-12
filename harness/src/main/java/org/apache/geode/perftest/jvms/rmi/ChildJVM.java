@@ -13,26 +13,31 @@ import org.apache.geode.perftest.jvms.JVMManager;
  */
 public class ChildJVM {
 
-  public static void main(String[] args)
-      throws RemoteException, NotBoundException, MalformedURLException, InterruptedException {
+  public static void main(String[] args) {
+    try {
+      String RMI_HOST = System.getProperty(JVMManager.RMI_HOST);
+      String RMI_PORT = System.getProperty(JVMManager.RMI_PORT);
+      int id = Integer.getInteger(JVMManager.JVM_ID);
 
-    String RMI_HOST = System.getProperty(JVMManager.RMI_HOST);
-    String RMI_PORT = System.getProperty(JVMManager.RMI_PORT);
-    int id = Integer.getInteger(JVMManager.JVM_ID);
+      ControllerRemote controller = (ControllerRemote) Naming
+          .lookup("//" + RMI_HOST + ":" + RMI_PORT + "/" + JVMManager.CONTROLLER);
 
-    ControllerRemote controller = (ControllerRemote) Naming
-        .lookup("//" + RMI_HOST + ":" + RMI_PORT + "/" + JVMManager.CONTROLLER);
+      Worker worker = new Worker();
 
+      controller.addWorker(id, worker);
 
-    Worker worker = new Worker();
+      //Wait until the controller shuts down
+      //If the controller shuts down, this will throw an exception
+      while (controller.ping()) {
+        Thread.sleep(1000);
+      }
 
-    controller.addWorker(id, worker);
-
-    //Wait until the controller shuts down
-    while(controller.ping()) {
-      Thread.sleep(1000);
+      System.exit(0);
+    } catch(Throwable t) {
+      t.printStackTrace();
+      //Force a system exit. Because we created an RMI object, an exception from the main
+      //thread would not otherwise cause this process to exit
+      System.exit(1);
     }
-
-    System.exit(0);
   }
 }

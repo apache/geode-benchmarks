@@ -17,20 +17,22 @@ import org.apache.geode.perftest.TestContext;
 public class Controller extends UnicastRemoteObject implements ControllerRemote {
   private Map<Integer, WorkerRemote> workers = new ConcurrentHashMap<>();
   private Consumer<WorkerRemote> callback;
+  private volatile boolean isClosed;
+
 
   public Controller(Consumer<WorkerRemote> callback) throws RemoteException {
     this.callback = callback;
   }
 
   @Override
-  public void addWorker(int id, WorkerRemote worker) {
+  public void addWorker(int id, WorkerRemote worker) throws RemoteException {
     this.workers.put(id, worker);
     this.callback.accept(worker);
   }
 
   @Override
-  public boolean ping() {
-    return true;
+  public boolean ping() throws RemoteException {
+    return !isClosed;
   }
 
   public CompletableFuture<Void> onWorker(int id, Task task, TestContext context) {
