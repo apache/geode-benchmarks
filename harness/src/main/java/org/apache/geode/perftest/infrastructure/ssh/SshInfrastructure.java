@@ -12,8 +12,12 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import net.schmizz.sshj.Config;
+import net.schmizz.sshj.DefaultConfig;
 import net.schmizz.sshj.SSHClient;
 import net.schmizz.sshj.connection.channel.direct.Session;
+import net.schmizz.sshj.transport.random.BouncyCastleRandom;
+import net.schmizz.sshj.transport.random.SingletonRandomFactory;
 import net.schmizz.sshj.transport.verification.PromiscuousVerifier;
 import net.schmizz.sshj.xfer.FileSystemFile;
 import org.slf4j.Logger;
@@ -26,14 +30,15 @@ public class SshInfrastructure implements Infrastructure {
 
   private final Set<SshNode> hosts;
   private final String user;
-
+  public static final Config CONFIG = new DefaultConfig();
+  
   public SshInfrastructure(Collection<String> hosts, String user) {
     this.hosts = hosts.stream().map(SshNode::new).collect(Collectors.toSet());
     this.user = user;
   }
 
   SSHClient getSSHClient(Node node) throws IOException {
-    SSHClient client = new SSHClient();
+    SSHClient client = new SSHClient(CONFIG);
     client.addHostKeyVerifier(new PromiscuousVerifier());
     client.loadKnownHosts();
     client.connect(node.getAddress());
