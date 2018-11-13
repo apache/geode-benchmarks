@@ -30,6 +30,6 @@ public class PartitionedPutBenchmark {
     config.before(new StartLocator(locatorPort), "locator");
     config.before(new StartServer(locatorPort), "server");
     config.before(new StartClient(locatorPort), "client");
-    config.workload(new PutTask(), 1, 1, "client");
+    config.workload(new PutTask(), 5, 30, "client");
   }
 }
