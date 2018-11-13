@@ -7,17 +7,18 @@ import java.io.PrintStream;
 import java.io.UncheckedIOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import net.schmizz.sshj.Config;
 import net.schmizz.sshj.DefaultConfig;
 import net.schmizz.sshj.SSHClient;
 import net.schmizz.sshj.connection.channel.direct.Session;
-import net.schmizz.sshj.transport.random.BouncyCastleRandom;
-import net.schmizz.sshj.transport.random.SingletonRandomFactory;
 import net.schmizz.sshj.transport.verification.PromiscuousVerifier;
 import net.schmizz.sshj.xfer.FileSystemFile;
 import org.slf4j.Logger;
@@ -37,11 +38,11 @@ public class SshInfrastructure implements Infrastructure {
     this.user = user;
   }
 
-  SSHClient getSSHClient(Node node) throws IOException {
+  SSHClient getSSHClient(InetAddress address) throws IOException {
     SSHClient client = new SSHClient(CONFIG);
     client.addHostKeyVerifier(new PromiscuousVerifier());
     client.loadKnownHosts();
-    client.connect(node.getAddress());
+    client.connect(address);
     client.authPublickey(user);
     return client;
   }
@@ -54,7 +55,7 @@ public class SshInfrastructure implements Infrastructure {
   @Override
   public int onNode(Node node, String[] shellCommand)
       throws IOException {
-    try (SSHClient client = getSSHClient(node)) {
+    try (SSHClient client = getSSHClient(node.getAddress())) {
 
       String script = "'" + String.join("' '", shellCommand) + "'";
 
@@ -82,26 +83,34 @@ public class SshInfrastructure implements Infrastructure {
 
   @Override
   public void copyToNodes(Iterable<File> files, String destDir) throws IOException {
-    for(Node node : getNodes()) {
-      try (SSHClient client = getSSHClient(node)) {
-        try (Session session = client.startSession()) {
-          client.useCompression();
+    Set<InetAddress> uniqueNodes = getNodes().stream().map(Node::getAddress).collect(Collectors.toSet());
 
-          String script = "mkdir -p " + destDir;
-          final Session.Command cmd = session.exec(script);
-          cmd.join();
-          for (File file : files) {
-            logger.info("Copying " + file + " to " + node.getAddress());
-            client.newSCPFileTransfer().upload(new FileSystemFile(file), destDir);
+    List<CompletableFuture<Void>> futures = new ArrayList<>();
+    for(InetAddress address: uniqueNodes) {
+      futures.add(CompletableFuture.runAsync(() -> {
+        try (SSHClient client = getSSHClient(address)) {
+          try (Session session = client.startSession()) {
+            client.useCompression();
+
+            String script = "mkdir -p " + destDir;
+            final Session.Command cmd = session.exec(script);
+            cmd.join();
+            for (File file : files) {
+              logger.info("Copying " + file + " to " + address);
+              client.newSCPFileTransfer().upload(new FileSystemFile(file), destDir);
+            }
           }
+        } catch(IOException e) {
+          throw new UncheckedIOException(e);
         }
-      }
+      }));
     }
+    futures.forEach(CompletableFuture::join);
   }
 
   @Override
   public void copyFromNode(Node node, String directory, File destDir) throws IOException {
-    try (SSHClient client = getSSHClient(node)) {
+    try (SSHClient client = getSSHClient(node.getAddress())) {
 
       try (Session session = client.startSession()) {
         client.useCompression();
