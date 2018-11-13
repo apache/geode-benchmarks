@@ -22,7 +22,7 @@ public class StartClient implements Task {
     InetAddress locator = context.getHostsForRole("locator").iterator().next();
 
     ClientCache clientCache = new ClientCacheFactory()
-        .addPoolLocator(locator.toString(), locatorPort)
+        .addPoolLocator(locator.getHostAddress(), locatorPort)
         .create();
 
     clientCache.createClientRegionFactory(ClientRegionShortcut.PROXY)

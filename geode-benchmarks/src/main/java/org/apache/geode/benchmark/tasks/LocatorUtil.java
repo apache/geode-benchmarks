@@ -9,6 +9,6 @@ public class LocatorUtil {
   static String getLocatorString(TestContext context, int locatorPort) {
     Set<InetAddress> locators = context.getHostsForRole("locator");
 
-    return locators.iterator().next().toString() + "[" + locatorPort + "]";
+    return locators.iterator().next().getHostAddress() + "[" + locatorPort + "]";
   }
 }

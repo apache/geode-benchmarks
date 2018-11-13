@@ -14,6 +14,9 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.apache.geode.perftest.infrastructure.Infrastructure;
 import org.apache.geode.perftest.jvms.classpath.ClassPathCopier;
 import org.apache.geode.perftest.jvms.rmi.ChildJVM;
@@ -24,6 +27,7 @@ import org.apache.geode.perftest.jvms.rmi.Controller;
  * access to all JVMs.
  */
 public class JVMManager {
+  private static final Logger logger = LoggerFactory.getLogger(JVMManager.class);
 
   public static final String RMI_HOST = "RMI_HOST";
   public static final String RMI_PORT = "RMI_PORT";
@@ -85,16 +89,25 @@ public class JVMManager {
   private CompletableFuture<Void> launchWorker(Infrastructure infra, int rmiPort, JVMMapping entry)
       throws UnknownHostException {
     String[] shellCommand = buildCommand(InetAddress.getLocalHost().getHostAddress(), rmiPort, entry.getId());
-    CompletableFuture<Integer> result = CompletableFuture.supplyAsync(() -> {
-      try {
-        return infra.onNode(entry.node, shellCommand);
-      } catch (Exception e) {
-        throw new RuntimeException(e);
+    CompletableFuture<Void> future = new CompletableFuture<>();
+    Thread thread = new Thread("Worker " + entry.getNode().getAddress()) {
+      public void run() {
+
+        try {
+          int result = infra.onNode(entry.node, shellCommand);
+          if(result != 0) {
+            logger.error("ChildJVM exited with error code " + result);
+          }
+        } catch(Throwable t) {
+          logger.error("Launching " + String.join(" ", shellCommand) + " on " + entry.getNode() + "Failed.", t);
+        } finally {
+          future.complete(null);
+        }
       }
-    });
-    return result.thenAccept(commandResult -> {
-      System.err.println("ChildJVM exited with code " + commandResult + ", output");
-    });
+    };
+    thread.start();
+
+    return future;
   }
 
   private String[] buildCommand(String rmiHost, int rmiPort, int id) {
