@@ -59,7 +59,8 @@ public class JVMManager {
     List<JVMMapping> mapping = mapRolesToNodes(roles, nodes);
 
     String classpath = System.getProperty("java.class.path");
-    ClassPathCopier copier = new ClassPathCopier(classpath);
+    String javaHome = System.getProperty("java.home");
+    ClassPathCopier copier = new ClassPathCopier(classpath, javaHome);
     copier.copyToNodes(infra);
 
     CompletableFuture<Void> processesExited = launchProcesses(infra, rmiPort, mapping);

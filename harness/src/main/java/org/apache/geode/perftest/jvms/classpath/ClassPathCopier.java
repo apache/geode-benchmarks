@@ -14,10 +14,12 @@ import org.apache.geode.perftest.infrastructure.Infrastructure;
  */
 public class ClassPathCopier {
 
+  private final String javaHome;
   public String classpath;
 
-  public ClassPathCopier(String classpath) {
+  public ClassPathCopier(String classpath, String javaHome) {
     this.classpath = classpath;
+    this.javaHome = javaHome;
   }
 
   /**
@@ -29,6 +31,7 @@ public class ClassPathCopier {
     String destDir = "lib";
     Iterable<File> files = Arrays.asList(fileArray)
         .stream()
+        .filter(path -> !path.contains(javaHome))
         .map(File::new)
         .map(this::jarDir)
         .filter(File::exists)

@@ -88,7 +88,6 @@ public class SshInfrastructure implements Infrastructure {
             logger.info("Copying " + file + " to " + node.getAddress());
             client.newSCPFileTransfer().upload(new FileSystemFile(file), destDir);
           }
-          return;
         }
       }
     }
