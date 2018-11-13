@@ -54,6 +54,7 @@ public class SshInfrastructure implements Infrastructure {
       String script = "'" + String.join("' '", shellCommand) + "'";
 
       try (Session session = client.startSession()) {
+        logger.info("Executing " + script + " on " + node.getAddress());
         final Session.Command cmd = session.exec(script);
         cmd.join();
         copyStream(cmd.getInputStream(), System.out);
