@@ -69,7 +69,7 @@ public class JVMManager {
 
     CompletableFuture<Void> processesExited = launchProcesses(infra, rmiPort, mapping);
 
-    if(!workersStarted.await(1, TimeUnit.MINUTES)) {
+    if(!workersStarted.await(5, TimeUnit.MINUTES)) {
       throw new IllegalStateException("Workers failed to start in 1 minute");
     }
 
