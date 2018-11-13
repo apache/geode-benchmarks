@@ -13,7 +13,10 @@ import org.yardstickframework.BenchmarkProbePoint;
 import org.yardstickframework.impl.BenchmarkLoader;
 import org.yardstickframework.impl.BenchmarkProbeSet;
 import org.yardstickframework.impl.BenchmarkRunner;
+import org.yardstickframework.probes.DStatProbe;
+import org.yardstickframework.probes.PercentileProbe;
 import org.yardstickframework.probes.ThroughputLatencyProbe;
+import org.yardstickframework.probes.VmStatProbe;
 
 import org.apache.geode.perftest.Task;
 
@@ -51,6 +54,7 @@ public class YardstickUtil {
 
       TestDoneProbe testDoneProbe = new TestDoneProbe();
       Collection<BenchmarkProbe> probes = Arrays.asList(new ThroughputLatencyProbe(),
+          new PercentileProbe(), new DStatProbe(), new VmStatProbe(),
           testDoneProbe);
       BenchmarkLoader loader = new BenchmarkLoader();
       loader.initialize(cfg);
