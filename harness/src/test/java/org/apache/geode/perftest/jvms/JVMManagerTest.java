@@ -20,15 +20,14 @@ public class JVMManagerTest {
   public void canExecuteCodeOnWorker() throws Exception {
     JVMManager jvmManager = new JVMManager();
     Map<String, Integer> roles = Collections.singletonMap("worker", 1);
-    RemoteJVMs jvms = jvmManager.launch(new LocalInfrastructure(1), roles);
+    try (RemoteJVMs jvms = jvmManager.launch(new LocalInfrastructure(1), roles)) {
+      File tempFile = new File(temporaryFolder.newFolder(), "tmpfile").getAbsoluteFile();
+      jvms.execute(context -> {
+        tempFile.createNewFile();
+      }, "worker");
 
-
-    File tempFile = new File(temporaryFolder.newFolder(), "tmpfile").getAbsoluteFile();
-    jvms.execute(context -> {
-     tempFile.createNewFile();
-    },"worker");
-
-    assertTrue(tempFile.exists());
+      assertTrue(tempFile.exists());
+    }
   }
 
 }

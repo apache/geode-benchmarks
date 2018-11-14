@@ -7,11 +7,7 @@ import org.apache.geode.benchmark.tasks.StartClient;
 import org.apache.geode.benchmark.tasks.StartLocator;
 import org.apache.geode.benchmark.tasks.StartServer;
 import org.apache.geode.perftest.TestConfig;
-import org.apache.geode.perftest.TestRunner;
 import org.apache.geode.perftest.TestRunners;
-import org.apache.geode.perftest.infrastructure.local.LocalInfraManager;
-import org.apache.geode.perftest.infrastructure.ssh.SshInfraManager;
-import org.apache.geode.perftest.jvms.JVMManager;
 
 public class PartitionedPutBenchmark {
 

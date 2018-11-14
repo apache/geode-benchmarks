@@ -53,6 +53,7 @@ public class RemoteJVMs implements AutoCloseable {
   public void close() throws NoSuchObjectException, ExecutionException, InterruptedException {
     controller.close();
     exited.get();
+    UnicastRemoteObject.unexportObject(controller,true);
     UnicastRemoteObject.unexportObject(registry, true);
   }
 }
