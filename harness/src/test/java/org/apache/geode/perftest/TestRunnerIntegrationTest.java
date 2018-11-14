@@ -21,12 +21,13 @@ import org.junit.Test;
 
 import org.apache.geode.perftest.infrastructure.local.LocalInfrastructureFactory;
 import org.apache.geode.perftest.jvms.RemoteJVMFactory;
+import org.apache.geode.perftest.runner.DefaultTestRunner;
 
 public class TestRunnerIntegrationTest {
 
   @Test
   public void runsBeforeWorkload() throws Exception {
-    TestRunner runner = new TestRunner(new LocalInfrastructureFactory(), new RemoteJVMFactory());
+    TestRunner runner = new DefaultTestRunner(new LocalInfrastructureFactory(), new RemoteJVMFactory());
 
     runner.runTest(testConfig -> {
       testConfig.role("all", 1);

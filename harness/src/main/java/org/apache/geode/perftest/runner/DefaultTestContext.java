@@ -15,14 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.geode.perftest;
+package org.apache.geode.perftest.runner;
 
-/**
- * Runner that executes a {@link PerformanceTest}A
- *
- * Runners can be obtained from the {@link TestRunners} static
- * factory methods. Eg
- */
-public interface TestRunner {
-  void runTest(PerformanceTest test) throws Exception;
+import java.net.InetAddress;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.apache.geode.perftest.TestContext;
+import org.apache.geode.perftest.jvms.RemoteJVMFactory;
+
+public class DefaultTestContext implements TestContext {
+
+  private List<RemoteJVMFactory.JVMMapping> jvmMappings;
+
+  public DefaultTestContext(List<RemoteJVMFactory.JVMMapping> jvmMappings) {
+
+    this.jvmMappings = jvmMappings;
+  }
+
+  @Override public Set<InetAddress> getHostsForRole(String role) {
+    return jvmMappings.stream()
+        .filter(mapping -> mapping.getRole().equals(role))
+        .map(mapping -> mapping.getNode().getAddress())
+        .collect(Collectors.toSet());
+  }
 }

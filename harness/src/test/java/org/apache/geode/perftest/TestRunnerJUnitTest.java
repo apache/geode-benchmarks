@@ -32,6 +32,7 @@ import org.apache.geode.perftest.infrastructure.InfrastructureFactory;
 import org.apache.geode.perftest.infrastructure.Infrastructure;
 import org.apache.geode.perftest.jvms.RemoteJVMFactory;
 import org.apache.geode.perftest.jvms.RemoteJVMs;
+import org.apache.geode.perftest.runner.DefaultTestRunner;
 
 public class TestRunnerJUnitTest {
 
@@ -47,7 +48,7 @@ public class TestRunnerJUnitTest {
     RemoteJVMs remoteJVMs = mock(RemoteJVMs.class);
     when(remoteJvmFactory.launch(eq(infrastructure), any())).thenReturn(remoteJVMs);
 
-    TestRunner runner = new TestRunner(infrastructureFactory, remoteJvmFactory);
+    TestRunner runner = new DefaultTestRunner(infrastructureFactory, remoteJvmFactory);
 
     Task before = mock(Task.class);
     Task after = mock(Task.class);

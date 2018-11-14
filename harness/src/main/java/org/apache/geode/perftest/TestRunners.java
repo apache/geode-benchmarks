@@ -21,9 +21,18 @@ import org.apache.geode.perftest.infrastructure.InfrastructureFactory;
 import org.apache.geode.perftest.infrastructure.local.LocalInfrastructureFactory;
 import org.apache.geode.perftest.infrastructure.ssh.SshInfrastructureFactory;
 import org.apache.geode.perftest.jvms.RemoteJVMFactory;
+import org.apache.geode.perftest.runner.DefaultTestRunner;
 
 /**
- * Static factory methods for {@link TestRunner}
+ * Static factory methods for implementations of {@link TestRunner}
+ *
+ * This the main entry point for running performance tests. Users of this
+ * class should create a {@link PerformanceTest} and pass it to the {@link TestRunner#runTest(PerformanceTest)}
+ * method of the test runner. For example
+ * <code>
+ *   TestRunners.default().runTest(new YourPerformanceTest());
+ * </code>
+ *
  */
 public class TestRunners {
 
@@ -43,6 +52,6 @@ public class TestRunners {
       infrastructureFactory = new SshInfrastructureFactory(System.getProperty("user.name"), hosts);
     }
 
-    return new TestRunner(infrastructureFactory, new RemoteJVMFactory());
+    return new DefaultTestRunner(infrastructureFactory, new RemoteJVMFactory());
   }
 }

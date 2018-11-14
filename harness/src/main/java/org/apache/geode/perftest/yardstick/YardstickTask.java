@@ -33,10 +33,13 @@ import org.yardstickframework.probes.ThroughputLatencyProbe;
 import org.yardstickframework.probes.VmStatProbe;
 
 import org.apache.geode.perftest.Task;
-import org.apache.geode.perftest.TestConfig;
 import org.apache.geode.perftest.TestContext;
 import org.apache.geode.perftest.WorkloadDuration;
 
+/**
+ * A {@link Task} that wraps a yardstick {@link BenchmarkDriver}. When the task
+ * is executed, it will use yardstick to run an measure the driver.
+ */
 public class YardstickTask implements Task {
   private final BenchmarkDriver benchmark;
   private WorkloadDuration duration;

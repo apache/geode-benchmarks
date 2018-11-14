@@ -32,6 +32,7 @@ import org.apache.geode.perftest.Task;
 import org.apache.geode.perftest.TestContext;
 import org.apache.geode.perftest.infrastructure.Infrastructure;
 import org.apache.geode.perftest.jvms.rmi.Controller;
+import org.apache.geode.perftest.runner.DefaultTestContext;
 
 /**
  * Interface for accessing remote JVMs are running tasks on them.
@@ -48,7 +49,7 @@ public class RemoteJVMs implements AutoCloseable {
                     CompletableFuture<Void> exited) {
     this.jvmMappings = mapping;
     this.controller = controller;
-    this.context = new TestContext(jvmMappings);
+    this.context = new DefaultTestContext(jvmMappings);
     this.registry = registry;
     this.exited = exited;
   }

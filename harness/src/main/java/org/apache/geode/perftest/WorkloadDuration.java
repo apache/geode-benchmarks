@@ -19,6 +19,16 @@ package org.apache.geode.perftest;
 
 import java.io.Serializable;
 
+import org.yardstickframework.BenchmarkDriver;
+
+import org.apache.geode.perftest.yardstick.YardstickTask;
+
+/**
+ * Holder for the durations of the benchmark. This is a separate object so that
+ * a {@link YardstickTask} can be created with a {@link WorkloadDuration}, but the
+ * actual duration values can be configured by the user after they call the
+ * {@link TestConfig#workload(BenchmarkDriver, String...)} method.
+ */
 public class WorkloadDuration implements Serializable {
   long durationSeconds = 1;
   long warmupSeconds = 1;
