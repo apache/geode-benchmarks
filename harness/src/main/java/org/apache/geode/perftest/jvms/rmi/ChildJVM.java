@@ -19,8 +19,9 @@ package org.apache.geode.perftest.jvms.rmi;
 
 import java.io.File;
 import java.io.PrintStream;
-import java.rmi.Naming;
 
+import org.apache.geode.perftest.jdk.RMI;
+import org.apache.geode.perftest.jdk.SystemInterface;
 import org.apache.geode.perftest.jvms.RemoteJVMFactory;
 
 /**
@@ -28,19 +29,34 @@ import org.apache.geode.perftest.jvms.RemoteJVMFactory;
  */
 public class ChildJVM {
 
+
+  private final RMI rmi;
+  private final SystemInterface system;
+  private final int pingTime;
+
+  public ChildJVM(RMI rmi, SystemInterface system, int pingTime) {
+    this.rmi = rmi;
+    this.system = system;
+    this.pingTime = pingTime;
+  }
+
   public static void main(String[] args) {
+    new ChildJVM(new RMI(), new SystemInterface(), 1000).run();
+  }
+
+  void run() {
     try {
 
-      String RMI_HOST = System.getProperty(RemoteJVMFactory.RMI_HOST);
-      String RMI_PORT = System.getProperty(RemoteJVMFactory.RMI_PORT);
-      int id = Integer.getInteger(RemoteJVMFactory.JVM_ID);
+      String RMI_HOST = system.getProperty(RemoteJVMFactory.RMI_HOST);
+      String RMI_PORT = system.getProperty(RemoteJVMFactory.RMI_PORT_PROPERTY);
+      int id = system.getInteger(RemoteJVMFactory.JVM_ID);
       File outputDir = new File("output");
       outputDir.mkdirs();
       PrintStream out = new PrintStream(new File(outputDir, "ChildJVM-" + id + ".txt"));
-      System.setOut(out);
-      System.setErr(out);
+      system.setOut(out);
+      system.setErr(out);
 
-      ControllerRemote controller = (ControllerRemote) Naming
+      ControllerRemote controller = (ControllerRemote) rmi
           .lookup("//" + RMI_HOST + ":" + RMI_PORT + "/" + RemoteJVMFactory.CONTROLLER);
 
       Worker worker = new Worker();
@@ -50,15 +66,16 @@ public class ChildJVM {
       //Wait until the controller shuts down
       //If the controller shuts down, this will throw an exception
       while (controller.ping()) {
-        Thread.sleep(1000);
+        Thread.sleep(pingTime);
       }
 
-      System.exit(0);
+      system.exit(0);
     } catch(Throwable t) {
       t.printStackTrace();
       //Force a system exit. Because we created an RMI object, an exception from the main
       //thread would not otherwise cause this process to exit
-      System.exit(1);
+      system.exit(1);
     }
   }
+
 }

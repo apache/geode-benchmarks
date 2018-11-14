@@ -47,9 +47,10 @@ public class RemoteJVMFactory {
   private static final Logger logger = LoggerFactory.getLogger(RemoteJVMFactory.class);
 
   public static final String RMI_HOST = "RMI_HOST";
-  public static final String RMI_PORT = "RMI_PORT";
+  public static final String RMI_PORT_PROPERTY = "RMI_PORT";
   public static final String CONTROLLER = "CONTROLLER";
   public static final String JVM_ID = "JVM_ID";
+  public static final int RMI_PORT = 33333;
 
   /**
    * Start all requested JVMs on the infrastructure
@@ -69,8 +70,7 @@ public class RemoteJVMFactory {
       throw new IllegalStateException("Too few nodes for test. Need " + numWorkers + ", have " + nodes.size());
     }
 
-    int rmiPort = 33333;
-    Registry registry = LocateRegistry.createRegistry(rmiPort);
+    Registry registry = LocateRegistry.createRegistry(RMI_PORT);
 
     CountDownLatch workersStarted = new CountDownLatch(numWorkers);
 
@@ -84,7 +84,7 @@ public class RemoteJVMFactory {
     ClassPathCopier copier = new ClassPathCopier(classpath, javaHome);
     copier.copyToNodes(infra);
 
-    CompletableFuture<Void> processesExited = launchProcesses(infra, rmiPort, mapping);
+    CompletableFuture<Void> processesExited = launchProcesses(infra, RMI_PORT, mapping);
 
     if(!workersStarted.await(5, TimeUnit.MINUTES)) {
       throw new IllegalStateException("Workers failed to start in 1 minute");
@@ -134,7 +134,7 @@ public class RemoteJVMFactory {
     command.add("-classpath");
     command.add("lib/*");
     command.add("-D" + RMI_HOST + "=" + rmiHost);
-    command.add("-D" + RMI_PORT + "=" + rmiPort);
+    command.add("-D" + RMI_PORT_PROPERTY + "=" + rmiPort);
     command.add("-D" + JVM_ID + "=" + id);
     command.add(ChildJVM.class.getName());
 
