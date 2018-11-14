@@ -61,4 +61,21 @@ public class TestRunners {
     }
     return infrastructureFactory;
   }
+
+  /**
+   * A test runner that runs the test with the minimal tuning - only
+   * 1 second duration on local infrastructure.
+   */
+  public static TestRunner minimalRunner() {
+    return new DefaultTestRunner(new LocalInfrastructureFactory(), new RemoteJVMFactory()) {
+      @Override
+      public void runTest(TestConfig config) throws Exception {
+        config.warmupSeconds(0);
+        config.durationSeconds(1);
+        config.threads(1);
+        super.runTest(config);
+      }
+    };
+  }
+
 }

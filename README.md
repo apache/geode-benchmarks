@@ -13,14 +13,14 @@ The benchmarks require machines with passwordless ssh enabled in order to run.
 To run all benchmarks locally, execute
 
 ```
-./gradlew geode-benchmarks:test
+./gradlew benchmark
 ```
 
 To run all benchmarks on multiple hosts, execute
 
 ```
 export TEST_HOSTS="host1,host2,host2"
-./gradlew geode-benchmarks:test
+./gradlew benchmark
 ```
 
 Performance results will be written to geode-benchmarks/output
@@ -47,12 +47,16 @@ reported by the yardstick framework.
 * the initialization tasks and workload tasks for the test.
 */
 public class PartitionedPutBenchmark {
+
+  @Test
+  public void run() throws Exception {
+    TestRunners.defaultRunner().runTest(this::configure);
+  }
   
   /**
   * Declare the configuration of the test by calling methods
   * on TestConfig.
   */
-
   public void configure(TestConfig config) {
 
     int locatorPort = 10334;
@@ -68,7 +72,7 @@ public class PartitionedPutBenchmark {
     config.before(new StartClient(locatorPort), "client");
     
     //Define the benchmarked workload, which runs in a client
-    config.workload(new PutTask(), 5 /*warmup time*/, 30 /*measurement time*/, "client");
+    config.workload(new PutTask());
   }
 }
 ```

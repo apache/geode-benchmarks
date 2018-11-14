@@ -18,8 +18,10 @@
 package org.apache.geode.perftest.runner;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,6 +58,11 @@ public class DefaultTestRunner implements TestRunner {
   public void runTest(PerformanceTest test) throws Exception {
     TestConfig config = new TestConfig();
     test.configure(config);
+    runTest(config);
+  }
+
+  protected void runTest(TestConfig config)
+      throws Exception {
     int nodes = config.getTotalJVMs();
 
     try (Infrastructure infra = infrastructureFactory.create(nodes)){

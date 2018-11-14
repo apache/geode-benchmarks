@@ -25,15 +25,16 @@ import org.apache.geode.perftest.yardstick.YardstickTask;
 
 /**
  * Holder for the durations of the benchmark. This is a separate object so that
- * a {@link YardstickTask} can be created with a {@link WorkloadDuration}, but the
+ * a {@link YardstickTask} can be created with a {@link WorkloadConfig}, but the
  * actual duration values can be configured by the user after they call the
  * {@link TestConfig#workload(BenchmarkDriver, String...)} method.
  */
-public class WorkloadDuration implements Serializable {
+public class WorkloadConfig implements Serializable {
   long durationSeconds = 1;
-  long warmupSeconds = 1;
+  long warmupSeconds = 0;
+  int threads = Runtime.getRuntime().availableProcessors() * 2;
 
-  public WorkloadDuration() {
+  public WorkloadConfig() {
   }
 
   public void durationSeconds(long durationSeconds) {
@@ -44,11 +45,19 @@ public class WorkloadDuration implements Serializable {
     this.warmupSeconds = warmupSeconds;
   }
 
+  public void threads(int threads) {
+    this.threads = threads;
+  }
+
   public long getDurationSeconds() {
     return durationSeconds;
   }
 
   public long getWarmupSeconds() {
     return warmupSeconds;
+  }
+
+  public int getThreads() {
+    return threads;
   }
 }

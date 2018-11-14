@@ -15,27 +15,22 @@
  * limitations under the License.
  */
 
-plugins {
-    id 'java'
-}
+package org.apache.geode.benchmark;
 
-group 'org.upthewaterspout.geode-performance'
-version '1.0-SNAPSHOT'
+import org.junit.Test;
 
-sourceCompatibility = 1.8
+import org.apache.geode.benchmark.tasks.PutTask;
+import org.apache.geode.benchmark.tasks.StartClient;
+import org.apache.geode.benchmark.tasks.StartLocator;
+import org.apache.geode.benchmark.tasks.StartServer;
+import org.apache.geode.benchmark.tests.PartitionedPutBenchmark;
+import org.apache.geode.perftest.TestConfig;
+import org.apache.geode.perftest.TestRunners;
 
-repositories {
-    mavenCentral()
-}
+public class PartitionedPutBenchmarkTest {
 
-dependencies {
-    compile group: 'junit', name: 'junit', version: '4.12'
-    compile group: 'org.apache.geode', name: 'geode-core', version: '1.7.0'
-    compile group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.25'
-    compile project(":harness")
-}
-
-task benchmark(type: Test) {
-    testClassesDirs = project.sourceSets.main.output.classesDirs
-    classpath = project.sourceSets.main.runtimeClasspath
+  @Test
+  public void benchmarkRunsSuccessfully() throws Exception {
+    TestRunners.minimalRunner().runTest(new PartitionedPutBenchmark()::configure);
+  }
 }

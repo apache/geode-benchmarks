@@ -34,7 +34,7 @@ import org.yardstickframework.probes.VmStatProbe;
 
 import org.apache.geode.perftest.Task;
 import org.apache.geode.perftest.TestContext;
-import org.apache.geode.perftest.WorkloadDuration;
+import org.apache.geode.perftest.WorkloadConfig;
 
 /**
  * A {@link Task} that wraps a yardstick {@link BenchmarkDriver}. When the task
@@ -42,11 +42,11 @@ import org.apache.geode.perftest.WorkloadDuration;
  */
 public class YardstickTask implements Task {
   private final BenchmarkDriver benchmark;
-  private WorkloadDuration duration;
+  private WorkloadConfig workloadConfig;
 
-  public YardstickTask(BenchmarkDriver benchmark, WorkloadDuration duration) {
+  public YardstickTask(BenchmarkDriver benchmark, WorkloadConfig workloadConfig) {
     this.benchmark = benchmark;
-    this.duration = duration;
+    this.workloadConfig = workloadConfig;
   }
 
   @Override
@@ -60,12 +60,17 @@ public class YardstickTask implements Task {
 
       @Override
       public long duration() {
-        return duration.getDurationSeconds();
+        return workloadConfig.getDurationSeconds();
       }
 
       @Override
       public long warmup() {
-        return duration.getWarmupSeconds();
+        return workloadConfig.getWarmupSeconds();
+      }
+
+      @Override
+      public int threads() {
+        return workloadConfig.getThreads();
       }
 
       @Override

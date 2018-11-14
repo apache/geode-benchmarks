@@ -19,7 +19,6 @@ package org.apache.geode.perftest;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,7 +34,7 @@ import org.apache.geode.perftest.yardstick.YardstickTask;
  */
 public class TestConfig implements Serializable {
 
-  private final WorkloadDuration workloadDuration = new WorkloadDuration();
+  private final WorkloadConfig workloadConfig = new WorkloadConfig();
   private Map<String, Integer> roles = new LinkedHashMap<>();
   private List<TestStep> before = new ArrayList<>();
   private List<TestStep> workload = new ArrayList<>();
@@ -78,7 +77,7 @@ public class TestConfig implements Serializable {
    * @param roles The roles to run the workload on
    */
   public void workload(BenchmarkDriver benchmark, String ... roles) {
-    workload.add(new TestStep(new YardstickTask(benchmark, workloadDuration), roles));
+    workload.add(new TestStep(new YardstickTask(benchmark, workloadConfig), roles));
   }
 
 
@@ -89,7 +88,15 @@ public class TestConfig implements Serializable {
    * @param durationSeconds The time in seconds for the duration phase
    */
   public void durationSeconds(long durationSeconds) {
-    workloadDuration.durationSeconds(durationSeconds);
+    workloadConfig.durationSeconds(durationSeconds);
+  }
+
+  /**
+   * Set the number of threads to run in each JVM for the workload test. Default
+   *  is twice the number of available processors.
+   */
+  public void threads(int threads) {
+    workloadConfig.threads(threads);
   }
 
   /**
@@ -98,15 +105,15 @@ public class TestConfig implements Serializable {
    * @param warmupSeconds The time in seconds for the warmup phase
    */
   public void warmupSeconds(long warmupSeconds) {
-    workloadDuration.warmupSeconds(warmupSeconds);
+    workloadConfig.warmupSeconds(warmupSeconds);
   }
 
   public long getDurationSeconds() {
-    return workloadDuration.getDurationSeconds();
+    return workloadConfig.getDurationSeconds();
   }
 
   public long getWarmupSeconds() {
-    return workloadDuration.getWarmupSeconds();
+    return workloadConfig.getWarmupSeconds();
   }
 
   public Map<String, Integer> getRoles() {
