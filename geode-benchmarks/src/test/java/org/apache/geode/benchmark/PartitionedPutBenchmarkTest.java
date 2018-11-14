@@ -15,14 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.geode.perftest;
+package org.apache.geode.benchmark;
 
-/**
- * Runner that executes a {@link PerformanceTest}A
- *
- * Runners can be obtained from the {@link TestRunners} static
- * factory methods. Eg
- */
-public interface TestRunner {
-  void runTest(PerformanceTest test) throws Exception;
+import org.junit.Test;
+
+import org.apache.geode.benchmark.tasks.PutTask;
+import org.apache.geode.benchmark.tasks.StartClient;
+import org.apache.geode.benchmark.tasks.StartLocator;
+import org.apache.geode.benchmark.tasks.StartServer;
+import org.apache.geode.benchmark.tests.PartitionedPutBenchmark;
+import org.apache.geode.perftest.TestConfig;
+import org.apache.geode.perftest.TestRunners;
+
+public class PartitionedPutBenchmarkTest {
+
+  @Test
+  public void benchmarkRunsSuccessfully() throws Exception {
+    TestRunners.minimalRunner().runTest(new PartitionedPutBenchmark()::configure);
+  }
 }

@@ -15,14 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.geode.perftest;
+package org.apache.geode.perftest.jdk;
+
+import java.io.PrintStream;
 
 /**
- * Runner that executes a {@link PerformanceTest}A
- *
- * Runners can be obtained from the {@link TestRunners} static
- * factory methods. Eg
+ * Wrapper around the JDK system class, to allow mocking of static methods
  */
-public interface TestRunner {
-  void runTest(PerformanceTest test) throws Exception;
+public class SystemInterface {
+
+  public static String getProperty(String property) {
+    return System.getProperty(property);
+  }
+
+  public void setErr(PrintStream out) {
+    System.setErr(out);
+  }
+
+  public void setOut(PrintStream out) {
+    System.setOut(out);
+  }
+
+  public void exit(int code) {
+    System.exit(code);
+  }
+
+  public int getInteger(String property) {
+    return Integer.getInteger(property);
+  }
 }

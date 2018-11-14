@@ -1,6 +1,22 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.apache.geode.perftest;
 
-import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.eq;
@@ -12,26 +28,27 @@ import static org.mockito.Mockito.when;
 import org.junit.Test;
 import org.mockito.InOrder;
 
-import org.apache.geode.perftest.infrastructure.InfraManager;
+import org.apache.geode.perftest.infrastructure.InfrastructureFactory;
 import org.apache.geode.perftest.infrastructure.Infrastructure;
-import org.apache.geode.perftest.jvms.JVMManager;
+import org.apache.geode.perftest.jvms.RemoteJVMFactory;
 import org.apache.geode.perftest.jvms.RemoteJVMs;
+import org.apache.geode.perftest.runner.DefaultTestRunner;
 
 public class TestRunnerJUnitTest {
 
   @Test
   public void testRunnerRunsBeforeAndAfterTasks() throws Exception {
 
-    InfraManager infraManager = mock(InfraManager.class);
+    InfrastructureFactory infrastructureFactory = mock(InfrastructureFactory.class);
     Infrastructure infrastructure = mock(Infrastructure.class);
-    JVMManager jvmManager = mock(JVMManager.class);
+    RemoteJVMFactory remoteJvmFactory = mock(RemoteJVMFactory.class);
 
-    when(infraManager.create(anyInt())).thenReturn(infrastructure);
+    when(infrastructureFactory.create(anyInt())).thenReturn(infrastructure);
 
     RemoteJVMs remoteJVMs = mock(RemoteJVMs.class);
-    when(jvmManager.launch(eq(infrastructure), any())).thenReturn(remoteJVMs);
+    when(remoteJvmFactory.launch(eq(infrastructure), any())).thenReturn(remoteJVMs);
 
-    TestRunner runner = new TestRunner(infraManager, jvmManager);
+    TestRunner runner = new DefaultTestRunner(infrastructureFactory, remoteJvmFactory);
 
     Task before = mock(Task.class);
     Task after = mock(Task.class);
@@ -44,7 +61,7 @@ public class TestRunnerJUnitTest {
       config.before(before, "before");
       config.after(after, "before");
     };
-    runner.runTest(test, 3);
+    runner.runTest(test);
 
     InOrder inOrder = inOrder(remoteJVMs, before, after);
     inOrder.verify(remoteJVMs).execute(eq(before), any());

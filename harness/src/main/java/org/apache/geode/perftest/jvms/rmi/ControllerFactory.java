@@ -15,14 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.geode.perftest;
+package org.apache.geode.perftest.jvms.rmi;
 
-/**
- * Runner that executes a {@link PerformanceTest}A
- *
- * Runners can be obtained from the {@link TestRunners} static
- * factory methods. Eg
- */
-public interface TestRunner {
-  void runTest(PerformanceTest test) throws Exception;
+import static org.apache.geode.perftest.jvms.RemoteJVMFactory.CONTROLLER;
+import static org.apache.geode.perftest.jvms.RemoteJVMFactory.RMI_PORT;
+
+import java.rmi.AlreadyBoundException;
+import java.rmi.RemoteException;
+import java.rmi.registry.Registry;
+
+import org.apache.geode.perftest.jdk.RMI;
+
+public class ControllerFactory {
+
+  private final RMI rmi = new RMI();
+
+  public Controller createController(int numWorkers) throws RemoteException, AlreadyBoundException {
+    Registry registry = rmi.createRegistry(RMI_PORT);
+    Controller controller = new Controller(numWorkers, registry);
+    registry.bind(CONTROLLER, controller);
+    return controller;
+  }
 }

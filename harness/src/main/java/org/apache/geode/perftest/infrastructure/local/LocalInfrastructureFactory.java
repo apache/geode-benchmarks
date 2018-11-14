@@ -15,14 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.geode.perftest;
+package org.apache.geode.perftest.infrastructure.local;
+
+import org.apache.geode.perftest.infrastructure.InfrastructureFactory;
+import org.apache.geode.perftest.infrastructure.Infrastructure;
 
 /**
- * Runner that executes a {@link PerformanceTest}A
- *
- * Runners can be obtained from the {@link TestRunners} static
- * factory methods. Eg
+ * {@link InfrastructureFactory} That uses local processes on the local machine
  */
-public interface TestRunner {
-  void runTest(PerformanceTest test) throws Exception;
+public class LocalInfrastructureFactory implements InfrastructureFactory {
+  @Override
+  public Infrastructure create(int nodes) throws Exception {
+    return new LocalInfrastructure(nodes);
+  }
 }

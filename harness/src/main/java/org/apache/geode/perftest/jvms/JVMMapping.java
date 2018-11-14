@@ -15,14 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.geode.perftest;
+package org.apache.geode.perftest.jvms;
 
-/**
- * Runner that executes a {@link PerformanceTest}A
- *
- * Runners can be obtained from the {@link TestRunners} static
- * factory methods. Eg
- */
-public interface TestRunner {
-  void runTest(PerformanceTest test) throws Exception;
+import java.io.Serializable;
+
+import org.apache.geode.perftest.infrastructure.Infrastructure;
+
+public class JVMMapping implements Serializable {
+  private final Infrastructure.Node node;
+  private final String role;
+  private final int id;
+
+  public JVMMapping(Infrastructure.Node node, String role, int id) {
+    this.node = node;
+    this.role = role;
+    this.id = id;
+  }
+
+  public Infrastructure.Node getNode() {
+    return node;
+  }
+
+  public String getRole() {
+    return role;
+  }
+
+  public int getId() {
+    return id;
+  }
+
 }

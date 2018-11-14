@@ -15,14 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.geode.perftest;
+package org.apache.geode.perftest.infrastructure;
 
 /**
- * Runner that executes a {@link PerformanceTest}A
- *
- * Runners can be obtained from the {@link TestRunners} static
- * factory methods. Eg
+ * Factory for creating or providing access a number of nodes on a given infrastructure
  */
-public interface TestRunner {
-  void runTest(PerformanceTest test) throws Exception;
+public interface InfrastructureFactory {
+
+  Infrastructure create(int nodes) throws Exception;
+
 }

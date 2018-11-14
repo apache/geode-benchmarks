@@ -15,34 +15,47 @@
  * limitations under the License.
  */
 
-package org.apache.geode.benchmark.tasks;
+package org.apache.geode.perftest.yardstick;
 
-import java.io.Serializable;
-import java.util.Map;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.concurrent.CountDownLatch;
 
 import org.yardstickframework.BenchmarkConfiguration;
-import org.yardstickframework.BenchmarkDriverAdapter;
+import org.yardstickframework.BenchmarkDriver;
+import org.yardstickframework.BenchmarkProbe;
+import org.yardstickframework.BenchmarkProbePoint;
 
-import org.apache.geode.cache.Region;
-import org.apache.geode.cache.client.ClientCache;
-import org.apache.geode.cache.client.ClientCacheFactory;
-import org.apache.geode.perftest.Task;
-import org.apache.geode.perftest.TestContext;
+class TestDoneProbe implements BenchmarkProbe {
 
-public class PutTask extends BenchmarkDriverAdapter implements Serializable {
+  CountDownLatch done = new CountDownLatch(1);
 
-  private Region<Object, Object> region;
-
-  @Override
-  public void setUp(BenchmarkConfiguration cfg) throws Exception {
-    super.setUp(cfg);
-    ClientCache cache = ClientCacheFactory.getAnyInstance();
-    region = cache.getRegion("region");
+  public void await() throws InterruptedException {
+    done.await();
   }
 
   @Override
-  public boolean test(Map<Object, Object> ctx) throws Exception {
-    region.put(1,2);
-    return true;
+  public void start(BenchmarkDriver drv, BenchmarkConfiguration cfg) throws Exception {
+
+  }
+
+  @Override
+  public void stop() throws Exception {
+    done.countDown();
+  }
+
+  @Override
+  public Collection<String> metaInfo() {
+    return null;
+  }
+
+  @Override
+  public Collection<BenchmarkProbePoint> points() {
+    return Collections.emptyList();
+  }
+
+  @Override
+  public void buildPoint(long time) {
+
   }
 }

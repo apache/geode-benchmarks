@@ -15,14 +15,34 @@
  * limitations under the License.
  */
 
-package org.apache.geode.perftest;
+package org.apache.geode.perftest.infrastructure.ssh;
 
-/**
- * Runner that executes a {@link PerformanceTest}A
- *
- * Runners can be obtained from the {@link TestRunners} static
- * factory methods. Eg
- */
-public interface TestRunner {
-  void runTest(PerformanceTest test) throws Exception;
+import java.util.Arrays;
+import java.util.Collection;
+
+import org.apache.geode.perftest.infrastructure.InfrastructureFactory;
+import org.apache.geode.perftest.infrastructure.Infrastructure;
+
+public class SshInfrastructureFactory implements InfrastructureFactory {
+
+  private final Collection<String> hosts;
+  private final String user;
+
+  public SshInfrastructureFactory(String user, String ... hosts) {
+    this.hosts = Arrays.asList(hosts);
+    this.user = user;
+  }
+
+  @Override
+  public Infrastructure create(int nodes) throws Exception {
+    return new SshInfrastructure(hosts, user);
+  }
+
+  public Collection<String> getHosts() {
+    return hosts;
+  }
+
+  public String getUser() {
+    return user;
+  }
 }

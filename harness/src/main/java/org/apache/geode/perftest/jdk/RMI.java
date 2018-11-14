@@ -15,14 +15,38 @@
  * limitations under the License.
  */
 
-package org.apache.geode.perftest.jvms.rmi;
+package org.apache.geode.perftest.jdk;
 
+import java.net.MalformedURLException;
+import java.rmi.Naming;
+import java.rmi.NotBoundException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 
-public interface ControllerRemote extends Remote {
+/**
+ * Wrapper around the JDKs RMI interface, which is static, and can't be mocked.
+ *
+ * Using this instead of Java RMI directly allows us to unit test classes that
+ * interact with RMI.
+ */
+public class RMI {
 
-  void addWorker(int id, WorkerRemote remote) throws RemoteException;
+  /**
+   * Wrapper around {@link Naming#lookup(String)}
+   */
+  public Remote lookup(String name)
+      throws RemoteException, NotBoundException, MalformedURLException {
+    return Naming.lookup(name);
+  }
 
-  boolean ping() throws RemoteException;
+  /**
+   * Wrapper around {@link LocateRegistry#createRegistry(int)}
+   * @param rmiPort
+   * @return
+   */
+  public Registry createRegistry(int rmiPort) throws RemoteException {
+    return LocateRegistry.createRegistry(rmiPort);
+  }
 }
