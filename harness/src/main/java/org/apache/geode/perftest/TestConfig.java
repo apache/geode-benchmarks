@@ -25,7 +25,7 @@ import java.util.Map;
 
 import org.yardstickframework.BenchmarkDriver;
 
-import org.apache.geode.perftest.yardstick.YardstickUtil;
+import org.apache.geode.perftest.yardstick.YardstickTask;
 
 /**
  * Declarative configuration of a test. Used by
@@ -63,7 +63,7 @@ public class TestConfig implements Serializable {
   }
 
   public void workload(BenchmarkDriver benchmark, long warmUpSeconds, long durationSeconds, String ... roles) {
-    workload.add(new TestStep(YardstickUtil.toTask(benchmark, warmUpSeconds, durationSeconds), roles));
+    workload.add(new TestStep(new YardstickTask(benchmark, durationSeconds, warmUpSeconds), roles));
   }
 
   public void after(Task task, String ... roles) {

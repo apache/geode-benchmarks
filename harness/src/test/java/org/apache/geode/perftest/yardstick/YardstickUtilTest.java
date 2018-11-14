@@ -35,7 +35,7 @@ public class YardstickUtilTest {
   @Test
   public void testExecuteBenchmark() throws Exception {
     EmptyBenchmark benchmark = new EmptyBenchmark();
-    Task task = YardstickUtil.toTask(benchmark, 1, 1);
+    Task task = new YardstickTask(benchmark, (long) 1, (long) 1);
     task.run(null);
 
     Assert.assertTrue(1 <= benchmark.invocations.get());
