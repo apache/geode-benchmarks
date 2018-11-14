@@ -1,0 +1,18 @@
+plugins {
+    id "org.nosphere.apache.rat" version "0.3.1"
+}
+
+rat {
+    excludes = [
+            '.idea/**',
+            '.travis.yml',
+            '.gradle/**',
+            'gradlew*',
+            'gradle/*',
+            '.git/**',
+            '**/output/**',
+            '**/build/**',
+            '**/out/**'
+
+    ]
+}
