@@ -38,22 +38,19 @@ import org.apache.geode.perftest.runner.DefaultTestContext;
  * Interface for accessing remote JVMs are running tasks on them.
  */
 public class RemoteJVMs implements AutoCloseable {
-  private final List<RemoteJVMFactory.JVMMapping> jvmMappings;
+  private final List<JVMMapping> jvmMappings;
   private final Controller controller;
   private final TestContext context;
-  private final Registry registry;
   private final CompletableFuture<Void> exited;
 
 
-  public RemoteJVMs(List<RemoteJVMFactory.JVMMapping> mapping, Controller controller, Registry registry,
+  public RemoteJVMs(List<JVMMapping> mapping, Controller controller,
                     CompletableFuture<Void> exited) {
     this.jvmMappings = mapping;
     this.controller = controller;
     this.context = new DefaultTestContext(jvmMappings);
-    this.registry = registry;
     this.exited = exited;
   }
-
 
   /**
    * Run a task in parallel on all JVMs with the given roles.
@@ -72,14 +69,12 @@ public class RemoteJVMs implements AutoCloseable {
   public void close() throws NoSuchObjectException, ExecutionException, InterruptedException {
     controller.close();
     exited.get();
-    UnicastRemoteObject.unexportObject(controller,true);
-    UnicastRemoteObject.unexportObject(registry, true);
   }
 
   public String getRole(Infrastructure.Node node) {
     return jvmMappings.stream()
         .filter(mapping -> mapping.getNode().equals(node))
-        .map(RemoteJVMFactory.JVMMapping::getRole)
+        .map(JVMMapping::getRole)
         .findFirst()
         .orElse("no-role");
   }

@@ -31,7 +31,7 @@ import java.util.stream.Stream;
 import org.junit.Test;
 
 import org.apache.geode.perftest.infrastructure.Infrastructure;
-import org.apache.geode.perftest.jvms.RemoteJVMFactory;
+import org.apache.geode.perftest.jvms.JVMMapping;
 
 public class DefaultTestContextTest {
 
@@ -42,10 +42,10 @@ public class DefaultTestContextTest {
     InetAddress host2 = InetAddress.getByName("127.0.0.2");
     Infrastructure.Node node1 = mock(Infrastructure.Node.class);
     when(node1.getAddress()).thenReturn(host1);
-    RemoteJVMFactory.JVMMapping mapping1 = new RemoteJVMFactory.JVMMapping(node1, "role", 1);
+    JVMMapping mapping1 = new JVMMapping(node1, "role", 1);
     Infrastructure.Node node2 = mock(Infrastructure.Node.class);
     when(node2.getAddress()).thenReturn(host2);
-    RemoteJVMFactory.JVMMapping mapping2 = new RemoteJVMFactory.JVMMapping(node2, "role", 2);
+    JVMMapping mapping2 = new JVMMapping(node2, "role", 2);
 
     DefaultTestContext context = new DefaultTestContext(Arrays.asList(mapping1, mapping2));
 

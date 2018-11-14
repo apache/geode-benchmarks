@@ -17,19 +17,23 @@
 
 package org.apache.geode.perftest.jvms.rmi;
 
+import static org.apache.geode.perftest.jvms.RemoteJVMFactory.CONTROLLER;
+import static org.apache.geode.perftest.jvms.RemoteJVMFactory.RMI_PORT;
+
+import java.rmi.AlreadyBoundException;
 import java.rmi.RemoteException;
-import java.rmi.server.UnicastRemoteObject;
+import java.rmi.registry.Registry;
 
-import org.apache.geode.perftest.Task;
-import org.apache.geode.perftest.TestContext;
+import org.apache.geode.perftest.jdk.RMI;
 
-public class Worker extends UnicastRemoteObject implements WorkerRemote {
+public class ControllerFactory {
 
-  public Worker() throws RemoteException {
-    super();
-  }
-  @Override
-  public void execute(Task task, TestContext context) throws Exception {
-    task.run(context);
+  private final RMI rmi = new RMI();
+
+  public Controller createController(int numWorkers) throws RemoteException, AlreadyBoundException {
+    Registry registry = rmi.createRegistry(RMI_PORT);
+    Controller controller = new Controller(numWorkers, registry);
+    registry.bind(CONTROLLER, controller);
+    return controller;
   }
 }

@@ -46,7 +46,6 @@ public class ChildJVM {
 
   void run() {
     try {
-
       String RMI_HOST = system.getProperty(RemoteJVMFactory.RMI_HOST);
       String RMI_PORT = system.getProperty(RemoteJVMFactory.RMI_PORT_PROPERTY);
       int id = system.getInteger(RemoteJVMFactory.JVM_ID);

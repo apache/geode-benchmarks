@@ -23,13 +23,13 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.geode.perftest.TestContext;
-import org.apache.geode.perftest.jvms.RemoteJVMFactory;
+import org.apache.geode.perftest.jvms.JVMMapping;
 
 public class DefaultTestContext implements TestContext {
 
-  private List<RemoteJVMFactory.JVMMapping> jvmMappings;
+  private List<JVMMapping> jvmMappings;
 
-  public DefaultTestContext(List<RemoteJVMFactory.JVMMapping> jvmMappings) {
+  public DefaultTestContext(List<JVMMapping> jvmMappings) {
 
     this.jvmMappings = jvmMappings;
   }

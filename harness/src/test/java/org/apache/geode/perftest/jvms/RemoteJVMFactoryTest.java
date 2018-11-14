@@ -17,34 +17,72 @@
 
 package org.apache.geode.perftest.jvms;
 
-import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
-import java.io.File;
+import java.rmi.AlreadyBoundException;
+import java.rmi.RemoteException;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import org.junit.Rule;
+import org.junit.Before;
 import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.mockito.InOrder;
 
-import org.apache.geode.perftest.infrastructure.local.LocalInfrastructure;
+import org.apache.geode.perftest.infrastructure.Infrastructure;
+import org.apache.geode.perftest.jdk.RMI;
+import org.apache.geode.perftest.jvms.classpath.ClassPathCopier;
+import org.apache.geode.perftest.jvms.rmi.Controller;
+import org.apache.geode.perftest.jvms.rmi.ControllerFactory;
 
 public class RemoteJVMFactoryTest {
-  @Rule
-  public final TemporaryFolder temporaryFolder = new TemporaryFolder();
+
+  private JVMLauncher jvmLauncher;
+  private RMI rmi;
+  private ClassPathCopier classPathCopier;
+  private RemoteJVMFactory factory;
+  private Controller controller;
+  private ControllerFactory controllerFactory;
+
+  @Before
+  public void setUp() throws AlreadyBoundException, RemoteException {
+    classPathCopier = mock(ClassPathCopier.class);
+    jvmLauncher = mock(JVMLauncher.class);
+    controller = mock(Controller.class);
+    controllerFactory = mock(ControllerFactory.class);
+    when(controllerFactory.createController(anyInt())).thenReturn(controller);
+    factory = new RemoteJVMFactory(jvmLauncher, rmi, classPathCopier, controllerFactory);
+  }
 
   @Test
-  public void canExecuteCodeOnWorker() throws Exception {
-    RemoteJVMFactory remoteJvmFactory = new RemoteJVMFactory();
-    Map<String, Integer> roles = Collections.singletonMap("worker", 1);
-    try (RemoteJVMs jvms = remoteJvmFactory.launch(new LocalInfrastructure(1), roles)) {
-      File tempFile = new File(temporaryFolder.newFolder(), "tmpfile").getAbsoluteFile();
-      jvms.execute(context -> {
-        tempFile.createNewFile();
-      }, "worker");
+  public void launchMethodCreatesControllerAndLaunchesNodes() throws Exception {
+    Map<String, Integer> roles = Collections.singletonMap("role", 2);
+    Infrastructure infra = mock(Infrastructure.class);
 
-      assertTrue(tempFile.exists());
-    }
+    Infrastructure.Node node1 = mock(Infrastructure.Node.class);
+    Infrastructure.Node node2 = mock(Infrastructure.Node.class);
+    Set<Infrastructure.Node> nodes = Stream.of(node1, node2).collect(Collectors.toSet());
+    when(infra.getNodes()).thenReturn(nodes);
+
+    when(controller.waitForWorkers(anyInt(), any())).thenReturn(true);
+
+    factory.launch(infra, roles);
+
+    InOrder inOrder = inOrder(controller, controllerFactory, jvmLauncher, classPathCopier, infra);
+
+    inOrder.verify(controllerFactory).createController(eq(2));
+    inOrder.verify(jvmLauncher).launchProcesses(eq(infra), anyInt(), any());
+    inOrder.verify(controller).waitForWorkers(anyInt(), any());
+
+
+
   }
 
 }

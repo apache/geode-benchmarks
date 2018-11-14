@@ -15,21 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.geode.perftest.jvms.rmi;
+package org.apache.geode.perftest.jvms;
 
-import java.rmi.RemoteException;
-import java.rmi.server.UnicastRemoteObject;
+import java.io.Serializable;
 
-import org.apache.geode.perftest.Task;
-import org.apache.geode.perftest.TestContext;
+import org.apache.geode.perftest.infrastructure.Infrastructure;
 
-public class Worker extends UnicastRemoteObject implements WorkerRemote {
+public class JVMMapping implements Serializable {
+  private final Infrastructure.Node node;
+  private final String role;
+  private final int id;
 
-  public Worker() throws RemoteException {
-    super();
+  public JVMMapping(Infrastructure.Node node, String role, int id) {
+    this.node = node;
+    this.role = role;
+    this.id = id;
   }
-  @Override
-  public void execute(Task task, TestContext context) throws Exception {
-    task.run(context);
+
+  public Infrastructure.Node getNode() {
+    return node;
   }
+
+  public String getRole() {
+    return role;
+  }
+
+  public int getId() {
+    return id;
+  }
+
 }

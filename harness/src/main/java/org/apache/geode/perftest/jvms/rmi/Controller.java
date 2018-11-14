@@ -17,12 +17,15 @@
 
 package org.apache.geode.perftest.jvms.rmi;
 
+import java.rmi.NoSuchObjectException;
 import java.rmi.RemoteException;
+import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Consumer;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.geode.perftest.Task;
 import org.apache.geode.perftest.TestContext;
@@ -31,23 +34,31 @@ import org.apache.geode.perftest.TestContext;
  * RMI object that lives on the main controller JVM
  */
 public class Controller extends UnicastRemoteObject implements ControllerRemote {
+  private final Registry registry;
   private Map<Integer, WorkerRemote> workers = new ConcurrentHashMap<>();
-  private Consumer<WorkerRemote> callback;
+  private final CountDownLatch workersStarted;
   private volatile boolean isClosed;
 
 
-  public Controller(Consumer<WorkerRemote> callback) throws RemoteException {
-    this.callback = callback;
+  Controller(int numWorkers, Registry registry) throws RemoteException {
+    this.workersStarted = new CountDownLatch(numWorkers);
+    this.registry = registry;
   }
 
-  public void close() {
+  public void close() throws NoSuchObjectException {
     isClosed = true;
+    UnicastRemoteObject.unexportObject(this,true);
+    UnicastRemoteObject.unexportObject(registry, true);
   }
 
   @Override
   public void addWorker(int id, WorkerRemote worker) throws RemoteException {
     this.workers.put(id, worker);
-    this.callback.accept(worker);
+    workersStarted.countDown();
+  }
+
+  public boolean waitForWorkers(long time, TimeUnit timeUnit) throws InterruptedException {
+    return workersStarted.await(time, timeUnit);
   }
 
   @Override
