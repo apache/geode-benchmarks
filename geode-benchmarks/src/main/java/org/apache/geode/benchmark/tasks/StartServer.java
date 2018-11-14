@@ -23,6 +23,7 @@ import org.apache.geode.cache.Cache;
 import org.apache.geode.cache.CacheFactory;
 import org.apache.geode.cache.RegionShortcut;
 import org.apache.geode.cache.server.CacheServer;
+import org.apache.geode.distributed.ConfigurationProperties;
 import org.apache.geode.perftest.Task;
 import org.apache.geode.perftest.TestContext;
 
@@ -40,8 +41,10 @@ public class StartServer implements Task {
     String locatorString = LocatorUtil.getLocatorString(context, locatorPort);
 
     Cache cache = new CacheFactory()
-        .set("locators",locatorString)
-        .set("name","server-"+ InetAddress.getLocalHost())
+        .set(ConfigurationProperties.LOCATORS,locatorString)
+        .set(ConfigurationProperties.NAME,"server-"+ InetAddress.getLocalHost())
+        .set(ConfigurationProperties.STATISTIC_SAMPLING_ENABLED,"true")
+        .set(ConfigurationProperties.STATISTIC_ARCHIVE_FILE,"output/stats.gfs")
         .create();
 
     CacheServer cacheServer = ((Cache) cache).addCacheServer();

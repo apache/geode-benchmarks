@@ -27,6 +27,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -40,7 +41,7 @@ import org.apache.geode.perftest.infrastructure.Infrastructure;
  */
 public class LocalInfrastructure implements Infrastructure {
 
-  private final Set<LocalNode> nodes = new HashSet<>();
+  private final Set<LocalNode> nodes = new LinkedHashSet<>();
   private final List<Process> processList = new ArrayList<Process>();
 
   public LocalInfrastructure(int numNodes) throws IOException {

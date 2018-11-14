@@ -52,7 +52,9 @@ public class SshInfrastructure implements Infrastructure {
   public static final Config CONFIG = new DefaultConfig();
   
   public SshInfrastructure(Collection<String> hosts, String user) {
-    this.hosts = hosts.stream().map(SshNode::new).collect(Collectors.toCollection(LinkedHashSet::new));
+    this.hosts = hosts.stream()
+        .map(SshNode::new)
+        .collect(Collectors.toCollection(LinkedHashSet::new));
     this.user = user;
   }
 

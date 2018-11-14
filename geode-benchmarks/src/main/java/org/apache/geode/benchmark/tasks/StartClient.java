@@ -19,10 +19,10 @@ package org.apache.geode.benchmark.tasks;
 
 import java.net.InetAddress;
 
-import org.apache.geode.cache.RegionShortcut;
 import org.apache.geode.cache.client.ClientCache;
 import org.apache.geode.cache.client.ClientCacheFactory;
 import org.apache.geode.cache.client.ClientRegionShortcut;
+import org.apache.geode.distributed.ConfigurationProperties;
 import org.apache.geode.perftest.Task;
 import org.apache.geode.perftest.TestContext;
 
@@ -40,6 +40,8 @@ public class StartClient implements Task {
 
     ClientCache clientCache = new ClientCacheFactory()
         .addPoolLocator(locator.getHostAddress(), locatorPort)
+        .set(ConfigurationProperties.STATISTIC_SAMPLING_ENABLED,"true")
+        .set(ConfigurationProperties.STATISTIC_ARCHIVE_FILE,"output/stats.gfs")
         .create();
 
     clientCache.createClientRegionFactory(ClientRegionShortcut.PROXY)

@@ -20,6 +20,7 @@ package org.apache.geode.perftest;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -34,7 +35,7 @@ import org.apache.geode.perftest.yardstick.YardstickTask;
 public class TestConfig implements Serializable {
 
   private final WorkloadDuration workloadDuration = new WorkloadDuration();
-  private Map<String, Integer> roles = new HashMap<>();
+  private Map<String, Integer> roles = new LinkedHashMap<>();
   private List<TestStep> before = new ArrayList<>();
   private List<TestStep> workload = new ArrayList<>();
   private List<TestStep> after = new ArrayList<>();

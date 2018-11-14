@@ -30,6 +30,7 @@ import java.util.stream.Stream;
 import org.apache.geode.perftest.Task;
 
 import org.apache.geode.perftest.TestContext;
+import org.apache.geode.perftest.infrastructure.Infrastructure;
 import org.apache.geode.perftest.jvms.rmi.Controller;
 
 /**
@@ -72,5 +73,13 @@ public class RemoteJVMs implements AutoCloseable {
     exited.get();
     UnicastRemoteObject.unexportObject(controller,true);
     UnicastRemoteObject.unexportObject(registry, true);
+  }
+
+  public String getRole(Infrastructure.Node node) {
+    return jvmMappings.stream()
+        .filter(mapping -> mapping.getNode().equals(node))
+        .map(JVMManager.JVMMapping::getRole)
+        .findFirst()
+        .orElse("no-role");
   }
 }

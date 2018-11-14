@@ -73,7 +73,8 @@ public class TestRunner {
         File outputDir = new File("output");
         int nodeId = 0;
         for (Infrastructure.Node node : infra.getNodes()) {
-          infra.copyFromNode(node, "output", new File(outputDir, "node-" + nodeId++));
+          String role = remoteJVMs.getRole(node);
+          infra.copyFromNode(node, "output", new File(outputDir, role + nodeId++));
         }
       }
     }
