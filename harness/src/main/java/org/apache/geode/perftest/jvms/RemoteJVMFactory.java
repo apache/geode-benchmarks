@@ -40,11 +40,11 @@ import org.apache.geode.perftest.jvms.rmi.ChildJVM;
 import org.apache.geode.perftest.jvms.rmi.Controller;
 
 /**
- * Manager for launching JVMs and a given infrastructure and setting up RMI
+ * Factory for launching JVMs and a given infrastructure and setting up RMI
  * access to all JVMs.
  */
-public class JVMManager {
-  private static final Logger logger = LoggerFactory.getLogger(JVMManager.class);
+public class RemoteJVMFactory {
+  private static final Logger logger = LoggerFactory.getLogger(RemoteJVMFactory.class);
 
   public static final String RMI_HOST = "RMI_HOST";
   public static final String RMI_PORT = "RMI_PORT";

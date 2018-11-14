@@ -19,14 +19,14 @@ package org.apache.geode.perftest;
 
 import org.junit.Test;
 
-import org.apache.geode.perftest.infrastructure.local.LocalInfraManager;
-import org.apache.geode.perftest.jvms.JVMManager;
+import org.apache.geode.perftest.infrastructure.local.LocalInfrastructureFactory;
+import org.apache.geode.perftest.jvms.RemoteJVMFactory;
 
 public class TestRunnerIntegrationTest {
 
   @Test
   public void runsBeforeWorkload() throws Exception {
-    TestRunner runner = new TestRunner(new LocalInfraManager(), new JVMManager());
+    TestRunner runner = new TestRunner(new LocalInfrastructureFactory(), new RemoteJVMFactory());
 
     runner.runTest(testConfig -> {
       testConfig.role("all", 1);

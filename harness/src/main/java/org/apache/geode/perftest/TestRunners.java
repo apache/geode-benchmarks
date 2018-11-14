@@ -17,10 +17,10 @@
 
 package org.apache.geode.perftest;
 
-import org.apache.geode.perftest.infrastructure.InfraManager;
-import org.apache.geode.perftest.infrastructure.local.LocalInfraManager;
-import org.apache.geode.perftest.infrastructure.ssh.SshInfraManager;
-import org.apache.geode.perftest.jvms.JVMManager;
+import org.apache.geode.perftest.infrastructure.InfrastructureFactory;
+import org.apache.geode.perftest.infrastructure.local.LocalInfrastructureFactory;
+import org.apache.geode.perftest.infrastructure.ssh.SshInfrastructureFactory;
+import org.apache.geode.perftest.jvms.RemoteJVMFactory;
 
 /**
  * Static factory methods for {@link TestRunner}
@@ -35,14 +35,14 @@ public class TestRunners {
    */
   public static TestRunner defaultRunner() {
     String testHostsString = System.getenv("TEST_HOSTS");
-    InfraManager infraManager;
+    InfrastructureFactory infrastructureFactory;
     if(testHostsString == null) {
-      infraManager = new LocalInfraManager();
+      infrastructureFactory = new LocalInfrastructureFactory();
     } else {
       String[] hosts = testHostsString.split(",\\s*");
-      infraManager = new SshInfraManager(System.getProperty("user.name"), hosts);
+      infrastructureFactory = new SshInfrastructureFactory(System.getProperty("user.name"), hosts);
     }
 
-    return new TestRunner(infraManager, new JVMManager());
+    return new TestRunner(infrastructureFactory, new RemoteJVMFactory());
   }
 }

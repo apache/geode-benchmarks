@@ -23,13 +23,13 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.geode.perftest.jvms.JVMManager;
+import org.apache.geode.perftest.jvms.RemoteJVMFactory;
 
 public class TestContext implements Serializable {
 
-  private List<JVMManager.JVMMapping> jvmMappings;
+  private List<RemoteJVMFactory.JVMMapping> jvmMappings;
 
-  public TestContext(List<JVMManager.JVMMapping> jvmMappings) {
+  public TestContext(List<RemoteJVMFactory.JVMMapping> jvmMappings) {
 
     this.jvmMappings = jvmMappings;
   }

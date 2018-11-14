@@ -15,17 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.geode.perftest.infrastructure.local;
+package org.apache.geode.perftest.infrastructure.ssh;
 
-import org.apache.geode.perftest.infrastructure.InfraManager;
+import java.util.Arrays;
+import java.util.Collection;
+
+import org.apache.geode.perftest.infrastructure.InfrastructureFactory;
 import org.apache.geode.perftest.infrastructure.Infrastructure;
 
-/**
- * {@link InfraManager} That uses local processes on the local machine
- */
-public class LocalInfraManager implements InfraManager {
+public class SshInfrastructureFactory implements InfrastructureFactory {
+
+  private final Collection<String> hosts;
+  private final String user;
+
+  public SshInfrastructureFactory(String user, String ... hosts) {
+    this.hosts = Arrays.asList(hosts);
+    this.user = user;
+  }
+
   @Override
   public Infrastructure create(int nodes) throws Exception {
-    return new LocalInfrastructure(nodes);
+    return new SshInfrastructure(hosts, user);
   }
 }

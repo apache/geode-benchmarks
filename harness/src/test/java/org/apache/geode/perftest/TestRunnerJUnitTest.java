@@ -28,9 +28,9 @@ import static org.mockito.Mockito.when;
 import org.junit.Test;
 import org.mockito.InOrder;
 
-import org.apache.geode.perftest.infrastructure.InfraManager;
+import org.apache.geode.perftest.infrastructure.InfrastructureFactory;
 import org.apache.geode.perftest.infrastructure.Infrastructure;
-import org.apache.geode.perftest.jvms.JVMManager;
+import org.apache.geode.perftest.jvms.RemoteJVMFactory;
 import org.apache.geode.perftest.jvms.RemoteJVMs;
 
 public class TestRunnerJUnitTest {
@@ -38,16 +38,16 @@ public class TestRunnerJUnitTest {
   @Test
   public void testRunnerRunsBeforeAndAfterTasks() throws Exception {
 
-    InfraManager infraManager = mock(InfraManager.class);
+    InfrastructureFactory infrastructureFactory = mock(InfrastructureFactory.class);
     Infrastructure infrastructure = mock(Infrastructure.class);
-    JVMManager jvmManager = mock(JVMManager.class);
+    RemoteJVMFactory remoteJvmFactory = mock(RemoteJVMFactory.class);
 
-    when(infraManager.create(anyInt())).thenReturn(infrastructure);
+    when(infrastructureFactory.create(anyInt())).thenReturn(infrastructure);
 
     RemoteJVMs remoteJVMs = mock(RemoteJVMs.class);
-    when(jvmManager.launch(eq(infrastructure), any())).thenReturn(remoteJVMs);
+    when(remoteJvmFactory.launch(eq(infrastructure), any())).thenReturn(remoteJVMs);
 
-    TestRunner runner = new TestRunner(infraManager, jvmManager);
+    TestRunner runner = new TestRunner(infrastructureFactory, remoteJvmFactory);
 
     Task before = mock(Task.class);
     Task after = mock(Task.class);

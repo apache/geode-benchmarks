@@ -18,15 +18,10 @@
 package org.apache.geode.perftest.jvms.rmi;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.PrintStream;
-import java.net.MalformedURLException;
 import java.rmi.Naming;
-import java.rmi.NotBoundException;
-import java.rmi.RemoteException;
 
-import org.apache.geode.perftest.TestContext;
-import org.apache.geode.perftest.jvms.JVMManager;
+import org.apache.geode.perftest.jvms.RemoteJVMFactory;
 
 /**
  * Main method for a JVM running on a remote node
@@ -36,9 +31,9 @@ public class ChildJVM {
   public static void main(String[] args) {
     try {
 
-      String RMI_HOST = System.getProperty(JVMManager.RMI_HOST);
-      String RMI_PORT = System.getProperty(JVMManager.RMI_PORT);
-      int id = Integer.getInteger(JVMManager.JVM_ID);
+      String RMI_HOST = System.getProperty(RemoteJVMFactory.RMI_HOST);
+      String RMI_PORT = System.getProperty(RemoteJVMFactory.RMI_PORT);
+      int id = Integer.getInteger(RemoteJVMFactory.JVM_ID);
       File outputDir = new File("output");
       outputDir.mkdirs();
       PrintStream out = new PrintStream(new File(outputDir, "ChildJVM-" + id + ".txt"));
@@ -46,7 +41,7 @@ public class ChildJVM {
       System.setErr(out);
 
       ControllerRemote controller = (ControllerRemote) Naming
-          .lookup("//" + RMI_HOST + ":" + RMI_PORT + "/" + JVMManager.CONTROLLER);
+          .lookup("//" + RMI_HOST + ":" + RMI_PORT + "/" + RemoteJVMFactory.CONTROLLER);
 
       Worker worker = new Worker();
 

@@ -37,14 +37,14 @@ import org.apache.geode.perftest.jvms.rmi.Controller;
  * Interface for accessing remote JVMs are running tasks on them.
  */
 public class RemoteJVMs implements AutoCloseable {
-  private final List<JVMManager.JVMMapping> jvmMappings;
+  private final List<RemoteJVMFactory.JVMMapping> jvmMappings;
   private final Controller controller;
   private final TestContext context;
   private final Registry registry;
   private final CompletableFuture<Void> exited;
 
 
-  public RemoteJVMs(List<JVMManager.JVMMapping> mapping, Controller controller, Registry registry,
+  public RemoteJVMs(List<RemoteJVMFactory.JVMMapping> mapping, Controller controller, Registry registry,
                     CompletableFuture<Void> exited) {
     this.jvmMappings = mapping;
     this.controller = controller;
@@ -78,7 +78,7 @@ public class RemoteJVMs implements AutoCloseable {
   public String getRole(Infrastructure.Node node) {
     return jvmMappings.stream()
         .filter(mapping -> mapping.getNode().equals(node))
-        .map(JVMManager.JVMMapping::getRole)
+        .map(RemoteJVMFactory.JVMMapping::getRole)
         .findFirst()
         .orElse("no-role");
   }

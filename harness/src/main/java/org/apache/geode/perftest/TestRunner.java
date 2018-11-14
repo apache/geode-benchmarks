@@ -24,14 +24,14 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.apache.geode.perftest.infrastructure.InfraManager;
+import org.apache.geode.perftest.infrastructure.InfrastructureFactory;
 import org.apache.geode.perftest.infrastructure.Infrastructure;
-import org.apache.geode.perftest.jvms.JVMManager;
+import org.apache.geode.perftest.jvms.RemoteJVMFactory;
 import org.apache.geode.perftest.jvms.RemoteJVMs;
 
 /**
  * Runner that executes a {@link PerformanceTest}, using
- * a provided {@link InfraManager}.
+ * a provided {@link InfrastructureFactory}.
  *
  * This is the main entry point for running tests. Users should
  * implement {@link PerformanceTest} to define there tests in
@@ -41,12 +41,12 @@ public class TestRunner {
   private static final Logger logger = LoggerFactory.getLogger(TestRunner.class);
 
 
-  private final InfraManager infraManager;
-  private final JVMManager jvmManager;
+  private final InfrastructureFactory infrastructureFactory;
+  private final RemoteJVMFactory remoteJvmFactory;
 
-  public TestRunner(InfraManager infraManager, JVMManager jvmManager) {
-    this.infraManager = infraManager;
-    this.jvmManager = jvmManager;
+  public TestRunner(InfrastructureFactory infrastructureFactory, RemoteJVMFactory remoteJvmFactory) {
+    this.infrastructureFactory = infrastructureFactory;
+    this.remoteJvmFactory = remoteJvmFactory;
   }
 
   public void runTest(PerformanceTest test) throws Exception {
@@ -54,12 +54,12 @@ public class TestRunner {
     test.configure(config);
     int nodes = config.getTotalJVMs();
 
-    try (Infrastructure infra = infraManager.create(nodes)){
+    try (Infrastructure infra = infrastructureFactory.create(nodes)){
       Map<String, Integer> roles = config.getRoles();
 
       logger.info("Lauching JVMs...");
       //launch JVMs in parallel, hook them up
-      try (RemoteJVMs remoteJVMs = jvmManager.launch(infra, roles)) {
+      try (RemoteJVMs remoteJVMs = remoteJvmFactory.launch(infra, roles)) {
 
         logger.info("Starting before tasks...");
         runTasks(config.getBefore(), remoteJVMs);
