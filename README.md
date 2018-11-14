@@ -13,7 +13,6 @@ The benchmarks require machines with passwordless ssh enabled in order to run.
 To run all benchmarks locally, execute
 
 ```
-export TEST_HOSTS="localhost,localhost,localhost"
 ./gradlew geode-benchmarks:test
 ```
 
@@ -23,6 +22,8 @@ To run all benchmarks on multiple hosts, execute
 export TEST_HOSTS="host1,host2,host2"
 ./gradlew geode-benchmarks:test
 ```
+
+Performance results will be written to geode-benchmarks/output
 
 ## Project structure
 
