@@ -33,6 +33,7 @@ import org.apache.geode.perftest.yardstick.YardstickTask;
  */
 public class TestConfig implements Serializable {
 
+  private final WorkloadDuration workloadDuration = new WorkloadDuration();
   private Map<String, Integer> roles = new HashMap<>();
   private List<TestStep> before = new ArrayList<>();
   private List<TestStep> workload = new ArrayList<>();
@@ -62,12 +63,28 @@ public class TestConfig implements Serializable {
     before.add(new TestStep(task, roles));
   }
 
-  public void workload(BenchmarkDriver benchmark, long warmUpSeconds, long durationSeconds, String ... roles) {
-    workload.add(new TestStep(new YardstickTask(benchmark, durationSeconds, warmUpSeconds), roles));
+  public void workload(BenchmarkDriver benchmark, String ... roles) {
+    workload.add(new TestStep(new YardstickTask(benchmark, workloadDuration), roles));
   }
 
   public void after(Task task, String ... roles) {
     after.add(new TestStep(task, roles));
+  }
+
+  public void durationSeconds(long durationSeconds) {
+    workloadDuration.durationSeconds(durationSeconds);
+  }
+
+  public void warmupSeconds(long warmupSeconds) {
+    workloadDuration.warmupSeconds(warmupSeconds);
+  }
+
+  public long getDurationSeconds() {
+    return workloadDuration.getDurationSeconds();
+  }
+
+  public long getWarmupSeconds() {
+    return workloadDuration.getWarmupSeconds();
   }
 
   public static class TestStep {

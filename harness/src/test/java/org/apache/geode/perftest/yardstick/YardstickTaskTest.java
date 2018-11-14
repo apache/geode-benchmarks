@@ -29,13 +29,15 @@ import org.junit.Test;
 import org.yardstickframework.BenchmarkDriverAdapter;
 
 import org.apache.geode.perftest.Task;
+import org.apache.geode.perftest.TestConfig;
+import org.apache.geode.perftest.WorkloadDuration;
 
-public class YardstickUtilTest {
+public class YardstickTaskTest {
 
   @Test
   public void testExecuteBenchmark() throws Exception {
     EmptyBenchmark benchmark = new EmptyBenchmark();
-    Task task = new YardstickTask(benchmark, (long) 1, (long) 1);
+    Task task = new YardstickTask(benchmark, new WorkloadDuration());
     task.run(null);
 
     Assert.assertTrue(1 <= benchmark.invocations.get());

@@ -37,12 +37,14 @@ public class PartitionedPutBenchmark {
 
     int locatorPort = 10334;
 
+    config.warmupSeconds(5);
+    config.durationSeconds(30);
     config.role("locator", 1);
     config.role("server", 1);
     config.role("client", 1);
     config.before(new StartLocator(locatorPort), "locator");
     config.before(new StartServer(locatorPort), "server");
     config.before(new StartClient(locatorPort), "client");
-    config.workload(new PutTask(), 5, 30, "client");
+    config.workload(new PutTask(),"client");
   }
 }
