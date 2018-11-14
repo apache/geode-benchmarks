@@ -36,6 +36,8 @@ import org.apache.geode.perftest.runner.DefaultTestRunner;
  */
 public class TestRunners {
 
+  public static final String TEST_HOSTS = "TEST_HOSTS";
+
   /**
    * The default runner, which runs on localhost, unless the environment variable
    * TEST_HOSTS is set to a comma separated list of hosts.
@@ -43,15 +45,20 @@ public class TestRunners {
    * If TEST_HOSTS is set, the test will run on those hosts.
    */
   public static TestRunner defaultRunner() {
-    String testHostsString = System.getenv("TEST_HOSTS");
+    String testHosts = System.getenv(TEST_HOSTS);
+
+    InfrastructureFactory infrastructureFactory = getInfrastructureFactory(testHosts);
+    return new DefaultTestRunner(infrastructureFactory, new RemoteJVMFactory());
+  }
+
+  static InfrastructureFactory getInfrastructureFactory(String testHosts) {
     InfrastructureFactory infrastructureFactory;
-    if(testHostsString == null) {
+    if(testHosts == null) {
       infrastructureFactory = new LocalInfrastructureFactory();
     } else {
-      String[] hosts = testHostsString.split(",\\s*");
+      String[] hosts = testHosts.split(",\\s*");
       infrastructureFactory = new SshInfrastructureFactory(System.getProperty("user.name"), hosts);
     }
-
-    return new DefaultTestRunner(infrastructureFactory, new RemoteJVMFactory());
+    return infrastructureFactory;
   }
 }

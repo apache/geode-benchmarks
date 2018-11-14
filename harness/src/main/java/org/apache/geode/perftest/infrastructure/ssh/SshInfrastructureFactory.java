@@ -37,4 +37,12 @@ public class SshInfrastructureFactory implements InfrastructureFactory {
   public Infrastructure create(int nodes) throws Exception {
     return new SshInfrastructure(hosts, user);
   }
+
+  public Collection<String> getHosts() {
+    return hosts;
+  }
+
+  public String getUser() {
+    return user;
+  }
 }
