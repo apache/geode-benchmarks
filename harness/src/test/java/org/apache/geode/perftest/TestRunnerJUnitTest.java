@@ -17,7 +17,6 @@
 
 package org.apache.geode.perftest;
 
-import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.eq;
@@ -61,7 +60,7 @@ public class TestRunnerJUnitTest {
       config.before(before, "before");
       config.after(after, "before");
     };
-    runner.runTest(test, 3);
+    runner.runTest(test);
 
     InOrder inOrder = inOrder(remoteJVMs, before, after);
     inOrder.verify(remoteJVMs).execute(eq(before), any());

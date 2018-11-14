@@ -22,15 +22,24 @@ import org.apache.geode.perftest.infrastructure.local.LocalInfraManager;
 import org.apache.geode.perftest.infrastructure.ssh.SshInfraManager;
 import org.apache.geode.perftest.jvms.JVMManager;
 
+/**
+ * Static factory methods for {@link TestRunner}
+ */
 public class TestRunners {
 
+  /**
+   * The default runner, which runs on localhost, unless the environment variable
+   * TEST_HOSTS is set to a comma separated list of hosts.
+   *
+   * If TEST_HOSTS is set, the test will run on those hosts.
+   */
   public static TestRunner defaultRunner() {
     String testHostsString = System.getenv("TEST_HOSTS");
     InfraManager infraManager;
     if(testHostsString == null) {
       infraManager = new LocalInfraManager();
     } else {
-      String[] hosts = testHostsString.split(",");
+      String[] hosts = testHostsString.split(",\\s*");
       infraManager = new SshInfraManager(System.getProperty("user.name"), hosts);
     }
 

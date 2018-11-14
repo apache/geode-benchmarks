@@ -32,7 +32,7 @@ public class TestRunnerIntegrationTest {
       testConfig.role("all", 1);
       testConfig.before(context -> System.out.println("hello"), "all");
 
-    }, 1);
+    });
 
   }
 }

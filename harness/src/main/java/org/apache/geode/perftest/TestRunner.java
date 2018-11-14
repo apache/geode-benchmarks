@@ -49,11 +49,12 @@ public class TestRunner {
     this.jvmManager = jvmManager;
   }
 
-  public void runTest(PerformanceTest test, int nodes) throws Exception {
-    try (Infrastructure infra = infraManager.create(nodes)){
-      TestConfig config = new TestConfig();
-      test.configure(config);
+  public void runTest(PerformanceTest test) throws Exception {
+    TestConfig config = new TestConfig();
+    test.configure(config);
+    int nodes = config.getTotalJVMs();
 
+    try (Infrastructure infra = infraManager.create(nodes)){
       Map<String, Integer> roles = config.getRoles();
 
       logger.info("Lauching JVMs...");

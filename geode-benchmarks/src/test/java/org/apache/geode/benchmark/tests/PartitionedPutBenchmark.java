@@ -30,7 +30,7 @@ public class PartitionedPutBenchmark {
 
   @Test
   public void run() throws Exception {
-    TestRunners.defaultRunner().runTest(this::configure,3);
+    TestRunners.defaultRunner().runTest(this::configure);
   }
 
   public void configure(TestConfig config) {
