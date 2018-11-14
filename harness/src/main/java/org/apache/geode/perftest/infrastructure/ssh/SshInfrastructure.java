@@ -27,6 +27,7 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
@@ -51,7 +52,7 @@ public class SshInfrastructure implements Infrastructure {
   public static final Config CONFIG = new DefaultConfig();
   
   public SshInfrastructure(Collection<String> hosts, String user) {
-    this.hosts = hosts.stream().map(SshNode::new).collect(Collectors.toSet());
+    this.hosts = hosts.stream().map(SshNode::new).collect(Collectors.toCollection(LinkedHashSet::new));
     this.user = user;
   }
 
