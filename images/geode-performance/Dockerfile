@@ -21,13 +21,13 @@ RUN apt update -y && \
 COPY . /geode-performance
 RUN mkdir /var/run/sshd && \
   sed -i 's/PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config && \
-  sed 's@session\s*required\s*pam_loginuid.so@session optional pam_loginuid.so@g' -i /etc/pam.d/sshd &&
-
-RUN ssh-keygen -N "" -f /root/.ssh/id_rsa
-RUN echo "Host localhost" > /root/.ssh/config
-RUN echo "    StrictHostKeyChecking no" >> /root/.ssh/config
-RUN chmod 600 /root/.ssh/config
-RUN cp /root/.ssh/id_rsa.pub /root/.ssh/authorized_keys
-RUN chmod 600 /root/.ssh/authorized_keys
-RUN rm -f /geode-performance/Dockerfile
-CMD ["/usr/sbin/sshd", "-D"]
+  sed 's@session\s*required\s*pam_loginuid.so@session optional pam_loginuid.so@g' -i /etc/pam.d/sshd && \
+  ssh-keygen -N "" -f /root/.ssh/id_rsa && \
+  echo "Host localhost" > /root/.ssh/config && \
+  echo "    StrictHostKeyChecking no" >> /root/.ssh/config && \
+  chmod 600 /root/.ssh/config && \
+  cp /root/.ssh/id_rsa.pub /root/.ssh/authorized_keys && \
+  chmod 600 /root/.ssh/authorized_keys && \
+  rm -f /geode-performance/Dockerfile
+CMD ["/usr/sbin/sshd", "-D", "-E", "/var/log/sshd.log"]
+EXPOSE 22
