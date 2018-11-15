@@ -49,20 +49,26 @@ public class SshInfrastructure implements Infrastructure {
 
   private final Set<SshNode> hosts;
   private final String user;
+  private final int port;
   public static final Config CONFIG = new DefaultConfig();
   
   public SshInfrastructure(Collection<String> hosts, String user) {
+    this(hosts, user, 22);
+  }
+
+  public SshInfrastructure(Collection<String> hosts, String user, int port) {
     this.hosts = hosts.stream()
         .map(SshNode::new)
         .collect(Collectors.toCollection(LinkedHashSet::new));
     this.user = user;
+    this.port = port;
   }
 
   SSHClient getSSHClient(InetAddress address) throws IOException {
     SSHClient client = new SSHClient(CONFIG);
     client.addHostKeyVerifier(new PromiscuousVerifier());
     client.loadKnownHosts();
-    client.connect(address);
+    client.connect(address, port);
     client.authPublickey(user);
     return client;
   }

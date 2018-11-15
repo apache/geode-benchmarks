@@ -34,14 +34,19 @@ import org.junit.rules.TemporaryFolder;
 import org.apache.geode.perftest.infrastructure.Infrastructure;
 
 public class SshInfrastructureTest {
+
+
   private static final Set<String> HOSTS = Collections.singleton("localhost");
   private static final String USER = System.getProperty("user.name");
   @Rule
   public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
+  @Rule
+  public SshServerRule server = new SshServerRule();
+
   @Test
   public void canFindNodes() throws IOException {
-    SshInfrastructure infra = new SshInfrastructure(HOSTS, USER);
+    SshInfrastructure infra = new SshInfrastructure(HOSTS, USER, server.getPort());
 
     assertEquals(1, infra.getNodes().size());
   }
@@ -49,10 +54,11 @@ public class SshInfrastructureTest {
   @Test
   public void canExecuteACommandOnNode()
       throws IOException {
-    SshInfrastructure infra = new SshInfrastructure(HOSTS, USER);
+    SshInfrastructure infra = new SshInfrastructure(HOSTS, USER, server.getPort());
     Infrastructure.Node node1 = infra.getNodes().iterator().next();
 
     File folder = temporaryFolder.newFolder();
+    folder.mkdirs();
     File expectedFile = new File(folder, "somefile.txt").getAbsoluteFile();
     int result = infra.onNode(node1, new String[] {"touch", expectedFile.getPath()}
     );
@@ -63,7 +69,7 @@ public class SshInfrastructureTest {
 
   @Test
   public void copyToNodesPutsFileOnNode() throws IOException, InterruptedException {
-    SshInfrastructure infra = new SshInfrastructure(HOSTS, USER);
+    SshInfrastructure infra = new SshInfrastructure(HOSTS, USER, server.getPort());
 
     File someFile = temporaryFolder.newFile();
     File targetFolder = new File(temporaryFolder.newFolder(), "dest");
@@ -99,7 +105,7 @@ public class SshInfrastructureTest {
   @Test
   public void canCopyFilesFromANode()
       throws IOException, ExecutionException, InterruptedException {
-    SshInfrastructure infra = new SshInfrastructure(HOSTS, USER);
+    SshInfrastructure infra = new SshInfrastructure(HOSTS, USER, server.getPort());
     Infrastructure.Node node1 = infra.getNodes().iterator().next();
 
     infra.onNode(node1, new String[] {"mkdir", "-p", "/tmp/foo"});
