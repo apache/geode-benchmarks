@@ -27,4 +27,4 @@ script:
   - docker exec -it geode-test chown root:root /root/.ssh/id_rsa.pub
   - docker cp id_rsa.pub geode-test:/root/.ssh/authorized_keys
   - docker exec -it geode-test chown root:root /root/.ssh/authorized_keys
-  - ssh -i id_rsa -p 2222 root@localhost "pushd /geode-performance; ./gradlew geode-benchmarks:test"
+  - ssh  -o "StrictHostKeyChecking=no" -i id_rsa -p 2222 root@localhost "pushd /geode-performance; ./gradlew geode-benchmarks:test"
