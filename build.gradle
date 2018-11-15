@@ -14,10 +14,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+buildscript {
+    repositories {
+        gradlePluginPortal()
+    }
+    dependencies {
+        classpath 'com.bmuschko:gradle-docker-plugin:4.0.4'
+    }
+}
+
 
 plugins {
     id "org.nosphere.apache.rat" version "0.3.1"
 }
+
+apply plugin: 'com.bmuschko.docker-remote-api'
 
 rat {
     excludes = [
@@ -25,11 +36,21 @@ rat {
             '.travis.yml',
             '.gradle/**',
             'gradlew*',
-            'gradle/*',
+            'gradle/**',
             '.git/**',
             '**/output/**',
             '**/build/**',
             '**/out/**',
             'README.md'
     ]
+}
+
+// Import task types
+import com.bmuschko.gradle.docker.tasks.image.*
+
+// Use task types
+task buildTestingImage(type: DockerBuildImage) {
+    inputDir = file(project.rootDir)
+    dockerFile = file('images/geode-performance/Dockerfile')
+    tag = 'geode-performance-testing:latest'
 }
