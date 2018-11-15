@@ -1,8 +1,13 @@
+required: sudo
+
 language: java
+
+services:
+  - docker
 
 jdk:
   - openjdk8
- 
+
 #Added to cache gradle dependencies, from the travis java manual
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
@@ -11,3 +16,15 @@ cache:
   directories:
     - $HOME/.gradle/caches/
     - $HOME/.gradle/wrapper/
+
+script:
+  - ./gradlew buildTestingImage
+  - docker run -p 2222:22 -d --name geode-test geode-performance-testing
+  - ssh-keygen -N "" -f ./id_rsa
+  - docker cp id_rsa geode-test:/root/.ssh/id_rsa
+  - docker exec -it geode-test chown root:root /root/.ssh/id_rsa
+  - docker cp id_rsa.pub geode-test:/root/.ssh/id_rsa.pub
+  - docker exec -it geode-test chown root:root /root/.ssh/id_rsa.pub
+  - docker cp id_rsa.pub geode-test:/root/.ssh/authorized_keys
+  - docker exec -it geode-test chown root:root /root/.ssh/authorized_keys
+  - ssh  -o "StrictHostKeyChecking=no" -i id_rsa -p 2222 root@localhost "pushd /geode-performance; ./gradlew geode-benchmarks:test"
