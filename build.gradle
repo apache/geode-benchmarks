@@ -39,6 +39,7 @@ rat {
             'gradle/**',
             '.git/**',
             '**/output/**',
+            '**/output-*/**',
             '**/build/**',
             '**/out/**',
             'README.md'
