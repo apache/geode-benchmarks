@@ -92,6 +92,10 @@ public class DefaultTestRunner implements TestRunner {
     }
   }
 
+  public InfrastructureFactory getInfrastructureFactory() {
+    return infrastructureFactory;
+  }
+
   private void runTasks(List<TestConfig.TestStep> steps,
                         RemoteJVMs remoteJVMs) {
     steps.forEach(testStep -> {

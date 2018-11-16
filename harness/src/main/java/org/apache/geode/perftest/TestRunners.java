@@ -38,28 +38,28 @@ public class TestRunners {
 
   public static final String TEST_HOSTS = "TEST_HOSTS";
 
+
+  public static TestRunner defaultRunner(String username, String ... hosts) {
+    return new DefaultTestRunner(new SshInfrastructureFactory(username, hosts), new RemoteJVMFactory());
+  }
   /**
-   * The default runner, which runs on localhost, unless the environment variable
-   * TEST_HOSTS is set to a comma separated list of hosts.
+   * The default runner, which gets a list of hosts to run on from the
+   * TEST_HOSTS system property.
    *
-   * If TEST_HOSTS is set, the test will run on those hosts.
    */
   public static TestRunner defaultRunner() {
-    String testHosts = System.getenv(TEST_HOSTS);
+    String testHosts = System.getProperty(TEST_HOSTS);
 
-    InfrastructureFactory infrastructureFactory = getInfrastructureFactory(testHosts);
-    return new DefaultTestRunner(infrastructureFactory, new RemoteJVMFactory());
+    return defaultRunner(testHosts);
   }
 
-  static InfrastructureFactory getInfrastructureFactory(String testHosts) {
-    InfrastructureFactory infrastructureFactory;
+  static TestRunner defaultRunner(String testHosts) {
     if(testHosts == null) {
-      infrastructureFactory = new LocalInfrastructureFactory();
-    } else {
-      String[] hosts = testHosts.split(",\\s*");
-      infrastructureFactory = new SshInfrastructureFactory(System.getProperty("user.name"), hosts);
+      throw new IllegalStateException("You must set the TEST_HOSTS system property to a comma separated list of hosts to run the benchmarks on.");
     }
-    return infrastructureFactory;
+
+    String userName = System.getProperty("user.name");
+    return defaultRunner(userName, testHosts.split(",\\s*"));
   }
 
   /**

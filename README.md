@@ -10,17 +10,11 @@ These benchmarks are under development.
 ## Running the benchmarks
 The benchmarks require machines with passwordless ssh enabled in order to run.
 
-To run all benchmarks locally, execute
+To run all benchmarks, run the benchmark task and pass in a list of hosts.
 
+For example:
 ```
-./gradlew benchmark
-```
-
-To run all benchmarks on multiple hosts, execute
-
-```
-export TEST_HOSTS="host1,host2,host2"
-./gradlew benchmark
+./gradlew benchmark -Phosts=localhost,localhost,localhost
 ```
 
 Performance results will be written to geode-benchmarks/output

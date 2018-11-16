@@ -38,4 +38,16 @@ dependencies {
 task benchmark(type: Test) {
     testClassesDirs = project.sourceSets.main.output.classesDirs
     classpath = project.sourceSets.main.runtimeClasspath
+
+    testLogging {
+        exceptionFormat = 'full'
+    }
+
+    systemProperty 'TEST_HOSTS', project.findProperty('hosts');
+
+    doFirst {
+        if(!project.hasProperty('hosts')) {
+            throw new IllegalStateException("You must set the hosts property to a comma separated list of hosts. Eg ./gradlew benchmark -Phosts=localhost,localhost,localhost")
+        }
+    }
 }

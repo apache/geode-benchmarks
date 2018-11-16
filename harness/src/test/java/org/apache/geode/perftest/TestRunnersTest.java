@@ -21,6 +21,8 @@ import static org.junit.Assert.*;
 
 import java.util.Arrays;
 
+import jdk.nashorn.internal.objects.NativeDebug;
+import org.junit.Rule;
 import org.junit.Test;
 
 import org.apache.geode.perftest.infrastructure.InfrastructureFactory;
@@ -28,24 +30,22 @@ import org.apache.geode.perftest.infrastructure.local.LocalInfrastructure;
 import org.apache.geode.perftest.infrastructure.local.LocalInfrastructureFactory;
 import org.apache.geode.perftest.infrastructure.ssh.SshInfrastructure;
 import org.apache.geode.perftest.infrastructure.ssh.SshInfrastructureFactory;
+import org.apache.geode.perftest.runner.DefaultTestRunner;
 
 public class TestRunnersTest {
 
   @Test
-  public void getInfraStructureShouldReturnLocalIfNoTestHosts() {
-    InfrastructureFactory infrastructureFactory = TestRunners.getInfrastructureFactory(null);
-    assertEquals(LocalInfrastructureFactory.class, infrastructureFactory.getClass());
+  public void defaultRunnerShouldParseHosts() {
+    DefaultTestRunner runner = (DefaultTestRunner) TestRunners.defaultRunner("localhost,localhost");
+
+    SshInfrastructureFactory infrastructureFactory =
+        (SshInfrastructureFactory) runner.getInfrastructureFactory();
+
+    assertEquals(Arrays.asList("localhost", "localhost") , infrastructureFactory.getHosts());
   }
-
-  @Test
-  public void getInfraStructureShouldReturnSshInfraStructureForCommaSeparatedList() {
-    InfrastructureFactory infrastructureFactory = TestRunners.getInfrastructureFactory("localhost, localhost");
-    assertEquals(SshInfrastructureFactory.class, infrastructureFactory.getClass());
-
-    SshInfrastructureFactory infra = (SshInfrastructureFactory) infrastructureFactory;
-
-    assertEquals(Arrays.asList("localhost", "localhost") , infra.getHosts());
+  
+  @Test(expected = IllegalStateException.class)
+  public void defaultRunnerShouldFailWithNoHosts() {
+    TestRunners.defaultRunner(null);
   }
-
-
 }
