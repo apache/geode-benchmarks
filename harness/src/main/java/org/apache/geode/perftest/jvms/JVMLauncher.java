@@ -32,20 +32,24 @@ import org.apache.geode.perftest.jvms.rmi.ChildJVM;
 class JVMLauncher {
   private static final Logger logger = LoggerFactory.getLogger(RemoteJVMFactory.class);
 
+  JVMLauncher() {
+  }
+
   CompletableFuture<Void> launchProcesses(Infrastructure infra, int rmiPort,
-                                          List<JVMMapping> mapping)
+                                          List<JVMMapping> mapping, String libDir)
       throws UnknownHostException {
     List<CompletableFuture<Void>> futures = new ArrayList<CompletableFuture<Void>>();
     for (JVMMapping entry : mapping) {
-      futures.add(launchWorker(infra, rmiPort, entry.getId(), entry.getNode()));
+      futures.add(launchWorker(infra, rmiPort, entry.getId(), entry.getNode(), libDir));
     }
     return CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]));
   }
 
   CompletableFuture<Void> launchWorker(Infrastructure infra, int rmiPort,
-                                       int id, final Infrastructure.Node node)
+                                       int id, final Infrastructure.Node node, String libDir)
       throws UnknownHostException {
-    String[] shellCommand = buildCommand(InetAddress.getLocalHost().getHostAddress(), rmiPort, id);
+    String[] shellCommand = buildCommand(InetAddress.getLocalHost().getHostAddress(), rmiPort, id,
+        libDir);
     CompletableFuture<Void> future = new CompletableFuture<Void>();
     Thread thread = new Thread("Worker " + node.getAddress()) {
       public void run() {
@@ -67,12 +71,12 @@ class JVMLauncher {
     return future;
   }
 
-  String[] buildCommand(String rmiHost, int rmiPort, int id) {
+  String[] buildCommand(String rmiHost, int rmiPort, int id, String libDir) {
 
     List<String> command = new ArrayList<String>();
     command.add("java");
     command.add("-classpath");
-    command.add("lib/*");
+    command.add(libDir + "/*");
     command.add("-D" + RemoteJVMFactory.RMI_HOST + "=" + rmiHost);
     command.add("-D" + RemoteJVMFactory.RMI_PORT_PROPERTY + "=" + rmiPort);
     command.add("-D" + RemoteJVMFactory.JVM_ID + "=" + id);

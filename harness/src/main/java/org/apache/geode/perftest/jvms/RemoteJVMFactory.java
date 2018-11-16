@@ -17,7 +17,6 @@
 
 package org.apache.geode.perftest.jvms;
 
-import java.rmi.registry.Registry;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -49,6 +48,7 @@ public class RemoteJVMFactory {
   public static final int RMI_PORT = 33333;
   public static final String CLASSPATH = System.getProperty("java.class.path");
   public static final String JAVA_HOME = System.getProperty("java.home");
+  private static final String LIB_DIR = ".geode-performance/lib";
   private final JVMLauncher jvmLauncher;
   private final ClassPathCopier classPathCopier;
   private final ControllerFactory controllerFactory;
@@ -84,10 +84,11 @@ public class RemoteJVMFactory {
 
     Controller controller = controllerFactory.createController(numWorkers);
 
-    classPathCopier.copyToNodes(infra);
+    classPathCopier.copyToNodes(infra, LIB_DIR);
 
     List<JVMMapping> mapping = mapRolesToNodes(roles, nodes);
-    CompletableFuture<Void> processesExited = jvmLauncher.launchProcesses(infra, RMI_PORT, mapping);
+    CompletableFuture<Void> processesExited = jvmLauncher.launchProcesses(infra, RMI_PORT, mapping,
+        LIB_DIR);
 
     if(!controller.waitForWorkers(5, TimeUnit.MINUTES)) {
       throw new IllegalStateException("Workers failed to start in 1 minute");

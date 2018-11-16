@@ -43,9 +43,14 @@ public interface Infrastructure extends AutoCloseable {
   void close() throws InterruptedException, IOException;
 
   /**
-   * Copy a list of files to a directory on the node
+   * Copy a list of files to a directory on the node.
+   *
+   * @param files A list of files on the local system to copy
+   * @param destDir The directory on the remote machine to copy to
+   * @param removeExisting If true, remove all existing files in the directory on the remote
+   * machine
    */
-  void copyToNodes(Iterable<File> files, String destDir) throws IOException;
+  void copyToNodes(Iterable<File> files, String destDir, boolean removeExisting) throws IOException;
 
   void copyFromNode(Node node, String directory, File destDir) throws IOException;
 
