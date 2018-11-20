@@ -12,7 +12,7 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.apache.geode.perftest.yardstick;
+package org.apache.geode.perftest.yardstick.analysis;
 
 import static java.lang.Math.abs;
 
@@ -22,12 +22,21 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class YardstickPercentileSensorParser {
-  static final String sensorOutputFile = "PercentileProbe.csv";
+import org.yardstickframework.probes.PercentileProbe;
+
+import org.apache.geode.perftest.analysis.ProbeResultParser;
+
+/**
+ * Parses the output from {@link PercentileProbe} and reports the
+ * 99% percentile latency in microseconds.
+ */
+public class YardstickPercentileSensorParser implements ProbeResultParser {
+  public static final String sensorOutputFile = "PercentileProbe.csv";
+  public static final String probeResultDescription = "99th percentile latency";
 
   private class SensorBucket {
     public int latencyBucket;
-    public float bucketPercentage;
+    public double bucketPercentage;
 
     SensorBucket(String dataLine) throws IOException {
       String[] data = dataLine.split(",");
@@ -36,7 +45,7 @@ public class YardstickPercentileSensorParser {
       }
       try {
         latencyBucket = Integer.parseInt(data[0]);
-        bucketPercentage = Float.parseFloat(data[1]);
+        bucketPercentage = Double.parseDouble(data[1]);
       } catch (NumberFormatException e) {
         throw new IOException("Invalid data line: " + dataLine);
       }
@@ -60,6 +69,22 @@ public class YardstickPercentileSensorParser {
     }
   }
 
+  @Override
+  public void reset() {
+    buckets = new ArrayList<>();
+  }
+
+  @Override
+  // Default probe result is the 99th percentile latency for the benchmark
+  public double getProbeResult() {
+    return getPercentile(99);
+  }
+
+  @Override
+  public String getResultDescription() {
+    return probeResultDescription;
+  }
+
   private void normalizeBuckets() {
     float totalPercentage = 0;
     for (SensorBucket bucket : buckets) {
@@ -73,11 +98,11 @@ public class YardstickPercentileSensorParser {
     }
   }
 
-  public float getPercentile(int target) {
+  public double getPercentile(int target) {
     if (target < 0 || target > 100) {
       throw new RuntimeException("Percentile must be in the range (0, 100), invalid value: " + target);
     }
-    float targetPercent = target / 100f;
+    double targetPercent = target / 100.0;
     normalizeBuckets();
 
     if (buckets.size() == 1) {
@@ -86,7 +111,7 @@ public class YardstickPercentileSensorParser {
 
     SensorBucket[] bucketArray = buckets.toArray(new SensorBucket[buckets.size()]);
 
-    float accumulator = 0;
+    double accumulator = 0;
     int i = -1;
     while (targetPercent - accumulator > 0.0001) {
       ++i;
@@ -100,7 +125,7 @@ public class YardstickPercentileSensorParser {
         bucketArray[i + 1].latencyBucket - targetBucket.latencyBucket :
         targetBucket.latencyBucket - bucketArray[i - 1].latencyBucket;
 
-    float percentileLocationInTargetBucket = 1.0f - ((accumulator - targetPercent) / targetBucket.bucketPercentage);
+    double percentileLocationInTargetBucket = 1.0 - ((accumulator - targetPercent) / targetBucket.bucketPercentage);
 
     return targetBucket.latencyBucket + bucketSize * percentileLocationInTargetBucket;
   }

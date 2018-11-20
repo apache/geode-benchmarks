@@ -13,7 +13,7 @@
  * the License.
  */
 
-package org.apache.geode.perftest.yardstick;
+package org.apache.geode.perftest.yardstick.analysis;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -24,6 +24,8 @@ import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+
+import org.apache.geode.perftest.yardstick.analysis.YardstickThroughputSensorParser;
 
 public class YardstickThroughputSensorParserTest {
   @Rule
