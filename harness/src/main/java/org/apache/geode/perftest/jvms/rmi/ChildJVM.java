@@ -33,15 +33,17 @@ public class ChildJVM {
   private final RMI rmi;
   private final SystemInterface system;
   private final int pingTime;
+  private final File outputDir;
 
-  public ChildJVM(RMI rmi, SystemInterface system, int pingTime) {
+  public ChildJVM(RMI rmi, SystemInterface system, int pingTime, File outputDir) {
     this.rmi = rmi;
     this.system = system;
     this.pingTime = pingTime;
+    this.outputDir = outputDir;
   }
 
   public static void main(String[] args) {
-    new ChildJVM(new RMI(), new SystemInterface(), 1000).run();
+    new ChildJVM(new RMI(), new SystemInterface(), 1000, new File("output")).run();
   }
 
   void run() {
@@ -49,7 +51,6 @@ public class ChildJVM {
       String RMI_HOST = system.getProperty(RemoteJVMFactory.RMI_HOST);
       String RMI_PORT = system.getProperty(RemoteJVMFactory.RMI_PORT_PROPERTY);
       int id = system.getInteger(RemoteJVMFactory.JVM_ID);
-      File outputDir = new File("output");
       outputDir.mkdirs();
       PrintStream out = new PrintStream(new File(outputDir, "ChildJVM-" + id + ".txt"));
       system.setOut(out);

@@ -17,31 +17,29 @@
 
 package org.apache.geode.perftest.yardstick;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
-
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import org.junit.Assert;
+import org.junit.Rule;
 import org.junit.Test;
-import org.yardstickframework.BenchmarkDriverAdapter;
+import org.junit.rules.TemporaryFolder;
 
 import org.apache.geode.perftest.Task;
 import org.apache.geode.perftest.WorkloadConfig;
+import org.apache.geode.perftest.benchmarks.EmptyBenchmark;
 
 public class YardstickTaskTest {
+
+  @Rule
+  public final TemporaryFolder folder = new TemporaryFolder();
 
   @Test
   public void testExecuteBenchmark() throws Exception {
     EmptyBenchmark benchmark = new EmptyBenchmark();
     WorkloadConfig workloadConfig = new WorkloadConfig();
     workloadConfig.threads(1);
-    Task task = new YardstickTask(benchmark, workloadConfig);
+    Task task = new YardstickTask(benchmark, workloadConfig, folder.newFolder().getAbsolutePath());
     task.run(null);
 
-    Assert.assertTrue(1 <= benchmark.invocations.get());
+    Assert.assertTrue(1 <= benchmark.getInvocations());
 
     //TODO -verify probes are shutdown
     //TODO -verify benchmark is shutdown
@@ -49,18 +47,4 @@ public class YardstickTaskTest {
 
   }
 
-  private static class EmptyBenchmark extends BenchmarkDriverAdapter {
-    private AtomicInteger invocations = new AtomicInteger();
-
-    @Override
-    public boolean test(Map<Object, Object> ctx) throws Exception {
-      invocations.incrementAndGet();
-      return true;
-    }
-
-    @Override
-    public void onException(Throwable e) {
-      e.printStackTrace();
-    }
-  }
 }

@@ -18,10 +18,8 @@
 package org.apache.geode.perftest.runner;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,10 +46,13 @@ public class DefaultTestRunner implements TestRunner {
 
   private final InfrastructureFactory infrastructureFactory;
   private final RemoteJVMFactory remoteJvmFactory;
+  private File outputDir;
 
-  public DefaultTestRunner(InfrastructureFactory infrastructureFactory, RemoteJVMFactory remoteJvmFactory) {
+  public DefaultTestRunner(InfrastructureFactory infrastructureFactory,
+                           RemoteJVMFactory remoteJvmFactory, File outputDir) {
     this.infrastructureFactory = infrastructureFactory;
     this.remoteJvmFactory = remoteJvmFactory;
+    this.outputDir = outputDir;
   }
 
   @Override
@@ -64,6 +65,15 @@ public class DefaultTestRunner implements TestRunner {
   protected void runTest(TestConfig config)
       throws Exception {
     int nodes = config.getTotalJVMs();
+
+    if(config.getName() == null) {
+      throw new IllegalStateException("Benchmark must have a name.");
+    }
+    File benchmarkOutput = new File(outputDir, config.getName());
+    if(benchmarkOutput.exists()) {
+      throw new IllegalStateException("Benchmark output directory already exists: " + benchmarkOutput.getPath());
+    }
+
 
     try (Infrastructure infra = infrastructureFactory.create(nodes)){
       Map<String, Integer> roles = config.getRoles();
@@ -82,11 +92,15 @@ public class DefaultTestRunner implements TestRunner {
         runTasks(config.getAfter(), remoteJVMs);
 
         logger.info("Copying results...");
-        File outputDir = new File("output");
+
         int nodeId = 0;
+
+
+        benchmarkOutput.mkdirs();
+
         for (Infrastructure.Node node : infra.getNodes()) {
           String role = remoteJVMs.getRole(node);
-          infra.copyFromNode(node, "output", new File(outputDir, role + nodeId++));
+          infra.copyFromNode(node, "output", new File(benchmarkOutput, role + nodeId++));
         }
       }
     }

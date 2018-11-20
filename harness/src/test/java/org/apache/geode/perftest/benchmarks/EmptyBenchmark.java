@@ -15,25 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.geode.benchmark;
+package org.apache.geode.perftest.benchmarks;
 
-import java.io.File;
+import java.io.Serializable;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.yardstickframework.BenchmarkDriverAdapter;
 
-import org.apache.geode.benchmark.tests.PartitionedPutBenchmark;
-import org.apache.geode.perftest.TestRunners;
+public class EmptyBenchmark extends BenchmarkDriverAdapter implements Serializable {
+  private AtomicInteger invocations = new AtomicInteger();
 
-public class PartitionedPutBenchmarkTest {
+  @Override
+  public boolean test(Map<Object, Object> ctx) throws Exception {
+    invocations.incrementAndGet();
+    return true;
+  }
 
-  @Rule
-  public TemporaryFolder folder = new TemporaryFolder();
+  public int getInvocations() {
+    return this.invocations.get();
+  }
 
-  @Test
-  public void benchmarkRunsSuccessfully() throws Exception {
-    TestRunners.minimalRunner(folder.newFolder())
-        .runTest(new PartitionedPutBenchmark()::configure);
+  @Override
+  public void onException(Throwable e) {
+    e.printStackTrace();
   }
 }

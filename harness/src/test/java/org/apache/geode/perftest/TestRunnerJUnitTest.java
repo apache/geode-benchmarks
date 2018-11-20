@@ -25,7 +25,11 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.io.File;
+
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.mockito.InOrder;
 
 import org.apache.geode.perftest.infrastructure.InfrastructureFactory;
@@ -35,6 +39,9 @@ import org.apache.geode.perftest.jvms.RemoteJVMs;
 import org.apache.geode.perftest.runner.DefaultTestRunner;
 
 public class TestRunnerJUnitTest {
+
+  @Rule
+  public TemporaryFolder folder = new TemporaryFolder();
 
   @Test
   public void testRunnerRunsBeforeAndAfterTasks() throws Exception {
@@ -48,12 +55,14 @@ public class TestRunnerJUnitTest {
     RemoteJVMs remoteJVMs = mock(RemoteJVMs.class);
     when(remoteJvmFactory.launch(eq(infrastructure), any())).thenReturn(remoteJVMs);
 
-    TestRunner runner = new DefaultTestRunner(infrastructureFactory, remoteJvmFactory);
+    TestRunner runner = new DefaultTestRunner(infrastructureFactory, remoteJvmFactory,
+        folder.newFolder());
 
     Task before = mock(Task.class);
     Task after = mock(Task.class);
 
     PerformanceTest test = config -> {
+      config.name("SampleBenchmark");
       config.role("before", 1);
       config.role("workload", 1);
       config.role("after", 1);

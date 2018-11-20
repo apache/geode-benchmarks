@@ -24,12 +24,16 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import org.apache.geode.perftest.jdk.RMI;
 import org.apache.geode.perftest.jdk.SystemInterface;
@@ -37,16 +41,18 @@ import org.apache.geode.perftest.jvms.RemoteJVMFactory;
 
 public class ChildJVMTest {
 
+  @Rule
+  public TemporaryFolder temporaryFolder = new TemporaryFolder();
   private RMI rmi;
   private ChildJVM jvm;
   private SystemInterface system;
   private Controller controller;
 
   @Before
-  public void setUp() throws RemoteException, NotBoundException, MalformedURLException {
+  public void setUp() throws IOException, NotBoundException {
     system = mock(SystemInterface.class);
     rmi = mock(RMI.class);
-    jvm = new ChildJVM(rmi, system, 1);
+    jvm = new ChildJVM(rmi, system, 1, temporaryFolder.newFolder());
 
     controller = mock(Controller.class);
     when(rmi.lookup(any())).thenReturn(controller);

@@ -17,7 +17,8 @@
 
 package org.apache.geode.perftest;
 
-import org.apache.geode.perftest.infrastructure.InfrastructureFactory;
+import java.io.File;
+
 import org.apache.geode.perftest.infrastructure.local.LocalInfrastructureFactory;
 import org.apache.geode.perftest.infrastructure.ssh.SshInfrastructureFactory;
 import org.apache.geode.perftest.jvms.RemoteJVMFactory;
@@ -40,7 +41,8 @@ public class TestRunners {
 
 
   public static TestRunner defaultRunner(String username, String ... hosts) {
-    return new DefaultTestRunner(new SshInfrastructureFactory(username, hosts), new RemoteJVMFactory());
+    return new DefaultTestRunner(new SshInfrastructureFactory(username, hosts), new RemoteJVMFactory(),
+        new File("output"));
   }
   /**
    * The default runner, which gets a list of hosts to run on from the
@@ -65,9 +67,11 @@ public class TestRunners {
   /**
    * A test runner that runs the test with the minimal tuning - only
    * 1 second duration on local infrastructure.
+   * @param outputDir
    */
-  public static TestRunner minimalRunner() {
-    return new DefaultTestRunner(new LocalInfrastructureFactory(), new RemoteJVMFactory()) {
+  public static TestRunner minimalRunner(final File outputDir) {
+    return new DefaultTestRunner(new LocalInfrastructureFactory(), new RemoteJVMFactory(),
+        outputDir) {
       @Override
       public void runTest(TestConfig config) throws Exception {
         config.warmupSeconds(0);

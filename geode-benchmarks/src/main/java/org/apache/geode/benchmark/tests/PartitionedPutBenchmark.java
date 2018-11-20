@@ -37,6 +37,7 @@ public class PartitionedPutBenchmark {
 
     int locatorPort = 10334;
 
+    config.name(PartitionedPutBenchmark.class.getCanonicalName());
     config.warmupSeconds(5);
     config.durationSeconds(30);
     config.role("locator", 1);
