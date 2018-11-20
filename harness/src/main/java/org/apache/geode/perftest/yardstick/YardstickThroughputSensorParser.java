@@ -21,13 +21,16 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class YardstickThroughputSensorParser {
-  static final String sensorOutputFile = "ThroughputLatencyProbe.csv";
+import org.apache.geode.perftest.ProbeResultParser;
+
+public class YardstickThroughputSensorParser implements ProbeResultParser {
+  public static final String sensorOutputFile = "ThroughputLatencyProbe.csv";
+  public static final String probeResultDescription = "average ops/second";
 
   private class SensorDatapoint {
     public int second;
-    public float opsPerSec;
-    public float avgLatency;
+    public double opsPerSec;
+    public double avgLatency;
 
     SensorDatapoint(String dataLine) throws IOException {
       String[] data = dataLine.split(",");
@@ -61,8 +64,23 @@ public class YardstickThroughputSensorParser {
     }
   }
 
-  public float getAverageThroughput() {
-    float accumulator = 0;
+  @Override
+  public void reset() {
+    datapoints = new ArrayList<>();
+  }
+
+  @Override
+  public double getProbeResult() {
+    return getAverageThroughput();
+  }
+
+  @Override
+  public String getResultDescription() {
+    return probeResultDescription;
+  }
+
+  public double getAverageThroughput() {
+    double accumulator = 0;
     for (SensorDatapoint datapoint : datapoints) {
       accumulator += datapoint.opsPerSec;
     }
