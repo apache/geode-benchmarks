@@ -19,14 +19,20 @@ package org.apache.geode.benchmark.tests;
 
 import org.junit.Test;
 
-import org.apache.geode.benchmark.tasks.PutTask;
+import org.apache.geode.benchmark.tasks.GetTask;
 import org.apache.geode.benchmark.tasks.StartClient;
 import org.apache.geode.benchmark.tasks.StartLocator;
 import org.apache.geode.benchmark.tasks.StartServer;
 import org.apache.geode.perftest.TestConfig;
 import org.apache.geode.perftest.TestRunners;
 
-public class PartitionedPutBenchmark {
+/**
+ * Benchmark of gets on a partitioned region.
+ *
+ * TODO - this is not populating the region!
+ * TODO - this is only getting a single key!
+ */
+public class PartitionedGetBenchmark {
 
   @Test
   public void run() throws Exception {
@@ -37,7 +43,7 @@ public class PartitionedPutBenchmark {
 
     int locatorPort = 10334;
 
-    config.name(PartitionedPutBenchmark.class.getCanonicalName());
+    config.name(PartitionedGetBenchmark.class.getCanonicalName());
     config.warmupSeconds(2);
     config.durationSeconds(5);
     config.role("locator", 1);
@@ -46,6 +52,6 @@ public class PartitionedPutBenchmark {
     config.before(new StartLocator(locatorPort), "locator");
     config.before(new StartServer(locatorPort), "server");
     config.before(new StartClient(locatorPort), "client");
-    config.workload(new PutTask(),"client");
+    config.workload(new GetTask(),"client");
   }
 }
