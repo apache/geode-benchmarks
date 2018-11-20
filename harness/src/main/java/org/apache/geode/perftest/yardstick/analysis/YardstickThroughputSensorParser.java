@@ -12,7 +12,7 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.apache.geode.perftest.yardstick;
+package org.apache.geode.perftest.yardstick.analysis;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -21,31 +21,17 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.geode.perftest.ProbeResultParser;
+import org.yardstickframework.probes.ThroughputLatencyProbe;
 
+import org.apache.geode.perftest.analysis.ProbeResultParser;
+
+/**
+ * Parses the results from a {@link ThroughputLatencyProbe} and
+ * reports the average throughput in operations/second.
+ */
 public class YardstickThroughputSensorParser implements ProbeResultParser {
   public static final String sensorOutputFile = "ThroughputLatencyProbe.csv";
   public static final String probeResultDescription = "average ops/second";
-
-  private class SensorDatapoint {
-    public int second;
-    public double opsPerSec;
-    public double avgLatency;
-
-    SensorDatapoint(String dataLine) throws IOException {
-      String[] data = dataLine.split(",");
-      if (data.length != 3) {
-        throw new IOException("Invalid data line: " + dataLine);
-      }
-      try {
-        second = Integer.parseInt(data[0]);
-        opsPerSec = Float.parseFloat(data[1]);
-        avgLatency = Float.parseFloat(data[2]);
-      } catch (NumberFormatException e) {
-        throw new IOException("Invalid data line: " + dataLine);
-      }
-    }
-  }
 
   private List<SensorDatapoint> datapoints = new ArrayList<>();
 
@@ -85,5 +71,25 @@ public class YardstickThroughputSensorParser implements ProbeResultParser {
       accumulator += datapoint.opsPerSec;
     }
     return  accumulator / datapoints.size();
+  }
+
+  private static class SensorDatapoint {
+    private int second;
+    private double opsPerSec;
+    private double avgLatency;
+
+    SensorDatapoint(String dataLine) throws IOException {
+      String[] data = dataLine.split(",");
+      if (data.length != 3) {
+        throw new IOException("Invalid data line: " + dataLine);
+      }
+      try {
+        second = Integer.parseInt(data[0]);
+        opsPerSec = Float.parseFloat(data[1]);
+        avgLatency = Float.parseFloat(data[2]);
+      } catch (NumberFormatException e) {
+        throw new IOException("Invalid data line: " + dataLine);
+      }
+    }
   }
 }

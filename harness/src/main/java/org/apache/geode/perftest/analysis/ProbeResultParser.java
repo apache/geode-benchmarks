@@ -12,13 +12,15 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.apache.geode.perftest;
+package org.apache.geode.perftest.analysis;
 
 import java.io.File;
 import java.io.IOException;
 
 public interface ProbeResultParser {
-  // Given a output directory for a benchmark, parse out the data for the desired probe
+  // Given a output directory for a benchmark, parse out the data for the desired probe.  Note that
+  // this method may be passed several csv files for a run and is expected to appropriately
+  // aggregate the result of interest.
   void parseResults(File benchmarkOutputDir) throws IOException;
 
   // Reset the parser to a clean state where parseResults can be called again

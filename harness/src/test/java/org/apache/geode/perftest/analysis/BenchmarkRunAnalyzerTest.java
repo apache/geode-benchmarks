@@ -13,16 +13,16 @@
  * the License.
  */
 
-package org.apache.geode.perftest;
+package org.apache.geode.perftest.analysis;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.PrintStream;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -32,10 +32,11 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import org.apache.geode.perftest.yardstick.YardstickPercentileSensorParser;
-import org.apache.geode.perftest.yardstick.YardstickThroughputSensorParser;
+import org.apache.geode.perftest.analysis.BenchmarkRunAnalyzer;
+import org.apache.geode.perftest.yardstick.analysis.YardstickPercentileSensorParser;
+import org.apache.geode.perftest.yardstick.analysis.YardstickThroughputSensorParser;
 
-public class ResultDeltaHarvesterTest {
+public class BenchmarkRunAnalyzerTest {
   @Rule
   public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
@@ -74,16 +75,18 @@ public class ResultDeltaHarvesterTest {
     nodes.add("client1");
     nodes.add("client2");
 
-    ResultDeltaHarvester harvester = new ResultDeltaHarvester();
+    BenchmarkRunAnalyzer harvester = new BenchmarkRunAnalyzer();
     harvester.addBenchmark("Alpha", "BenchmarkA", nodes);
     harvester.addBenchmark("Beta", "BenchmarkB", nodes);
     harvester.addProbe(new YardstickThroughputSensorParser());
     harvester.addProbe(new YardstickPercentileSensorParser());
 
     ByteArrayOutputStream outputStream = new ByteArrayOutputStream(4000);
-    harvester.harvestResults(testFolder, baseFolder, outputStream);
-    System.out.println(new String(outputStream.toByteArray()));
-    BufferedReader resultReader = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(outputStream.toByteArray())));
+    StringWriter writer = new StringWriter();
+
+    harvester.analyzeTestRun(testFolder, baseFolder, writer);
+    System.out.println(writer.toString());
+    BufferedReader resultReader = new BufferedReader(new StringReader(writer.toString()));
 
     validatedBenchmark(resultReader, "Alpha", 20, 300, 25, 200);
     validatedBenchmark(resultReader, "Beta", 25, 400, 20, 400);

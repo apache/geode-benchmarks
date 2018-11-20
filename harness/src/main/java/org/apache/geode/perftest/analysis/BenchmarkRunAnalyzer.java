@@ -12,47 +12,54 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.apache.geode.perftest;
+package org.apache.geode.perftest.analysis;
 
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintStream;
+import java.io.PrintWriter;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ResultDeltaHarvester {
-  // TODO: depending on how run output is stored, this data may be excessive or insufficient
-  // The present assumption is each benchmark contains an arbitrarily named result directory
-  // containing subdirectories for each node.  Those subdirectories then contain the probe output
-  // files for the run, for that node.
-  public static class SensorData {
-    String benchmarkName;
-    String benchmarkSubdirectory;
-    List<String> nodesToParse;
+/**
+ * Analyzer that takes in benchmarks, probes, and result directories and produces
+ * a comparison of the results to a provided writer.
+ *
+ * This currently handles data in the format
+ * <pre>
+ *   Result1
+ *     /BenchmarkA
+ *       /client1
+ *         /Probe1.csv
+ *       /client2
+ *         /Probe2.csv
+ *     /BenchmarkB
+ *         ...
+ * </pre>
+ */
+public class BenchmarkRunAnalyzer {
+  private final List<SensorData> benchmarks = new ArrayList<>();
+  private final List<ProbeResultParser> probes = new ArrayList<>();
 
-    public SensorData(String benchmarkName, String benchmarkSubdirectory, List<String> nodesNames) {
-      this.benchmarkName = benchmarkName;
-      this.benchmarkSubdirectory = benchmarkSubdirectory;
-      this.nodesToParse = nodesNames;
-    }
-  }
-
-  private List<SensorData> benchmarks = new ArrayList<>();
-  private List<ProbeResultParser> probes = new ArrayList<>();
-
+  /**
+   * Add a benchmark to be analyzed. The benchmark is expected to exist
+   * in both result directories passed to {@link #analyzeTestRun(File, File, Writer)}
+   */
   public void addBenchmark(String name, String testResultDir, List<String> nodeNames) {
     benchmarks.add(new SensorData(name, testResultDir, nodeNames));
   }
 
+  /**
+   * Add a probe to produce a comparison for. The probe expects to find output files
+   * in the result directory for each node of each benchmark.
+   */
   public void addProbe(ProbeResultParser probeResultParser) {
     probes.add(probeResultParser);
   }
 
-  public void harvestResults(File testResultDir, File baselineResultDir, OutputStream output)
+  public void analyzeTestRun(File testResultDir, File baselineResultDir, Writer output)
       throws IOException {
-    PrintStream stream = new PrintStream(output);
+    PrintWriter stream = new PrintWriter(output);
     for (SensorData benchmark : benchmarks) {
       stream.println("-- " + benchmark.benchmarkName + " --");
       for (ProbeResultParser probe : probes) {
@@ -75,4 +82,21 @@ public class ResultDeltaHarvester {
 
     stream.flush();
   }
+
+  // TODO: depending on how run output is stored, this data may be excessive or insufficient
+  // The present assumption is each benchmark contains an arbitrarily named result directory
+  // containing subdirectories for each node.  Those subdirectories then contain the probe output
+  // files for the run, for that node.
+  private static class SensorData {
+    private final String benchmarkName;
+    private final String benchmarkSubdirectory;
+    private final List<String> nodesToParse;
+
+    public SensorData(String benchmarkName, String benchmarkSubdirectory, List<String> nodesNames) {
+      this.benchmarkName = benchmarkName;
+      this.benchmarkSubdirectory = benchmarkSubdirectory;
+      this.nodesToParse = nodesNames;
+    }
+  }
+
 }

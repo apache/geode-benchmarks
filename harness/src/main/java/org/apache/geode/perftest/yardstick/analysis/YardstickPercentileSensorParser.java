@@ -12,7 +12,7 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.apache.geode.perftest.yardstick;
+package org.apache.geode.perftest.yardstick.analysis;
 
 import static java.lang.Math.abs;
 
@@ -22,8 +22,14 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import org.apache.geode.perftest.ProbeResultParser;
+import org.yardstickframework.probes.PercentileProbe;
 
+import org.apache.geode.perftest.analysis.ProbeResultParser;
+
+/**
+ * Parses the output from {@link PercentileProbe} and reports the
+ * 99% percentile latency in microseconds.
+ */
 public class YardstickPercentileSensorParser implements ProbeResultParser {
   public static final String sensorOutputFile = "PercentileProbe.csv";
   public static final String probeResultDescription = "99th percentile latency";
