@@ -23,6 +23,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 import org.junit.Assert;
@@ -40,29 +42,47 @@ public class ResultDeltaHarvesterTest {
   @Test
   public void verifyResultHarvester() throws IOException {
     final File testFolder = temporaryFolder.newFolder("testFolder");
-    final File testBenchmarkA = temporaryFolder.newFolder("testFolder","BenchmarkA");
-    final File testBenchmarkB = temporaryFolder.newFolder("testFolder","BenchmarkB");
+    final File testBenchmarkA1 = temporaryFolder.newFolder("testFolder","BenchmarkA","client1");
+    final File testBenchmarkA2 = temporaryFolder.newFolder("testFolder","BenchmarkA","client2");
+    final File testBenchmarkB1 = temporaryFolder.newFolder("testFolder","BenchmarkB","client1");
+    final File testBenchmarkB2 = temporaryFolder.newFolder("testFolder","BenchmarkB","client2");
     final File baseFolder = temporaryFolder.newFolder("baseFolder");
-    final File baseBenchmarkA = temporaryFolder.newFolder("baseFolder","BenchmarkA");
-    final File baseBenchmarkB = temporaryFolder.newFolder("baseFolder","BenchmarkB");
+    final File baseBenchmarkA1 = temporaryFolder.newFolder("baseFolder","BenchmarkA","client1");
+    final File baseBenchmarkA2 = temporaryFolder.newFolder("baseFolder","BenchmarkA","client2");
+    final File baseBenchmarkB1 = temporaryFolder.newFolder("baseFolder","BenchmarkB","client1");
+    final File baseBenchmarkB2 = temporaryFolder.newFolder("baseFolder","BenchmarkB","client2");
 
-    populateThroughputCSV(testBenchmarkA, new double[] {10, 15, 20, 25, 30});  // Avg 20
-    populatePercentileCSV(testBenchmarkA, new double[] {0, 0, 99, 1});         // 200
-    populateThroughputCSV(testBenchmarkB, new double[] {10, 15, 20, 25, 30, 35, 40});  // Avg 25
-    populatePercentileCSV(testBenchmarkB, new double[] {0, 0, 0, 99, 1});      // 300
-    populateThroughputCSV(baseBenchmarkA, new double[] {15, 20, 25, 30, 35});  // Avg 25
-    populatePercentileCSV(baseBenchmarkA, new double[] {0, 99, 1});         // 100
-    populateThroughputCSV(baseBenchmarkB, new double[] {10, 15, 20, 25, 30});  // Avg 20
-    populatePercentileCSV(baseBenchmarkB, new double[] {0, 0, 0, 99, 1});      // 300
+    populateThroughputCSV(testBenchmarkA1, new double[] {10, 15, 20, 25, 30});  // Avg 20
+    populatePercentileCSV(testBenchmarkA1, new double[] {0, 0, 99, 1});         // 200
+    populateThroughputCSV(testBenchmarkB1, new double[] {10, 15, 20, 25, 30, 35, 40});  // Avg 25
+    populatePercentileCSV(testBenchmarkB1, new double[] {0, 0, 0, 99, 1});      // 300
+    populateThroughputCSV(baseBenchmarkA1, new double[] {15, 20, 25, 30, 35});  // Avg 25
+    populatePercentileCSV(baseBenchmarkA1, new double[] {0, 99, 1});         // 100
+    populateThroughputCSV(baseBenchmarkB1, new double[] {10, 15, 20, 25, 30});  // Avg 20
+    populatePercentileCSV(baseBenchmarkB1, new double[] {0, 0, 0, 99, 1});      // 300
+
+    populateThroughputCSV(testBenchmarkA2, new double[] {10, 15, 20, 25, 30});  // Avg 20
+    populatePercentileCSV(testBenchmarkA2, new double[] {0, 0, 99, 1});         // 200
+    populateThroughputCSV(testBenchmarkB2, new double[] {10, 15, 20, 25, 30, 35, 40});  // Avg 25
+    populatePercentileCSV(testBenchmarkB2, new double[] {0, 0, 0, 99, 1});      // 300
+    populateThroughputCSV(baseBenchmarkA2, new double[] {15, 20, 25, 30, 35});  // Avg 25
+    populatePercentileCSV(baseBenchmarkA2, new double[] {0, 99, 1});         // 100
+    populateThroughputCSV(baseBenchmarkB2, new double[] {10, 15, 20, 25, 30});  // Avg 20
+    populatePercentileCSV(baseBenchmarkB2, new double[] {0, 0, 0, 99, 1});      // 300
+
+    List<String> nodes = new ArrayList(2);
+    nodes.add("client1");
+    nodes.add("client2");
 
     ResultDeltaHarvester harvester = new ResultDeltaHarvester();
-    harvester.addBenchmark("Alpha", "BenchmarkA");
-    harvester.addBenchmark("Beta", "BenchmarkB");
+    harvester.addBenchmark("Alpha", "BenchmarkA", nodes);
+    harvester.addBenchmark("Beta", "BenchmarkB", nodes);
     harvester.addProbe(new YardstickThroughputSensorParser());
     harvester.addProbe(new YardstickPercentileSensorParser());
 
     ByteArrayOutputStream outputStream = new ByteArrayOutputStream(4000);
     harvester.harvestResults(testFolder, baseFolder, outputStream);
+    System.out.println(new String(outputStream.toByteArray()));
     BufferedReader resultReader = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(outputStream.toByteArray())));
 
     validatedBenchmark(resultReader, "Alpha", 20, 300, 25, 200);
@@ -103,10 +123,10 @@ public class ResultDeltaHarvesterTest {
     Assert.assertEquals(description, line);
     Scanner scanner = new Scanner(input.readLine());
     while (!scanner.hasNextDouble()) {scanner.next();}
-    Assert.assertEquals(testVal, scanner.nextDouble(), 0.1);
+    Assert.assertEquals(testVal, scanner.nextDouble(), 0.01 * testVal);
     scanner = new Scanner(input.readLine());
     while (!scanner.hasNextDouble()) {scanner.next();}
-    Assert.assertEquals(baseVal, scanner.nextDouble(), 0.1);
+    Assert.assertEquals(baseVal, scanner.nextDouble(), 0.01 * baseVal);
     scanner = new Scanner(input.readLine());
     while (!scanner.hasNextDouble()) {scanner.next();}
     Assert.assertEquals(testVal / baseVal, scanner.nextDouble(), 0.1);

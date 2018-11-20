@@ -25,22 +25,25 @@ import java.util.List;
 public class ResultDeltaHarvester {
   // TODO: depending on how run output is stored, this data may be excessive or insufficient
   // The present assumption is each benchmark contains an arbitrarily named result directory
-  // containing all the probe output for the run.
+  // containing subdirectories for each node.  Those subdirectories then contain the probe output
+  // files for the run, for that node.
   public static class SensorData {
     String benchmarkName;
     String benchmarkSubdirectory;
+    List<String> nodesToParse;
 
-    public SensorData(String benchmarkName, String benchmarkSubdirectory) {
+    public SensorData(String benchmarkName, String benchmarkSubdirectory, List<String> nodesNames) {
       this.benchmarkName = benchmarkName;
       this.benchmarkSubdirectory = benchmarkSubdirectory;
+      this.nodesToParse = nodesNames;
     }
   }
 
   private List<SensorData> benchmarks = new ArrayList<>();
   private List<ProbeResultParser> probes = new ArrayList<>();
 
-  public void addBenchmark(String name, String testResultDir) {
-    benchmarks.add(new SensorData(name, testResultDir));
+  public void addBenchmark(String name, String testResultDir, List<String> nodeNames) {
+    benchmarks.add(new SensorData(name, testResultDir, nodeNames));
   }
 
   public void addProbe(ProbeResultParser probeResultParser) {
@@ -54,11 +57,15 @@ public class ResultDeltaHarvester {
       stream.println("-- " + benchmark.benchmarkName + " --");
       for (ProbeResultParser probe : probes) {
         stream.println(probe.getResultDescription());
-        probe.parseResults(new File(testResultDir, benchmark.benchmarkSubdirectory));
+        for (String node : benchmark.nodesToParse) {
+          probe.parseResults(new File(new File(testResultDir, benchmark.benchmarkSubdirectory), node));
+        }
         double testResult = probe.getProbeResult();
         stream.println("Result: " + String.valueOf(testResult));
         probe.reset();
-        probe.parseResults(new File(baselineResultDir, benchmark.benchmarkSubdirectory));
+        for (String node : benchmark.nodesToParse) {
+          probe.parseResults(new File(new File(baselineResultDir, benchmark.benchmarkSubdirectory), node));
+        }
         double baselineResult = probe.getProbeResult();
         stream.println("Baseline: " + String.valueOf(baselineResult));
         stream.println("Relative performance: " + String.valueOf(testResult / baselineResult));
