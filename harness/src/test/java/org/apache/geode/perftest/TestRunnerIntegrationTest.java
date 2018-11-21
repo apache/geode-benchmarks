@@ -17,23 +17,75 @@
 
 package org.apache.geode.perftest;
 
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
+
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
+
+import org.apache.geode.perftest.benchmarks.EmptyBenchmark;
 import org.apache.geode.perftest.infrastructure.local.LocalInfrastructureFactory;
 import org.apache.geode.perftest.jvms.RemoteJVMFactory;
 import org.apache.geode.perftest.runner.DefaultTestRunner;
+import org.apache.geode.perftest.yardstick.analysis.YardstickThroughputSensorParser;
 
 public class TestRunnerIntegrationTest {
+  @Rule
+  public TemporaryFolder temporaryFolder = new TemporaryFolder();
+  private TestRunner runner;
+  private File outputDir;
+  public static final String SAMPLE_BENCHMARK = "SampleBenchmark";
+
+  @Before
+  public void setup() throws IOException {
+    outputDir = temporaryFolder.newFolder();
+    runner = new DefaultTestRunner(new RemoteJVMFactory(new LocalInfrastructureFactory()),
+        outputDir);
+  }
 
   @Test
   public void runsBeforeWorkload() throws Exception {
-    TestRunner runner = new DefaultTestRunner(new LocalInfrastructureFactory(), new RemoteJVMFactory());
-
     runner.runTest(testConfig -> {
+      testConfig.name(SAMPLE_BENCHMARK);
       testConfig.role("all", 1);
       testConfig.before(context -> System.out.println("hello"), "all");
+    });
+  }
 
+  @Test
+  public void generatesOutputDirectoryPerBenchmark() throws Exception {
+
+    runner.runTest(testConfig -> {
+      testConfig.name(SAMPLE_BENCHMARK);
+      testConfig.role("all", 1);
+      testConfig.workload(new EmptyBenchmark(), "all");
     });
 
+    File expectedBenchmarkDir = new File(outputDir, SAMPLE_BENCHMARK);
+    assertTrue(expectedBenchmarkDir.exists());
+
+    //Node directory name is the role + a number
+    File expectedNodeDir = new File(expectedBenchmarkDir, "all-0");
+    assertTrue(expectedNodeDir.exists());
+
+    //We expect the node directory to have benchmark results
+    Stream<Path>
+        outputFiles = Files.walk(expectedNodeDir.toPath())
+        .filter(nameMatches(YardstickThroughputSensorParser.sensorOutputFile));
+
+    assertEquals(1, outputFiles.count());
+  }
+
+  private Predicate<Path> nameMatches(String sensorOutputFile) {
+    return path -> path.toString().contains(sensorOutputFile);
   }
 }

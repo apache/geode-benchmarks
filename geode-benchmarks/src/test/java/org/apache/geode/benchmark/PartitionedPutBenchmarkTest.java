@@ -17,20 +17,23 @@
 
 package org.apache.geode.benchmark;
 
-import org.junit.Test;
+import java.io.File;
 
-import org.apache.geode.benchmark.tasks.PutTask;
-import org.apache.geode.benchmark.tasks.StartClient;
-import org.apache.geode.benchmark.tasks.StartLocator;
-import org.apache.geode.benchmark.tasks.StartServer;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
+
 import org.apache.geode.benchmark.tests.PartitionedPutBenchmark;
-import org.apache.geode.perftest.TestConfig;
 import org.apache.geode.perftest.TestRunners;
 
 public class PartitionedPutBenchmarkTest {
 
+  @Rule
+  public TemporaryFolder folder = new TemporaryFolder();
+
   @Test
   public void benchmarkRunsSuccessfully() throws Exception {
-    TestRunners.minimalRunner().runTest(new PartitionedPutBenchmark()::configure);
+    TestRunners.minimalRunner(folder.newFolder())
+        .runTest(new PartitionedPutBenchmark()::configure);
   }
 }

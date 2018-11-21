@@ -102,7 +102,7 @@ public class SshInfrastructure implements Infrastructure {
   }
 
   @Override
-  public void copyToNodes(Iterable<File> files, String destDir) throws IOException {
+  public void copyToNodes(Iterable<File> files, String destDir, boolean removeExisting) throws IOException {
     Set<InetAddress> uniqueNodes = getNodes().stream().map(Node::getAddress).collect(Collectors.toSet());
 
     List<CompletableFuture<Void>> futures = new ArrayList<>();
@@ -112,9 +112,11 @@ public class SshInfrastructure implements Infrastructure {
           try (Session session = client.startSession()) {
             client.useCompression();
 
-            String script = "mkdir -p " + destDir;
-            final Session.Command cmd = session.exec(script);
-            cmd.join();
+            if(removeExisting) {
+              session.exec(String.format("/bin/sh -c \"rm -rf '%s'; mkdir -p '%s'\"", destDir, destDir)).join();
+            }else {
+              session.exec(String.format("mkdir -p '%s'", destDir)).join();
+            }
             for (File file : files) {
               logger.info("Copying " + file + " to " + address);
               client.newSCPFileTransfer().upload(new FileSystemFile(file), destDir);

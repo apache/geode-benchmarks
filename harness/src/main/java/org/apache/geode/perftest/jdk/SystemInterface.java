@@ -24,7 +24,7 @@ import java.io.PrintStream;
  */
 public class SystemInterface {
 
-  public static String getProperty(String property) {
+  public String getProperty(String property) {
     return System.getProperty(property);
   }
 

@@ -17,9 +17,8 @@
 
 package org.apache.geode.perftest.jvms;
 
-import java.rmi.NoSuchObjectException;
-import java.rmi.registry.Registry;
-import java.rmi.server.UnicastRemoteObject;
+import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -40,15 +39,16 @@ import org.apache.geode.perftest.runner.DefaultTestContext;
 public class RemoteJVMs implements AutoCloseable {
   private final List<JVMMapping> jvmMappings;
   private final Controller controller;
-  private final TestContext context;
   private final CompletableFuture<Void> exited;
+  private final Infrastructure infra;
 
 
-  public RemoteJVMs(List<JVMMapping> mapping, Controller controller,
+  public RemoteJVMs(Infrastructure infra,
+                    List<JVMMapping> mapping, Controller controller,
                     CompletableFuture<Void> exited) {
+    this.infra = infra;
     this.jvmMappings = mapping;
     this.controller = controller;
-    this.context = new DefaultTestContext(jvmMappings);
     this.exited = exited;
   }
 
@@ -61,21 +61,24 @@ public class RemoteJVMs implements AutoCloseable {
 
     Stream<CompletableFuture> futures = jvmMappings.stream()
         .filter(mapping -> roles.contains(mapping.getRole()))
-        .map(mapping -> controller.onWorker(mapping.getId(), task, context));
+        .map(mapping -> controller.onWorker(mapping.getId(), task));
 
     futures.forEach(CompletableFuture::join);
   }
 
-  public void close() throws NoSuchObjectException, ExecutionException, InterruptedException {
+  public void close() throws IOException, ExecutionException, InterruptedException {
+    infra.close();
     controller.close();
     exited.get();
   }
 
-  public String getRole(Infrastructure.Node node) {
-    return jvmMappings.stream()
-        .filter(mapping -> mapping.getNode().equals(node))
-        .map(JVMMapping::getRole)
-        .findFirst()
-        .orElse("no-role");
+  /**
+   * Copy results to the provided output directory
+   */
+  public void copyResults(File benchmarkOutput) throws IOException {
+    benchmarkOutput.mkdirs();
+    for (JVMMapping jvm : jvmMappings) {
+      infra.copyFromNode(jvm.getNode(), jvm.getOutputDir(), new File(benchmarkOutput, jvm.getRole() + "-" + jvm.getId()));
+    }
   }
 }

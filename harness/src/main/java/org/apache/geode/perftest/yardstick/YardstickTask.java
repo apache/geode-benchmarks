@@ -75,7 +75,7 @@ public class YardstickTask implements Task {
 
       @Override
       public String outputFolder() {
-        return "output";
+        return context.getOutputDir().getAbsolutePath();
       }
     };
     cfg.output(System.out);

@@ -15,23 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.geode.perftest.jvms.rmi;
+package org.apache.geode.benchmark.tasks;
 
-import java.rmi.RemoteException;
-import java.rmi.server.UnicastRemoteObject;
+import java.io.Serializable;
+import java.util.Map;
 
-import org.apache.geode.perftest.Task;
-import org.apache.geode.perftest.runner.DefaultTestContext;
+import org.yardstickframework.BenchmarkConfiguration;
+import org.yardstickframework.BenchmarkDriverAdapter;
 
-public class Worker extends UnicastRemoteObject implements WorkerRemote {
+import org.apache.geode.cache.Region;
+import org.apache.geode.cache.client.ClientCache;
+import org.apache.geode.cache.client.ClientCacheFactory;
 
-  private DefaultTestContext context;
+public class GetTask extends BenchmarkDriverAdapter implements Serializable {
 
-  public Worker(DefaultTestContext context) throws RemoteException {
-    this.context = context;
-  }
+  private Region<Object, Object> region;
+
   @Override
-  public void execute(Task task) throws Exception {
-    task.run(context);
+  public void setUp(BenchmarkConfiguration cfg) throws Exception {
+    super.setUp(cfg);
+    ClientCache cache = ClientCacheFactory.getAnyInstance();
+    region = cache.getRegion("region");
+  }
+
+  @Override
+  public boolean test(Map<Object, Object> ctx) throws Exception {
+    region.get(1);
+    return true;
   }
 }

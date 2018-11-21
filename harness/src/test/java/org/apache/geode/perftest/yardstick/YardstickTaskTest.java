@@ -17,21 +17,26 @@
 
 package org.apache.geode.perftest.yardstick;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
+import static org.junit.Assert.assertTrue;
 
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.io.File;
+import java.nio.file.Files;
 
 import org.junit.Assert;
+import org.junit.Rule;
 import org.junit.Test;
-import org.yardstickframework.BenchmarkDriverAdapter;
+import org.junit.rules.TemporaryFolder;
 
 import org.apache.geode.perftest.Task;
+import org.apache.geode.perftest.TestContext;
 import org.apache.geode.perftest.WorkloadConfig;
+import org.apache.geode.perftest.benchmarks.EmptyBenchmark;
+import org.apache.geode.perftest.runner.DefaultTestContext;
 
 public class YardstickTaskTest {
+
+  @Rule
+  public final TemporaryFolder folder = new TemporaryFolder();
 
   @Test
   public void testExecuteBenchmark() throws Exception {
@@ -39,28 +44,16 @@ public class YardstickTaskTest {
     WorkloadConfig workloadConfig = new WorkloadConfig();
     workloadConfig.threads(1);
     Task task = new YardstickTask(benchmark, workloadConfig);
-    task.run(null);
+    File outputDir = folder.newFolder();
+    TestContext context = new DefaultTestContext(null, outputDir);
+    task.run(context);
 
-    Assert.assertTrue(1 <= benchmark.invocations.get());
+    assertTrue(1 <= benchmark.getInvocations());
+
+    assertTrue(Files.walk(outputDir.toPath()).findFirst().isPresent());
 
     //TODO -verify probes are shutdown
     //TODO -verify benchmark is shutdown
-    //TODO - pass in probes to yardstick util, turn it into a real class
-
   }
 
-  private static class EmptyBenchmark extends BenchmarkDriverAdapter {
-    private AtomicInteger invocations = new AtomicInteger();
-
-    @Override
-    public boolean test(Map<Object, Object> ctx) throws Exception {
-      invocations.incrementAndGet();
-      return true;
-    }
-
-    @Override
-    public void onException(Throwable e) {
-      e.printStackTrace();
-    }
-  }
 }

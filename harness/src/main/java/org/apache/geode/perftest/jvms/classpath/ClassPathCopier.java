@@ -42,10 +42,9 @@ public class ClassPathCopier {
   /**
    * Copy the current classpath to a lib directory on all of the nodes in the infrastructure
    */
-  public void copyToNodes(Infrastructure infrastructure) throws IOException {
+  public void copyToNodes(Infrastructure infrastructure, String destDir) throws IOException {
     String[] fileArray = classpath.split(File.pathSeparator);
 
-    String destDir = "lib";
     Iterable<File> files = Arrays.asList(fileArray)
         .stream()
         .filter(path -> !path.contains(javaHome))
@@ -54,7 +53,7 @@ public class ClassPathCopier {
         .filter(File::exists)
         .collect(Collectors.toSet());
 
-    infrastructure.copyToNodes(files, destDir);
+    infrastructure.copyToNodes(files, destDir, true);
   }
 
   private File jarDir(File file) {

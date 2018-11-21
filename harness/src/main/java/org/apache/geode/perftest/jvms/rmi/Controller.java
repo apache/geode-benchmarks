@@ -28,21 +28,23 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.geode.perftest.Task;
-import org.apache.geode.perftest.TestContext;
+import org.apache.geode.perftest.runner.SharedContext;
 
 /**
  * RMI object that lives on the main controller JVM
  */
 public class Controller extends UnicastRemoteObject implements ControllerRemote {
   private final Registry registry;
-  private Map<Integer, WorkerRemote> workers = new ConcurrentHashMap<>();
+  private final SharedContext context;
+  private final Map<Integer, WorkerRemote> workers = new ConcurrentHashMap<>();
   private final CountDownLatch workersStarted;
   private volatile boolean isClosed;
 
 
-  Controller(int numWorkers, Registry registry) throws RemoteException {
+  Controller(int numWorkers, Registry registry, SharedContext context) throws RemoteException {
     this.workersStarted = new CountDownLatch(numWorkers);
     this.registry = registry;
+    this.context = context;
   }
 
   public void close() throws NoSuchObjectException {
@@ -66,7 +68,12 @@ public class Controller extends UnicastRemoteObject implements ControllerRemote 
     return !isClosed;
   }
 
-  public CompletableFuture<Void> onWorker(int id, Task task, TestContext context) {
+  @Override
+  public SharedContext getsharedContext() throws RemoteException {
+    return context;
+  }
+
+  public CompletableFuture<Void> onWorker(int id, Task task) {
     WorkerRemote worker = workers.get(id);
     if(worker == null) {
       throw new IllegalStateException("Worker number " + id + " is not set");
@@ -74,7 +81,7 @@ public class Controller extends UnicastRemoteObject implements ControllerRemote 
 
     return CompletableFuture.runAsync(() -> {
       try {
-        worker.execute(task, context);
+        worker.execute(task);
       } catch (Exception e) {
         throw new RuntimeException(e);
       }

@@ -18,10 +18,8 @@
 package org.apache.geode.perftest.runner;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,12 +44,12 @@ public class DefaultTestRunner implements TestRunner {
   private static final Logger logger = LoggerFactory.getLogger(DefaultTestRunner.class);
 
 
-  private final InfrastructureFactory infrastructureFactory;
   private final RemoteJVMFactory remoteJvmFactory;
+  private File outputDir;
 
-  public DefaultTestRunner(InfrastructureFactory infrastructureFactory, RemoteJVMFactory remoteJvmFactory) {
-    this.infrastructureFactory = infrastructureFactory;
+  public DefaultTestRunner(RemoteJVMFactory remoteJvmFactory, File outputDir) {
     this.remoteJvmFactory = remoteJvmFactory;
+    this.outputDir = outputDir;
   }
 
   @Override
@@ -65,35 +63,34 @@ public class DefaultTestRunner implements TestRunner {
       throws Exception {
     int nodes = config.getTotalJVMs();
 
-    try (Infrastructure infra = infrastructureFactory.create(nodes)){
-      Map<String, Integer> roles = config.getRoles();
-
-      logger.info("Lauching JVMs...");
-      //launch JVMs in parallel, hook them up
-      try (RemoteJVMs remoteJVMs = remoteJvmFactory.launch(infra, roles)) {
-
-        logger.info("Starting before tasks...");
-        runTasks(config.getBefore(), remoteJVMs);
-
-        logger.info("Starting workload tasks...");
-        runTasks(config.getWorkload(), remoteJVMs);
-
-        logger.info("Starting after tasks...");
-        runTasks(config.getAfter(), remoteJVMs);
-
-        logger.info("Copying results...");
-        File outputDir = new File("output");
-        int nodeId = 0;
-        for (Infrastructure.Node node : infra.getNodes()) {
-          String role = remoteJVMs.getRole(node);
-          infra.copyFromNode(node, "output", new File(outputDir, role + nodeId++));
-        }
-      }
+    if(config.getName() == null) {
+      throw new IllegalStateException("Benchmark must have a name.");
     }
-  }
+    File benchmarkOutput = new File(outputDir, config.getName());
+    if(benchmarkOutput.exists()) {
+      throw new IllegalStateException("Benchmark output directory already exists: " + benchmarkOutput.getPath());
+    }
 
-  public InfrastructureFactory getInfrastructureFactory() {
-    return infrastructureFactory;
+
+    Map<String, Integer> roles = config.getRoles();
+
+    logger.info("Lauching JVMs...");
+    //launch JVMs in parallel, hook them up
+    try (RemoteJVMs remoteJVMs = remoteJvmFactory.launch(roles)) {
+
+      logger.info("Starting before tasks...");
+      runTasks(config.getBefore(), remoteJVMs);
+
+      logger.info("Starting workload tasks...");
+      runTasks(config.getWorkload(), remoteJVMs);
+
+      logger.info("Starting after tasks...");
+      runTasks(config.getAfter(), remoteJVMs);
+
+      logger.info("Copying results...");
+      remoteJVMs.copyResults(benchmarkOutput);
+
+    }
   }
 
   private void runTasks(List<TestConfig.TestStep> steps,
@@ -101,5 +98,9 @@ public class DefaultTestRunner implements TestRunner {
     steps.forEach(testStep -> {
       remoteJVMs.execute(testStep.getTask(), testStep.getRoles());
     });
+  }
+
+  public RemoteJVMFactory getRemoteJvmFactory() {
+    return remoteJvmFactory;
   }
 }

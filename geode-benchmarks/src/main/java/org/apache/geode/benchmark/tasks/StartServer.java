@@ -17,6 +17,7 @@
 
 package org.apache.geode.benchmark.tasks;
 
+import java.io.File;
 import java.net.InetAddress;
 
 import org.apache.geode.cache.Cache;
@@ -39,12 +40,13 @@ public class StartServer implements Task {
   public void run(TestContext context) throws Exception {
 
     String locatorString = LocatorUtil.getLocatorString(context, locatorPort);
+    String statsFile = new File(context.getOutputDir(), "stats.gfs").getAbsolutePath();
 
     Cache cache = new CacheFactory()
         .set(ConfigurationProperties.LOCATORS,locatorString)
         .set(ConfigurationProperties.NAME,"server-"+ InetAddress.getLocalHost())
         .set(ConfigurationProperties.STATISTIC_SAMPLING_ENABLED,"true")
-        .set(ConfigurationProperties.STATISTIC_ARCHIVE_FILE,"output/stats.gfs")
+        .set(ConfigurationProperties.STATISTIC_ARCHIVE_FILE, statsFile)
         .create();
 
     CacheServer cacheServer = ((Cache) cache).addCacheServer();

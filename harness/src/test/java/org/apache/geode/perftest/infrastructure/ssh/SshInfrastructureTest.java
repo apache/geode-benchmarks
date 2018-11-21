@@ -70,10 +70,29 @@ public class SshInfrastructureTest {
 
     assertFalse(targetFolder.exists());
 
-    infra.copyToNodes(Arrays.asList(someFile), targetFolder.getPath());
+    infra.copyToNodes(Arrays.asList(someFile), targetFolder.getPath(), false);
 
     assertTrue(targetFolder.exists());
     assertTrue(new File(targetFolder, someFile.getName()).exists());
+  }
+
+  @Test
+  public void copyToNodesCleansDirectory() throws IOException, InterruptedException {
+    SshInfrastructure infra = new SshInfrastructure(HOSTS, USER);
+
+    File someFile = temporaryFolder.newFile();
+    File targetFolder = new File(temporaryFolder.newFolder(), "dest");
+
+    targetFolder.mkdirs();
+    File fileToRemove = new File(targetFolder, "removethis");
+    fileToRemove.createNewFile();
+    assertTrue(fileToRemove.exists());
+
+    infra.copyToNodes(Arrays.asList(someFile), targetFolder.getPath(), true);
+
+    assertTrue(targetFolder.exists());
+    assertTrue(new File(targetFolder, someFile.getName()).exists());
+    assertFalse(fileToRemove.exists());
   }
 
 

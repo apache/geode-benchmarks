@@ -20,9 +20,14 @@ package org.apache.geode.perftest.jvms.rmi;
 import java.io.File;
 import java.io.PrintStream;
 
+import org.apache.commons.io.FileUtils;
+import org.bouncycastle.jcajce.provider.drbg.DRBG;
+
 import org.apache.geode.perftest.jdk.RMI;
 import org.apache.geode.perftest.jdk.SystemInterface;
 import org.apache.geode.perftest.jvms.RemoteJVMFactory;
+import org.apache.geode.perftest.runner.DefaultTestContext;
+import org.apache.geode.perftest.runner.SharedContext;
 
 /**
  * Main method for a JVM running on a remote node
@@ -48,17 +53,29 @@ public class ChildJVM {
     try {
       String RMI_HOST = system.getProperty(RemoteJVMFactory.RMI_HOST);
       String RMI_PORT = system.getProperty(RemoteJVMFactory.RMI_PORT_PROPERTY);
+      String OUTPUT_DIR = system.getProperty(RemoteJVMFactory.OUTPUT_DIR);
       int id = system.getInteger(RemoteJVMFactory.JVM_ID);
-      File outputDir = new File("output");
+
+
+      if(RMI_HOST == null || RMI_PORT == null || OUTPUT_DIR == null) {
+        throw new IllegalStateException("ChildJVM must be launched with all required system properties set.");
+      }
+
+      File outputDir = new File(OUTPUT_DIR);
+      //Clean up the output directory before the test runs
+      FileUtils.deleteQuietly(outputDir);
       outputDir.mkdirs();
-      PrintStream out = new PrintStream(new File(outputDir, "ChildJVM-" + id + ".txt"));
+      PrintStream out = new PrintStream(new File(outputDir, "system.log"));
       system.setOut(out);
       system.setErr(out);
 
       ControllerRemote controller = (ControllerRemote) rmi
           .lookup("//" + RMI_HOST + ":" + RMI_PORT + "/" + RemoteJVMFactory.CONTROLLER);
 
-      Worker worker = new Worker();
+      SharedContext sharedContext = controller.getsharedContext();
+      DefaultTestContext context = new DefaultTestContext(sharedContext, outputDir);
+
+      Worker worker = new Worker(context);
 
       controller.addWorker(id, worker);
 

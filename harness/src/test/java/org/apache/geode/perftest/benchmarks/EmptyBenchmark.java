@@ -15,23 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.geode.perftest.jvms.rmi;
+package org.apache.geode.perftest.benchmarks;
 
-import java.rmi.RemoteException;
-import java.rmi.server.UnicastRemoteObject;
+import java.io.Serializable;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.geode.perftest.Task;
-import org.apache.geode.perftest.runner.DefaultTestContext;
+import org.yardstickframework.BenchmarkDriverAdapter;
 
-public class Worker extends UnicastRemoteObject implements WorkerRemote {
+public class EmptyBenchmark extends BenchmarkDriverAdapter implements Serializable {
+  private AtomicInteger invocations = new AtomicInteger();
 
-  private DefaultTestContext context;
-
-  public Worker(DefaultTestContext context) throws RemoteException {
-    this.context = context;
-  }
   @Override
-  public void execute(Task task) throws Exception {
-    task.run(context);
+  public boolean test(Map<Object, Object> ctx) throws Exception {
+    invocations.incrementAndGet();
+    return true;
+  }
+
+  public int getInvocations() {
+    return this.invocations.get();
+  }
+
+  @Override
+  public void onException(Throwable e) {
+    e.printStackTrace();
   }
 }

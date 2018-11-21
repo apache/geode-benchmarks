@@ -33,7 +33,7 @@ import org.junit.Test;
 import org.apache.geode.perftest.infrastructure.Infrastructure;
 import org.apache.geode.perftest.jvms.JVMMapping;
 
-public class DefaultTestContextTest {
+public class SharedContextTest {
 
   @Test
   public void getHostsForRoleShouldReturnCorrectList() throws UnknownHostException {
@@ -47,7 +47,7 @@ public class DefaultTestContextTest {
     when(node2.getAddress()).thenReturn(host2);
     JVMMapping mapping2 = new JVMMapping(node2, "role", 2);
 
-    DefaultTestContext context = new DefaultTestContext(Arrays.asList(mapping1, mapping2));
+    SharedContext context = new SharedContext(Arrays.asList(mapping1, mapping2));
 
     Set<InetAddress> hosts = context.getHostsForRole("role");
 

@@ -15,36 +15,34 @@
  * limitations under the License.
  */
 
-package org.apache.geode.perftest.jvms;
+package org.apache.geode.perftest.runner;
 
 import java.io.Serializable;
+import java.net.InetAddress;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
-import org.apache.geode.perftest.infrastructure.Infrastructure;
+import org.apache.geode.perftest.jvms.JVMMapping;
 
-public class JVMMapping implements Serializable {
-  private final Infrastructure.Node node;
-  private final String role;
-  private final int id;
+/**
+ * Context for a running test that is the same for all JVMs
+ * running the test. This context is created at the beginning of the
+ * test run and passed to all JVMs.
+ */
+public class SharedContext implements Serializable {
 
-  public JVMMapping(Infrastructure.Node node, String role, int id) {
-    this.node = node;
-    this.role = role;
-    this.id = id;
+  private List<JVMMapping> jvmMappings;
+
+  public SharedContext(List<JVMMapping> jvmMappings) {
+
+    this.jvmMappings = jvmMappings;
   }
 
-  public Infrastructure.Node getNode() {
-    return node;
-  }
-
-  public String getRole() {
-    return role;
-  }
-
-  public int getId() {
-    return id;
-  }
-
-  public String getOutputDir() {
-    return "output/" + role + "-" + id;
+  public Set<InetAddress> getHostsForRole(String role) {
+    return jvmMappings.stream()
+        .filter(mapping -> mapping.getRole().equals(role))
+        .map(mapping -> mapping.getNode().getAddress())
+        .collect(Collectors.toSet());
   }
 }

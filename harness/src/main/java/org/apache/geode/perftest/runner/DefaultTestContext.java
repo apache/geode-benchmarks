@@ -17,27 +17,29 @@
 
 package org.apache.geode.perftest.runner;
 
+import java.io.File;
 import java.net.InetAddress;
-import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.apache.geode.perftest.TestContext;
-import org.apache.geode.perftest.jvms.JVMMapping;
 
 public class DefaultTestContext implements TestContext {
 
-  private List<JVMMapping> jvmMappings;
+  private SharedContext sharedContext;
+  private File outputDir;
 
-  public DefaultTestContext(List<JVMMapping> jvmMappings) {
-
-    this.jvmMappings = jvmMappings;
+  public DefaultTestContext(SharedContext sharedContext, File outputDir) {
+    this.sharedContext = sharedContext;
+    this.outputDir = outputDir;
   }
 
-  @Override public Set<InetAddress> getHostsForRole(String role) {
-    return jvmMappings.stream()
-        .filter(mapping -> mapping.getRole().equals(role))
-        .map(mapping -> mapping.getNode().getAddress())
-        .collect(Collectors.toSet());
+  @Override
+  public Set<InetAddress> getHostsForRole(String role) {
+    return sharedContext.getHostsForRole(role);
+  }
+
+  @Override
+  public File getOutputDir() {
+    return outputDir;
   }
 }

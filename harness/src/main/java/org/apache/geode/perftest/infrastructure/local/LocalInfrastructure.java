@@ -24,9 +24,9 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -85,10 +85,10 @@ public class LocalInfrastructure implements Infrastructure {
   }
 
   @Override
-  public void copyToNodes(Iterable<File> files, String destDirName) throws IOException {
+  public void copyToNodes(Iterable<File> files, String destDirName, boolean removeExisting) throws IOException {
     for(LocalNode node : nodes) {
       Path destDir = new File(node.getWorkingDir(), destDirName).toPath();
-      destDir.toFile().mkdir();
+      destDir.toFile().mkdirs();
 
       for(File file : files) {
         Files.copy(file.toPath(), destDir.resolve(file.getName()));

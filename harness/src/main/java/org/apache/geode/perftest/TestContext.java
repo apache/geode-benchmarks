@@ -17,10 +17,13 @@
 
 package org.apache.geode.perftest;
 
+import java.io.File;
 import java.io.Serializable;
 import java.net.InetAddress;
 import java.util.Set;
 
 public interface TestContext extends Serializable {
   Set<InetAddress> getHostsForRole(String role);
+
+  File getOutputDir();
 }
