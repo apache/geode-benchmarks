@@ -38,10 +38,10 @@ import org.mockito.InOrder;
 
 import org.apache.geode.perftest.infrastructure.Infrastructure;
 import org.apache.geode.perftest.infrastructure.InfrastructureFactory;
-import org.apache.geode.perftest.jdk.RMI;
 import org.apache.geode.perftest.jvms.classpath.ClassPathCopier;
 import org.apache.geode.perftest.jvms.rmi.Controller;
 import org.apache.geode.perftest.jvms.rmi.ControllerFactory;
+import org.apache.geode.perftest.runner.SharedContext;
 
 public class RemoteJVMFactoryTest {
 
@@ -58,7 +58,7 @@ public class RemoteJVMFactoryTest {
     jvmLauncher = mock(JVMLauncher.class);
     controller = mock(Controller.class);
     controllerFactory = mock(ControllerFactory.class);
-    when(controllerFactory.createController(anyInt())).thenReturn(controller);
+    when(controllerFactory.createController(any(), anyInt())).thenReturn(controller);
     infra = mock(Infrastructure.class);
     InfrastructureFactory infraFactory = nodes -> infra;
     factory = new RemoteJVMFactory(infraFactory, jvmLauncher, classPathCopier, controllerFactory);
@@ -79,7 +79,7 @@ public class RemoteJVMFactoryTest {
 
     InOrder inOrder = inOrder(controller, controllerFactory, jvmLauncher, classPathCopier, infra);
 
-    inOrder.verify(controllerFactory).createController(eq(2));
+    inOrder.verify(controllerFactory).createController(any(), eq(2));
     inOrder.verify(jvmLauncher).launchProcesses(eq(infra), anyInt(), any(), any());
     inOrder.verify(controller).waitForWorkers(anyInt(), any());
 

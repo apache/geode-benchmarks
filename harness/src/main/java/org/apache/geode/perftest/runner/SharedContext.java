@@ -17,21 +17,32 @@
 
 package org.apache.geode.perftest.runner;
 
+import java.io.Serializable;
 import java.net.InetAddress;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
-import org.apache.geode.perftest.TestContext;
+import org.apache.geode.perftest.jvms.JVMMapping;
 
-public class DefaultTestContext implements TestContext {
+/**
+ * Context for a running test that is the same for all JVMs
+ * running the test. This context is created at the beginning of the
+ * test run and passed to all JVMs.
+ */
+public class SharedContext implements Serializable {
 
-  private SharedContext sharedContext;
+  private List<JVMMapping> jvmMappings;
 
-  public DefaultTestContext(SharedContext sharedContext) {
-    this.sharedContext = sharedContext;
+  public SharedContext(List<JVMMapping> jvmMappings) {
+
+    this.jvmMappings = jvmMappings;
   }
 
-  @Override
   public Set<InetAddress> getHostsForRole(String role) {
-    return sharedContext.getHostsForRole(role);
+    return jvmMappings.stream()
+        .filter(mapping -> mapping.getRole().equals(role))
+        .map(mapping -> mapping.getNode().getAddress())
+        .collect(Collectors.toSet());
   }
 }

@@ -25,14 +25,16 @@ import java.rmi.RemoteException;
 import java.rmi.registry.Registry;
 
 import org.apache.geode.perftest.jdk.RMI;
+import org.apache.geode.perftest.runner.SharedContext;
 
 public class ControllerFactory {
 
   private final RMI rmi = new RMI();
 
-  public Controller createController(int numWorkers) throws RemoteException, AlreadyBoundException {
+  public Controller createController(SharedContext sharedContext,
+                                     int numWorkers) throws RemoteException, AlreadyBoundException {
     Registry registry = rmi.createRegistry(RMI_PORT);
-    Controller controller = new Controller(numWorkers, registry);
+    Controller controller = new Controller(numWorkers, registry, sharedContext);
     registry.bind(CONTROLLER, controller);
     return controller;
   }

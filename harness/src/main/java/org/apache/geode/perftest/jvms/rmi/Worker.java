@@ -21,15 +21,17 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 
 import org.apache.geode.perftest.Task;
-import org.apache.geode.perftest.TestContext;
+import org.apache.geode.perftest.runner.DefaultTestContext;
 
 public class Worker extends UnicastRemoteObject implements WorkerRemote {
 
-  public Worker() throws RemoteException {
-    super();
+  private DefaultTestContext context;
+
+  public Worker(DefaultTestContext context) throws RemoteException {
+    this.context = context;
   }
   @Override
-  public void execute(Task task, TestContext context) throws Exception {
+  public void execute(Task task) throws Exception {
     task.run(context);
   }
 }

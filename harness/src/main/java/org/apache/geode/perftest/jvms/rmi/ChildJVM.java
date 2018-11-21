@@ -20,9 +20,13 @@ package org.apache.geode.perftest.jvms.rmi;
 import java.io.File;
 import java.io.PrintStream;
 
+import org.bouncycastle.jcajce.provider.drbg.DRBG;
+
 import org.apache.geode.perftest.jdk.RMI;
 import org.apache.geode.perftest.jdk.SystemInterface;
 import org.apache.geode.perftest.jvms.RemoteJVMFactory;
+import org.apache.geode.perftest.runner.DefaultTestContext;
+import org.apache.geode.perftest.runner.SharedContext;
 
 /**
  * Main method for a JVM running on a remote node
@@ -59,7 +63,10 @@ public class ChildJVM {
       ControllerRemote controller = (ControllerRemote) rmi
           .lookup("//" + RMI_HOST + ":" + RMI_PORT + "/" + RemoteJVMFactory.CONTROLLER);
 
-      Worker worker = new Worker();
+      SharedContext sharedContext = controller.getsharedContext();
+      DefaultTestContext context = new DefaultTestContext(sharedContext);
+
+      Worker worker = new Worker(context);
 
       controller.addWorker(id, worker);
 

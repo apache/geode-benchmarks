@@ -33,6 +33,7 @@ import org.apache.geode.perftest.infrastructure.InfrastructureFactory;
 import org.apache.geode.perftest.jvms.classpath.ClassPathCopier;
 import org.apache.geode.perftest.jvms.rmi.Controller;
 import org.apache.geode.perftest.jvms.rmi.ControllerFactory;
+import org.apache.geode.perftest.runner.SharedContext;
 
 /**
  * Factory for launching JVMs and a given infrastructure and setting up RMI
@@ -85,11 +86,12 @@ public class RemoteJVMFactory {
       throw new IllegalStateException("Too few nodes for test. Need " + numWorkers + ", have " + nodes.size());
     }
 
-    Controller controller = controllerFactory.createController(numWorkers);
+    List<JVMMapping> mapping = mapRolesToNodes(roles, nodes);
+
+    Controller controller = controllerFactory.createController(new SharedContext(mapping), numWorkers);
 
     classPathCopier.copyToNodes(infra, LIB_DIR);
 
-    List<JVMMapping> mapping = mapRolesToNodes(roles, nodes);
     CompletableFuture<Void> processesExited = jvmLauncher.launchProcesses(infra, RMI_PORT, mapping,
         LIB_DIR);
 
