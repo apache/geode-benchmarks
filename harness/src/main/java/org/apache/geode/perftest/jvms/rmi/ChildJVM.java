@@ -19,6 +19,7 @@ package org.apache.geode.perftest.jvms.rmi;
 
 import java.io.File;
 import java.io.PrintStream;
+import java.rmi.RemoteException;
 
 import org.apache.commons.io.FileUtils;
 import org.bouncycastle.jcajce.provider.drbg.DRBG;
@@ -56,9 +57,9 @@ public class ChildJVM {
       String OUTPUT_DIR = system.getProperty(RemoteJVMFactory.OUTPUT_DIR);
       int id = system.getInteger(RemoteJVMFactory.JVM_ID);
 
-
-      if(RMI_HOST == null || RMI_PORT == null || OUTPUT_DIR == null) {
-        throw new IllegalStateException("ChildJVM must be launched with all required system properties set.");
+      if (RMI_HOST == null || RMI_PORT == null || OUTPUT_DIR == null) {
+        throw new IllegalStateException(
+            "ChildJVM must be launched with all required system properties set.");
       }
 
       File outputDir = new File(OUTPUT_DIR);
@@ -81,8 +82,13 @@ public class ChildJVM {
 
       //Wait until the controller shuts down
       //If the controller shuts down, this will throw an exception
-      while (controller.ping()) {
-        Thread.sleep(pingTime);
+      try {
+        while (controller.ping()) {
+          Thread.sleep(pingTime);
+        }
+      } catch(RemoteException e) {
+        //If we get a RemoteException, the controller has shut down
+        //exit gracefully
       }
 
       system.exit(0);

@@ -67,9 +67,9 @@ public class RemoteJVMs implements AutoCloseable {
   }
 
   public void close() throws IOException, ExecutionException, InterruptedException {
-    infra.close();
     controller.close();
     exited.get();
+    infra.close();
   }
 
   /**
