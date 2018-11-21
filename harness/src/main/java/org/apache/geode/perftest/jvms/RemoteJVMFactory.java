@@ -29,7 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.apache.geode.perftest.infrastructure.Infrastructure;
-import org.apache.geode.perftest.jdk.RMI;
+import org.apache.geode.perftest.infrastructure.InfrastructureFactory;
 import org.apache.geode.perftest.jvms.classpath.ClassPathCopier;
 import org.apache.geode.perftest.jvms.rmi.Controller;
 import org.apache.geode.perftest.jvms.rmi.ControllerFactory;
@@ -52,31 +52,34 @@ public class RemoteJVMFactory {
   private final JVMLauncher jvmLauncher;
   private final ClassPathCopier classPathCopier;
   private final ControllerFactory controllerFactory;
+  private final InfrastructureFactory infrastructureFactory;
 
-  public RemoteJVMFactory(JVMLauncher jvmLauncher, RMI rmi,
+  public RemoteJVMFactory(InfrastructureFactory infrastructureFactory,
+                          JVMLauncher jvmLauncher,
                           ClassPathCopier classPathCopier,
                           ControllerFactory controllerFactory) {
+    this.infrastructureFactory = infrastructureFactory;
     this.jvmLauncher = jvmLauncher;
     this.classPathCopier = classPathCopier;
     this.controllerFactory = controllerFactory;
   }
-  public RemoteJVMFactory() {
-    this(new JVMLauncher(), new RMI(), new ClassPathCopier(CLASSPATH, JAVA_HOME), new ControllerFactory());
+  public RemoteJVMFactory(InfrastructureFactory infrastructureFactory) {
+    this(infrastructureFactory, new JVMLauncher(), new ClassPathCopier(CLASSPATH, JAVA_HOME), new ControllerFactory());
   }
 
   /**
    * Start all requested JVMs on the infrastructure
-   * @param infra The infrastructure to use
    * @param roles The JVMs to start. Keys a roles and values are the number
    * of JVMs in that role.
    *
    * @return a {@link RemoteJVMs} object used to access the JVMs through RMI
    */
-  public RemoteJVMs launch(Infrastructure infra,
-                           Map<String, Integer> roles) throws Exception {
+  public RemoteJVMs launch(Map<String, Integer> roles) throws Exception {
+    int numWorkers = roles.values().stream().mapToInt(Integer::intValue).sum();
+
+    Infrastructure infra = infrastructureFactory.create(numWorkers);
 
     Set<Infrastructure.Node> nodes = infra.getNodes();
-    int numWorkers = roles.values().stream().mapToInt(Integer::intValue).sum();
 
     if(nodes.size() < numWorkers) {
       throw new IllegalStateException("Too few nodes for test. Need " + numWorkers + ", have " + nodes.size());
@@ -94,7 +97,11 @@ public class RemoteJVMFactory {
       throw new IllegalStateException("Workers failed to start in 1 minute");
     }
 
-    return new RemoteJVMs(mapping, controller, processesExited);
+    return new RemoteJVMs(infra, mapping, controller, processesExited);
+  }
+
+  public InfrastructureFactory getInfrastructureFactory() {
+    return infrastructureFactory;
   }
 
   private List<JVMMapping> mapRolesToNodes(Map<String, Integer> roles,
@@ -114,5 +121,4 @@ public class RemoteJVMFactory {
     }
     return mapping;
   }
-
 }

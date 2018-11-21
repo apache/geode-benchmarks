@@ -24,12 +24,9 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.attribute.BasicFileAttributes;
-import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -51,7 +48,7 @@ public class TestRunnerIntegrationTest {
   @Before
   public void setup() throws IOException {
     outputDir = temporaryFolder.newFolder();
-    runner = new DefaultTestRunner(new LocalInfrastructureFactory(), new RemoteJVMFactory(),
+    runner = new DefaultTestRunner(new RemoteJVMFactory(new LocalInfrastructureFactory()),
         outputDir);
   }
 
@@ -77,7 +74,7 @@ public class TestRunnerIntegrationTest {
     assertTrue(expectedBenchmarkDir.exists());
 
     //Node directory name is the role + a number
-    File expectedNodeDir = new File(expectedBenchmarkDir, "all0");
+    File expectedNodeDir = new File(expectedBenchmarkDir, "all-0");
     assertTrue(expectedNodeDir.exists());
 
     //We expect the node directory to have benchmark results

@@ -37,6 +37,7 @@ import org.junit.Test;
 import org.mockito.InOrder;
 
 import org.apache.geode.perftest.infrastructure.Infrastructure;
+import org.apache.geode.perftest.infrastructure.InfrastructureFactory;
 import org.apache.geode.perftest.jdk.RMI;
 import org.apache.geode.perftest.jvms.classpath.ClassPathCopier;
 import org.apache.geode.perftest.jvms.rmi.Controller;
@@ -45,11 +46,11 @@ import org.apache.geode.perftest.jvms.rmi.ControllerFactory;
 public class RemoteJVMFactoryTest {
 
   private JVMLauncher jvmLauncher;
-  private RMI rmi;
   private ClassPathCopier classPathCopier;
   private RemoteJVMFactory factory;
   private Controller controller;
   private ControllerFactory controllerFactory;
+  private Infrastructure infra;
 
   @Before
   public void setUp() throws AlreadyBoundException, RemoteException {
@@ -58,13 +59,14 @@ public class RemoteJVMFactoryTest {
     controller = mock(Controller.class);
     controllerFactory = mock(ControllerFactory.class);
     when(controllerFactory.createController(anyInt())).thenReturn(controller);
-    factory = new RemoteJVMFactory(jvmLauncher, rmi, classPathCopier, controllerFactory);
+    infra = mock(Infrastructure.class);
+    InfrastructureFactory infraFactory = nodes -> infra;
+    factory = new RemoteJVMFactory(infraFactory, jvmLauncher, classPathCopier, controllerFactory);
   }
 
   @Test
   public void launchMethodCreatesControllerAndLaunchesNodes() throws Exception {
     Map<String, Integer> roles = Collections.singletonMap("role", 2);
-    Infrastructure infra = mock(Infrastructure.class);
 
     Infrastructure.Node node1 = mock(Infrastructure.Node.class);
     Infrastructure.Node node2 = mock(Infrastructure.Node.class);
@@ -73,7 +75,7 @@ public class RemoteJVMFactoryTest {
 
     when(controller.waitForWorkers(anyInt(), any())).thenReturn(true);
 
-    factory.launch(infra, roles);
+    factory.launch(roles);
 
     InOrder inOrder = inOrder(controller, controllerFactory, jvmLauncher, classPathCopier, infra);
 

@@ -46,16 +46,12 @@ public class TestRunnerJUnitTest {
   @Test
   public void testRunnerRunsBeforeAndAfterTasks() throws Exception {
 
-    InfrastructureFactory infrastructureFactory = mock(InfrastructureFactory.class);
-    Infrastructure infrastructure = mock(Infrastructure.class);
     RemoteJVMFactory remoteJvmFactory = mock(RemoteJVMFactory.class);
 
-    when(infrastructureFactory.create(anyInt())).thenReturn(infrastructure);
-
     RemoteJVMs remoteJVMs = mock(RemoteJVMs.class);
-    when(remoteJvmFactory.launch(eq(infrastructure), any())).thenReturn(remoteJVMs);
+    when(remoteJvmFactory.launch(any())).thenReturn(remoteJVMs);
 
-    TestRunner runner = new DefaultTestRunner(infrastructureFactory, remoteJvmFactory,
+    TestRunner runner = new DefaultTestRunner(remoteJvmFactory,
         folder.newFolder());
 
     Task before = mock(Task.class);

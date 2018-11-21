@@ -17,6 +17,8 @@
 
 package org.apache.geode.perftest.jvms;
 
+import java.io.File;
+import java.io.IOException;
 import java.rmi.NoSuchObjectException;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
@@ -42,10 +44,13 @@ public class RemoteJVMs implements AutoCloseable {
   private final Controller controller;
   private final TestContext context;
   private final CompletableFuture<Void> exited;
+  private final Infrastructure infra;
 
 
-  public RemoteJVMs(List<JVMMapping> mapping, Controller controller,
+  public RemoteJVMs(Infrastructure infra,
+                    List<JVMMapping> mapping, Controller controller,
                     CompletableFuture<Void> exited) {
+    this.infra = infra;
     this.jvmMappings = mapping;
     this.controller = controller;
     this.context = new DefaultTestContext(jvmMappings);
@@ -66,7 +71,8 @@ public class RemoteJVMs implements AutoCloseable {
     futures.forEach(CompletableFuture::join);
   }
 
-  public void close() throws NoSuchObjectException, ExecutionException, InterruptedException {
+  public void close() throws IOException, ExecutionException, InterruptedException {
+    infra.close();
     controller.close();
     exited.get();
   }
@@ -77,5 +83,15 @@ public class RemoteJVMs implements AutoCloseable {
         .map(JVMMapping::getRole)
         .findFirst()
         .orElse("no-role");
+  }
+
+  /**
+   * Copy results to the provided output directory
+   */
+  public void copyResults(File benchmarkOutput) throws IOException {
+    benchmarkOutput.mkdirs();
+    for (JVMMapping jvm : jvmMappings) {
+      infra.copyFromNode(jvm.getNode(), "output", new File(benchmarkOutput, jvm.getRole() + "-" + jvm.getId()));
+    }
   }
 }

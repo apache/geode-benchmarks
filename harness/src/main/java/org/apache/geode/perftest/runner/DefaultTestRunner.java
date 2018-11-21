@@ -44,13 +44,10 @@ public class DefaultTestRunner implements TestRunner {
   private static final Logger logger = LoggerFactory.getLogger(DefaultTestRunner.class);
 
 
-  private final InfrastructureFactory infrastructureFactory;
   private final RemoteJVMFactory remoteJvmFactory;
   private File outputDir;
 
-  public DefaultTestRunner(InfrastructureFactory infrastructureFactory,
-                           RemoteJVMFactory remoteJvmFactory, File outputDir) {
-    this.infrastructureFactory = infrastructureFactory;
+  public DefaultTestRunner(RemoteJVMFactory remoteJvmFactory, File outputDir) {
     this.remoteJvmFactory = remoteJvmFactory;
     this.outputDir = outputDir;
   }
@@ -75,39 +72,25 @@ public class DefaultTestRunner implements TestRunner {
     }
 
 
-    try (Infrastructure infra = infrastructureFactory.create(nodes)){
-      Map<String, Integer> roles = config.getRoles();
+    Map<String, Integer> roles = config.getRoles();
 
-      logger.info("Lauching JVMs...");
-      //launch JVMs in parallel, hook them up
-      try (RemoteJVMs remoteJVMs = remoteJvmFactory.launch(infra, roles)) {
+    logger.info("Lauching JVMs...");
+    //launch JVMs in parallel, hook them up
+    try (RemoteJVMs remoteJVMs = remoteJvmFactory.launch(roles)) {
 
-        logger.info("Starting before tasks...");
-        runTasks(config.getBefore(), remoteJVMs);
+      logger.info("Starting before tasks...");
+      runTasks(config.getBefore(), remoteJVMs);
 
-        logger.info("Starting workload tasks...");
-        runTasks(config.getWorkload(), remoteJVMs);
+      logger.info("Starting workload tasks...");
+      runTasks(config.getWorkload(), remoteJVMs);
 
-        logger.info("Starting after tasks...");
-        runTasks(config.getAfter(), remoteJVMs);
+      logger.info("Starting after tasks...");
+      runTasks(config.getAfter(), remoteJVMs);
 
-        logger.info("Copying results...");
+      logger.info("Copying results...");
+      remoteJVMs.copyResults(benchmarkOutput);
 
-        int nodeId = 0;
-
-
-        benchmarkOutput.mkdirs();
-
-        for (Infrastructure.Node node : infra.getNodes()) {
-          String role = remoteJVMs.getRole(node);
-          infra.copyFromNode(node, "output", new File(benchmarkOutput, role + nodeId++));
-        }
-      }
     }
-  }
-
-  public InfrastructureFactory getInfrastructureFactory() {
-    return infrastructureFactory;
   }
 
   private void runTasks(List<TestConfig.TestStep> steps,
@@ -115,5 +98,9 @@ public class DefaultTestRunner implements TestRunner {
     steps.forEach(testStep -> {
       remoteJVMs.execute(testStep.getTask(), testStep.getRoles());
     });
+  }
+
+  public RemoteJVMFactory getRemoteJvmFactory() {
+    return remoteJvmFactory;
   }
 }

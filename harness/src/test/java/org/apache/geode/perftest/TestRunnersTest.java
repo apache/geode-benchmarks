@@ -17,18 +17,12 @@
 
 package org.apache.geode.perftest;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.util.Arrays;
 
-import jdk.nashorn.internal.objects.NativeDebug;
-import org.junit.Rule;
 import org.junit.Test;
 
-import org.apache.geode.perftest.infrastructure.InfrastructureFactory;
-import org.apache.geode.perftest.infrastructure.local.LocalInfrastructure;
-import org.apache.geode.perftest.infrastructure.local.LocalInfrastructureFactory;
-import org.apache.geode.perftest.infrastructure.ssh.SshInfrastructure;
 import org.apache.geode.perftest.infrastructure.ssh.SshInfrastructureFactory;
 import org.apache.geode.perftest.runner.DefaultTestRunner;
 
@@ -39,7 +33,7 @@ public class TestRunnersTest {
     DefaultTestRunner runner = (DefaultTestRunner) TestRunners.defaultRunner("localhost,localhost");
 
     SshInfrastructureFactory infrastructureFactory =
-        (SshInfrastructureFactory) runner.getInfrastructureFactory();
+        (SshInfrastructureFactory) runner.getRemoteJvmFactory().getInfrastructureFactory();
 
     assertEquals(Arrays.asList("localhost", "localhost") , infrastructureFactory.getHosts());
   }

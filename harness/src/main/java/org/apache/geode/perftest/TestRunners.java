@@ -41,7 +41,7 @@ public class TestRunners {
 
 
   public static TestRunner defaultRunner(String username, String ... hosts) {
-    return new DefaultTestRunner(new SshInfrastructureFactory(username, hosts), new RemoteJVMFactory(),
+    return new DefaultTestRunner(new RemoteJVMFactory(new SshInfrastructureFactory(username, hosts)),
         new File("output"));
   }
   /**
@@ -70,8 +70,7 @@ public class TestRunners {
    * @param outputDir
    */
   public static TestRunner minimalRunner(final File outputDir) {
-    return new DefaultTestRunner(new LocalInfrastructureFactory(), new RemoteJVMFactory(),
-        outputDir) {
+    return new DefaultTestRunner(new RemoteJVMFactory(new LocalInfrastructureFactory()), outputDir) {
       @Override
       public void runTest(TestConfig config) throws Exception {
         config.warmupSeconds(0);
