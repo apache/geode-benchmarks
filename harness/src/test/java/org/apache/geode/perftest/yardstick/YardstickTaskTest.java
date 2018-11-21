@@ -44,7 +44,8 @@ public class YardstickTaskTest {
     WorkloadConfig workloadConfig = new WorkloadConfig();
     workloadConfig.threads(1);
     Task task = new YardstickTask(benchmark, workloadConfig);
-    File outputDir = folder.newFolder();
+//    File outputDir = folder.newFolder();
+    File outputDir = new File("output");
     TestContext context = new DefaultTestContext(null, outputDir);
     task.run(context);
 
