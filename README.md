@@ -14,10 +14,8 @@ To run all benchmarks, run the benchmark task and pass in a list of hosts.
 
 For example:
 ```
-./gradlew benchmark -Phosts=localhost,localhost,localhost
+./gradlew benchmark -Phosts=localhost,localhost,localhost -PoutputDir=/tmp/results
 ```
-
-Performance results will be written to geode-benchmarks/output
 
 ## Project structure
 

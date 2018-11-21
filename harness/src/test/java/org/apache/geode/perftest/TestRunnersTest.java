@@ -30,7 +30,7 @@ public class TestRunnersTest {
 
   @Test
   public void defaultRunnerShouldParseHosts() {
-    DefaultTestRunner runner = (DefaultTestRunner) TestRunners.defaultRunner("localhost,localhost");
+    DefaultTestRunner runner = (DefaultTestRunner) TestRunners.defaultRunner("localhost,localhost", null);
 
     SshInfrastructureFactory infrastructureFactory =
         (SshInfrastructureFactory) runner.getRemoteJvmFactory().getInfrastructureFactory();
@@ -40,6 +40,6 @@ public class TestRunnersTest {
   
   @Test(expected = IllegalStateException.class)
   public void defaultRunnerShouldFailWithNoHosts() {
-    TestRunners.defaultRunner(null);
+    TestRunners.defaultRunner(null, null);
   }
 }

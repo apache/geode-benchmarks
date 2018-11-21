@@ -38,11 +38,12 @@ import org.apache.geode.perftest.runner.DefaultTestRunner;
 public class TestRunners {
 
   public static final String TEST_HOSTS = "TEST_HOSTS";
+  public static final String OUTPUT_DIR = "OUTPUT_DIR";
 
 
-  public static TestRunner defaultRunner(String username, String ... hosts) {
+  public static TestRunner defaultRunner(String username, File outputDir, String ... hosts) {
     return new DefaultTestRunner(new RemoteJVMFactory(new SshInfrastructureFactory(username, hosts)),
-        new File("output"));
+        outputDir);
   }
   /**
    * The default runner, which gets a list of hosts to run on from the
@@ -51,17 +52,18 @@ public class TestRunners {
    */
   public static TestRunner defaultRunner() {
     String testHosts = System.getProperty(TEST_HOSTS);
+    String outputDir = System.getProperty(OUTPUT_DIR, "output");
 
-    return defaultRunner(testHosts);
+    return defaultRunner(testHosts, new File(outputDir));
   }
 
-  static TestRunner defaultRunner(String testHosts) {
+  static TestRunner defaultRunner(String testHosts, File outputDir) {
     if(testHosts == null) {
       throw new IllegalStateException("You must set the TEST_HOSTS system property to a comma separated list of hosts to run the benchmarks on.");
     }
 
     String userName = System.getProperty("user.name");
-    return defaultRunner(userName, testHosts.split(",\\s*"));
+    return defaultRunner(userName, outputDir, testHosts.split(",\\s*"));
   }
 
   /**

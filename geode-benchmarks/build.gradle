@@ -43,7 +43,10 @@ task benchmark(type: Test) {
         exceptionFormat = 'full'
     }
 
+    def outputDir = project.hasProperty('outputDir') ? project.findProperty('outputDir') : new File(project.buildDir, "benchmarks").getAbsolutePath();
+
     systemProperty 'TEST_HOSTS', project.findProperty('hosts');
+    systemProperty 'OUTPUT_DIR', outputDir;
 
     doFirst {
         if(!project.hasProperty('hosts')) {

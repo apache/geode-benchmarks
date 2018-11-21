@@ -65,7 +65,7 @@ public class ChildJVM {
       //Clean up the output directory before the test runs
       FileUtils.deleteQuietly(outputDir);
       outputDir.mkdirs();
-      PrintStream out = new PrintStream(new File(outputDir, "ChildJVM-" + id + ".txt"));
+      PrintStream out = new PrintStream(new File(outputDir, "system.log"));
       system.setOut(out);
       system.setErr(out);
 
