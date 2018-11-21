@@ -41,7 +41,6 @@ import org.apache.geode.perftest.infrastructure.InfrastructureFactory;
 import org.apache.geode.perftest.jvms.classpath.ClassPathCopier;
 import org.apache.geode.perftest.jvms.rmi.Controller;
 import org.apache.geode.perftest.jvms.rmi.ControllerFactory;
-import org.apache.geode.perftest.runner.SharedContext;
 
 public class RemoteJVMFactoryTest {
 

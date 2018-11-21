@@ -17,6 +17,7 @@
 
 package org.apache.geode.perftest.runner;
 
+import java.io.File;
 import java.net.InetAddress;
 import java.util.Set;
 
@@ -25,13 +26,20 @@ import org.apache.geode.perftest.TestContext;
 public class DefaultTestContext implements TestContext {
 
   private SharedContext sharedContext;
+  private File outputDir;
 
-  public DefaultTestContext(SharedContext sharedContext) {
+  public DefaultTestContext(SharedContext sharedContext, File outputDir) {
     this.sharedContext = sharedContext;
+    this.outputDir = outputDir;
   }
 
   @Override
   public Set<InetAddress> getHostsForRole(String role) {
     return sharedContext.getHostsForRole(role);
+  }
+
+  @Override
+  public File getOutputDir() {
+    return outputDir;
   }
 }

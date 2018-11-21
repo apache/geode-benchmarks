@@ -17,6 +17,10 @@
 
 package org.apache.geode.perftest.jvms.rmi;
 
+import static org.apache.geode.perftest.jvms.RemoteJVMFactory.OUTPUT_DIR;
+import static org.apache.geode.perftest.jvms.RemoteJVMFactory.RMI_HOST;
+import static org.apache.geode.perftest.jvms.RemoteJVMFactory.RMI_PORT_PROPERTY;
+import static org.junit.Assert.assertFalse;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
@@ -47,12 +51,17 @@ public class ChildJVMTest {
   private ChildJVM jvm;
   private SystemInterface system;
   private Controller controller;
+  private File folder;
 
   @Before
   public void setUp() throws IOException, NotBoundException {
     system = mock(SystemInterface.class);
+    when(system.getProperty(RMI_HOST)).thenReturn("something");
+    when(system.getProperty(RMI_PORT_PROPERTY)).thenReturn("0");
+    folder = temporaryFolder.newFolder();
+    when(system.getProperty(OUTPUT_DIR)).thenReturn(folder.getAbsolutePath());
     rmi = mock(RMI.class);
-    jvm = new ChildJVM(rmi, system, 1, temporaryFolder.newFolder());
+    jvm = new ChildJVM(rmi, system, 1);
 
     controller = mock(Controller.class);
     when(rmi.lookup(any())).thenReturn(controller);
@@ -73,6 +82,16 @@ public class ChildJVMTest {
     jvm.run();
 
     verify(controller, times(3)).ping();
+  }
+
+  @Test
+  public void childCleansOutputDir() throws IOException {
+    File expectedFile = new File(folder, "somefile.txt");
+    expectedFile.createNewFile();
+
+    jvm.run();
+
+    assertFalse(expectedFile.exists());
   }
 
 }

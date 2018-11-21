@@ -42,13 +42,11 @@ import org.apache.geode.perftest.WorkloadConfig;
  */
 public class YardstickTask implements Task {
   private final BenchmarkDriver benchmark;
-  private final String outputDir;
   private WorkloadConfig workloadConfig;
 
-  public YardstickTask(BenchmarkDriver benchmark, WorkloadConfig workloadConfig, String outputDir) {
+  public YardstickTask(BenchmarkDriver benchmark, WorkloadConfig workloadConfig) {
     this.benchmark = benchmark;
     this.workloadConfig = workloadConfig;
-    this.outputDir = outputDir;
   }
 
   @Override
@@ -77,7 +75,7 @@ public class YardstickTask implements Task {
 
       @Override
       public String outputFolder() {
-        return outputDir;
+        return context.getOutputDir().getAbsolutePath();
       }
     };
     cfg.output(System.out);

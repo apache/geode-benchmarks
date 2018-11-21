@@ -17,6 +17,7 @@
 
 package org.apache.geode.benchmark.tasks;
 
+import java.io.File;
 import java.net.InetAddress;
 
 import org.apache.geode.cache.client.ClientCache;
@@ -38,10 +39,12 @@ public class StartClient implements Task {
 
     InetAddress locator = context.getHostsForRole("locator").iterator().next();
 
+    String statsFile = new File(context.getOutputDir(), "stats.gfs").getAbsolutePath();
+
     ClientCache clientCache = new ClientCacheFactory()
         .addPoolLocator(locator.getHostAddress(), locatorPort)
         .set(ConfigurationProperties.STATISTIC_SAMPLING_ENABLED,"true")
-        .set(ConfigurationProperties.STATISTIC_ARCHIVE_FILE,"output/stats.gfs")
+        .set(ConfigurationProperties.STATISTIC_ARCHIVE_FILE, statsFile)
         .create();
 
     clientCache.createClientRegionFactory(ClientRegionShortcut.PROXY)

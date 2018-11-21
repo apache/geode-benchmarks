@@ -20,6 +20,7 @@ package org.apache.geode.perftest.jvms.rmi;
 import java.io.File;
 import java.io.PrintStream;
 
+import org.apache.commons.io.FileUtils;
 import org.bouncycastle.jcajce.provider.drbg.DRBG;
 
 import org.apache.geode.perftest.jdk.RMI;
@@ -37,24 +38,32 @@ public class ChildJVM {
   private final RMI rmi;
   private final SystemInterface system;
   private final int pingTime;
-  private final File outputDir;
 
-  public ChildJVM(RMI rmi, SystemInterface system, int pingTime, File outputDir) {
+  public ChildJVM(RMI rmi, SystemInterface system, int pingTime) {
     this.rmi = rmi;
     this.system = system;
     this.pingTime = pingTime;
-    this.outputDir = outputDir;
   }
 
   public static void main(String[] args) {
-    new ChildJVM(new RMI(), new SystemInterface(), 1000, new File("output")).run();
+    new ChildJVM(new RMI(), new SystemInterface(), 1000).run();
   }
 
   void run() {
     try {
       String RMI_HOST = system.getProperty(RemoteJVMFactory.RMI_HOST);
       String RMI_PORT = system.getProperty(RemoteJVMFactory.RMI_PORT_PROPERTY);
+      String OUTPUT_DIR = system.getProperty(RemoteJVMFactory.OUTPUT_DIR);
       int id = system.getInteger(RemoteJVMFactory.JVM_ID);
+
+
+      if(RMI_HOST == null || RMI_PORT == null || OUTPUT_DIR == null) {
+        throw new IllegalStateException("ChildJVM must be launched with all required system properties set.");
+      }
+
+      File outputDir = new File(OUTPUT_DIR);
+      //Clean up the output directory before the test runs
+      FileUtils.deleteQuietly(outputDir);
       outputDir.mkdirs();
       PrintStream out = new PrintStream(new File(outputDir, "ChildJVM-" + id + ".txt"));
       system.setOut(out);
@@ -64,7 +73,7 @@ public class ChildJVM {
           .lookup("//" + RMI_HOST + ":" + RMI_PORT + "/" + RemoteJVMFactory.CONTROLLER);
 
       SharedContext sharedContext = controller.getsharedContext();
-      DefaultTestContext context = new DefaultTestContext(sharedContext);
+      DefaultTestContext context = new DefaultTestContext(sharedContext, outputDir);
 
       Worker worker = new Worker(context);
 

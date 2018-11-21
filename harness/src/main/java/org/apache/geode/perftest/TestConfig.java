@@ -78,7 +78,7 @@ public class TestConfig implements Serializable {
    * @param roles The roles to run the workload on
    */
   public void workload(BenchmarkDriver benchmark, String ... roles) {
-    workload.add(new TestStep(new YardstickTask(benchmark, workloadConfig, "output"), roles));
+    workload.add(new TestStep(new YardstickTask(benchmark, workloadConfig), roles));
   }
 
 

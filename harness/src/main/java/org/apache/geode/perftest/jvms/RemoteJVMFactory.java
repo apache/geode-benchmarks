@@ -45,6 +45,7 @@ public class RemoteJVMFactory {
   public static final String RMI_HOST = "RMI_HOST";
   public static final String RMI_PORT_PROPERTY = "RMI_PORT";
   public static final String CONTROLLER = "CONTROLLER";
+  public static final String OUTPUT_DIR = "OUTPUT_DIR";
   public static final String JVM_ID = "JVM_ID";
   public static final int RMI_PORT = 33333;
   public static final String CLASSPATH = System.getProperty("java.class.path");

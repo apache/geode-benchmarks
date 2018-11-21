@@ -17,14 +17,21 @@
 
 package org.apache.geode.perftest.yardstick;
 
+import static org.junit.Assert.assertTrue;
+
+import java.io.File;
+import java.nio.file.Files;
+
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import org.apache.geode.perftest.Task;
+import org.apache.geode.perftest.TestContext;
 import org.apache.geode.perftest.WorkloadConfig;
 import org.apache.geode.perftest.benchmarks.EmptyBenchmark;
+import org.apache.geode.perftest.runner.DefaultTestContext;
 
 public class YardstickTaskTest {
 
@@ -36,15 +43,17 @@ public class YardstickTaskTest {
     EmptyBenchmark benchmark = new EmptyBenchmark();
     WorkloadConfig workloadConfig = new WorkloadConfig();
     workloadConfig.threads(1);
-    Task task = new YardstickTask(benchmark, workloadConfig, folder.newFolder().getAbsolutePath());
-    task.run(null);
+    Task task = new YardstickTask(benchmark, workloadConfig);
+    File outputDir = folder.newFolder();
+    TestContext context = new DefaultTestContext(null, outputDir);
+    task.run(context);
 
-    Assert.assertTrue(1 <= benchmark.getInvocations());
+    assertTrue(1 <= benchmark.getInvocations());
+
+    assertTrue(Files.walk(outputDir.toPath()).findFirst().isPresent());
 
     //TODO -verify probes are shutdown
     //TODO -verify benchmark is shutdown
-    //TODO - pass in probes to yardstick util, turn it into a real class
-
   }
 
 }

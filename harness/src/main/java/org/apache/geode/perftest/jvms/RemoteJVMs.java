@@ -72,21 +72,13 @@ public class RemoteJVMs implements AutoCloseable {
     exited.get();
   }
 
-  public String getRole(Infrastructure.Node node) {
-    return jvmMappings.stream()
-        .filter(mapping -> mapping.getNode().equals(node))
-        .map(JVMMapping::getRole)
-        .findFirst()
-        .orElse("no-role");
-  }
-
   /**
    * Copy results to the provided output directory
    */
   public void copyResults(File benchmarkOutput) throws IOException {
     benchmarkOutput.mkdirs();
     for (JVMMapping jvm : jvmMappings) {
-      infra.copyFromNode(jvm.getNode(), "output", new File(benchmarkOutput, jvm.getRole() + "-" + jvm.getId()));
+      infra.copyFromNode(jvm.getNode(), jvm.getOutputDir(), new File(benchmarkOutput, jvm.getRole() + "-" + jvm.getId()));
     }
   }
 }

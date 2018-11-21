@@ -17,6 +17,7 @@
 
 package org.apache.geode.benchmark.tasks;
 
+import java.io.File;
 import java.net.InetAddress;
 import java.util.Properties;
 
@@ -35,9 +36,12 @@ public class StartLocator implements Task {
   @Override
   public void run(TestContext context) throws Exception {
     Properties properties = new Properties();
-    properties.setProperty(ConfigurationProperties.NAME,"locator-"+ InetAddress.getLocalHost());
+
+    String statsFile = new File(context.getOutputDir(), "stats.gfs").getAbsolutePath();
     properties.setProperty(ConfigurationProperties.STATISTIC_SAMPLING_ENABLED,"true");
-    properties.setProperty(ConfigurationProperties.STATISTIC_ARCHIVE_FILE,"output/stats.gfs");
+    properties.setProperty(ConfigurationProperties.STATISTIC_ARCHIVE_FILE, statsFile);
+
+    properties.setProperty(ConfigurationProperties.NAME,"locator-"+ InetAddress.getLocalHost());
     Locator.startLocatorAndDS(locatorPort, null, properties);
   }
 }

@@ -44,4 +44,7 @@ public class JVMMapping implements Serializable {
     return id;
   }
 
+  public String getOutputDir() {
+    return "output/" + role + "-" + id;
+  }
 }
