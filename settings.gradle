@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-rootProject.name = 'play-perf-framework'
+rootProject.name = 'geode-benchmarks'
 
 include 'harness'
 include 'geode-benchmarks'
