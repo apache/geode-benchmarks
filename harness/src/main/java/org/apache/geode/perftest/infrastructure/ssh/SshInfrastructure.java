@@ -67,7 +67,6 @@ public class SshInfrastructure implements Infrastructure {
   SSHClient getSSHClient(InetAddress address) throws IOException {
     SSHClient client = new SSHClient(CONFIG);
     client.addHostKeyVerifier(new PromiscuousVerifier());
-    client.loadKnownHosts();
     client.connect(address, port);
     client.authPublickey(user);
     return client;
