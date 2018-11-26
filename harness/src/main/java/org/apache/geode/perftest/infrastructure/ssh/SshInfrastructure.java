@@ -49,20 +49,25 @@ public class SshInfrastructure implements Infrastructure {
 
   private final Set<SshNode> hosts;
   private final String user;
+  private final int port;
   public static final Config CONFIG = new DefaultConfig();
   
   public SshInfrastructure(Collection<String> hosts, String user) {
+    this(hosts, user, 22);
+  }
+
+  public SshInfrastructure(Collection<String> hosts, String user, int port) {
     this.hosts = hosts.stream()
         .map(SshNode::new)
         .collect(Collectors.toCollection(LinkedHashSet::new));
     this.user = user;
+    this.port = port;
   }
 
   SSHClient getSSHClient(InetAddress address) throws IOException {
     SSHClient client = new SSHClient(CONFIG);
     client.addHostKeyVerifier(new PromiscuousVerifier());
-    client.loadKnownHosts();
-    client.connect(address);
+    client.connect(address, port);
     client.authPublickey(user);
     return client;
   }
@@ -109,19 +114,22 @@ public class SshInfrastructure implements Infrastructure {
     for(InetAddress address: uniqueNodes) {
       futures.add(CompletableFuture.runAsync(() -> {
         try (SSHClient client = getSSHClient(address)) {
-          try (Session session = client.startSession()) {
             client.useCompression();
 
             if(removeExisting) {
-              session.exec(String.format("/bin/sh -c \"rm -rf '%s'; mkdir -p '%s'\"", destDir, destDir)).join();
-            }else {
+              try (Session session = client.startSession()) {
+                session.exec(String.format("rm -rf '%s'", destDir)).join();
+              }
+            }
+
+            try (Session session = client.startSession()) {
               session.exec(String.format("mkdir -p '%s'", destDir)).join();
             }
+
             for (File file : files) {
               logger.info("Copying " + file + " to " + address);
               client.newSCPFileTransfer().upload(new FileSystemFile(file), destDir);
             }
-          }
         } catch(IOException e) {
           throw new UncheckedIOException(e);
         }
@@ -133,14 +141,11 @@ public class SshInfrastructure implements Infrastructure {
   @Override
   public void copyFromNode(Node node, String directory, File destDir) throws IOException {
     try (SSHClient client = getSSHClient(node.getAddress())) {
-
-      try (Session session = client.startSession()) {
         client.useCompression();
 
         destDir.mkdirs();
         client.newSCPFileTransfer().download(directory, destDir.getPath());
         return;
-      }
     }
 
   }
