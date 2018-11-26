@@ -114,19 +114,22 @@ public class SshInfrastructure implements Infrastructure {
     for(InetAddress address: uniqueNodes) {
       futures.add(CompletableFuture.runAsync(() -> {
         try (SSHClient client = getSSHClient(address)) {
-          try (Session session = client.startSession()) {
             client.useCompression();
 
             if(removeExisting) {
-              session.exec(String.format("/bin/sh -c \"rm -rf '%s'; mkdir -p '%s'\"", destDir, destDir)).join();
-            }else {
+              try (Session session = client.startSession()) {
+                session.exec(String.format("rm -rf '%s'", destDir)).join();
+              }
+            }
+
+            try (Session session = client.startSession()) {
               session.exec(String.format("mkdir -p '%s'", destDir)).join();
             }
+
             for (File file : files) {
               logger.info("Copying " + file + " to " + address);
               client.newSCPFileTransfer().upload(new FileSystemFile(file), destDir);
             }
-          }
         } catch(IOException e) {
           throw new UncheckedIOException(e);
         }
@@ -138,14 +141,11 @@ public class SshInfrastructure implements Infrastructure {
   @Override
   public void copyFromNode(Node node, String directory, File destDir) throws IOException {
     try (SSHClient client = getSSHClient(node.getAddress())) {
-
-      try (Session session = client.startSession()) {
         client.useCompression();
 
         destDir.mkdirs();
         client.newSCPFileTransfer().download(directory, destDir.getPath());
         return;
-      }
     }
 
   }
