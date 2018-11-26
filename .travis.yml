@@ -13,5 +13,5 @@ cache:
     - $HOME/.gradle/wrapper/
 
 script:
- - ssh-keygen -N "" -f ./id_rsa
+ - ssh-keygen -N "" -f ~/.ssh/id_rsa
  - ./gradlew check

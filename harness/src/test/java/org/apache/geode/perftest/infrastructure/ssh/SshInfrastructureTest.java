@@ -84,7 +84,7 @@ public class SshInfrastructureTest {
 
   @Test
   public void copyToNodesCleansDirectory() throws IOException, InterruptedException {
-    SshInfrastructure infra = new SshInfrastructure(HOSTS, USER);
+    SshInfrastructure infra = new SshInfrastructure(HOSTS, USER, server.getPort());
 
     File someFile = temporaryFolder.newFile();
     File targetFolder = new File(temporaryFolder.newFolder(), "dest");
