@@ -41,6 +41,7 @@ import org.apache.geode.perftest.WorkloadConfig;
  * is executed, it will use yardstick to run an measure the driver.
  */
 public class YardstickTask implements Task {
+  public static final String YARDSTICK_OUTPUT = "-yardstick-output";
   private final BenchmarkDriver benchmark;
   private WorkloadConfig workloadConfig;
 
@@ -76,6 +77,11 @@ public class YardstickTask implements Task {
       @Override
       public String outputFolder() {
         return context.getOutputDir().getAbsolutePath();
+      }
+
+      @Override
+      public String defaultDescription() {
+        return YARDSTICK_OUTPUT;
       }
     };
     cfg.output(System.out);

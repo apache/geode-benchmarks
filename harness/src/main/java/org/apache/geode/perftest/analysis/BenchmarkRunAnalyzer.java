@@ -15,11 +15,15 @@
 package org.apache.geode.perftest.analysis;
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Writer;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.apache.geode.perftest.yardstick.YardstickTask;
 
 /**
  * Analyzer that takes in benchmarks, probes, and result directories and produces
@@ -30,9 +34,11 @@ import java.util.List;
  *   Result1
  *     /BenchmarkA
  *       /client1
- *         /Probe1.csv
+ *         /20181121-111354-yardstick-output
+ *           /Probe1.csv
  *       /client2
- *         /Probe2.csv
+ *         /20181121-111354-yardstick-output
+ *           /Probe1.csv
  *     /BenchmarkB
  *         ...
  * </pre>
@@ -65,13 +71,13 @@ public class BenchmarkRunAnalyzer {
       for (ProbeResultParser probe : probes) {
         stream.println(probe.getResultDescription());
         for (String node : benchmark.nodesToParse) {
-          probe.parseResults(new File(new File(testResultDir, benchmark.benchmarkSubdirectory), node));
+          probe.parseResults(getBenchmarkOutputDir(testResultDir, benchmark, node));
         }
         double testResult = probe.getProbeResult();
         stream.println("Result: " + String.valueOf(testResult));
         probe.reset();
         for (String node : benchmark.nodesToParse) {
-          probe.parseResults(new File(new File(baselineResultDir, benchmark.benchmarkSubdirectory), node));
+          probe.parseResults(getBenchmarkOutputDir(baselineResultDir, benchmark, node));
         }
         double baselineResult = probe.getProbeResult();
         stream.println("Baseline: " + String.valueOf(baselineResult));
@@ -81,6 +87,21 @@ public class BenchmarkRunAnalyzer {
     }
 
     stream.flush();
+  }
+
+  private File getBenchmarkOutputDir(File testResultDir, SensorData benchmark,
+                                     String node) {
+    File benchmarkDir = new File(testResultDir, benchmark.benchmarkSubdirectory);
+    File nodeDir = new File(benchmarkDir, node);
+
+    File[] files = nodeDir.listFiles((dir, name) -> name.contains(YardstickTask.YARDSTICK_OUTPUT));
+
+    if(files == null || files.length != 1) {
+      throw new IllegalStateException("Expected at least one subdirectory in " + nodeDir
+          + " with the name *"  +YardstickTask.YARDSTICK_OUTPUT);
+    }
+
+    return files[0];
   }
 
   // TODO: depending on how run output is stored, this data may be excessive or insufficient

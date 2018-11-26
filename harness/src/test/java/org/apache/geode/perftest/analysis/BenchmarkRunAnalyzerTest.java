@@ -43,15 +43,15 @@ public class BenchmarkRunAnalyzerTest {
   @Test
   public void verifyResultHarvester() throws IOException {
     final File testFolder = temporaryFolder.newFolder("testFolder");
-    final File testBenchmarkA1 = temporaryFolder.newFolder("testFolder","BenchmarkA","client1");
-    final File testBenchmarkA2 = temporaryFolder.newFolder("testFolder","BenchmarkA","client2");
-    final File testBenchmarkB1 = temporaryFolder.newFolder("testFolder","BenchmarkB","client1");
-    final File testBenchmarkB2 = temporaryFolder.newFolder("testFolder","BenchmarkB","client2");
+    final File testBenchmarkA1 = temporaryFolder.newFolder("testFolder","BenchmarkA","client1", "20181121-111516-yardstick-output");
+    final File testBenchmarkA2 = temporaryFolder.newFolder("testFolder","BenchmarkA","client2", "20181121-111516-yardstick-output");
+    final File testBenchmarkB1 = temporaryFolder.newFolder("testFolder","BenchmarkB","client1", "20181121-111516-yardstick-output");
+    final File testBenchmarkB2 = temporaryFolder.newFolder("testFolder","BenchmarkB","client2", "20181121-111516-yardstick-output");
     final File baseFolder = temporaryFolder.newFolder("baseFolder");
-    final File baseBenchmarkA1 = temporaryFolder.newFolder("baseFolder","BenchmarkA","client1");
-    final File baseBenchmarkA2 = temporaryFolder.newFolder("baseFolder","BenchmarkA","client2");
-    final File baseBenchmarkB1 = temporaryFolder.newFolder("baseFolder","BenchmarkB","client1");
-    final File baseBenchmarkB2 = temporaryFolder.newFolder("baseFolder","BenchmarkB","client2");
+    final File baseBenchmarkA1 = temporaryFolder.newFolder("baseFolder","BenchmarkA","client1", "20181121-111516-yardstick-output");
+    final File baseBenchmarkA2 = temporaryFolder.newFolder("baseFolder","BenchmarkA","client2", "20181121-111516-yardstick-output");
+    final File baseBenchmarkB1 = temporaryFolder.newFolder("baseFolder","BenchmarkB","client1", "20181121-111516-yardstick-output");
+    final File baseBenchmarkB2 = temporaryFolder.newFolder("baseFolder","BenchmarkB","client2", "20181121-111516-yardstick-output");
 
     populateThroughputCSV(testBenchmarkA1, new double[] {10, 15, 20, 25, 30});  // Avg 20
     populatePercentileCSV(testBenchmarkA1, new double[] {0, 0, 99, 1});         // 200
