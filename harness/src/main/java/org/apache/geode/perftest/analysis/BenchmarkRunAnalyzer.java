@@ -34,10 +34,10 @@ import org.apache.geode.perftest.yardstick.YardstickTask;
  *   Result1
  *     /BenchmarkA
  *       /client1
- *         /20181121-111354-PutTask-t=16-d=40-w=20
+ *         /20181121-111354-yardstick-output
  *           /Probe1.csv
  *       /client2
- *         /20181121-111354-PutTask-t=16-d=40-w=20
+ *         /20181121-111354-yardstick-output
  *           /Probe1.csv
  *     /BenchmarkB
  *         ...
