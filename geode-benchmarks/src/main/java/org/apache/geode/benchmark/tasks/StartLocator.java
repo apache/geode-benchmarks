@@ -40,6 +40,8 @@ public class StartLocator implements Task {
     String statsFile = new File(context.getOutputDir(), "stats.gfs").getAbsolutePath();
     properties.setProperty(ConfigurationProperties.STATISTIC_SAMPLING_ENABLED,"true");
     properties.setProperty(ConfigurationProperties.STATISTIC_ARCHIVE_FILE, statsFile);
+    properties.setProperty(ConfigurationProperties.ENABLE_CLUSTER_CONFIGURATION, "false");
+    properties.setProperty(ConfigurationProperties.USE_CLUSTER_CONFIGURATION, "false");
 
     properties.setProperty(ConfigurationProperties.NAME,"locator-"+ InetAddress.getLocalHost());
     Locator.startLocatorAndDS(locatorPort, null, properties);

@@ -47,6 +47,7 @@ public class StartServer implements Task {
         .set(ConfigurationProperties.NAME,"server-"+ InetAddress.getLocalHost())
         .set(ConfigurationProperties.STATISTIC_SAMPLING_ENABLED,"true")
         .set(ConfigurationProperties.STATISTIC_ARCHIVE_FILE, statsFile)
+        .set(ConfigurationProperties.USE_CLUSTER_CONFIGURATION, "false")
         .create();
 
     CacheServer cacheServer = ((Cache) cache).addCacheServer();
