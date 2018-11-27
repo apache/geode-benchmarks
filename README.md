@@ -17,6 +17,11 @@ For example:
 ./gradlew benchmark -Phosts=localhost,localhost,localhost -PoutputDir=/tmp/results
 ```
 
+### Running in google cloud
+
+This project includes some scripts to automate running benchmarks in google cloud. See the 
+[README.md](infrastructure/google_cloud/README.md) in the infrastructure/google_cloud directory.
+
 ## Project structure
 
 The project is divided into two modules
