@@ -24,6 +24,7 @@ import static org.mockito.Mockito.when;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -42,10 +43,10 @@ public class SharedContextTest {
     InetAddress host2 = InetAddress.getByName("127.0.0.2");
     Infrastructure.Node node1 = mock(Infrastructure.Node.class);
     when(node1.getAddress()).thenReturn(host1);
-    JVMMapping mapping1 = new JVMMapping(node1, "role", 1);
+    JVMMapping mapping1 = new JVMMapping(node1, "role", 1, Collections.emptyList());
     Infrastructure.Node node2 = mock(Infrastructure.Node.class);
     when(node2.getAddress()).thenReturn(host2);
-    JVMMapping mapping2 = new JVMMapping(node2, "role", 2);
+    JVMMapping mapping2 = new JVMMapping(node2, "role", 2, Collections.emptyList());
 
     SharedContext context = new SharedContext(Arrays.asList(mapping1, mapping2));
 

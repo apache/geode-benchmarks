@@ -27,7 +27,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import org.apache.geode.perftest.infrastructure.local.LocalInfrastructure;
 import org.apache.geode.perftest.infrastructure.local.LocalInfrastructureFactory;
 
 public class RemoteJVMFactoryIntegrationTest {
@@ -38,7 +37,7 @@ public class RemoteJVMFactoryIntegrationTest {
   public void canExecuteCodeOnWorker() throws Exception {
     RemoteJVMFactory remoteJvmFactory = new RemoteJVMFactory(new LocalInfrastructureFactory());
     Map<String, Integer> roles = Collections.singletonMap("worker", 1);
-    try (RemoteJVMs jvms = remoteJvmFactory.launch(roles)) {
+    try (RemoteJVMs jvms = remoteJvmFactory.launch(roles, Collections.emptyMap())) {
       File tempFile = new File(temporaryFolder.newFolder(), "tmpfile").getAbsoluteFile();
       jvms.execute(context -> {
         tempFile.createNewFile();

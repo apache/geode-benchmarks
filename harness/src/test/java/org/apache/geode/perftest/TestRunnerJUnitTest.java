@@ -18,22 +18,20 @@
 package org.apache.geode.perftest;
 
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.io.File;
+import java.util.Collections;
 
+import org.assertj.core.api.Assertions;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.mockito.InOrder;
 
-import org.apache.geode.perftest.infrastructure.InfrastructureFactory;
-import org.apache.geode.perftest.infrastructure.Infrastructure;
 import org.apache.geode.perftest.jvms.RemoteJVMFactory;
 import org.apache.geode.perftest.jvms.RemoteJVMs;
 import org.apache.geode.perftest.runner.DefaultTestRunner;
@@ -49,7 +47,7 @@ public class TestRunnerJUnitTest {
     RemoteJVMFactory remoteJvmFactory = mock(RemoteJVMFactory.class);
 
     RemoteJVMs remoteJVMs = mock(RemoteJVMs.class);
-    when(remoteJvmFactory.launch(any())).thenReturn(remoteJVMs);
+    when(remoteJvmFactory.launch(any(), any())).thenReturn(remoteJVMs);
 
     TestRunner runner = new DefaultTestRunner(remoteJvmFactory,
         folder.newFolder());
@@ -73,4 +71,25 @@ public class TestRunnerJUnitTest {
     inOrder.verify(remoteJVMs).execute(eq(after), any());
   }
 
+  @Test
+  public void requiresAtLeastOneRole() throws Exception {
+
+    RemoteJVMFactory remoteJvmFactory = mock(RemoteJVMFactory.class);
+
+    RemoteJVMs remoteJVMs = mock(RemoteJVMs.class);
+    when(remoteJvmFactory.launch(any(), any())).thenReturn(remoteJVMs);
+
+    TestRunner runner = new DefaultTestRunner(remoteJvmFactory,
+        folder.newFolder());
+
+    Task before = mock(Task.class);
+
+    PerformanceTest test = config -> {
+      config.name("SampleBenchmark");
+      config.role("before", 1);
+
+      config.before(before);
+    };
+    Assertions.assertThatThrownBy(() -> runner.runTest(test)).isInstanceOf(IllegalStateException.class);
+  }
 }

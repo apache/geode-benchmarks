@@ -18,6 +18,7 @@
 package org.apache.geode.perftest.jvms;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -74,9 +75,11 @@ public class RemoteJVMFactory {
    * @param roles The JVMs to start. Keys a roles and values are the number
    * of JVMs in that role.
    *
+   * @param jvmArgs
    * @return a {@link RemoteJVMs} object used to access the JVMs through RMI
    */
-  public RemoteJVMs launch(Map<String, Integer> roles) throws Exception {
+  public RemoteJVMs launch(Map<String, Integer> roles,
+                           Map<String, List<String>> jvmArgs) throws Exception {
     int numWorkers = roles.values().stream().mapToInt(Integer::intValue).sum();
 
     Infrastructure infra = infrastructureFactory.create(numWorkers);
@@ -87,7 +90,7 @@ public class RemoteJVMFactory {
       throw new IllegalStateException("Too few nodes for test. Need " + numWorkers + ", have " + nodes.size());
     }
 
-    List<JVMMapping> mapping = mapRolesToNodes(roles, nodes);
+    List<JVMMapping> mapping = mapRolesToNodes(roles, nodes, jvmArgs);
 
     Controller controller = controllerFactory.createController(new SharedContext(mapping), numWorkers);
 
@@ -108,9 +111,8 @@ public class RemoteJVMFactory {
   }
 
   private List<JVMMapping> mapRolesToNodes(Map<String, Integer> roles,
-                                           Set<Infrastructure.Node> nodes) {
-
-
+                                           Set<Infrastructure.Node> nodes,
+                                           Map<String, List<String>> jvmArgs) {
     List<JVMMapping> mapping = new ArrayList<>();
     Iterator<Infrastructure.Node> nodeItr = nodes.iterator();
 
@@ -118,7 +120,9 @@ public class RemoteJVMFactory {
     for(Map.Entry<String, Integer> roleEntry : roles.entrySet()) {
       for(int i = 0; i < roleEntry.getValue(); i++) {
         Infrastructure.Node node = nodeItr.next();
-        mapping.add(new JVMMapping(node, roleEntry.getKey(), id++));
+        String role = roleEntry.getKey();
+        List<String> roleArgs = jvmArgs.getOrDefault(role, Collections.emptyList());
+        mapping.add(new JVMMapping(node, role, id++, roleArgs));
       }
 
     }

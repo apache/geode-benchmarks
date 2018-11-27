@@ -85,6 +85,19 @@ public class TestRunnerIntegrationTest {
     assertEquals(1, outputFiles.count());
   }
 
+  @Test
+  public void configuresJVMOptions() throws Exception {
+    runner.runTest(testConfig -> {
+      testConfig.name(SAMPLE_BENCHMARK);
+      testConfig.role("all", 1);
+      testConfig.jvmArgs("all", "-Dprop1=true", "-Dprop2=5");
+      testConfig.before(context -> {
+        assertTrue("Expecting system property to be set in launched JVM, but it was not present.", Boolean.getBoolean("prop1"));
+        assertEquals("Expecting system property to be set in launched JVM, but it was not present.", 5, Integer.getInteger("prop2").intValue());
+      }, "all");
+    });
+  }
+
   private Predicate<Path> nameMatches(String sensorOutputFile) {
     return path -> path.toString().contains(sensorOutputFile);
   }

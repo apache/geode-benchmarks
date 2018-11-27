@@ -18,6 +18,7 @@
 package org.apache.geode.perftest.jvms;
 
 import java.io.Serializable;
+import java.util.List;
 
 import org.apache.geode.perftest.infrastructure.Infrastructure;
 
@@ -25,11 +26,14 @@ public class JVMMapping implements Serializable {
   private final Infrastructure.Node node;
   private final String role;
   private final int id;
+  private final List<String> jvmArgs;
 
-  public JVMMapping(Infrastructure.Node node, String role, int id) {
+  public JVMMapping(Infrastructure.Node node, String role, int id,
+                    List<String> jvmArgs) {
     this.node = node;
     this.role = role;
     this.id = id;
+    this.jvmArgs = jvmArgs;
   }
 
   public Infrastructure.Node getNode() {
@@ -46,5 +50,9 @@ public class JVMMapping implements Serializable {
 
   public String getOutputDir() {
     return "output/" + role + "-" + id;
+  }
+
+  public List<String> getJvmArgs() {
+    return jvmArgs;
   }
 }
