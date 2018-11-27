@@ -20,6 +20,7 @@
 set -e
 
 TAG=${1}
+BRANCH=${2:-develop}
 PREFIX="geode-performance-${TAG}"
 DATE=$(date '+%m-%d-%Y-%H-%M-%S')
 OUTPUT=output-${DATE}
@@ -33,9 +34,10 @@ FIRST_INSTANCE=$(echo ${INSTANCES} | awk '{print $1}' )
 
 gcloud compute ssh geode@$FIRST_INSTANCE --command="\
   rm -rf geode-benchmarks && \
+  git clone --depth=1 https://github.com/apache/geode --branch ${BRANCH} && \
   git clone https://github.com/apache/geode-benchmarks && \
   cd geode-benchmarks && \
-  ./gradlew benchmark -Phosts=${HOSTS}"
+  ./gradlew --include-build ../geode benchmark -Phosts=${HOSTS}"
 
 mkdir -p ${OUTPUT}
 gcloud compute scp --recurse geode@${FIRST_INSTANCE}:geode-benchmarks/geode-benchmarks/build/benchmarks ${OUTPUT}
