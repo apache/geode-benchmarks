@@ -19,7 +19,7 @@ plugins {
     id 'java'
 }
 
-group 'org.upthewaterspout.geode-performance'
+group 'org.apache.geode-benchmark'
 version '1.0-SNAPSHOT'
 
 sourceCompatibility = 1.8
