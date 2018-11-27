@@ -73,10 +73,11 @@ public class DefaultTestRunner implements TestRunner {
 
 
     Map<String, Integer> roles = config.getRoles();
+    Map<String, List<String>> jvmArgs = config.getJvmArgs();
 
     logger.info("Lauching JVMs...");
     //launch JVMs in parallel, hook them up
-    try (RemoteJVMs remoteJVMs = remoteJvmFactory.launch(roles)) {
+    try (RemoteJVMs remoteJVMs = remoteJvmFactory.launch(roles, jvmArgs)) {
 
       logger.info("Starting before tasks...");
       runTasks(config.getBefore(), remoteJVMs);

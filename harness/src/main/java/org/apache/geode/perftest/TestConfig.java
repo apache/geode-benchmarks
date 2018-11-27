@@ -19,6 +19,9 @@ package org.apache.geode.perftest;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,6 +39,7 @@ public class TestConfig implements Serializable {
 
   private final WorkloadConfig workloadConfig = new WorkloadConfig();
   private Map<String, Integer> roles = new LinkedHashMap<>();
+  private Map<String, List<String>> jvmArgs = new HashMap<>();
   private List<TestStep> before = new ArrayList<>();
   private List<TestStep> workload = new ArrayList<>();
   private List<TestStep> after = new ArrayList<>();
@@ -153,11 +157,29 @@ public class TestConfig implements Serializable {
     return roles.values().stream().mapToInt(Integer::intValue).sum();
   }
 
+  /**
+   * Add JVM arguments used to launch JVMs for a particular role
+   *
+   * If multiple calls to this method are made for the same role, the new JVM arguments
+   * are appended to the existing JVM args
+   */
+  public void jvmArgs(String role, String ... jvmArgs) {
+    List<String> roleArgs = this.jvmArgs.computeIfAbsent(role, key -> new ArrayList<>());
+    roleArgs.addAll(Arrays.asList(jvmArgs));
+  }
+
+  public Map<String, List<String>> getJvmArgs() {
+    return Collections.unmodifiableMap(jvmArgs);
+  }
+
   public static class TestStep {
     private final Task task;
     private final String[] roles;
 
     public TestStep(Task task, String[] roles) {
+      if(roles == null || roles.length == 0) {
+        throw new IllegalStateException("Task " + task + " must be assigned to at least one role");
+      }
       this.task = task;
       this.roles = roles;
     }

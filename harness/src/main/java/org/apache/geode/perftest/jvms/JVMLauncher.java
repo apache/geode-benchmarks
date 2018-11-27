@@ -40,28 +40,27 @@ class JVMLauncher {
       throws UnknownHostException {
     List<CompletableFuture<Void>> futures = new ArrayList<CompletableFuture<Void>>();
     for (JVMMapping entry : mapping) {
-      futures.add(launchWorker(infra, rmiPort, entry.getId(), entry.getNode(), libDir, entry.getOutputDir()));
+      CompletableFuture<Void> future = launchWorker(infra, rmiPort, libDir, entry);
+      futures.add(future);
     }
     return CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]));
   }
 
-  CompletableFuture<Void> launchWorker(Infrastructure infra, int rmiPort,
-                                       int id, final Infrastructure.Node node, String libDir,
-                                       String outputDir)
+  CompletableFuture<Void> launchWorker(Infrastructure infra, int rmiPort, String libDir, JVMMapping jvmConfig)
       throws UnknownHostException {
-    String[] shellCommand = buildCommand(InetAddress.getLocalHost().getHostAddress(), rmiPort, id,
-        libDir, outputDir);
+    String[] shellCommand = buildCommand(InetAddress.getLocalHost().getHostAddress(), rmiPort, libDir, jvmConfig);
+
     CompletableFuture<Void> future = new CompletableFuture<Void>();
-    Thread thread = new Thread("Worker " + node.getAddress()) {
+    Thread thread = new Thread("Worker " + jvmConfig.getNode().getAddress()) {
       public void run() {
 
         try {
-          int result = infra.onNode(node, shellCommand);
+          int result = infra.onNode(jvmConfig.getNode(), shellCommand);
           if (result != 0) {
             logger.error("ChildJVM exited with error code " + result);
           }
         } catch (Throwable t) {
-          logger.error("Launching " + String.join(" ", shellCommand) + " on " + node + "Failed.", t);
+          logger.error("Launching " + String.join(" ", shellCommand) + " on " + jvmConfig.getNode() + "Failed.", t);
         } finally {
           future.complete(null);
         }
@@ -72,8 +71,7 @@ class JVMLauncher {
     return future;
   }
 
-  String[] buildCommand(String rmiHost, int rmiPort, int id, String libDir,
-                        String outputDir) {
+  String[] buildCommand(String rmiHost, int rmiPort, String libDir, JVMMapping jvmConfig) {
 
     List<String> command = new ArrayList<String>();
     command.add("java");
@@ -81,8 +79,9 @@ class JVMLauncher {
     command.add(libDir + "/*");
     command.add("-D" + RemoteJVMFactory.RMI_HOST + "=" + rmiHost);
     command.add("-D" + RemoteJVMFactory.RMI_PORT_PROPERTY + "=" + rmiPort);
-    command.add("-D" + RemoteJVMFactory.JVM_ID + "=" + id);
-    command.add("-D" + RemoteJVMFactory.OUTPUT_DIR + "=" + outputDir);
+    command.add("-D" + RemoteJVMFactory.JVM_ID + "=" + jvmConfig.getId());
+    command.add("-D" + RemoteJVMFactory.OUTPUT_DIR + "=" + jvmConfig.getOutputDir());
+    command.addAll(jvmConfig.getJvmArgs());
     command.add(ChildJVM.class.getName());
 
     return command.toArray(new String[0]);
