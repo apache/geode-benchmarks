@@ -70,6 +70,7 @@ public class BenchmarkRunAnalyzer {
       stream.println("-- " + testDir.getName() + " --");
       for (ProbeResultParser probe : probes) {
         stream.println(probe.getResultDescription());
+        probe.reset();
         for (File outputDirectory : yardstickOutputDirsForTest) {
           probe.parseResults(outputDirectory);
         }
