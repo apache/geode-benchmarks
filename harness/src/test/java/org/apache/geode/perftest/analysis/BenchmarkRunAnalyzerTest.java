@@ -23,8 +23,6 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Scanner;
 
 import org.junit.Assert;
@@ -32,7 +30,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import org.apache.geode.perftest.analysis.BenchmarkRunAnalyzer;
 import org.apache.geode.perftest.yardstick.analysis.YardstickPercentileSensorParser;
 import org.apache.geode.perftest.yardstick.analysis.YardstickThroughputSensorParser;
 
@@ -47,6 +44,8 @@ public class BenchmarkRunAnalyzerTest {
     final File testBenchmarkA2 = temporaryFolder.newFolder("testFolder","BenchmarkA","client2", "20181121-111516-yardstick-output");
     final File testBenchmarkB1 = temporaryFolder.newFolder("testFolder","BenchmarkB","client1", "20181121-111516-yardstick-output");
     final File testBenchmarkB2 = temporaryFolder.newFolder("testFolder","BenchmarkB","client2", "20181121-111516-yardstick-output");
+    temporaryFolder.newFolder(testFolder.getName(), "junkfolder");
+    new File(testFolder, "junkfile").createNewFile();
     final File baseFolder = temporaryFolder.newFolder("baseFolder");
     final File baseBenchmarkA1 = temporaryFolder.newFolder("baseFolder","BenchmarkA","client1", "20181121-111516-yardstick-output");
     final File baseBenchmarkA2 = temporaryFolder.newFolder("baseFolder","BenchmarkA","client2", "20181121-111516-yardstick-output");
@@ -71,13 +70,7 @@ public class BenchmarkRunAnalyzerTest {
     populateThroughputCSV(baseBenchmarkB2, new double[] {10, 15, 20, 25, 30});  // Avg 20
     populatePercentileCSV(baseBenchmarkB2, new double[] {0, 0, 0, 99, 1});      // 300
 
-    List<String> nodes = new ArrayList(2);
-    nodes.add("client1");
-    nodes.add("client2");
-
     BenchmarkRunAnalyzer harvester = new BenchmarkRunAnalyzer();
-    harvester.addBenchmark("Alpha", "BenchmarkA", nodes);
-    harvester.addBenchmark("Beta", "BenchmarkB", nodes);
     harvester.addProbe(new YardstickThroughputSensorParser());
     harvester.addProbe(new YardstickPercentileSensorParser());
 
@@ -88,8 +81,8 @@ public class BenchmarkRunAnalyzerTest {
     System.out.println(writer.toString());
     BufferedReader resultReader = new BufferedReader(new StringReader(writer.toString()));
 
-    validatedBenchmark(resultReader, "Alpha", 20, 300, 25, 200);
-    validatedBenchmark(resultReader, "Beta", 25, 400, 20, 400);
+    validatedBenchmark(resultReader, "BenchmarkA", 20, 300, 25, 200);
+    validatedBenchmark(resultReader, "BenchmarkB", 25, 400, 20, 400);
   }
 
   private void populateThroughputCSV(File targetDirectory, double[] perSecondThroughputs)
