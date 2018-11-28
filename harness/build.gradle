@@ -28,6 +28,11 @@ repositories {
     mavenCentral()
 }
 
+task(analyzeRun, dependsOn: 'classes', type: JavaExec) {
+    main = 'org.apache.geode.perftest.analysis.Analyzer'
+    classpath = sourceSets.main.runtimeClasspath
+}
+
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
     compile group: 'com.hierynomus', name: 'sshj', version: '0.26.0'
