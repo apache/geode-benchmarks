@@ -17,8 +17,6 @@ package org.apache.geode.perftest.analysis;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.apache.geode.perftest.yardstick.analysis.YardstickPercentileSensorParser;
 import org.apache.geode.perftest.yardstick.analysis.YardstickThroughputSensorParser;
@@ -27,7 +25,8 @@ public class Analyzer {
 
   public static void main(String[] args) throws IOException {
     if (args.length != 2) {
-      System.out.println("Analyzer takes two test output directories as arguments");
+      System.out.println("Analyzer takes two test output directories as arguments, test results followed by baseline run result.");
+      System.exit(1);
       return;
     }
 
@@ -47,18 +46,14 @@ public class Analyzer {
       valid = false;
     }
     if (!valid) {
+      System.exit(1);
       return;
     }
-
 
     System.out.println("Running analyzer");
     System.out.println("Comparing test result at " + testResultArg + " to baseline at " + baselineResultArg);
 
     BenchmarkRunAnalyzer analyzer = new BenchmarkRunAnalyzer();
-    final List<String> nodes = new ArrayList<>(1);
-    nodes.add("client-2");
-    analyzer.addBenchmark("PartitionedPutBenchmark", "org.apache.geode.benchmark.tests.PartitionedPutBenchmark",
-        nodes);
     analyzer.addProbe(new YardstickThroughputSensorParser());
     analyzer.addProbe(new YardstickPercentileSensorParser());
 
