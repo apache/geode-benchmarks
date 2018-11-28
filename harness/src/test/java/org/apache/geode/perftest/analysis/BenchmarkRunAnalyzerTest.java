@@ -44,6 +44,8 @@ public class BenchmarkRunAnalyzerTest {
     final File testBenchmarkA2 = temporaryFolder.newFolder("testFolder","BenchmarkA","client2", "20181121-111516-yardstick-output");
     final File testBenchmarkB1 = temporaryFolder.newFolder("testFolder","BenchmarkB","client1", "20181121-111516-yardstick-output");
     final File testBenchmarkB2 = temporaryFolder.newFolder("testFolder","BenchmarkB","client2", "20181121-111516-yardstick-output");
+    temporaryFolder.newFolder(testFolder.getName(), "junkfolder");
+    new File(testFolder, "junkfile").createNewFile();
     final File baseFolder = temporaryFolder.newFolder("baseFolder");
     final File baseBenchmarkA1 = temporaryFolder.newFolder("baseFolder","BenchmarkA","client1", "20181121-111516-yardstick-output");
     final File baseBenchmarkA2 = temporaryFolder.newFolder("baseFolder","BenchmarkA","client2", "20181121-111516-yardstick-output");

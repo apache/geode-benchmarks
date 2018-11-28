@@ -62,11 +62,15 @@ public class BenchmarkRunAnalyzer {
 
     PrintWriter stream = new PrintWriter(output);
     for (File testDir : benchmarkDirs) {
+      final List<File> yardstickOutputDirsForTest = getYardstickOutputForBenchmarkDir(testDir);
+      if (yardstickOutputDirsForTest.isEmpty()) {
+        continue;
+      }
       File baselineDir = new File(baselineResultDir, testDir.getName());
       stream.println("-- " + testDir.getName() + " --");
       for (ProbeResultParser probe : probes) {
         stream.println(probe.getResultDescription());
-        for (File outputDirectory : getYardstickOutputForBenchmarkDir(testDir)) {
+        for (File outputDirectory : yardstickOutputDirsForTest) {
           probe.parseResults(outputDirectory);
         }
         double testResult = probe.getProbeResult();
