@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.geode.perftest.yardstick;
+package org.apache.geode.perftest.yardstick.hdrhistogram;
 
-public interface Clock {
+interface Clock {
 
   long currentTimeNanos();
 

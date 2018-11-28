@@ -1,11 +1,11 @@
-package org.apache.geode.perftest.yardstick;
+package org.apache.geode.perftest.yardstick.hdrhistogram;
 
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.IntStream;
+import java.util.function.Consumer;
 
 import org.HdrHistogram.Histogram;
 import org.yardstickframework.BenchmarkConfiguration;
@@ -31,18 +31,20 @@ public class HdrHistogramProbe implements BenchmarkExecutionAwareProbe, Benchmar
   private final long upper;
   private final int numDigits;
   private final Clock clock;
+  private final Consumer<Histogram> histogramConsumer;
   private long[] startTimes;
   private Histogram[] histograms;
 
-  public HdrHistogramProbe() {
-    this(1, TimeUnit.HOURS.toNanos(5), 3, () -> System.nanoTime());
+  public HdrHistogramProbe(Consumer<Histogram> histogramConsumer) {
+    this(1, TimeUnit.HOURS.toNanos(5), 3, () -> System.nanoTime(), histogramConsumer);
   }
 
-  public HdrHistogramProbe(int lower, long upper, int numDigits, Clock clock) {
+  public HdrHistogramProbe(int lower, long upper, int numDigits, Clock clock, Consumer<Histogram> histogramConsumer) {
     this.lower = lower;
     this.upper = upper;
     this.numDigits = numDigits;
     this.clock = clock;
+    this.histogramConsumer = histogramConsumer;
   }
 
   @Override
@@ -89,12 +91,12 @@ public class HdrHistogramProbe implements BenchmarkExecutionAwareProbe, Benchmar
     Histogram aggregate = getHistogram();
     reset();
 
-    long benchmarkEnd = clock.currentTimeNanos();
     double percentile50 = aggregate.getMean();
     long percentile99 = aggregate.getValueAtPercentile(99);
 
     BenchmarkProbePoint point = new BenchmarkProbePoint(0, new double[] {percentile50, percentile99});
 
+    histogramConsumer.accept(aggregate);
     return Collections.singleton(point);
   }
 

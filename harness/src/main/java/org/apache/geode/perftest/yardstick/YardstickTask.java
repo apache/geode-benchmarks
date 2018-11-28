@@ -35,6 +35,8 @@ import org.yardstickframework.probes.VmStatProbe;
 import org.apache.geode.perftest.Task;
 import org.apache.geode.perftest.TestContext;
 import org.apache.geode.perftest.WorkloadConfig;
+import org.apache.geode.perftest.yardstick.hdrhistogram.HdrHistogramProbe;
+import org.apache.geode.perftest.yardstick.hdrhistogram.HdrHistogramWriter;
 
 /**
  * A {@link Task} that wraps a yardstick {@link BenchmarkDriver}. When the task
@@ -90,7 +92,7 @@ public class YardstickTask implements Task {
     benchmark.setUp(cfg);
 
     TestDoneProbe testDoneProbe = new TestDoneProbe();
-    Collection<BenchmarkProbe> probes = Arrays.asList(new HdrHistogramProbe(), new ThroughputLatencyProbe(),
+    Collection<BenchmarkProbe> probes = Arrays.asList(new HdrHistogramProbe(new HdrHistogramWriter(context.getOutputDir())), new ThroughputLatencyProbe(),
         new PercentileProbe(), new DStatProbe(), new VmStatProbe(),
         testDoneProbe);
     BenchmarkLoader loader = new BenchmarkLoader();

@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.geode.perftest.yardstick;
+package org.apache.geode.perftest.yardstick.hdrhistogram;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.function.Consumer;
 
 import org.HdrHistogram.Histogram;
 import org.assertj.core.api.Assertions;
@@ -34,11 +34,13 @@ public class HdrHistogramProbeTest {
 
   private HdrHistogramProbe probe;
   private Clock clock;
+  private Consumer consumer;
 
   @Before
   public void setUp() {
     clock = mock(Clock.class);
-    probe = new HdrHistogramProbe(1, 3_600_000, 3, clock);
+    consumer = mock(Consumer.class);
+    probe = new HdrHistogramProbe(1, 3_600_000, 3, clock, consumer);
   }
 
   @Test
@@ -51,6 +53,7 @@ public class HdrHistogramProbeTest {
 
     Histogram histogram = probe.getHistogram();
     assertEquals(2, histogram.getMaxValue());
+    System.out.println("Size=" + histogram.getEstimatedFootprintInBytes());
   }
 
   @Test

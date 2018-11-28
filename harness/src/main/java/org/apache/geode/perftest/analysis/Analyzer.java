@@ -18,6 +18,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 
+import org.apache.geode.perftest.yardstick.analysis.YardstickHdrHistogramParser;
 import org.apache.geode.perftest.yardstick.analysis.YardstickPercentileSensorParser;
 import org.apache.geode.perftest.yardstick.analysis.YardstickThroughputSensorParser;
 
@@ -56,6 +57,7 @@ public class Analyzer {
     BenchmarkRunAnalyzer analyzer = new BenchmarkRunAnalyzer();
     analyzer.addProbe(new YardstickThroughputSensorParser());
     analyzer.addProbe(new YardstickPercentileSensorParser());
+    analyzer.addProbe(new YardstickHdrHistogramParser());
 
     analyzer.analyzeTestRun(testResultDir, baselineResultDir, new PrintWriter(System.out));
   }

@@ -32,6 +32,7 @@ import org.apache.geode.perftest.TestContext;
 import org.apache.geode.perftest.WorkloadConfig;
 import org.apache.geode.perftest.benchmarks.EmptyBenchmark;
 import org.apache.geode.perftest.runner.DefaultTestContext;
+import org.apache.geode.perftest.yardstick.hdrhistogram.HdrHistogramWriter;
 
 public class YardstickTaskTest {
 
@@ -51,6 +52,9 @@ public class YardstickTaskTest {
     assertTrue(1 <= benchmark.getInvocations());
 
     assertTrue(Files.walk(outputDir.toPath()).findFirst().isPresent());
+
+    assertTrue(Files.walk(outputDir.toPath()).anyMatch(path -> path.toString().contains(
+        HdrHistogramWriter.FILE_NAME)));
 
     //TODO -verify probes are shutdown
     //TODO -verify benchmark is shutdown
