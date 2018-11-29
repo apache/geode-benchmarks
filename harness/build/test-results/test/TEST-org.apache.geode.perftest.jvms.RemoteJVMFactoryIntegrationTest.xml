@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="org.apache.geode.perftest.jvms.RemoteJVMFactoryIntegrationTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2018-11-29T18:42:59" hostname="nnag-mbpro" time="1.875">
-  <properties/>
-  <testcase name="canExecuteCodeOnWorker" classname="org.apache.geode.perftest.jvms.RemoteJVMFactoryIntegrationTest" time="1.875"/>
-  <system-out><![CDATA[Lauching /var/folders/zw/j26m_tp947j9vtmhkx648d7r0000gn/T/workerProcess7097974407876116470>java -classpath .geode-performance/lib/* -DRMI_HOST=10.118.19.23 -DRMI_PORT=33333 -DJVM_ID=0 -DOUTPUT_DIR=output/worker-0 org.apache.geode.perftest.jvms.rmi.ChildJVM
-]]></system-out>
-  <system-err><![CDATA[]]></system-err>
-</testsuite>

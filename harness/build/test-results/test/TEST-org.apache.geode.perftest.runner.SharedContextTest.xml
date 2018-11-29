@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="org.apache.geode.perftest.runner.SharedContextTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2018-11-29T18:42:54" hostname="nnag-mbpro" time="0.007">
-  <properties/>
-  <testcase name="getHostsForRoleShouldReturnCorrectList" classname="org.apache.geode.perftest.runner.SharedContextTest" time="0.007"/>
-  <system-out><![CDATA[]]></system-out>
-  <system-err><![CDATA[]]></system-err>
-</testsuite>
