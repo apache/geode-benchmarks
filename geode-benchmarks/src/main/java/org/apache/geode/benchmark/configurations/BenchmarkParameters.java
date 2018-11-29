@@ -59,14 +59,4 @@ public class BenchmarkParameters {
    * Key range on which all the region operations are conducted on a minimal runner
    */
   public static final long KEY_RANGE_FOR_MINIMAL_RUNNER = 5;
-
-  /**
-   * Warm up time for the benchmark running on the minimal runner
-   */
-  public static final int WARM_UP_TIME_FOR_MINIMAL_RUNNER = 5;
-
-  /**
-   * Total duration for which the benchmark will run on the minimal runner
-   */
-  public static final int BENCHMARK_DURATION_FOR_MINIMAL_RUNNER = 5;
 }
