@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="org.apache.geode.benchmark.tests.PartitionedPutBenchmarkTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2018-11-29T18:41:17" hostname="nnag-mbpro" time="20.574">
+  <properties/>
+  <testcase name="benchmarkRunsSuccessfully" classname="org.apache.geode.benchmark.tests.PartitionedPutBenchmarkTest" time="20.574"/>
+  <system-out><![CDATA[Lauching /var/folders/zw/j26m_tp947j9vtmhkx648d7r0000gn/T/workerProcess6073806476963244510>java -classpath .geode-performance/lib/* -DRMI_HOST=10.118.19.23 -DRMI_PORT=33333 -DJVM_ID=5 -DOUTPUT_DIR=output/client-5 org.apache.geode.perftest.jvms.rmi.ChildJVM
+Lauching /var/folders/zw/j26m_tp947j9vtmhkx648d7r0000gn/T/workerProcess6079042721900566770>java -classpath .geode-performance/lib/* -DRMI_HOST=10.118.19.23 -DRMI_PORT=33333 -DJVM_ID=1 -DOUTPUT_DIR=output/server-1 org.apache.geode.perftest.jvms.rmi.ChildJVM
+Lauching /var/folders/zw/j26m_tp947j9vtmhkx648d7r0000gn/T/workerProcess1134135813834900647>java -classpath .geode-performance/lib/* -DRMI_HOST=10.118.19.23 -DRMI_PORT=33333 -DJVM_ID=3 -DOUTPUT_DIR=output/server-3 org.apache.geode.perftest.jvms.rmi.ChildJVM
+Lauching /var/folders/zw/j26m_tp947j9vtmhkx648d7r0000gn/T/workerProcess3847339901352225655>java -classpath .geode-performance/lib/* -DRMI_HOST=10.118.19.23 -DRMI_PORT=33333 -DJVM_ID=4 -DOUTPUT_DIR=output/server-4 org.apache.geode.perftest.jvms.rmi.ChildJVM
+Lauching /var/folders/zw/j26m_tp947j9vtmhkx648d7r0000gn/T/workerProcess6393400657156028760>java -classpath .geode-performance/lib/* -DRMI_HOST=10.118.19.23 -DRMI_PORT=33333 -DJVM_ID=0 -DOUTPUT_DIR=output/locator-0 org.apache.geode.perftest.jvms.rmi.ChildJVM
+Lauching /var/folders/zw/j26m_tp947j9vtmhkx648d7r0000gn/T/workerProcess478773169164782037>java -classpath .geode-performance/lib/* -DRMI_HOST=10.118.19.23 -DRMI_PORT=33333 -DJVM_ID=2 -DOUTPUT_DIR=output/server-2 org.apache.geode.perftest.jvms.rmi.ChildJVM
+]]></system-out>
+  <system-err><![CDATA[[Test worker] INFO org.apache.geode.perftest.runner.DefaultTestRunner - Lauching JVMs...
+[Test worker] INFO org.apache.geode.perftest.runner.DefaultTestRunner - Starting before tasks...
+[Test worker] INFO org.apache.geode.perftest.runner.DefaultTestRunner - Starting workload tasks...
+[Test worker] INFO org.apache.geode.perftest.runner.DefaultTestRunner - Starting after tasks...
+[Test worker] INFO org.apache.geode.perftest.runner.DefaultTestRunner - Copying results...
+]]></system-err>
+</testsuite>

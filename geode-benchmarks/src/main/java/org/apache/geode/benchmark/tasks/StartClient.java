@@ -17,16 +17,20 @@
 
 package org.apache.geode.benchmark.tasks;
 
+import static org.apache.geode.benchmark.configurations.BenchmarkParameters.CLIENT_CACHE;
+
 import java.io.File;
 import java.net.InetAddress;
 
 import org.apache.geode.cache.client.ClientCache;
 import org.apache.geode.cache.client.ClientCacheFactory;
-import org.apache.geode.cache.client.ClientRegionShortcut;
 import org.apache.geode.distributed.ConfigurationProperties;
 import org.apache.geode.perftest.Task;
 import org.apache.geode.perftest.TestContext;
 
+/**
+ * Task to create the client cache
+ */
 public class StartClient implements Task {
   private int locatorPort;
 
@@ -47,7 +51,6 @@ public class StartClient implements Task {
         .set(ConfigurationProperties.STATISTIC_ARCHIVE_FILE, statsFile)
         .create();
 
-    clientCache.createClientRegionFactory(ClientRegionShortcut.PROXY)
-        .create("region");
+    context.setAttribute(CLIENT_CACHE, clientCache);
   }
 }

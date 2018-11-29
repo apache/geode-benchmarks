@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta http-equiv="x-ua-compatible" content="IE=edge"/>
+<title>Test results - Class org.apache.geode.perftest.infrastructure.ssh.SshInfrastructureTest</title>
+<link href="../css/base-style.css" rel="stylesheet" type="text/css"/>
+<link href="../css/style.css" rel="stylesheet" type="text/css"/>
+<script src="../js/report.js" type="text/javascript"></script>
+</head>
+<body>
+<div id="content">
+<h1>Class org.apache.geode.perftest.infrastructure.ssh.SshInfrastructureTest</h1>
+<div class="breadcrumbs">
+<a href="../index.html">all</a> &gt; 
+<a href="../packages/org.apache.geode.perftest.infrastructure.ssh.html">org.apache.geode.perftest.infrastructure.ssh</a> &gt; SshInfrastructureTest</div>
+<div id="summary">
+<table>
+<tr>
+<td>
+<div class="summaryGroup">
+<table>
+<tr>
+<td>
+<div class="infoBox" id="tests">
+<div class="counter">5</div>
+<p>tests</p>
+</div>
+</td>
+<td>
+<div class="infoBox" id="failures">
+<div class="counter">0</div>
+<p>failures</p>
+</div>
+</td>
+<td>
+<div class="infoBox" id="ignored">
+<div class="counter">0</div>
+<p>ignored</p>
+</div>
+</td>
+<td>
+<div class="infoBox" id="duration">
+<div class="counter">2.577s</div>
+<p>duration</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</td>
+<td>
+<div class="infoBox success" id="successRate">
+<div class="percent">100%</div>
+<p>successful</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div id="tabs">
+<ul class="tabLinks">
+<li>
+<a href="#tab0">Tests</a>
+</li>
+<li>
+<a href="#tab1">Standard error</a>
+</li>
+</ul>
+<div id="tab0" class="tab">
+<h2>Tests</h2>
+<table>
+<thead>
+<tr>
+<th>Test</th>
+<th>Duration</th>
+<th>Result</th>
+</tr>
+</thead>
+<tr>
+<td class="success">canCopyFilesFromANode</td>
+<td class="success">0.592s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">canExecuteACommandOnNode</td>
+<td class="success">1.286s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">canFindNodes</td>
+<td class="success">0.003s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">copyToNodesCleansDirectory</td>
+<td class="success">0.336s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">copyToNodesPutsFileOnNode</td>
+<td class="success">0.360s</td>
+<td class="success">passed</td>
+</tr>
+</table>
+</div>
+<div id="tab1" class="tab">
+<h2>Standard error</h2>
+<span class="code">
+<pre>[Test worker] INFO org.apache.sshd.common.util.security.bouncycastle.BouncyCastleSecurityProviderRegistrar - getOrCreateProvider(BC) created instance of org.bouncycastle.jce.provider.BouncyCastleProvider
+[Test worker] INFO org.apache.sshd.common.util.security.eddsa.EdDSASecurityProviderRegistrar - getOrCreateProvider(EdDSA) created instance of net.i2p.crypto.eddsa.EdDSASecurityProvider
+[Test worker] INFO org.apache.sshd.common.io.DefaultIoServiceFactoryFactory - No detected/configured IoServiceFactoryFactory using Nio2ServiceFactoryFactory
+[Test worker] INFO org.apache.sshd.server.SshServer - start() listen on auto-allocated port=51767
+[Test worker] INFO net.schmizz.sshj.transport.random.BouncyCastleRandom - Generating random seed from SecureRandom.
+[Test worker] INFO net.schmizz.sshj.transport.TransportImpl - Client identity string: SSH-2.0-SSHJ_0.26.0
+[Test worker] INFO net.schmizz.sshj.transport.TransportImpl - Server identity string: SSH-2.0-SSHD-COMMON-2.1.0
+[Test worker] INFO net.schmizz.sshj.SSHClient - Could not load keys from /Users/nnag/.ssh/id_dsa due to: /Users/nnag/.ssh/id_dsa (No such file or directory)
+[Test worker] INFO net.schmizz.sshj.SSHClient - Could not load keys from /Users/nnag/.ssh/id_ecdsa due to: /Users/nnag/.ssh/id_ecdsa (No such file or directory)
+[Test worker] ERROR net.schmizz.concurrent.Promise - &lt;&lt;authenticated&gt;&gt; woke to: net.schmizz.sshj.userauth.UserAuthException: Problem getting private key from PKCS8KeyFile{resource=[PrivateKeyFileResource] /Users/nnag/.ssh/id_rsa}
+[Test worker] INFO com.hierynomus.sshj.userauth.keyprovider.OpenSSHKeyV1KeyFile - Read key type: ssh-ed25519
+[sshd-SshServer[5bf17d43]-nio2-thread-8] INFO org.apache.sshd.server.session.ServerUserAuthService - Session nnag@/127.0.0.1:51768 authenticated
+[Test worker] INFO org.apache.geode.perftest.infrastructure.ssh.SshInfrastructure - Executing 'touch' '/var/folders/zw/j26m_tp947j9vtmhkx648d7r0000gn/T/junit8714916734200419846/junit1936880000951122828/somefile.txt' on localhost/127.0.0.1
+[Test worker] INFO net.schmizz.sshj.transport.TransportImpl - Disconnected - BY_APPLICATION
+[Test worker] INFO org.apache.sshd.common.io.nio2.Nio2Session - doCloseGracefully(Nio2Session[local=/127.0.0.1:51767, remote=/127.0.0.1:51768]) ClosedChannelException while shutting down output: null
+[Test worker] INFO org.apache.sshd.server.SshServer - start() listen on auto-allocated port=51772
+[ForkJoinPool.commonPool-worker-1] INFO net.schmizz.sshj.transport.TransportImpl - Client identity string: SSH-2.0-SSHJ_0.26.0
+[ForkJoinPool.commonPool-worker-1] INFO net.schmizz.sshj.transport.TransportImpl - Server identity string: SSH-2.0-SSHD-COMMON-2.1.0
+[ForkJoinPool.commonPool-worker-1] INFO net.schmizz.sshj.SSHClient - Could not load keys from /Users/nnag/.ssh/id_dsa due to: /Users/nnag/.ssh/id_dsa (No such file or directory)
+[ForkJoinPool.commonPool-worker-1] INFO net.schmizz.sshj.SSHClient - Could not load keys from /Users/nnag/.ssh/id_ecdsa due to: /Users/nnag/.ssh/id_ecdsa (No such file or directory)
+[ForkJoinPool.commonPool-worker-1] ERROR net.schmizz.concurrent.Promise - &lt;&lt;authenticated&gt;&gt; woke to: net.schmizz.sshj.userauth.UserAuthException: Problem getting private key from PKCS8KeyFile{resource=[PrivateKeyFileResource] /Users/nnag/.ssh/id_rsa}
+[ForkJoinPool.commonPool-worker-1] INFO com.hierynomus.sshj.userauth.keyprovider.OpenSSHKeyV1KeyFile - Read key type: ssh-ed25519
+[sshd-SshServer[20769644]-nio2-thread-7] INFO org.apache.sshd.server.session.ServerUserAuthService - Session nnag@/127.0.0.1:51773 authenticated
+[ForkJoinPool.commonPool-worker-1] INFO org.apache.geode.perftest.infrastructure.ssh.SshInfrastructure - Copying /var/folders/zw/j26m_tp947j9vtmhkx648d7r0000gn/T/junit479844368750162964/junit2707444091393024199.tmp to localhost/127.0.0.1
+[ForkJoinPool.commonPool-worker-1] INFO net.schmizz.sshj.transport.TransportImpl - Disconnected - BY_APPLICATION
+[Test worker] INFO org.apache.sshd.server.SshServer - start() listen on auto-allocated port=51774
+[Test worker] INFO org.apache.sshd.server.SshServer - start() listen on auto-allocated port=51775
+[Test worker] INFO net.schmizz.sshj.transport.TransportImpl - Client identity string: SSH-2.0-SSHJ_0.26.0
+[Test worker] INFO net.schmizz.sshj.transport.TransportImpl - Server identity string: SSH-2.0-SSHD-COMMON-2.1.0
+[Test worker] INFO net.schmizz.sshj.SSHClient - Could not load keys from /Users/nnag/.ssh/id_dsa due to: /Users/nnag/.ssh/id_dsa (No such file or directory)
+[Test worker] INFO net.schmizz.sshj.SSHClient - Could not load keys from /Users/nnag/.ssh/id_ecdsa due to: /Users/nnag/.ssh/id_ecdsa (No such file or directory)
+[Test worker] ERROR net.schmizz.concurrent.Promise - &lt;&lt;authenticated&gt;&gt; woke to: net.schmizz.sshj.userauth.UserAuthException: Problem getting private key from PKCS8KeyFile{resource=[PrivateKeyFileResource] /Users/nnag/.ssh/id_rsa}
+[Test worker] INFO com.hierynomus.sshj.userauth.keyprovider.OpenSSHKeyV1KeyFile - Read key type: ssh-ed25519
+[sshd-SshServer[4f008331]-nio2-thread-7] INFO org.apache.sshd.server.session.ServerUserAuthService - Session nnag@/127.0.0.1:51776 authenticated
+[Test worker] INFO org.apache.geode.perftest.infrastructure.ssh.SshInfrastructure - Executing 'mkdir' '-p' '/tmp/foo' on localhost/127.0.0.1
+[Test worker] INFO net.schmizz.sshj.transport.TransportImpl - Disconnected - BY_APPLICATION
+[Test worker] INFO net.schmizz.sshj.transport.TransportImpl - Client identity string: SSH-2.0-SSHJ_0.26.0
+[Test worker] INFO net.schmizz.sshj.transport.TransportImpl - Server identity string: SSH-2.0-SSHD-COMMON-2.1.0
+[Test worker] INFO net.schmizz.sshj.SSHClient - Could not load keys from /Users/nnag/.ssh/id_dsa due to: /Users/nnag/.ssh/id_dsa (No such file or directory)
+[Test worker] INFO net.schmizz.sshj.SSHClient - Could not load keys from /Users/nnag/.ssh/id_ecdsa due to: /Users/nnag/.ssh/id_ecdsa (No such file or directory)
+[Test worker] ERROR net.schmizz.concurrent.Promise - &lt;&lt;authenticated&gt;&gt; woke to: net.schmizz.sshj.userauth.UserAuthException: Problem getting private key from PKCS8KeyFile{resource=[PrivateKeyFileResource] /Users/nnag/.ssh/id_rsa}
+[Test worker] INFO com.hierynomus.sshj.userauth.keyprovider.OpenSSHKeyV1KeyFile - Read key type: ssh-ed25519
+[sshd-SshServer[4f008331]-nio2-thread-3] INFO org.apache.sshd.server.session.ServerUserAuthService - Session nnag@/127.0.0.1:51777 authenticated
+[Test worker] INFO org.apache.geode.perftest.infrastructure.ssh.SshInfrastructure - Executing 'touch' '/tmp/foo/file.txt' on localhost/127.0.0.1
+[Test worker] INFO net.schmizz.sshj.transport.TransportImpl - Disconnected - BY_APPLICATION
+[Test worker] INFO net.schmizz.sshj.transport.TransportImpl - Client identity string: SSH-2.0-SSHJ_0.26.0
+[Test worker] INFO net.schmizz.sshj.transport.TransportImpl - Server identity string: SSH-2.0-SSHD-COMMON-2.1.0
+[Test worker] INFO net.schmizz.sshj.SSHClient - Could not load keys from /Users/nnag/.ssh/id_dsa due to: /Users/nnag/.ssh/id_dsa (No such file or directory)
+[Test worker] INFO net.schmizz.sshj.SSHClient - Could not load keys from /Users/nnag/.ssh/id_ecdsa due to: /Users/nnag/.ssh/id_ecdsa (No such file or directory)
+[Test worker] ERROR net.schmizz.concurrent.Promise - &lt;&lt;authenticated&gt;&gt; woke to: net.schmizz.sshj.userauth.UserAuthException: Problem getting private key from PKCS8KeyFile{resource=[PrivateKeyFileResource] /Users/nnag/.ssh/id_rsa}
+[Test worker] INFO com.hierynomus.sshj.userauth.keyprovider.OpenSSHKeyV1KeyFile - Read key type: ssh-ed25519
+[sshd-SshServer[4f008331]-nio2-thread-8] INFO org.apache.sshd.server.session.ServerUserAuthService - Session nnag@/127.0.0.1:51778 authenticated
+[Test worker] INFO org.apache.geode.perftest.infrastructure.ssh.SshInfrastructure - Executing 'touch' '/tmp/foo/file2.txt' on localhost/127.0.0.1
+[Test worker] INFO net.schmizz.sshj.transport.TransportImpl - Disconnected - BY_APPLICATION
+[Test worker] INFO net.schmizz.sshj.transport.TransportImpl - Client identity string: SSH-2.0-SSHJ_0.26.0
+[Test worker] INFO net.schmizz.sshj.transport.TransportImpl - Server identity string: SSH-2.0-SSHD-COMMON-2.1.0
+[Test worker] INFO net.schmizz.sshj.SSHClient - Could not load keys from /Users/nnag/.ssh/id_dsa due to: /Users/nnag/.ssh/id_dsa (No such file or directory)
+[Test worker] INFO net.schmizz.sshj.SSHClient - Could not load keys from /Users/nnag/.ssh/id_ecdsa due to: /Users/nnag/.ssh/id_ecdsa (No such file or directory)
+[Test worker] ERROR net.schmizz.concurrent.Promise - &lt;&lt;authenticated&gt;&gt; woke to: net.schmizz.sshj.userauth.UserAuthException: Problem getting private key from PKCS8KeyFile{resource=[PrivateKeyFileResource] /Users/nnag/.ssh/id_rsa}
+[Test worker] INFO com.hierynomus.sshj.userauth.keyprovider.OpenSSHKeyV1KeyFile - Read key type: ssh-ed25519
+[sshd-SshServer[4f008331]-nio2-thread-3] INFO org.apache.sshd.server.session.ServerUserAuthService - Session nnag@/127.0.0.1:51779 authenticated
+[Test worker] INFO net.schmizz.sshj.transport.TransportImpl - Disconnected - BY_APPLICATION
+[Test worker] INFO org.apache.sshd.server.SshServer - start() listen on auto-allocated port=51780
+[ForkJoinPool.commonPool-worker-1] INFO net.schmizz.sshj.transport.TransportImpl - Client identity string: SSH-2.0-SSHJ_0.26.0
+[ForkJoinPool.commonPool-worker-1] INFO net.schmizz.sshj.transport.TransportImpl - Server identity string: SSH-2.0-SSHD-COMMON-2.1.0
+[ForkJoinPool.commonPool-worker-1] INFO net.schmizz.sshj.SSHClient - Could not load keys from /Users/nnag/.ssh/id_dsa due to: /Users/nnag/.ssh/id_dsa (No such file or directory)
+[ForkJoinPool.commonPool-worker-1] INFO net.schmizz.sshj.SSHClient - Could not load keys from /Users/nnag/.ssh/id_ecdsa due to: /Users/nnag/.ssh/id_ecdsa (No such file or directory)
+[ForkJoinPool.commonPool-worker-1] ERROR net.schmizz.concurrent.Promise - &lt;&lt;authenticated&gt;&gt; woke to: net.schmizz.sshj.userauth.UserAuthException: Problem getting private key from PKCS8KeyFile{resource=[PrivateKeyFileResource] /Users/nnag/.ssh/id_rsa}
+[ForkJoinPool.commonPool-worker-1] INFO com.hierynomus.sshj.userauth.keyprovider.OpenSSHKeyV1KeyFile - Read key type: ssh-ed25519
+[sshd-SshServer[6daa5af2]-nio2-thread-7] INFO org.apache.sshd.server.session.ServerUserAuthService - Session nnag@/127.0.0.1:51781 authenticated
+[ForkJoinPool.commonPool-worker-1] INFO org.apache.geode.perftest.infrastructure.ssh.SshInfrastructure - Copying /var/folders/zw/j26m_tp947j9vtmhkx648d7r0000gn/T/junit7266642354113372742/junit278809459309703159.tmp to localhost/127.0.0.1
+[ForkJoinPool.commonPool-worker-1] INFO net.schmizz.sshj.transport.TransportImpl - Disconnected - BY_APPLICATION
+</pre>
+</span>
+</div>
+</div>
+<div id="footer">
+<p>
+<div>
+<label class="hidden" id="label-for-line-wrapping-toggle" for="line-wrapping-toggle">Wrap lines
+<input id="line-wrapping-toggle" type="checkbox" autocomplete="off"/>
+</label>
+</div>Generated by 
+<a href="http://www.gradle.org">Gradle 4.10.2</a> at Nov 29, 2018 10:43:10 AM</p>
+</div>
+</div>
+</body>
+</html>

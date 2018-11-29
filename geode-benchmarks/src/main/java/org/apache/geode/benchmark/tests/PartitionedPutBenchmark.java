@@ -17,35 +17,22 @@
 
 package org.apache.geode.benchmark.tests;
 
-import org.junit.Test;
+import static org.apache.geode.benchmark.configurations.BenchmarkParameters.Roles.SERVER;
 
-import org.apache.geode.benchmark.tasks.PutTask;
-import org.apache.geode.benchmark.tasks.StartClient;
-import org.apache.geode.benchmark.tasks.StartLocator;
-import org.apache.geode.benchmark.tasks.StartServer;
+import org.apache.geode.benchmark.tasks.CreatePartitionedRegion;
 import org.apache.geode.perftest.TestConfig;
-import org.apache.geode.perftest.TestRunners;
 
-public class PartitionedPutBenchmark {
+public class PartitionedPutBenchmark extends PutBenchmark {
 
-  @Test
-  public void run() throws Exception {
-    TestRunners.defaultRunner().runTest(this::configure);
+  public PartitionedPutBenchmark() {
   }
 
-  public void configure(TestConfig config) {
+  PartitionedPutBenchmark(long keyRange) {
+    this.keyRange = keyRange;
+  }
 
-    int locatorPort = 10334;
-
-    config.name(PartitionedPutBenchmark.class.getCanonicalName());
-    config.warmupSeconds(2);
-    config.durationSeconds(5);
-    config.role("locator", 1);
-    config.role("server", 1);
-    config.role("client", 1);
-    config.before(new StartLocator(locatorPort), "locator");
-    config.before(new StartServer(locatorPort), "server");
-    config.before(new StartClient(locatorPort), "client");
-    config.workload(new PutTask(),"client");
+  @Override
+  void createRegion(TestConfig config) {
+    config.before(new CreatePartitionedRegion(),SERVER);
   }
 }

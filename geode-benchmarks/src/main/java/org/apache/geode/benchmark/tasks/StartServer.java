@@ -17,17 +17,21 @@
 
 package org.apache.geode.benchmark.tasks;
 
+import static org.apache.geode.benchmark.configurations.BenchmarkParameters.SERVER_CACHE;
+
 import java.io.File;
 import java.net.InetAddress;
 
 import org.apache.geode.cache.Cache;
 import org.apache.geode.cache.CacheFactory;
-import org.apache.geode.cache.RegionShortcut;
 import org.apache.geode.cache.server.CacheServer;
 import org.apache.geode.distributed.ConfigurationProperties;
 import org.apache.geode.perftest.Task;
 import org.apache.geode.perftest.TestContext;
 
+/**
+ * Task to create the server cache and start the cache server.
+ */
 public class StartServer implements Task {
 
   private int locatorPort;
@@ -41,11 +45,11 @@ public class StartServer implements Task {
 
     String locatorString = LocatorUtil.getLocatorString(context, locatorPort);
     String statsFile = new File(context.getOutputDir(), "stats.gfs").getAbsolutePath();
-
     Cache cache = new CacheFactory()
-        .set(ConfigurationProperties.LOCATORS,locatorString)
-        .set(ConfigurationProperties.NAME,"server-"+ InetAddress.getLocalHost())
-        .set(ConfigurationProperties.STATISTIC_SAMPLING_ENABLED,"true")
+        .set(ConfigurationProperties.LOCATORS, locatorString)
+        .set(ConfigurationProperties.NAME,
+            "server-" + context.getJvmID() + "-" + InetAddress.getLocalHost())
+        .set(ConfigurationProperties.STATISTIC_SAMPLING_ENABLED, "true")
         .set(ConfigurationProperties.STATISTIC_ARCHIVE_FILE, statsFile)
         .set(ConfigurationProperties.USE_CLUSTER_CONFIGURATION, "false")
         .create();
@@ -53,8 +57,8 @@ public class StartServer implements Task {
     CacheServer cacheServer = ((Cache) cache).addCacheServer();
     cacheServer.setPort(0);
     cacheServer.start();
+    context.setAttribute(SERVER_CACHE, cache);
 
-    cache.createRegionFactory(RegionShortcut.PARTITION).create("region");
   }
 
 }

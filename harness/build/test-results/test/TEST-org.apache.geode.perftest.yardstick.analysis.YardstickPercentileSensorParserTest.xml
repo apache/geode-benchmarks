@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="org.apache.geode.perftest.yardstick.analysis.YardstickPercentileSensorParserTest" tests="7" skipped="0" failures="0" errors="0" timestamp="2018-11-29T18:42:54" hostname="nnag-mbpro" time="0.012">
+  <properties/>
+  <testcase name="throwsExceptionOnMissingFile" classname="org.apache.geode.perftest.yardstick.analysis.YardstickPercentileSensorParserTest" time="0.001"/>
+  <testcase name="throwsExceptionOnBadInput" classname="org.apache.geode.perftest.yardstick.analysis.YardstickPercentileSensorParserTest" time="0.002"/>
+  <testcase name="parsesInputFile" classname="org.apache.geode.perftest.yardstick.analysis.YardstickPercentileSensorParserTest" time="0.001"/>
+  <testcase name="percentileSearchNormalizesInput" classname="org.apache.geode.perftest.yardstick.analysis.YardstickPercentileSensorParserTest" time="0.001"/>
+  <testcase name="ignoreYardstickCommentAndMetadataLines" classname="org.apache.geode.perftest.yardstick.analysis.YardstickPercentileSensorParserTest" time="0.002"/>
+  <testcase name="parsesInputFileAndFindsUnalignedPercentiles" classname="org.apache.geode.perftest.yardstick.analysis.YardstickPercentileSensorParserTest" time="0.001"/>
+  <testcase name="parsesInputFileAndFindsAlignedPercentiles" classname="org.apache.geode.perftest.yardstick.analysis.YardstickPercentileSensorParserTest" time="0.002"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

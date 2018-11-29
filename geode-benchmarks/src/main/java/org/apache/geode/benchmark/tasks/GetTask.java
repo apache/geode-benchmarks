@@ -19,6 +19,7 @@ package org.apache.geode.benchmark.tasks;
 
 import java.io.Serializable;
 import java.util.Map;
+import java.util.concurrent.ThreadLocalRandom;
 
 import org.yardstickframework.BenchmarkConfiguration;
 import org.yardstickframework.BenchmarkDriverAdapter;
@@ -27,9 +28,18 @@ import org.apache.geode.cache.Region;
 import org.apache.geode.cache.client.ClientCache;
 import org.apache.geode.cache.client.ClientCacheFactory;
 
+/**
+ * Task workload to perform get operations on keys within 0
+ * and the keyRange (exclusive)
+ */
 public class GetTask extends BenchmarkDriverAdapter implements Serializable {
 
   private Region<Object, Object> region;
+  private long keyRange;
+
+  public GetTask(long keyRange) {
+    this.keyRange = keyRange;
+  }
 
   @Override
   public void setUp(BenchmarkConfiguration cfg) throws Exception {
@@ -40,7 +50,8 @@ public class GetTask extends BenchmarkDriverAdapter implements Serializable {
 
   @Override
   public boolean test(Map<Object, Object> ctx) throws Exception {
-    region.get(1);
+    long key = ThreadLocalRandom.current().nextLong(0,this.keyRange);
+    region.get(key);
     return true;
   }
 }
