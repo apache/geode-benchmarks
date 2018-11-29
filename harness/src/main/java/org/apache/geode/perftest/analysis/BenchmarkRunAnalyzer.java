@@ -16,8 +16,6 @@ package org.apache.geode.perftest.analysis;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -56,38 +54,37 @@ public class BenchmarkRunAnalyzer {
     probes.add(probeResultParser);
   }
 
-  public void analyzeTestRun(File testResultDir, File baselineResultDir, Writer output)
+  public BenchmarkRunResult analyzeTestRun(File testResultDir, File baselineResultDir)
       throws IOException {
     List<File> benchmarkDirs = Arrays.asList(testResultDir.listFiles());
+    BenchmarkRunResult result = new BenchmarkRunResult();
 
-    PrintWriter stream = new PrintWriter(output);
     for (File testDir : benchmarkDirs) {
-      final List<File> yardstickOutputDirsForTest = getYardstickOutputForBenchmarkDir(testDir);
-      if (yardstickOutputDirsForTest.isEmpty()) {
+      final List<File> testYardstickDirs = getYardstickOutputForBenchmarkDir(testDir);
+      if (testYardstickDirs.isEmpty()) {
         continue;
       }
       File baselineDir = new File(baselineResultDir, testDir.getName());
-      stream.println("-- " + testDir.getName() + " --");
+      final List<File> baselineYardstickDirs = getYardstickOutputForBenchmarkDir(baselineDir);
+
+      final BenchmarkRunResult.BenchmarkResult benchmarkResult = result.addBenchmark(testDir.getName());
       for (ProbeResultParser probe : probes) {
-        stream.println(probe.getResultDescription());
-        probe.reset();
-        for (File outputDirectory : yardstickOutputDirsForTest) {
-          probe.parseResults(outputDirectory);
-        }
-        double testResult = probe.getProbeResult();
-        stream.println("Result: " + String.valueOf(testResult));
-        probe.reset();
-        for (File outputDirectory : getYardstickOutputForBenchmarkDir(baselineDir)) {
-          probe.parseResults(outputDirectory);
-        }
-        double baselineResult = probe.getProbeResult();
-        stream.println("Baseline: " + String.valueOf(baselineResult));
-        stream.println("Relative performance: " + String.valueOf(testResult / baselineResult));
-        stream.println();
+        double testResult = getTestResult(testYardstickDirs, probe);
+        double baselineResult = getTestResult(baselineYardstickDirs, probe);
+
+        benchmarkResult.addProbeResult(probe.getResultDescription(), baselineResult, testResult);
       }
     }
 
-    stream.flush();
+    return result;
+  }
+
+  private double getTestResult(List<File> resultDirs, ProbeResultParser probe) throws IOException {
+    probe.reset();
+    for (File outputDirectory : resultDirs) {
+      probe.parseResults(outputDirectory);
+    }
+    return probe.getProbeResult();
   }
 
   private List<File> getYardstickOutputForBenchmarkDir(File benchmarkDir) throws IOException {

@@ -77,7 +77,7 @@ public class BenchmarkRunAnalyzerTest {
     ByteArrayOutputStream outputStream = new ByteArrayOutputStream(4000);
     StringWriter writer = new StringWriter();
 
-    harvester.analyzeTestRun(testFolder, baseFolder, writer);
+    harvester.analyzeTestRun(testFolder, baseFolder).writeResult(writer);
     System.out.println(writer.toString());
     BufferedReader resultReader = new BufferedReader(new StringReader(writer.toString()));
 

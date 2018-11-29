@@ -59,6 +59,6 @@ public class Analyzer {
     analyzer.addProbe(new YardstickPercentileSensorParser());
     analyzer.addProbe(new YardstickHdrHistogramParser());
 
-    analyzer.analyzeTestRun(testResultDir, baselineResultDir, new PrintWriter(System.out));
+    analyzer.analyzeTestRun(testResultDir, baselineResultDir).writeResult(new PrintWriter(System.out));
   }
 }
