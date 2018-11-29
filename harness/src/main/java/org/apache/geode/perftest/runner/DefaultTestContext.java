@@ -20,6 +20,7 @@ package org.apache.geode.perftest.runner;
 import java.io.File;
 import java.net.InetAddress;
 import java.util.Set;
+import java.util.TreeMap;
 
 import org.apache.geode.perftest.TestContext;
 
@@ -27,15 +28,34 @@ public class DefaultTestContext implements TestContext {
 
   private SharedContext sharedContext;
   private File outputDir;
+  private int jvmID;
+  TreeMap<String,Object> attributeMap;
 
-  public DefaultTestContext(SharedContext sharedContext, File outputDir) {
+  public DefaultTestContext(SharedContext sharedContext, File outputDir, int jvmID) {
     this.sharedContext = sharedContext;
     this.outputDir = outputDir;
+    attributeMap = new TreeMap<>();
+    this.jvmID = jvmID;
+  }
+
+  @Override
+  public int getJvmID() {
+    return jvmID;
   }
 
   @Override
   public Set<InetAddress> getHostsForRole(String role) {
     return sharedContext.getHostsForRole(role);
+  }
+
+  @Override
+  public void setAttribute(String attribute, Object value) {
+    attributeMap.put(attribute,value);
+  }
+
+  @Override
+  public Object getAttribute(String key) {
+    return attributeMap.get(key);
   }
 
   @Override

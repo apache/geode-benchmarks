@@ -26,6 +26,9 @@ import org.apache.geode.distributed.Locator;
 import org.apache.geode.perftest.Task;
 import org.apache.geode.perftest.TestContext;
 
+/**
+ * Task to start the locator
+ */
 public class StartLocator implements Task {
   private int locatorPort;
 

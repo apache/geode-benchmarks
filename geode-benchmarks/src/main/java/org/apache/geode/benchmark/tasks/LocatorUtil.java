@@ -22,6 +22,9 @@ import java.util.Set;
 
 import org.apache.geode.perftest.TestContext;
 
+/**
+ * Util class to get the locator address string
+ */
 public class LocatorUtil {
   static String getLocatorString(TestContext context, int locatorPort) {
     Set<InetAddress> locators = context.getHostsForRole("locator");

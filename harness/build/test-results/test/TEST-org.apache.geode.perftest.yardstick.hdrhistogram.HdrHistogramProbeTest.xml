@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="org.apache.geode.perftest.yardstick.hdrhistogram.HdrHistogramProbeTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2018-11-29T18:42:54" hostname="nnag-mbpro" time="0.083">
+  <properties/>
+  <testcase name="recordsFromMultipleThreads" classname="org.apache.geode.perftest.yardstick.hdrhistogram.HdrHistogramProbeTest" time="0.019"/>
+  <testcase name="generatesASummaryBenchmarkPoint" classname="org.apache.geode.perftest.yardstick.hdrhistogram.HdrHistogramProbeTest" time="0.06"/>
+  <testcase name="recordsASingleValue" classname="org.apache.geode.perftest.yardstick.hdrhistogram.HdrHistogramProbeTest" time="0.002"/>
+  <system-out><![CDATA[Size=107008
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

@@ -20,10 +20,35 @@ package org.apache.geode.perftest;
 import java.io.File;
 import java.io.Serializable;
 import java.net.InetAddress;
+import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 public interface TestContext extends Serializable {
   Set<InetAddress> getHostsForRole(String role);
 
   File getOutputDir();
+
+  /**
+   * Returns the JVM ID
+   * @return JVM ID
+   */
+  int getJvmID();
+  /**
+   * Sets the value of the attribute
+   * @param attribute attribute name
+   * @param value attribute value
+   */
+  void setAttribute(String attribute, Object value);
+
+  /**
+   * Gets the value of an attribute when searched by the passed key
+   *
+   * @param key lookup key
+   * @return the attribute value
+   */
+  Object getAttribute(String key);
+
+
+
 }

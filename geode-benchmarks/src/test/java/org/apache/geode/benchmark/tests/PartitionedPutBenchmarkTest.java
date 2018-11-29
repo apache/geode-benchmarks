@@ -15,15 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.geode.benchmark;
+package org.apache.geode.benchmark.tests;
 
-import java.io.File;
+import static org.apache.geode.benchmark.configurations.BenchmarkParameters.KEY_RANGE_FOR_MINIMAL_RUNNER;
 
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import org.apache.geode.benchmark.tests.PartitionedPutBenchmark;
 import org.apache.geode.perftest.TestRunners;
 
 public class PartitionedPutBenchmarkTest {
@@ -34,6 +33,7 @@ public class PartitionedPutBenchmarkTest {
   @Test
   public void benchmarkRunsSuccessfully() throws Exception {
     TestRunners.minimalRunner(folder.newFolder())
-        .runTest(new PartitionedPutBenchmark()::configure);
+        .runTest(new PartitionedPutBenchmark(KEY_RANGE_FOR_MINIMAL_RUNNER
+        )::configure);
   }
 }
