@@ -1,3 +1,5 @@
-.idea
-out
-.gradle
+.idea/
+out/
+.gradle/
+build/
+output/
