@@ -57,6 +57,7 @@ public class BenchmarkRunAnalyzer {
   public BenchmarkRunResult analyzeTestRun(File testResultDir, File baselineResultDir)
       throws IOException {
     List<File> benchmarkDirs = Arrays.asList(testResultDir.listFiles());
+    benchmarkDirs.sort(File::compareTo);
     BenchmarkRunResult result = new BenchmarkRunResult();
 
     for (File testDir : benchmarkDirs) {
