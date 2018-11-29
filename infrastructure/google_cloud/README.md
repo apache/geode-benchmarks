@@ -1,8 +1,19 @@
 # Benchmark Utilities for Google Cloud Platform
 
 
-These utilities create instances and run tests in your google cloud account. They assume that
-you have installed the gcloud utility and set your default project, region, and zone.
+These utilities create instances and run tests in your google cloud account. 
+
+# Prerequisites
+* You must have the [google cloud sdk](https://cloud.google.com/sdk/) installed.
+* You must also set a default region and zone via the following commands:
+```bash
+gcloud config set project <project>
+gcloud config set compute/region <region>
+gcloud config set compute/zone <zone>
+
+```
+
+otherwise the scripts may prompt you for these values.
 
 # build_image.sh
 `build_image.sh` creates a compute image suitable for launching benchmarks on. It takes no 
