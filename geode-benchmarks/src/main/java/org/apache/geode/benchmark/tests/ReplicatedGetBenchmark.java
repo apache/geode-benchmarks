@@ -19,9 +19,8 @@ import static org.apache.geode.benchmark.configurations.BenchmarkParameters.Role
 import org.apache.geode.benchmark.tasks.CreateReplicatedRegion;
 import org.apache.geode.perftest.TestConfig;
 
-public class ReplicatedGetBenchmark extends GetBenchmark{
-  public ReplicatedGetBenchmark() {
-  }
+public class ReplicatedGetBenchmark extends GetBenchmark {
+  public ReplicatedGetBenchmark() {}
 
   ReplicatedGetBenchmark(long keyRange) {
     this.keyRange = keyRange;

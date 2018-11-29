@@ -1,12 +1,12 @@
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
+ * contributor license agreements. See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
+ * the License. You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,7 +24,6 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashSet;
@@ -45,7 +44,7 @@ public class LocalInfrastructure implements Infrastructure {
   private final List<Process> processList = new ArrayList<Process>();
 
   public LocalInfrastructure(int numNodes) throws IOException {
-    for(int i =0; i < numNodes; i++) {
+    for (int i = 0; i < numNodes; i++) {
       Path workingDir = Files.createTempDirectory("workerProcess");
       nodes.add(new LocalNode(workingDir.toFile()));
     }
@@ -62,9 +61,10 @@ public class LocalInfrastructure implements Infrastructure {
     ProcessBuilder builder = new ProcessBuilder();
     builder.command(shellCommand);
     builder.inheritIO();
-    builder.directory(((LocalNode)node).getWorkingDir());
+    builder.directory(((LocalNode) node).getWorkingDir());
 
-    System.out.println(String.format("Lauching %s>%s", ((LocalNode) node).getWorkingDir(), String.join(" ", shellCommand)));
+    System.out.println(String.format("Lauching %s>%s", ((LocalNode) node).getWorkingDir(),
+        String.join(" ", shellCommand)));
     Process process = builder.start();
     processList.add(process);
 
@@ -74,23 +74,24 @@ public class LocalInfrastructure implements Infrastructure {
 
   @Override
   public void close() throws InterruptedException, IOException {
-    for(Process process : processList) {
+    for (Process process : processList) {
       process.destroyForcibly();
       process.waitFor();
     }
 
-    for(LocalNode node : nodes) {
+    for (LocalNode node : nodes) {
       FileUtils.deleteDirectory(node.getWorkingDir());
     }
   }
 
   @Override
-  public void copyToNodes(Iterable<File> files, String destDirName, boolean removeExisting) throws IOException {
-    for(LocalNode node : nodes) {
+  public void copyToNodes(Iterable<File> files, String destDirName, boolean removeExisting)
+      throws IOException {
+    for (LocalNode node : nodes) {
       Path destDir = new File(node.getWorkingDir(), destDirName).toPath();
       destDir.toFile().mkdirs();
 
-      for(File file : files) {
+      for (File file : files) {
         Files.copy(file.toPath(), destDir.resolve(file.getName()));
       }
     }
@@ -100,7 +101,7 @@ public class LocalInfrastructure implements Infrastructure {
   public void copyFromNode(Node node, String directory, File destDir) throws IOException {
     File nodeDir = new File(((LocalNode) node).workingDir, directory);
 
-    if(!nodeDir.exists()) {
+    if (!nodeDir.exists()) {
       return;
     }
 

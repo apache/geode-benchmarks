@@ -26,7 +26,8 @@ public class Analyzer {
 
   public static void main(String[] args) throws IOException {
     if (args.length != 2) {
-      System.out.println("Analyzer takes two test output directories as arguments, test results followed by baseline run result.");
+      System.out.println(
+          "Analyzer takes two test output directories as arguments, test results followed by baseline run result.");
       System.exit(1);
       return;
     }
@@ -52,13 +53,15 @@ public class Analyzer {
     }
 
     System.out.println("Running analyzer");
-    System.out.println("Comparing test result at " + testResultArg + " to baseline at " + baselineResultArg);
+    System.out.println(
+        "Comparing test result at " + testResultArg + " to baseline at " + baselineResultArg);
 
     BenchmarkRunAnalyzer analyzer = new BenchmarkRunAnalyzer();
     analyzer.addProbe(new YardstickThroughputSensorParser());
     analyzer.addProbe(new YardstickPercentileSensorParser());
     analyzer.addProbe(new YardstickHdrHistogramParser());
 
-    analyzer.analyzeTestRun(testResultDir, baselineResultDir).writeResult(new PrintWriter(System.out));
+    analyzer.analyzeTestRun(testResultDir, baselineResultDir)
+        .writeResult(new PrintWriter(System.out));
   }
 }

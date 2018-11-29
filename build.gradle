@@ -20,6 +20,7 @@ buildscript {
     }
     dependencies {
         classpath 'com.bmuschko:gradle-docker-plugin:4.0.4'
+        classpath "com.diffplug.spotless:spotless-plugin-gradle:3.16.0"
     }
 }
 
@@ -30,24 +31,9 @@ plugins {
 
 apply plugin: 'com.bmuschko.docker-remote-api'
 
-rat {
-    excludes = [
-            '.idea/**',
-            '.travis.yml',
-            '.gradle/**',
-            'gradlew*',
-            'gradle/**',
-            '.git/**',
-            '**/output/**',
-            '**/output-*/**',
-            '**/build/**',
-            '**/out/**',
-            'README.md'
-    ]
-}
 
 // Import task types
-import com.bmuschko.gradle.docker.tasks.image.*
+import com.bmuschko.gradle.docker.tasks.image.DockerBuildImage
 
 // Use task types
 task buildTestingImage(type: DockerBuildImage) {
@@ -55,3 +41,6 @@ task buildTestingImage(type: DockerBuildImage) {
     dockerFile = file('images/geode-performance/Dockerfile')
     tag = 'geode-performance-testing:latest'
 }
+
+apply from: "gradle/spotless.gradle"
+apply from: "gradle/rat.gradle"

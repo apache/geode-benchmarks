@@ -1,12 +1,12 @@
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
+ * contributor license agreements. See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
+ * the License. You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -27,11 +27,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.stream.Stream;
 
 import org.apache.geode.perftest.Task;
-
-import org.apache.geode.perftest.TestContext;
 import org.apache.geode.perftest.infrastructure.Infrastructure;
 import org.apache.geode.perftest.jvms.rmi.Controller;
-import org.apache.geode.perftest.runner.DefaultTestContext;
 
 /**
  * Interface for accessing remote JVMs are running tasks on them.
@@ -44,8 +41,8 @@ public class RemoteJVMs implements AutoCloseable {
 
 
   public RemoteJVMs(Infrastructure infra,
-                    List<JVMMapping> mapping, Controller controller,
-                    CompletableFuture<Void> exited) {
+      List<JVMMapping> mapping, Controller controller,
+      CompletableFuture<Void> exited) {
     this.infra = infra;
     this.jvmMappings = mapping;
     this.controller = controller;
@@ -55,7 +52,7 @@ public class RemoteJVMs implements AutoCloseable {
   /**
    * Run a task in parallel on all JVMs with the given roles.
    */
-  public void execute(Task task, String ... roleArray) {
+  public void execute(Task task, String... roleArray) {
 
     HashSet<String> roles = new HashSet<>(Arrays.asList(roleArray));
 
@@ -78,7 +75,8 @@ public class RemoteJVMs implements AutoCloseable {
   public void copyResults(File benchmarkOutput) throws IOException {
     benchmarkOutput.mkdirs();
     for (JVMMapping jvm : jvmMappings) {
-      infra.copyFromNode(jvm.getNode(), jvm.getOutputDir(), new File(benchmarkOutput, jvm.getRole() + "-" + jvm.getId()));
+      infra.copyFromNode(jvm.getNode(), jvm.getOutputDir(),
+          new File(benchmarkOutput, jvm.getRole() + "-" + jvm.getId()));
     }
   }
 }

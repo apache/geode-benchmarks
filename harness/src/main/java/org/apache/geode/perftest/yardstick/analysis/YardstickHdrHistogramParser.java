@@ -14,14 +14,9 @@
  */
 package org.apache.geode.perftest.yardstick.analysis;
 
-import static java.lang.Math.abs;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Scanner;
 
 import org.HdrHistogram.Histogram;
 import org.HdrHistogram.HistogramLogReader;
@@ -47,7 +42,7 @@ public class YardstickHdrHistogramParser implements ProbeResultParser {
 
     final Histogram nextIntervalHistogram = (Histogram) reader.nextIntervalHistogram();
 
-    if(histogram == null) {
+    if (histogram == null) {
       histogram = nextIntervalHistogram;
     } else {
       histogram.add(nextIntervalHistogram);

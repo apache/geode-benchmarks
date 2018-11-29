@@ -1,12 +1,12 @@
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
+ * contributor license agreements. See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
+ * the License. You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -32,11 +32,10 @@ import org.apache.geode.perftest.jvms.rmi.ChildJVM;
 class JVMLauncher {
   private static final Logger logger = LoggerFactory.getLogger(RemoteJVMFactory.class);
 
-  JVMLauncher() {
-  }
+  JVMLauncher() {}
 
   CompletableFuture<Void> launchProcesses(Infrastructure infra, int rmiPort,
-                                          List<JVMMapping> mapping, String libDir)
+      List<JVMMapping> mapping, String libDir)
       throws UnknownHostException {
     List<CompletableFuture<Void>> futures = new ArrayList<CompletableFuture<Void>>();
     for (JVMMapping entry : mapping) {
@@ -46,9 +45,11 @@ class JVMLauncher {
     return CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]));
   }
 
-  CompletableFuture<Void> launchWorker(Infrastructure infra, int rmiPort, String libDir, JVMMapping jvmConfig)
+  CompletableFuture<Void> launchWorker(Infrastructure infra, int rmiPort, String libDir,
+      JVMMapping jvmConfig)
       throws UnknownHostException {
-    String[] shellCommand = buildCommand(InetAddress.getLocalHost().getHostAddress(), rmiPort, libDir, jvmConfig);
+    String[] shellCommand =
+        buildCommand(InetAddress.getLocalHost().getHostAddress(), rmiPort, libDir, jvmConfig);
 
     CompletableFuture<Void> future = new CompletableFuture<Void>();
     Thread thread = new Thread("Worker " + jvmConfig.getNode().getAddress()) {
@@ -60,7 +61,8 @@ class JVMLauncher {
             logger.error("ChildJVM exited with error code " + result);
           }
         } catch (Throwable t) {
-          logger.error("Launching " + String.join(" ", shellCommand) + " on " + jvmConfig.getNode() + "Failed.", t);
+          logger.error("Launching " + String.join(" ", shellCommand) + " on " + jvmConfig.getNode()
+              + "Failed.", t);
         } finally {
           future.complete(null);
         }

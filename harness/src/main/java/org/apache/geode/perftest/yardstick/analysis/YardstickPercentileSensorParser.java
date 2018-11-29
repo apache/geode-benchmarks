@@ -100,13 +100,14 @@ public class YardstickPercentileSensorParser implements ProbeResultParser {
 
   public double getPercentile(int target) {
     if (target < 0 || target > 100) {
-      throw new RuntimeException("Percentile must be in the range (0, 100), invalid value: " + target);
+      throw new RuntimeException(
+          "Percentile must be in the range (0, 100), invalid value: " + target);
     }
     double targetPercent = target / 100.0;
     normalizeBuckets();
 
     if (buckets.size() == 1) {
-      return buckets.get(0).latencyBucket;  // Just one bucket doesn't give us much info
+      return buckets.get(0).latencyBucket; // Just one bucket doesn't give us much info
     }
 
     SensorBucket[] bucketArray = buckets.toArray(new SensorBucket[buckets.size()]);
@@ -121,11 +122,12 @@ public class YardstickPercentileSensorParser implements ProbeResultParser {
 
     SensorBucket targetBucket = bucketArray[i];
     // If last bucket contains the target percentile, assume bucket size is same as previous bucket
-    int bucketSize = (bucketArray.length > i + 1) ?
-        bucketArray[i + 1].latencyBucket - targetBucket.latencyBucket :
-        targetBucket.latencyBucket - bucketArray[i - 1].latencyBucket;
+    int bucketSize =
+        (bucketArray.length > i + 1) ? bucketArray[i + 1].latencyBucket - targetBucket.latencyBucket
+            : targetBucket.latencyBucket - bucketArray[i - 1].latencyBucket;
 
-    double percentileLocationInTargetBucket = 1.0 - ((accumulator - targetPercent) / targetBucket.bucketPercentage);
+    double percentileLocationInTargetBucket =
+        1.0 - ((accumulator - targetPercent) / targetBucket.bucketPercentage);
 
     return targetBucket.latencyBucket + bucketSize * percentileLocationInTargetBucket;
   }

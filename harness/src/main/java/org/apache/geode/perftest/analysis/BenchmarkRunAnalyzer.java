@@ -30,6 +30,7 @@ import org.apache.geode.perftest.yardstick.YardstickTask;
  * a comparison of the results to a provided writer.
  *
  * This currently handles data in the format
+ *
  * <pre>
  *   Result1
  *     /BenchmarkA
@@ -68,7 +69,8 @@ public class BenchmarkRunAnalyzer {
       File baselineDir = new File(baselineResultDir, testDir.getName());
       final List<File> baselineYardstickDirs = getYardstickOutputForBenchmarkDir(baselineDir);
 
-      final BenchmarkRunResult.BenchmarkResult benchmarkResult = result.addBenchmark(testDir.getName());
+      final BenchmarkRunResult.BenchmarkResult benchmarkResult =
+          result.addBenchmark(testDir.getName());
       for (ProbeResultParser probe : probes) {
         double testResult = getTestResult(testYardstickDirs, probe);
         double baselineResult = getTestResult(baselineYardstickDirs, probe);

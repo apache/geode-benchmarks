@@ -1,12 +1,12 @@
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
+ * contributor license agreements. See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
+ * the License. You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -51,7 +51,7 @@ public class SshInfrastructure implements Infrastructure {
   private final String user;
   private final int port;
   public static final Config CONFIG = new DefaultConfig();
-  
+
   public SshInfrastructure(Collection<String> hosts, String user) {
     this(hosts, user, 22);
   }
@@ -107,30 +107,32 @@ public class SshInfrastructure implements Infrastructure {
   }
 
   @Override
-  public void copyToNodes(Iterable<File> files, String destDir, boolean removeExisting) throws IOException {
-    Set<InetAddress> uniqueNodes = getNodes().stream().map(Node::getAddress).collect(Collectors.toSet());
+  public void copyToNodes(Iterable<File> files, String destDir, boolean removeExisting)
+      throws IOException {
+    Set<InetAddress> uniqueNodes =
+        getNodes().stream().map(Node::getAddress).collect(Collectors.toSet());
 
     List<CompletableFuture<Void>> futures = new ArrayList<>();
-    for(InetAddress address: uniqueNodes) {
+    for (InetAddress address : uniqueNodes) {
       futures.add(CompletableFuture.runAsync(() -> {
         try (SSHClient client = getSSHClient(address)) {
-            client.useCompression();
+          client.useCompression();
 
-            if(removeExisting) {
-              try (Session session = client.startSession()) {
-                session.exec(String.format("rm -rf '%s'", destDir)).join();
-              }
-            }
-
+          if (removeExisting) {
             try (Session session = client.startSession()) {
-              session.exec(String.format("mkdir -p '%s'", destDir)).join();
+              session.exec(String.format("rm -rf '%s'", destDir)).join();
             }
+          }
 
-            for (File file : files) {
-              logger.info("Copying " + file + " to " + address);
-              client.newSCPFileTransfer().upload(new FileSystemFile(file), destDir);
-            }
-        } catch(IOException e) {
+          try (Session session = client.startSession()) {
+            session.exec(String.format("mkdir -p '%s'", destDir)).join();
+          }
+
+          for (File file : files) {
+            logger.info("Copying " + file + " to " + address);
+            client.newSCPFileTransfer().upload(new FileSystemFile(file), destDir);
+          }
+        } catch (IOException e) {
           throw new UncheckedIOException(e);
         }
       }));
@@ -141,11 +143,11 @@ public class SshInfrastructure implements Infrastructure {
   @Override
   public void copyFromNode(Node node, String directory, File destDir) throws IOException {
     try (SSHClient client = getSSHClient(node.getAddress())) {
-        client.useCompression();
+      client.useCompression();
 
-        destDir.mkdirs();
-        client.newSCPFileTransfer().download(directory, destDir.getPath());
-        return;
+      destDir.mkdirs();
+      client.newSCPFileTransfer().download(directory, destDir.getPath());
+      return;
     }
 
   }
