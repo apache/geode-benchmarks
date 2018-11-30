@@ -34,14 +34,14 @@ task(analyzeRun, dependsOn: 'classes', type: JavaExec) {
 }
 
 dependencies {
-    testCompile group: 'junit', name: 'junit', version: '4.12'
-    compile group: 'com.hierynomus', name: 'sshj', version: '0.26.0'
-    compile group: 'commons-io', name: 'commons-io', version: '2.6'
-    compile group: 'org.yardstickframework', name: 'yardstick', version: '0.8.3'
-    compile group: 'org.hdrhistogram', name: 'HdrHistogram', version: '2.1.10'
-    testCompile group: 'org.mockito', name: 'mockito-all', version: '1.10.19'
-    testCompile group: 'org.awaitility', name: 'awaitility', version: '3.0.0'
-    testCompile group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.25'
-    testCompile group: 'org.apache.sshd', name: 'sshd-core', version: '2.1.0'
-    testCompile group: 'org.assertj', name: 'assertj-core', version: '3.11.1'
+    testCompile(group: 'junit', name: 'junit', version: '4.12')
+    compile(group: 'com.hierynomus', name: 'sshj', version: '0.26.0')
+    compile(group: 'commons-io', name: 'commons-io', version: '2.6')
+    compile(group: 'org.yardstickframework', name: 'yardstick', version: '0.8.3')
+    compile(group: 'org.hdrhistogram', name: 'HdrHistogram', version: '2.1.10')
+    testCompile(group: 'org.mockito', name: 'mockito-all', version: '1.10.19')
+    testCompile(group: 'org.awaitility', name: 'awaitility', version: '3.0.0')
+    testCompile(group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.25')
+    testCompile(group: 'org.apache.sshd', name: 'sshd-core', version: '2.1.0')
+    testCompile(group: 'org.assertj', name: 'assertj-core', version: '3.11.1')
 }

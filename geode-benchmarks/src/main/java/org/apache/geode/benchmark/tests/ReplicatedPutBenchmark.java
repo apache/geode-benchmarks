@@ -19,9 +19,8 @@ import static org.apache.geode.benchmark.configurations.BenchmarkParameters.Role
 import org.apache.geode.benchmark.tasks.CreateReplicatedRegion;
 import org.apache.geode.perftest.TestConfig;
 
-public class ReplicatedPutBenchmark extends PutBenchmark{
-  public ReplicatedPutBenchmark() {
-  }
+public class ReplicatedPutBenchmark extends PutBenchmark {
+  public ReplicatedPutBenchmark() {}
 
   ReplicatedPutBenchmark(long keyRange) {
     this.keyRange = keyRange;
@@ -29,6 +28,6 @@ public class ReplicatedPutBenchmark extends PutBenchmark{
 
   @Override
   void createRegion(TestConfig config) {
-    config.before(new CreateReplicatedRegion(),SERVER);
+    config.before(new CreateReplicatedRegion(), SERVER);
   }
 }

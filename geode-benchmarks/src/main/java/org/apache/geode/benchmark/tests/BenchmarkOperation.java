@@ -49,6 +49,7 @@ public abstract class BenchmarkOperation {
    * 1 - client
    * Two abstract methods are also provided to be implemented to
    * create the region as required by the benchmark.
+   *
    * @param config test configurations
    */
   void configure(TestConfig config) {
@@ -67,19 +68,21 @@ public abstract class BenchmarkOperation {
     createRegion(config);
     config.before(new StartClient(locatorPort), CLIENT);
     config.before(new CreateClientProxyRegion(), CLIENT);
-    config.before(new PrePopulateRegion(keyRange),SERVER);
+    config.before(new PrePopulateRegion(keyRange), SERVER);
     benchmarkOperation(config);
   }
 
   /**
    * The operation whose performance is to be measured
    * by the benchmark.
+   *
    * @param config test configurations
    */
   protected abstract void benchmarkOperation(TestConfig config);
 
   /**
    * Create the region to be used in the benchmark.
+   *
    * @param config test configurations.
    */
   abstract void createRegion(TestConfig config);

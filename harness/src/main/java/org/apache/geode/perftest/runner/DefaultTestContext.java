@@ -1,12 +1,12 @@
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
+ * contributor license agreements. See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
+ * the License. You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -29,7 +29,7 @@ public class DefaultTestContext implements TestContext {
   private SharedContext sharedContext;
   private File outputDir;
   private int jvmID;
-  TreeMap<String,Object> attributeMap;
+  TreeMap<String, Object> attributeMap;
 
   public DefaultTestContext(SharedContext sharedContext, File outputDir, int jvmID) {
     this.sharedContext = sharedContext;
@@ -50,7 +50,7 @@ public class DefaultTestContext implements TestContext {
 
   @Override
   public void setAttribute(String attribute, Object value) {
-    attributeMap.put(attribute,value);
+    attributeMap.put(attribute, value);
   }
 
   @Override

@@ -25,7 +25,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import org.apache.geode.perftest.yardstick.analysis.YardstickThroughputSensorParser;
 
 public class YardstickThroughputSensorParserTest {
   @Rule

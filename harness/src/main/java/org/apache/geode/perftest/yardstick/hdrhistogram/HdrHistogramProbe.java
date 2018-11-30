@@ -1,3 +1,20 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements. See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.apache.geode.perftest.yardstick.hdrhistogram;
 
 
@@ -39,7 +56,8 @@ public class HdrHistogramProbe implements BenchmarkExecutionAwareProbe, Benchmar
     this(1, TimeUnit.HOURS.toNanos(5), 3, () -> System.nanoTime(), histogramConsumer);
   }
 
-  public HdrHistogramProbe(int lower, long upper, int numDigits, Clock clock, Consumer<Histogram> histogramConsumer) {
+  public HdrHistogramProbe(int lower, long upper, int numDigits, Clock clock,
+      Consumer<Histogram> histogramConsumer) {
     this.lower = lower;
     this.upper = upper;
     this.numDigits = numDigits;
@@ -49,12 +67,12 @@ public class HdrHistogramProbe implements BenchmarkExecutionAwareProbe, Benchmar
 
   @Override
   public void beforeExecute(int threadIdx) {
-      startTimes[threadIdx] = clock.currentTimeNanos();
+    startTimes[threadIdx] = clock.currentTimeNanos();
   }
 
   @Override
   public void afterExecute(int threadIdx) {
-      histograms[threadIdx].recordValue(clock.currentTimeNanos() - startTimes[threadIdx]);
+    histograms[threadIdx].recordValue(clock.currentTimeNanos() - startTimes[threadIdx]);
   }
 
   @Override
@@ -72,14 +90,13 @@ public class HdrHistogramProbe implements BenchmarkExecutionAwareProbe, Benchmar
   }
 
   private void reset() {
-    for(int i =0; i < histograms.length; i++) {
+    for (int i = 0; i < histograms.length; i++) {
       histograms[i] = new Histogram(lower, upper, numDigits);
     }
   }
 
   @Override
-  public void stop() {
-  }
+  public void stop() {}
 
   @Override
   public Collection<String> metaInfo() {
@@ -94,7 +111,8 @@ public class HdrHistogramProbe implements BenchmarkExecutionAwareProbe, Benchmar
     double percentile50 = aggregate.getMean();
     long percentile99 = aggregate.getValueAtPercentile(99);
 
-    BenchmarkProbePoint point = new BenchmarkProbePoint(0, new double[] {percentile50, percentile99});
+    BenchmarkProbePoint point =
+        new BenchmarkProbePoint(0, new double[] {percentile50, percentile99});
 
     histogramConsumer.accept(aggregate);
     return Collections.singleton(point);
@@ -109,7 +127,7 @@ public class HdrHistogramProbe implements BenchmarkExecutionAwareProbe, Benchmar
 
   public Histogram getHistogram() {
     Histogram aggregate = new Histogram(lower, upper, numDigits);
-    for(Histogram histogram : histograms) {
+    for (Histogram histogram : histograms) {
       aggregate.add(histogram);
     }
     return aggregate;

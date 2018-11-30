@@ -70,7 +70,7 @@ public class YardstickThroughputSensorParser implements ProbeResultParser {
     for (SensorDatapoint datapoint : datapoints) {
       accumulator += datapoint.opsPerSec;
     }
-    return  accumulator / datapoints.size();
+    return accumulator / datapoints.size();
   }
 
   private static class SensorDatapoint {

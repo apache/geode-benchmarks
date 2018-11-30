@@ -1,12 +1,12 @@
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
+ * contributor license agreements. See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
+ * the License. You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,7 +22,6 @@ import java.io.PrintStream;
 import java.rmi.RemoteException;
 
 import org.apache.commons.io.FileUtils;
-import org.bouncycastle.jcajce.provider.drbg.DRBG;
 
 import org.apache.geode.perftest.jdk.RMI;
 import org.apache.geode.perftest.jdk.SystemInterface;
@@ -63,7 +62,7 @@ public class ChildJVM {
       }
 
       File outputDir = new File(OUTPUT_DIR);
-      //Clean up the output directory before the test runs
+      // Clean up the output directory before the test runs
       FileUtils.deleteQuietly(outputDir);
       outputDir.mkdirs();
       PrintStream out = new PrintStream(new File(outputDir, "system.log"));
@@ -80,22 +79,22 @@ public class ChildJVM {
 
       controller.addWorker(id, worker);
 
-      //Wait until the controller shuts down
-      //If the controller shuts down, this will throw an exception
+      // Wait until the controller shuts down
+      // If the controller shuts down, this will throw an exception
       try {
         while (controller.ping()) {
           Thread.sleep(pingTime);
         }
-      } catch(RemoteException e) {
-        //If we get a RemoteException, the controller has shut down
-        //exit gracefully
+      } catch (RemoteException e) {
+        // If we get a RemoteException, the controller has shut down
+        // exit gracefully
       }
 
       system.exit(0);
-    } catch(Throwable t) {
+    } catch (Throwable t) {
       t.printStackTrace();
-      //Force a system exit. Because we created an RMI object, an exception from the main
-      //thread would not otherwise cause this process to exit
+      // Force a system exit. Because we created an RMI object, an exception from the main
+      // thread would not otherwise cause this process to exit
       system.exit(1);
     }
   }

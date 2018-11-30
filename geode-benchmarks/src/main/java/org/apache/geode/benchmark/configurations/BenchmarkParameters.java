@@ -19,7 +19,7 @@ public class BenchmarkParameters {
   /**
    * All roles defined for the JVMs created for the benchmark
    */
-  public class Roles{
+  public class Roles {
     public static final String SERVER = "server";
     public static final String CLIENT = "client";
     public static final String LOCATOR = "locator";
@@ -28,7 +28,7 @@ public class BenchmarkParameters {
   /**
    * The port used to create the locator for the tests
    */
-  public final static int LOCATOR_PORT = 10334;
+  public static final int LOCATOR_PORT = 10334;
 
   /**
    * Key range on which all the region operations are conducted on the default runner

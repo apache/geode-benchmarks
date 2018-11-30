@@ -1,12 +1,12 @@
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
+ * contributor license agreements. See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
+ * the License. You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -88,19 +88,21 @@ public class YardstickTask implements Task {
     };
     cfg.output(System.out);
 
-    BenchmarkDriver[] drivers = new BenchmarkDriver[]{benchmark};
+    BenchmarkDriver[] drivers = new BenchmarkDriver[] {benchmark};
     benchmark.setUp(cfg);
 
     TestDoneProbe testDoneProbe = new TestDoneProbe();
-    Collection<BenchmarkProbe> probes = Arrays.asList(new HdrHistogramProbe(new HdrHistogramWriter(context.getOutputDir())), new ThroughputLatencyProbe(),
-        new PercentileProbe(), new DStatProbe(), new VmStatProbe(),
-        testDoneProbe);
+    Collection<BenchmarkProbe> probes =
+        Arrays.asList(new HdrHistogramProbe(new HdrHistogramWriter(context.getOutputDir())),
+            new ThroughputLatencyProbe(),
+            new PercentileProbe(), new DStatProbe(), new VmStatProbe(),
+            testDoneProbe);
     BenchmarkLoader loader = new BenchmarkLoader();
     loader.initialize(cfg);
 
     BenchmarkProbeSet probeSet = new BenchmarkProbeSet(benchmark, cfg, probes, loader);
-    BenchmarkProbeSet[] probeSets = new BenchmarkProbeSet[]{probeSet};
-    int[] weights = new int[]{1};
+    BenchmarkProbeSet[] probeSets = new BenchmarkProbeSet[] {probeSet};
+    int[] weights = new int[] {1};
 
     BenchmarkRunner runner = new BenchmarkRunner(cfg, drivers, probeSets, weights);
 

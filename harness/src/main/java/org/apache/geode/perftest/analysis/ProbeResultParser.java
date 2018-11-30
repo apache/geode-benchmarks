@@ -18,7 +18,7 @@ import java.io.File;
 import java.io.IOException;
 
 public interface ProbeResultParser {
-  // Given a output directory for a benchmark, parse out the data for the desired probe.  Note that
+  // Given a output directory for a benchmark, parse out the data for the desired probe. Note that
   // this method may be passed several csv files for a run and is expected to appropriately
   // aggregate the result of interest.
   void parseResults(File benchmarkOutputDir) throws IOException;

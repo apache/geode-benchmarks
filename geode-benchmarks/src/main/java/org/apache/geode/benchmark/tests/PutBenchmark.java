@@ -22,6 +22,6 @@ import org.apache.geode.perftest.TestConfig;
 public abstract class PutBenchmark extends BenchmarkOperation {
   @Override
   protected void benchmarkOperation(TestConfig config) {
-    config.workload(new PutTask(keyRange),CLIENT);
+    config.workload(new PutTask(keyRange), CLIENT);
   }
 }
