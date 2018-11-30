@@ -15,17 +15,14 @@
 
 package org.apache.geode.perftest.analysis;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
+import static org.junit.Assert.assertEquals;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.io.StringReader;
 import java.io.StringWriter;
-import java.util.Scanner;
 
-import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -82,15 +79,18 @@ public class BenchmarkRunAnalyzerTest {
     harvester.addProbe(new YardstickThroughputSensorParser());
     harvester.addProbe(new YardstickPercentileSensorParser());
 
-    ByteArrayOutputStream outputStream = new ByteArrayOutputStream(4000);
     StringWriter writer = new StringWriter();
 
-    harvester.analyzeTestRun(testFolder, baseFolder).writeResult(writer);
-    System.out.println(writer.toString());
-    BufferedReader resultReader = new BufferedReader(new StringReader(writer.toString()));
+    BenchmarkRunResult results = harvester.analyzeTestRun(testFolder, baseFolder);
 
-    validatedBenchmark(resultReader, "BenchmarkA", 20, 300, 25, 200);
-    validatedBenchmark(resultReader, "BenchmarkB", 25, 400, 20, 400);
+    BenchmarkRunResult expectedBenchmarkResult = new BenchmarkRunResult();
+    BenchmarkRunResult.BenchmarkResult resultA = expectedBenchmarkResult.addBenchmark("BenchmarkA");
+    resultA.addProbeResult(YardstickThroughputSensorParser.probeResultDescription, 25, 20);
+    resultA.addProbeResult(YardstickPercentileSensorParser.probeResultDescription, 200, 300);
+    BenchmarkRunResult.BenchmarkResult resultB = expectedBenchmarkResult.addBenchmark("BenchmarkB");
+    resultB.addProbeResult(YardstickThroughputSensorParser.probeResultDescription, 20, 25);
+    resultB.addProbeResult(YardstickPercentileSensorParser.probeResultDescription, 400, 400);
+    assertEquals(expectedBenchmarkResult, results);
   }
 
   private void populateThroughputCSV(File targetDirectory, double[] perSecondThroughputs)
@@ -113,40 +113,5 @@ public class BenchmarkRunAnalyzerTest {
       output.println(String.format("%d,%f", 100 * i, hundredUsBuckets[i]));
     }
     output.close();
-  }
-
-  private void validatedBenchmark(BufferedReader input, String benchmarkName, double testValA,
-      double testValB, double baseValA, double baseValB)
-      throws IOException {
-    String line = input.readLine();
-    Assert.assertEquals("-- " + benchmarkName + " --", line);
-    validateProbe(input, YardstickThroughputSensorParser.probeResultDescription, testValA,
-        baseValA);
-    validateProbe(input, YardstickPercentileSensorParser.probeResultDescription, testValB,
-        baseValB);
-  }
-
-  private void validateProbe(BufferedReader input, String description, double testVal,
-      double baseVal)
-      throws IOException {
-    String line = input.readLine();
-    Assert.assertEquals(description, line);
-    Scanner scanner = new Scanner(input.readLine());
-    while (!scanner.hasNextDouble()) {
-      scanner.next();
-    }
-    Assert.assertEquals(testVal, scanner.nextDouble(), 0.01 * testVal);
-    scanner = new Scanner(input.readLine());
-    while (!scanner.hasNextDouble()) {
-      scanner.next();
-    }
-    Assert.assertEquals(baseVal, scanner.nextDouble(), 0.01 * baseVal);
-    scanner = new Scanner(input.readLine());
-    while (!scanner.hasNextDouble()) {
-      scanner.next();
-    }
-    Assert.assertEquals(testVal / baseVal, scanner.nextDouble(), 0.1);
-    line = input.readLine();
-    Assert.assertEquals("", line);
   }
 }

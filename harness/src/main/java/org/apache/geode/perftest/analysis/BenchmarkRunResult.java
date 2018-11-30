@@ -17,12 +17,14 @@ package org.apache.geode.perftest.analysis;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Serializable;
+import java.io.StringWriter;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class BenchmarkRunResult implements Serializable {
-  private List<BenchmarkResult> benchmarkResults = new ArrayList<>();
+  private final List<BenchmarkResult> benchmarkResults = new ArrayList<>();
 
   public BenchmarkResult addBenchmark(String name) {
     final BenchmarkResult benchmarkResult = new BenchmarkResult(name);
@@ -33,18 +35,51 @@ public class BenchmarkRunResult implements Serializable {
   public void writeResult(Writer output) throws IOException {
     PrintWriter stream = new PrintWriter(output);
     for (BenchmarkResult benchmarkResult : benchmarkResults) {
-      stream.println("-- " + benchmarkResult.name + " --");
+      stream.println(benchmarkResult.name);
       for (ProbeResult probeResult : benchmarkResult.probeResults) {
-        stream.println(probeResult.description);
-        stream.println("Result: " + String.valueOf(probeResult.test));
-        stream.println("Baseline: " + String.valueOf(probeResult.baseline));
-        stream.println(
-            "Relative performance: " + String.valueOf(probeResult.test / probeResult.baseline));
+        stream.print(String.format("  %30s", probeResult.description));
+        stream.print(String.format("  Baseline: %12.2f", probeResult.baseline));
+        stream.print(String.format("  Test: %12.2f", probeResult.test));
+        stream.print(String.format("  Ratio: %2.2f", probeResult.test / probeResult.baseline));
         stream.println();
       }
     }
 
     output.flush();
+  }
+
+  @Override
+  public String toString() {
+    StringWriter writer = new StringWriter();
+    try {
+      this.writeResult(writer);
+    } catch (IOException e) {
+      throw new IllegalStateException();
+    }
+
+    return writer.toString();
+
+  }
+
+  public List<BenchmarkResult> getBenchmarkResults() {
+    return benchmarkResults;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    BenchmarkRunResult that = (BenchmarkRunResult) o;
+    return Objects.equals(benchmarkResults, that.benchmarkResults);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(benchmarkResults);
   }
 
   static class BenchmarkResult implements Serializable {
@@ -58,6 +93,25 @@ public class BenchmarkRunResult implements Serializable {
     public void addProbeResult(String name, double baseline, double test) {
       probeResults.add(new ProbeResult(name, baseline, test));
     }
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) {
+        return true;
+      }
+      if (o == null || getClass() != o.getClass()) {
+        return false;
+      }
+      BenchmarkResult that = (BenchmarkResult) o;
+      return Objects.equals(name, that.name) &&
+          Objects.equals(probeResults, that.probeResults);
+    }
+
+    @Override
+    public int hashCode() {
+
+      return Objects.hash(name, probeResults);
+    }
   }
 
   private static class ProbeResult implements Serializable {
@@ -69,6 +123,31 @@ public class BenchmarkRunResult implements Serializable {
       this.description = description;
       this.baseline = baseline;
       this.test = test;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) {
+        return true;
+      }
+      if (o == null || getClass() != o.getClass()) {
+        return false;
+      }
+      ProbeResult that = (ProbeResult) o;
+      return fuzzyEquals(that.baseline, baseline) &&
+          fuzzyEquals(that.test, test) &&
+          Objects.equals(description, that.description);
+    }
+
+    @Override
+    public int hashCode() {
+
+      return Objects.hash(description, baseline, test);
+    }
+
+    public boolean fuzzyEquals(double a, double b) {
+      double ratio = Math.abs(a / b);
+      return ratio < 1.05 && ratio > 0.95;
     }
   }
 }
