@@ -61,7 +61,7 @@ public abstract class BenchmarkOperation {
     config.warmupSeconds(warmUpTime);
     config.durationSeconds(benchmarkDuration);
     config.role(LOCATOR, 1);
-    config.role(SERVER, 4);
+    config.role(SERVER, 2);
     config.role(CLIENT, 1);
     config.before(new StartLocator(locatorPort), LOCATOR);
     config.before(new StartServer(locatorPort), SERVER);
