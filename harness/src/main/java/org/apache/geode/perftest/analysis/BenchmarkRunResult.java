@@ -14,6 +14,7 @@
  */
 package org.apache.geode.perftest.analysis;
 
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Serializable;
 import java.io.Writer;
@@ -29,7 +30,7 @@ public class BenchmarkRunResult implements Serializable {
     return benchmarkResult;
   }
 
-  public void writeResult(Writer output) {
+  public void writeResult(Writer output) throws IOException {
     PrintWriter stream = new PrintWriter(output);
     for (BenchmarkResult benchmarkResult : benchmarkResults) {
       stream.println("-- " + benchmarkResult.name + " --");
@@ -42,6 +43,8 @@ public class BenchmarkRunResult implements Serializable {
         stream.println();
       }
     }
+
+    output.flush();
   }
 
   static class BenchmarkResult implements Serializable {
