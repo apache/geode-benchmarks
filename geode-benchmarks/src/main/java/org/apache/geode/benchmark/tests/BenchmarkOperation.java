@@ -56,7 +56,7 @@ public abstract class BenchmarkOperation {
     int locatorPort = LOCATOR_PORT;
 
 
-    config.name(PartitionedPutBenchmark.class.getCanonicalName());
+    config.name(this.getClass().getCanonicalName());
     config.warmupSeconds(warmUpTime);
     config.durationSeconds(benchmarkDuration);
     config.role(LOCATOR, 1);
