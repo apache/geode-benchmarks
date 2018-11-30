@@ -21,6 +21,7 @@ import static org.apache.geode.benchmark.configurations.BenchmarkParameters.Role
 import static org.apache.geode.benchmark.configurations.BenchmarkParameters.Roles.LOCATOR;
 import static org.apache.geode.benchmark.configurations.BenchmarkParameters.Roles.SERVER;
 import static org.apache.geode.benchmark.configurations.BenchmarkParameters.WARM_UP_TIME;
+import static org.apache.geode.benchmark.configurations.JVMProperties.JVM_ARGS;
 
 import org.junit.Test;
 
@@ -34,8 +35,6 @@ import org.apache.geode.perftest.TestRunners;
 
 public abstract class BenchmarkOperation {
   long keyRange = KEY_RANGE;
-  int warmUpTime = WARM_UP_TIME;
-  int benchmarkDuration = BENCHMARK_DURATION;
 
   @Test
   public void run() throws Exception {
@@ -58,11 +57,14 @@ public abstract class BenchmarkOperation {
 
 
     config.name(this.getClass().getCanonicalName());
-    config.warmupSeconds(warmUpTime);
-    config.durationSeconds(benchmarkDuration);
+    config.warmupSeconds(WARM_UP_TIME);
+    config.durationSeconds(BENCHMARK_DURATION);
     config.role(LOCATOR, 1);
     config.role(SERVER, 4);
     config.role(CLIENT, 1);
+    config.jvmArgs(SERVER, JVM_ARGS);
+    config.jvmArgs(CLIENT, JVM_ARGS);
+    config.jvmArgs(LOCATOR, JVM_ARGS);
     config.before(new StartLocator(locatorPort), LOCATOR);
     config.before(new StartServer(locatorPort), SERVER);
     createRegion(config);
@@ -70,6 +72,7 @@ public abstract class BenchmarkOperation {
     config.before(new CreateClientProxyRegion(), CLIENT);
     config.before(new PrePopulateRegion(keyRange), SERVER);
     benchmarkOperation(config);
+
   }
 
   /**
