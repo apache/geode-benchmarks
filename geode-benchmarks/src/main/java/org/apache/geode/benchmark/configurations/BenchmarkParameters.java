@@ -38,12 +38,12 @@ public class BenchmarkParameters {
   /**
    * Warm up time for the benchmark running on the default runner
    */
-  public static final int WARM_UP_TIME = 30;
+  public static final int WARM_UP_TIME = 60;
 
   /**
    * Total duration for which the benchmark will run on the default runner
    */
-  public static final int BENCHMARK_DURATION = 30;
+  public static final int BENCHMARK_DURATION = 240;
 
   /**
    * String key for the server cache attribute in the TestContext's attributeTree
