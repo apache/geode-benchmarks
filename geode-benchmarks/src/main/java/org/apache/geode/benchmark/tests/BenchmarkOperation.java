@@ -14,14 +14,14 @@
  */
 package org.apache.geode.benchmark.tests;
 
-import static org.apache.geode.benchmark.configurations.BenchmarkParameters.BENCHMARK_DURATION;
-import static org.apache.geode.benchmark.configurations.BenchmarkParameters.KEY_RANGE;
-import static org.apache.geode.benchmark.configurations.BenchmarkParameters.LOCATOR_PORT;
-import static org.apache.geode.benchmark.configurations.BenchmarkParameters.Roles.CLIENT;
-import static org.apache.geode.benchmark.configurations.BenchmarkParameters.Roles.LOCATOR;
-import static org.apache.geode.benchmark.configurations.BenchmarkParameters.Roles.SERVER;
-import static org.apache.geode.benchmark.configurations.BenchmarkParameters.WARM_UP_TIME;
-import static org.apache.geode.benchmark.configurations.JVMProperties.JVM_ARGS;
+import static org.apache.geode.benchmark.parameters.BenchmarkParameters.BENCHMARK_DURATION;
+import static org.apache.geode.benchmark.parameters.BenchmarkParameters.KEY_RANGE;
+import static org.apache.geode.benchmark.parameters.BenchmarkParameters.LOCATOR_PORT;
+import static org.apache.geode.benchmark.parameters.BenchmarkParameters.Roles.CLIENT;
+import static org.apache.geode.benchmark.parameters.BenchmarkParameters.Roles.LOCATOR;
+import static org.apache.geode.benchmark.parameters.BenchmarkParameters.Roles.SERVER;
+import static org.apache.geode.benchmark.parameters.BenchmarkParameters.WARM_UP_TIME;
+import static org.apache.geode.benchmark.parameters.JVMParameters.JVM_ARGS;
 
 import org.junit.Test;
 

@@ -14,7 +14,7 @@
  */
 package org.apache.geode.benchmark.tests;
 
-import static org.apache.geode.benchmark.configurations.BenchmarkParameters.Roles.CLIENT;
+import static org.apache.geode.benchmark.parameters.BenchmarkParameters.Roles.CLIENT;
 
 import org.apache.geode.benchmark.tasks.GetTask;
 import org.apache.geode.perftest.TestConfig;

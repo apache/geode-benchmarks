@@ -17,7 +17,7 @@
 
 package org.apache.geode.benchmark.tasks;
 
-import static org.apache.geode.benchmark.configurations.BenchmarkParameters.CLIENT_CACHE;
+import static org.apache.geode.benchmark.parameters.BenchmarkParameters.CLIENT_CACHE;
 
 import java.io.File;
 import java.net.InetAddress;

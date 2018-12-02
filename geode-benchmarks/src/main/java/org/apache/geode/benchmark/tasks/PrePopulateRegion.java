@@ -16,8 +16,8 @@
  */
 package org.apache.geode.benchmark.tasks;
 
-import static org.apache.geode.benchmark.configurations.BenchmarkParameters.KEY_RANGE;
-import static org.apache.geode.benchmark.configurations.BenchmarkParameters.SERVER_CACHE;
+import static org.apache.geode.benchmark.parameters.BenchmarkParameters.KEY_RANGE;
+import static org.apache.geode.benchmark.parameters.BenchmarkParameters.SERVER_CACHE;
 
 import java.time.Duration;
 import java.time.Instant;

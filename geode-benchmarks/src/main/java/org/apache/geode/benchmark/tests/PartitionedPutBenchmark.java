@@ -17,7 +17,7 @@
 
 package org.apache.geode.benchmark.tests;
 
-import static org.apache.geode.benchmark.configurations.BenchmarkParameters.Roles.SERVER;
+import static org.apache.geode.benchmark.parameters.BenchmarkParameters.Roles.SERVER;
 
 import org.apache.geode.benchmark.tasks.CreatePartitionedRegion;
 import org.apache.geode.perftest.TestConfig;

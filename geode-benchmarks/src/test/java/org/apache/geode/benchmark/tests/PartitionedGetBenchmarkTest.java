@@ -14,7 +14,7 @@
  */
 package org.apache.geode.benchmark.tests;
 
-import static org.apache.geode.benchmark.configurations.BenchmarkParameters.KEY_RANGE_FOR_MINIMAL_RUNNER;
+import static org.apache.geode.benchmark.parameters.BenchmarkParameters.KEY_RANGE_FOR_MINIMAL_RUNNER;
 
 import org.junit.Rule;
 import org.junit.Test;

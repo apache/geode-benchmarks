@@ -15,7 +15,7 @@
 package org.apache.geode.benchmark.tasks;
 
 
-import static org.apache.geode.benchmark.configurations.BenchmarkParameters.SERVER_CACHE;
+import static org.apache.geode.benchmark.parameters.BenchmarkParameters.SERVER_CACHE;
 
 import org.apache.geode.cache.Cache;
 import org.apache.geode.cache.RegionShortcut;
