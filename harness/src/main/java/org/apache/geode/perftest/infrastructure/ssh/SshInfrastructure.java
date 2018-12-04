@@ -31,6 +31,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import net.schmizz.sshj.Config;
@@ -107,14 +108,15 @@ public class SshInfrastructure implements Infrastructure {
   }
 
   @Override
-  public void copyToNodes(Iterable<File> files, String destDir, boolean removeExisting)
+  public void copyToNodes(Iterable<File> files, Function<Node, String> destDirFunction,
+      boolean removeExisting)
       throws IOException {
-    Set<InetAddress> uniqueNodes =
-        getNodes().stream().map(Node::getAddress).collect(Collectors.toSet());
 
     List<CompletableFuture<Void>> futures = new ArrayList<>();
-    for (InetAddress address : uniqueNodes) {
+    for (Node node : this.getNodes()) {
       futures.add(CompletableFuture.runAsync(() -> {
+        InetAddress address = node.getAddress();
+        String destDir = destDirFunction.apply(node);
         try (SSHClient client = getSSHClient(address)) {
           client.useCompression();
 

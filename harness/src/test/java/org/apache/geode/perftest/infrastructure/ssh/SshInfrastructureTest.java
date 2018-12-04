@@ -75,7 +75,7 @@ public class SshInfrastructureTest {
 
     assertFalse(targetFolder.exists());
 
-    infra.copyToNodes(Arrays.asList(someFile), targetFolder.getPath(), false);
+    infra.copyToNodes(Arrays.asList(someFile), node -> targetFolder.getPath(), false);
 
     assertTrue(targetFolder.exists());
     assertTrue(new File(targetFolder, someFile.getName()).exists());
@@ -93,7 +93,7 @@ public class SshInfrastructureTest {
     fileToRemove.createNewFile();
     assertTrue(fileToRemove.exists());
 
-    infra.copyToNodes(Arrays.asList(someFile), targetFolder.getPath(), true);
+    infra.copyToNodes(Arrays.asList(someFile), node -> targetFolder.getPath(), true);
 
     assertTrue(targetFolder.exists());
     assertTrue(new File(targetFolder, someFile.getName()).exists());

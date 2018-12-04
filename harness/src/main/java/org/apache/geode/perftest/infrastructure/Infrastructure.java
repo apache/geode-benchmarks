@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.net.InetAddress;
 import java.util.Set;
+import java.util.function.Function;
 
 /**
  * Some deployed infrastructure that the test is running on
@@ -46,11 +47,12 @@ public interface Infrastructure extends AutoCloseable {
    * Copy a list of files to a directory on the node.
    *
    * @param files A list of files on the local system to copy
-   * @param destDir The directory on the remote machine to copy to
+   * @param destDirectoryFunction A function that returns the destination directory, given a node
    * @param removeExisting If true, remove all existing files in the directory on the remote
    *        machine
    */
-  void copyToNodes(Iterable<File> files, String destDir, boolean removeExisting) throws IOException;
+  void copyToNodes(Iterable<File> files, Function<Node, String> destDirectoryFunction,
+      boolean removeExisting) throws IOException;
 
   void copyFromNode(Node node, String directory, File destDir) throws IOException;
 

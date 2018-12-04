@@ -79,7 +79,7 @@ public class RemoteJVMFactoryTest {
     InOrder inOrder = inOrder(controller, controllerFactory, jvmLauncher, classPathCopier, infra);
 
     inOrder.verify(controllerFactory).createController(any(), eq(2));
-    inOrder.verify(jvmLauncher).launchProcesses(eq(infra), anyInt(), any(), any());
+    inOrder.verify(jvmLauncher).launchProcesses(eq(infra), anyInt(), any());
     inOrder.verify(controller).waitForWorkers(anyInt(), any());
 
 

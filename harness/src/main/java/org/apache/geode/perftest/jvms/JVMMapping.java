@@ -55,4 +55,8 @@ public class JVMMapping implements Serializable {
   public List<String> getJvmArgs() {
     return jvmArgs;
   }
+
+  public String getLibDir() {
+    return ".geode-performance/lib/" + role + "-" + id;
+  }
 }

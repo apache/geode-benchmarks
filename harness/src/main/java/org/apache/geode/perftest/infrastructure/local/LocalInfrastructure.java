@@ -29,6 +29,7 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Function;
 
 import org.apache.commons.io.FileUtils;
 
@@ -85,9 +86,11 @@ public class LocalInfrastructure implements Infrastructure {
   }
 
   @Override
-  public void copyToNodes(Iterable<File> files, String destDirName, boolean removeExisting)
+  public void copyToNodes(Iterable<File> files, Function<Node, String> destDirFunction,
+      boolean removeExisting)
       throws IOException {
     for (LocalNode node : nodes) {
+      String destDirName = destDirFunction.apply(node);
       Path destDir = new File(node.getWorkingDir(), destDirName).toPath();
       destDir.toFile().mkdirs();
 

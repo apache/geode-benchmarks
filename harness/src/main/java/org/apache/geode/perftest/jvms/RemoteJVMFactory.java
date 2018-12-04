@@ -51,7 +51,6 @@ public class RemoteJVMFactory {
   public static final int RMI_PORT = 33333;
   public static final String CLASSPATH = System.getProperty("java.class.path");
   public static final String JAVA_HOME = System.getProperty("java.home");
-  private static final String LIB_DIR = ".geode-performance/lib";
   private final JVMLauncher jvmLauncher;
   private final ClassPathCopier classPathCopier;
   private final ControllerFactory controllerFactory;
@@ -98,16 +97,23 @@ public class RemoteJVMFactory {
     Controller controller =
         controllerFactory.createController(new SharedContext(mapping), numWorkers);
 
-    classPathCopier.copyToNodes(infra, LIB_DIR);
+    classPathCopier.copyToNodes(infra, node -> getLibDir(mapping, node));
 
-    CompletableFuture<Void> processesExited = jvmLauncher.launchProcesses(infra, RMI_PORT, mapping,
-        LIB_DIR);
+    CompletableFuture<Void> processesExited = jvmLauncher.launchProcesses(infra, RMI_PORT, mapping);
 
     if (!controller.waitForWorkers(5, TimeUnit.MINUTES)) {
       throw new IllegalStateException("Workers failed to start in 1 minute");
     }
 
     return new RemoteJVMs(infra, mapping, controller, processesExited);
+  }
+
+  private String getLibDir(List<JVMMapping> mapping, Infrastructure.Node node) {
+    return mapping.stream()
+        .filter(entry -> entry.getNode().equals(node))
+        .findFirst()
+        .orElseThrow(() -> new IllegalStateException("Could not find lib dir for node " + node))
+        .getLibDir();
   }
 
   public InfrastructureFactory getInfrastructureFactory() {

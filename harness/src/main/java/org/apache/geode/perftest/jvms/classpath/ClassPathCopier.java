@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.Arrays;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.geode.perftest.infrastructure.Infrastructure;
@@ -42,7 +43,8 @@ public class ClassPathCopier {
   /**
    * Copy the current classpath to a lib directory on all of the nodes in the infrastructure
    */
-  public void copyToNodes(Infrastructure infrastructure, String destDir) throws IOException {
+  public void copyToNodes(Infrastructure infrastructure,
+      Function<Infrastructure.Node, String> destDirFunction) throws IOException {
     String[] fileArray = classpath.split(File.pathSeparator);
 
     Iterable<File> files = Arrays.asList(fileArray)
@@ -53,7 +55,7 @@ public class ClassPathCopier {
         .filter(File::exists)
         .collect(Collectors.toSet());
 
-    infrastructure.copyToNodes(files, destDir, true);
+    infrastructure.copyToNodes(files, destDirFunction, true);
   }
 
   private File jarDir(File file) {

@@ -35,21 +35,21 @@ class JVMLauncher {
   JVMLauncher() {}
 
   CompletableFuture<Void> launchProcesses(Infrastructure infra, int rmiPort,
-      List<JVMMapping> mapping, String libDir)
+      List<JVMMapping> mapping)
       throws UnknownHostException {
     List<CompletableFuture<Void>> futures = new ArrayList<CompletableFuture<Void>>();
     for (JVMMapping entry : mapping) {
-      CompletableFuture<Void> future = launchWorker(infra, rmiPort, libDir, entry);
+      CompletableFuture<Void> future = launchWorker(infra, rmiPort, entry);
       futures.add(future);
     }
     return CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]));
   }
 
-  CompletableFuture<Void> launchWorker(Infrastructure infra, int rmiPort, String libDir,
+  CompletableFuture<Void> launchWorker(Infrastructure infra, int rmiPort,
       JVMMapping jvmConfig)
       throws UnknownHostException {
     String[] shellCommand =
-        buildCommand(InetAddress.getLocalHost().getHostAddress(), rmiPort, libDir, jvmConfig);
+        buildCommand(InetAddress.getLocalHost().getHostAddress(), rmiPort, jvmConfig);
 
     CompletableFuture<Void> future = new CompletableFuture<Void>();
     Thread thread = new Thread("Worker " + jvmConfig.getNode().getAddress()) {
@@ -73,12 +73,12 @@ class JVMLauncher {
     return future;
   }
 
-  String[] buildCommand(String rmiHost, int rmiPort, String libDir, JVMMapping jvmConfig) {
+  String[] buildCommand(String rmiHost, int rmiPort, JVMMapping jvmConfig) {
 
     List<String> command = new ArrayList<String>();
     command.add("java");
     command.add("-classpath");
-    command.add(libDir + "/*");
+    command.add(jvmConfig.getLibDir() + "/*");
     command.add("-D" + RemoteJVMFactory.RMI_HOST + "=" + rmiHost);
     command.add("-D" + RemoteJVMFactory.RMI_PORT_PROPERTY + "=" + rmiPort);
     command.add("-D" + RemoteJVMFactory.JVM_ID + "=" + jvmConfig.getId());
