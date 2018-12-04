@@ -17,37 +17,20 @@
 
 package org.apache.geode.perftest.infrastructure.ssh;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import org.assertj.core.api.Assertions;
+import org.junit.Test;
 
 import org.apache.geode.perftest.infrastructure.Infrastructure;
-import org.apache.geode.perftest.infrastructure.InfrastructureFactory;
 
-public class SshInfrastructureFactory implements InfrastructureFactory {
+public class SshInfrastructureFactoryTest {
 
-  private final List<String> hosts;
-  private final String user;
+  @Test
+  public void ignoresExtraHosts() {
+    SshInfrastructureFactory factory =
+        new SshInfrastructureFactory("user", "localhost", "localhost", "localhost");
+    Infrastructure infra = factory.create(2);
 
-  public SshInfrastructureFactory(String user, String... hosts) {
-    this.hosts = Arrays.asList(hosts);
-    this.user = user;
+    Assertions.assertThat(infra.getNodes()).hasSize(2);
   }
 
-  @Override
-  public Infrastructure create(int nodes) {
-    if (nodes > hosts.size()) {
-      throw new IllegalStateException(
-          "Not enough hosts to create " + nodes + " nodes. Available hosts: " + hosts);
-    }
-    return new SshInfrastructure(hosts.subList(0, nodes), user);
-  }
-
-  public Collection<String> getHosts() {
-    return hosts;
-  }
-
-  public String getUser() {
-    return user;
-  }
 }
