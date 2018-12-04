@@ -28,7 +28,6 @@ public class JVMParameters {
       "-XX:GCLogFileSize=1M",
       "-XX:+UnlockDiagnosticVMOptions",
       "-XX:ParGCCardsPerStrideChunk=32768",
-      "-XX:OnOutOfMemoryError='\''kill -9 %p'\''",
       "-XX:+UseNUMA",
       "-XX:+UseConcMarkSweepGC",
       "-XX:+UseCMSInitiatingOccupancyOnly",
