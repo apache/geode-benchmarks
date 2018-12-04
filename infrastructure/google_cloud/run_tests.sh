@@ -24,23 +24,23 @@ OUTPUT=${3:-output-${DATE}-${TAG}}
 BENCHMARK_BRANCH=${4:-develop}
 PREFIX="geode-performance-${TAG}"
 
-#INSTANCES=$(gcloud compute instance-groups list-instances ${PREFIX} | grep "${TAG}" | awk '{print $1}')
+INSTANCES=$(gcloud compute instance-groups list-instances ${PREFIX} | grep "${TAG}" | awk '{print $1}')
 
 
-HOSTS=(r02-s06.maas.gemstone.com r02-s08.maas.gemstone.com r02-s10.maas.gemstone.com r02-s14.maas.gemstone.com)
+HOSTS=$(echo ${INSTANCES} | tr ' ' ',')
 
-#FIRST_INSTANCE=$(echo ${INSTANCES} | awk '{print $1}' )
+FIRST_INSTANCE=$(echo ${INSTANCES} | awk '{print $1}' )
 
-ssh r02-s06.maas.gemstone.com << EOF
-  git clone --depth=1 https://github.com/apache/geode --branch ${BRANCH} geode
-  rgit clone https://github.com/apache/geode-benchmaks --branch ${BENCHMARK_BRANCH}
-  cd geode-benchmarks &&
-  ./gradlew --include-build ../geode benchmark -Phosts=r02-s06.maas.gemstone.com,r02-s08.maas.gemstone.com,r02-s10.maas.gemstone.com,r02-s14.maas.gemstone.com,r02-s18.maas.gemstone.com --no-daemon
-EOF
+gcloud compute ssh geode@$FIRST_INSTANCE --command="\
+  rm -rf geode-benchmarks geode && \
+  git clone --depth=1 https://github.com/apache/geode --branch ${BRANCH} geode && \
+  git clone https://github.com/apache/geode-benchmarks --branch ${BENCHMARK_BRANCH} && \
+  cd geode-benchmarks && \
+  ./gradlew --include-build ../geode benchmark -Phosts=${HOSTS}"
 
 
 mkdir -p ${OUTPUT}
 
-scp --recurse r02-s06.maas.gemstone.com:geode-benchmarks/geode-benchmarks/build/reports ${OUTPUT}/reports
+gcloud compute scp --recurse geode@${FIRST_INSTANCE}:geode-benchmarks/geode-benchmarks/build/reports ${OUTPUT}/reports
 
-scp --recurse r02-s06.maas.gemstone.com:geode-benchmarks/geode-benchmarks/build/benchmarks ${OUTPUT}
+gcloud compute scp --recurse geode@${FIRST_INSTANCE}:geode-benchmarks/geode-benchmarks/build/benchmarks ${OUTPUT}
