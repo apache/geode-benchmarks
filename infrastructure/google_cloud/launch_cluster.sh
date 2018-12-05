@@ -24,16 +24,21 @@ COUNT=${2}
 SUBNET=${3}
 IMAGE_FAMILY="geode-performance"
 PREFIX="geode-performance-${TAG}"
-INSTANCE_TYPE=n1-standard-16
+NODE_TEMPLATE="${PREFIX}-node-template"
+NODE_GROUP="${PREFIX}-node-group"
+INSTANCE_TYPE=n1-highmem-96
 
 KEY_FILE=/tmp/id_${TAG}
 
 ssh-keygen -b 2048 -t rsa -f $KEY_FILE -q -N ""
 
+gcloud compute sole-tenancy node-templates create ${NODE_TEMPLATE} --node-type=n1-node-96-624
+gcloud compute sole-tenancy node-groups create ${NODE_GROUP} --node-template=${NODE_TEMPLATE} --target-size=${COUNT}
 
 gcloud compute instance-templates create ${PREFIX}-template \
   --machine-type=${INSTANCE_TYPE} \
   --subnet=${SUBNET}  \
+  --node-group="${NODE_GROUP}" \
   --image-family=${IMAGE_FAMILY} \
   --boot-disk-size=50GB \
   --boot-disk-type=pd-ssd
