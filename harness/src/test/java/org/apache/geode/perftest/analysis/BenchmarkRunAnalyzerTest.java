@@ -81,7 +81,7 @@ public class BenchmarkRunAnalyzerTest {
 
     StringWriter writer = new StringWriter();
 
-    BenchmarkRunResult results = harvester.analyzeTestRun(testFolder, baseFolder);
+    BenchmarkRunResult results = harvester.analyzeTestRun(baseFolder, testFolder);
 
     BenchmarkRunResult expectedBenchmarkResult = new BenchmarkRunResult();
     BenchmarkRunResult.BenchmarkResult resultA = expectedBenchmarkResult.addBenchmark("BenchmarkA");

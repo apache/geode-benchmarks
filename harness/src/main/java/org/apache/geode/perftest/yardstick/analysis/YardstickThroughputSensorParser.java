@@ -56,13 +56,11 @@ public class YardstickThroughputSensorParser implements ProbeResultParser {
   }
 
   @Override
-  public double getProbeResult() {
-    return getAverageThroughput();
-  }
+  public List<ResultData> getProbeResults() {
+    List<ResultData> results = new ArrayList<>(1);
+    results.add(new ResultData(probeResultDescription, getAverageThroughput()));
 
-  @Override
-  public String getResultDescription() {
-    return probeResultDescription;
+    return results;
   }
 
   public double getAverageThroughput() {

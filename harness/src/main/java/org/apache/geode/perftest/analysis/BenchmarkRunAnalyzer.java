@@ -20,6 +20,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -55,7 +56,7 @@ public class BenchmarkRunAnalyzer {
     probes.add(probeResultParser);
   }
 
-  public BenchmarkRunResult analyzeTestRun(File testResultDir, File baselineResultDir)
+  public BenchmarkRunResult analyzeTestRun(File baselineResultDir, File testResultDir)
       throws IOException {
     List<File> benchmarkDirs = Arrays.asList(testResultDir.listFiles());
     benchmarkDirs.sort(File::compareTo);
@@ -72,22 +73,33 @@ public class BenchmarkRunAnalyzer {
       final BenchmarkRunResult.BenchmarkResult benchmarkResult =
           result.addBenchmark(testDir.getName());
       for (ProbeResultParser probe : probes) {
-        double testResult = getTestResult(testYardstickDirs, probe);
-        double baselineResult = getTestResult(baselineYardstickDirs, probe);
+        List<ProbeResultParser.ResultData> testResults = getTestResult(testYardstickDirs, probe);
+        List<ProbeResultParser.ResultData> baselineResults =
+            getTestResult(baselineYardstickDirs, probe);
 
-        benchmarkResult.addProbeResult(probe.getResultDescription(), baselineResult, testResult);
+        Iterator<ProbeResultParser.ResultData> testResultIter = testResults.iterator();
+        Iterator<ProbeResultParser.ResultData> baselineResultIter = baselineResults.iterator();
+
+        while (testResultIter.hasNext()) {
+          ProbeResultParser.ResultData testResult = testResultIter.next();
+          ProbeResultParser.ResultData baselineResult = baselineResultIter.next();
+
+          benchmarkResult.addProbeResult(testResult.description, baselineResult.value,
+              testResult.value);
+        }
       }
     }
 
     return result;
   }
 
-  private double getTestResult(List<File> resultDirs, ProbeResultParser probe) throws IOException {
+  private List<ProbeResultParser.ResultData> getTestResult(List<File> resultDirs,
+      ProbeResultParser probe) throws IOException {
     probe.reset();
     for (File outputDirectory : resultDirs) {
       probe.parseResults(outputDirectory);
     }
-    return probe.getProbeResult();
+    return probe.getProbeResults();
   }
 
   private List<File> getYardstickOutputForBenchmarkDir(File benchmarkDir) throws IOException {
