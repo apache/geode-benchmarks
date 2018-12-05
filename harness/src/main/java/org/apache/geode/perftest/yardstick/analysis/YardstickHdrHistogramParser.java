@@ -17,6 +17,8 @@ package org.apache.geode.perftest.yardstick.analysis;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.HdrHistogram.Histogram;
 import org.HdrHistogram.HistogramLogReader;
@@ -31,7 +33,6 @@ import org.apache.geode.perftest.yardstick.hdrhistogram.HdrHistogramWriter;
  */
 public class YardstickHdrHistogramParser implements ProbeResultParser {
   public static final String sensorOutputFile = HdrHistogramWriter.FILE_NAME;
-  public static final String probeResultDescription = "HDR 99th percentile latency";
 
   public Histogram histogram = null;
 
@@ -55,13 +56,15 @@ public class YardstickHdrHistogramParser implements ProbeResultParser {
   }
 
   @Override
-  // Default probe result is the 99th percentile latency for the benchmark
-  public double getProbeResult() {
-    return histogram.getValueAtPercentile(99);
-  }
+  public List<ResultData> getProbeResults() {
+    List<ResultData> results = new ArrayList<>(3);
+    results.add(new ResultData("median latency", histogram.getValueAtPercentile(50)));
+    results.add(new ResultData("90th percentile latency", histogram.getValueAtPercentile(90)));
+    results.add(new ResultData("99th percentile latency", histogram.getValueAtPercentile(99)));
+    results.add(new ResultData("99.9th percentile latency", histogram.getValueAtPercentile(99.9)));
+    results.add(new ResultData("average latency", histogram.getMean()));
+    results.add(new ResultData("latency standard deviation", histogram.getStdDeviation()));
 
-  @Override
-  public String getResultDescription() {
-    return probeResultDescription;
+    return results;
   }
 }

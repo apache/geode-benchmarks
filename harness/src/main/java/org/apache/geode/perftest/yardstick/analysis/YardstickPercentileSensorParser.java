@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.yardstickframework.probes.PercentileProbe;
 
@@ -32,7 +33,7 @@ import org.apache.geode.perftest.analysis.ProbeResultParser;
  */
 public class YardstickPercentileSensorParser implements ProbeResultParser {
   public static final String sensorOutputFile = "PercentileProbe.csv";
-  public static final String probeResultDescription = "99th percentile latency";
+  public static final String probeResultDescription = "YS 99th percentile latency";
 
   private class SensorBucket {
     public int latencyBucket;
@@ -72,17 +73,6 @@ public class YardstickPercentileSensorParser implements ProbeResultParser {
   @Override
   public void reset() {
     buckets = new ArrayList<>();
-  }
-
-  @Override
-  // Default probe result is the 99th percentile latency for the benchmark
-  public double getProbeResult() {
-    return getPercentile(99);
-  }
-
-  @Override
-  public String getResultDescription() {
-    return probeResultDescription;
   }
 
   private void normalizeBuckets() {
@@ -130,5 +120,13 @@ public class YardstickPercentileSensorParser implements ProbeResultParser {
         1.0 - ((accumulator - targetPercent) / targetBucket.bucketPercentage);
 
     return targetBucket.latencyBucket + bucketSize * percentileLocationInTargetBucket;
+  }
+
+  @Override
+  public List<ResultData> getProbeResults() {
+    List<ResultData> results = new ArrayList<>(1);
+    results.add(new ResultData(probeResultDescription, getPercentile(99)));
+
+    return results;
   }
 }
