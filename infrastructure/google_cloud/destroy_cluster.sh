@@ -19,6 +19,10 @@
 
 TAG=${1}
 PREFIX="geode-performance-${TAG}"
+NODE_TEMPLATE="${PREFIX}-node-template"
+NODE_GROUP="${PREFIX}-node-group"
 
 gcloud compute instance-groups managed delete ${PREFIX} --quiet
 gcloud compute instance-templates delete ${PREFIX}-template --quiet
+gcloud compute sole-tenancy node-groups delete ${NODE_GROUP}
+gcloud compute sole-tenancy node-templates delete ${NODE_TEMPLATE}
