@@ -59,6 +59,7 @@ public abstract class BenchmarkOperation {
     config.name(this.getClass().getCanonicalName());
     config.warmupSeconds(WARM_UP_TIME);
     config.durationSeconds(BENCHMARK_DURATION);
+    config.threads(48);
     config.role(LOCATOR, 1);
     config.role(SERVER, 2);
     config.role(CLIENT, 1);
