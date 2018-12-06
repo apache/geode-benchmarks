@@ -15,8 +15,6 @@
 package org.apache.geode.benchmark.tasks;
 
 
-import static org.apache.geode.benchmark.parameters.BenchmarkParameters.SERVER_CACHE;
-
 import org.apache.geode.cache.Cache;
 import org.apache.geode.cache.RegionShortcut;
 import org.apache.geode.perftest.Task;
@@ -29,7 +27,7 @@ public class CreatePartitionedRegion implements Task {
 
   @Override
   public void run(TestContext context) throws Exception {
-    Cache cache = (Cache) context.getAttribute(SERVER_CACHE);
+    Cache cache = (Cache) context.getAttribute("SERVER_CACHE");
     cache.createRegionFactory(RegionShortcut.PARTITION).create("region");
   }
 }

@@ -52,7 +52,8 @@ public class TestRunnerJUnitTest {
     Task before = mock(Task.class);
     Task after = mock(Task.class);
 
-    PerformanceTest test = config -> {
+    PerformanceTest test = () -> {
+      TestConfig config = new TestConfig();
       config.name("SampleBenchmark");
       config.role("before", 1);
       config.role("workload", 1);
@@ -60,6 +61,7 @@ public class TestRunnerJUnitTest {
 
       config.before(before, "before");
       config.after(after, "before");
+      return config;
     };
     runner.runTest(test);
 
@@ -81,11 +83,13 @@ public class TestRunnerJUnitTest {
 
     Task before = mock(Task.class);
 
-    PerformanceTest test = config -> {
+    PerformanceTest test = () -> {
+      TestConfig config = new TestConfig();
       config.name("SampleBenchmark");
       config.role("before", 1);
 
       config.before(before);
+      return config;
     };
     Assertions.assertThatThrownBy(() -> runner.runTest(test))
         .isInstanceOf(IllegalStateException.class);

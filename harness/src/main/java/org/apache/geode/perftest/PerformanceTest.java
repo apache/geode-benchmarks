@@ -47,6 +47,6 @@ public interface PerformanceTest extends Serializable {
   /**
    * Return the configuration for the test.
    */
-  void configure(TestConfig test);
+  TestConfig configure();
 
 }

@@ -14,8 +14,6 @@
  */
 package org.apache.geode.benchmark.tasks;
 
-import static org.apache.geode.benchmark.parameters.BenchmarkParameters.CLIENT_CACHE;
-
 import org.apache.geode.cache.client.ClientCache;
 import org.apache.geode.cache.client.ClientRegionShortcut;
 import org.apache.geode.perftest.Task;
@@ -27,7 +25,7 @@ import org.apache.geode.perftest.TestContext;
 public class CreateClientProxyRegion implements Task {
   @Override
   public void run(TestContext context) throws Exception {
-    ClientCache clientCache = (ClientCache) context.getAttribute(CLIENT_CACHE);
+    ClientCache clientCache = (ClientCache) context.getAttribute("CLIENT_CACHE");
     clientCache.createClientRegionFactory(ClientRegionShortcut.PROXY)
         .create("region");
 

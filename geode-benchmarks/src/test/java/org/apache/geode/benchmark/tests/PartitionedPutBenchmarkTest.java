@@ -17,8 +17,6 @@
 
 package org.apache.geode.benchmark.tests;
 
-import static org.apache.geode.benchmark.parameters.BenchmarkParameters.KEY_RANGE_FOR_MINIMAL_RUNNER;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -33,6 +31,6 @@ public class PartitionedPutBenchmarkTest {
   @Test
   public void benchmarkRunsSuccessfully() throws Exception {
     TestRunners.minimalRunner(folder.newFolder())
-        .runTest(new PartitionedPutBenchmark(KEY_RANGE_FOR_MINIMAL_RUNNER)::configure);
+        .runTest(new PartitionedPutBenchmark(100));
   }
 }
