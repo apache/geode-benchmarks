@@ -42,8 +42,8 @@ public class JarUtil {
    */
   static void jar(File file, File outputFile) throws IOException {
     Manifest manifest = new Manifest();
-    try (JarOutputStream outputStream =
-        new JarOutputStream(new FileOutputStream(outputFile), manifest)) {
+    try (FileOutputStream fileOutputStream = new FileOutputStream(outputFile);
+        JarOutputStream outputStream = new JarOutputStream(fileOutputStream, manifest)) {
       Path start = file.toPath();
 
       Files.walkFileTree(start, new SimpleFileVisitor<Path>() {

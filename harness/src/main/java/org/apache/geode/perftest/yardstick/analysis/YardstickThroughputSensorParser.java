@@ -37,16 +37,18 @@ public class YardstickThroughputSensorParser implements ProbeResultParser {
 
   public void parseResults(File resultDir) throws IOException {
     File sensorData = new File(resultDir, sensorOutputFile);
-    BufferedReader dataStream = new BufferedReader(new FileReader(sensorData));
-    String nextLine;
+    try (FileReader fileReader = new FileReader(sensorData);
+        BufferedReader dataStream = new BufferedReader(new FileReader(sensorData))) {
+      String nextLine;
 
-    while ((nextLine = dataStream.readLine()) != null) {
-      if (nextLine.startsWith("--") ||
-          nextLine.startsWith("@@") ||
-          nextLine.startsWith("**")) {
-        continue;
+      while ((nextLine = dataStream.readLine()) != null) {
+        if (nextLine.startsWith("--") ||
+            nextLine.startsWith("@@") ||
+            nextLine.startsWith("**")) {
+          continue;
+        }
+        datapoints.add(new SensorDatapoint(nextLine));
       }
-      datapoints.add(new SensorDatapoint(nextLine));
     }
   }
 
