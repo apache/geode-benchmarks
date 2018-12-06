@@ -14,21 +14,24 @@
  */
 package org.apache.geode.benchmark.tests;
 
-import static org.apache.geode.benchmark.parameters.BenchmarkParameters.KEY_RANGE_FOR_MINIMAL_RUNNER;
+import org.apache.geode.perftest.TestConfig;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+public class GeodeBenchmark {
 
-import org.apache.geode.perftest.TestRunners;
+  /**
+   * Warm up time for the benchmark running on the default runner
+   */
+  public static final int WARM_UP_TIME = 60;
+  /**
+   * Total duration for which the benchmark will run on the default runner
+   */
+  public static final int BENCHMARK_DURATION = 240;
 
-public class ReplicatedPutBenchmarkTest {
-  @Rule
-  public TemporaryFolder folder = new TemporaryFolder();
-
-  @Test
-  public void benchmarkRunsSuccessfully() throws Exception {
-    TestRunners.minimalRunner(folder.newFolder())
-        .runTest(new ReplicatedPutBenchmark(KEY_RANGE_FOR_MINIMAL_RUNNER)::configure);
+  public static TestConfig createConfig() {
+    TestConfig testConfig = new TestConfig();
+    testConfig.warmupSeconds(WARM_UP_TIME);
+    testConfig.durationSeconds(BENCHMARK_DURATION);
+    return testConfig;
   }
+
 }

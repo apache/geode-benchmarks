@@ -53,8 +53,7 @@ public class DefaultTestRunner implements TestRunner {
 
   @Override
   public void runTest(PerformanceTest test) throws Exception {
-    TestConfig config = new TestConfig();
-    test.configure(config);
+    TestConfig config = test.configure();
     runTest(config);
   }
 

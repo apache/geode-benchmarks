@@ -16,9 +16,6 @@
  */
 package org.apache.geode.benchmark.tasks;
 
-import static org.apache.geode.benchmark.parameters.BenchmarkParameters.KEY_RANGE;
-import static org.apache.geode.benchmark.parameters.BenchmarkParameters.SERVER_CACHE;
-
 import java.time.Duration;
 import java.time.Instant;
 import java.util.concurrent.ThreadLocalRandom;
@@ -35,7 +32,7 @@ import org.apache.geode.perftest.TestContext;
 import org.apache.geode.perftest.jvms.RemoteJVMFactory;
 
 public class PrePopulateRegion implements Task {
-  long keyRangeToPrepopulate = KEY_RANGE;
+  long keyRangeToPrepopulate = 10000;
   private static final Logger logger = LoggerFactory.getLogger(RemoteJVMFactory.class);
 
   public PrePopulateRegion() {}
@@ -51,7 +48,7 @@ public class PrePopulateRegion implements Task {
    */
   @Override
   public void run(TestContext context) {
-    Cache serverCache = (Cache) context.getAttribute(SERVER_CACHE);
+    Cache serverCache = (Cache) context.getAttribute("SERVER_CACHE");
     Region region = serverCache.getRegion("region");
     logger.info("*******************************************");
     logger.info("      Prepopulating the region ");

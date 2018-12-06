@@ -17,8 +17,6 @@
 
 package org.apache.geode.benchmark.tasks;
 
-import static org.apache.geode.benchmark.parameters.BenchmarkParameters.CLIENT_CACHE;
-
 import java.io.File;
 import java.net.InetAddress;
 
@@ -51,6 +49,6 @@ public class StartClient implements Task {
         .set(ConfigurationProperties.STATISTIC_ARCHIVE_FILE, statsFile)
         .create();
 
-    context.setAttribute(CLIENT_CACHE, clientCache);
+    context.setAttribute("CLIENT_CACHE", clientCache);
   }
 }

@@ -17,8 +17,6 @@
 
 package org.apache.geode.benchmark.tasks;
 
-import static org.apache.geode.benchmark.parameters.BenchmarkParameters.SERVER_CACHE;
-
 import java.io.File;
 import java.net.InetAddress;
 
@@ -57,7 +55,7 @@ public class StartServer implements Task {
     CacheServer cacheServer = ((Cache) cache).addCacheServer();
     cacheServer.setPort(0);
     cacheServer.start();
-    context.setAttribute(SERVER_CACHE, cache);
+    context.setAttribute("SERVER_CACHE", cache);
 
   }
 

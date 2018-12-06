@@ -54,20 +54,24 @@ public class TestRunnerIntegrationTest {
 
   @Test
   public void runsBeforeWorkload() throws Exception {
-    runner.runTest(testConfig -> {
+    runner.runTest(() -> {
+      TestConfig testConfig = new TestConfig();
       testConfig.name(SAMPLE_BENCHMARK);
       testConfig.role("all", 1);
       testConfig.before(context -> System.out.println("hello"), "all");
+      return testConfig;
     });
   }
 
   @Test
   public void generatesOutputDirectoryPerBenchmark() throws Exception {
 
-    runner.runTest(testConfig -> {
+    runner.runTest(() -> {
+      TestConfig testConfig = new TestConfig();
       testConfig.name(SAMPLE_BENCHMARK);
       testConfig.role("all", 1);
       testConfig.workload(new EmptyBenchmark(), "all");
+      return testConfig;
     });
 
     File expectedBenchmarkDir = new File(outputDir, SAMPLE_BENCHMARK);
@@ -86,7 +90,8 @@ public class TestRunnerIntegrationTest {
 
   @Test
   public void configuresJVMOptions() throws Exception {
-    runner.runTest(testConfig -> {
+    runner.runTest(() -> {
+      TestConfig testConfig = new TestConfig();
       testConfig.name(SAMPLE_BENCHMARK);
       testConfig.role("all", 1);
       testConfig.jvmArgs("all", "-Dprop1=true", "-Dprop2=5");
@@ -96,6 +101,7 @@ public class TestRunnerIntegrationTest {
         assertEquals("Expecting system property to be set in launched JVM, but it was not present.",
             5, Integer.getInteger("prop2").intValue());
       }, "all");
+      return testConfig;
     });
   }
 
