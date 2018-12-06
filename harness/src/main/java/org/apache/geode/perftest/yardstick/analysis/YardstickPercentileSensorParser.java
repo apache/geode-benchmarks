@@ -57,16 +57,18 @@ public class YardstickPercentileSensorParser implements ProbeResultParser {
 
   public void parseResults(File resultDir) throws IOException {
     File sensorData = new File(resultDir, sensorOutputFile);
-    BufferedReader dataStream = new BufferedReader(new FileReader(sensorData));
-    String nextLine;
+    try (FileReader fileReader = new FileReader(sensorData);
+        BufferedReader dataStream = new BufferedReader(fileReader)) {
+      String nextLine;
 
-    while ((nextLine = dataStream.readLine()) != null) {
-      if (nextLine.startsWith("--") ||
-          nextLine.startsWith("@@") ||
-          nextLine.startsWith("**")) {
-        continue;
+      while ((nextLine = dataStream.readLine()) != null) {
+        if (nextLine.startsWith("--") ||
+            nextLine.startsWith("@@") ||
+            nextLine.startsWith("**")) {
+          continue;
+        }
+        buckets.add(new SensorBucket(nextLine));
       }
-      buckets.add(new SensorBucket(nextLine));
     }
   }
 
@@ -76,7 +78,7 @@ public class YardstickPercentileSensorParser implements ProbeResultParser {
   }
 
   private void normalizeBuckets() {
-    float totalPercentage = 0;
+    double totalPercentage = 0D;
     for (SensorBucket bucket : buckets) {
       totalPercentage += bucket.bucketPercentage;
     }

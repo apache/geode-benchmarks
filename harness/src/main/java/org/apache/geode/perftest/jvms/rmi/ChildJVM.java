@@ -65,32 +65,33 @@ public class ChildJVM {
       // Clean up the output directory before the test runs
       FileUtils.deleteQuietly(outputDir);
       outputDir.mkdirs();
-      PrintStream out = new PrintStream(new File(outputDir, "system.log"));
-      system.setOut(out);
-      system.setErr(out);
+      try (PrintStream out = new PrintStream(new File(outputDir, "system.log"))) {
+        system.setOut(out);
+        system.setErr(out);
 
-      ControllerRemote controller = (ControllerRemote) rmi
-          .lookup("//" + RMI_HOST + ":" + RMI_PORT + "/" + RemoteJVMFactory.CONTROLLER);
+        ControllerRemote controller = (ControllerRemote) rmi
+            .lookup("//" + RMI_HOST + ":" + RMI_PORT + "/" + RemoteJVMFactory.CONTROLLER);
 
-      SharedContext sharedContext = controller.getsharedContext();
-      DefaultTestContext context = new DefaultTestContext(sharedContext, outputDir, id);
+        SharedContext sharedContext = controller.getsharedContext();
+        DefaultTestContext context = new DefaultTestContext(sharedContext, outputDir, id);
 
-      Worker worker = new Worker(context);
+        Worker worker = new Worker(context);
 
-      controller.addWorker(id, worker);
+        controller.addWorker(id, worker);
 
-      // Wait until the controller shuts down
-      // If the controller shuts down, this will throw an exception
-      try {
-        while (controller.ping()) {
-          Thread.sleep(pingTime);
+        // Wait until the controller shuts down
+        // If the controller shuts down, this will throw an exception
+        try {
+          while (controller.ping()) {
+            Thread.sleep(pingTime);
+          }
+        } catch (RemoteException e) {
+          // If we get a RemoteException, the controller has shut down
+          // exit gracefully
         }
-      } catch (RemoteException e) {
-        // If we get a RemoteException, the controller has shut down
-        // exit gracefully
-      }
 
-      system.exit(0);
+        system.exit(0);
+      }
     } catch (Throwable t) {
       t.printStackTrace();
       // Force a system exit. Because we created an RMI object, an exception from the main
