@@ -17,37 +17,36 @@
 
 package org.apache.geode.benchmark.tests;
 
-
 import static org.apache.geode.benchmark.tests.util.ClientServerTopology.Roles.CLIENT;
 import static org.apache.geode.benchmark.tests.util.ClientServerTopology.Roles.SERVER;
 
 import org.junit.Test;
 
 import org.apache.geode.benchmark.tasks.CreateClientProxyRegion;
-import org.apache.geode.benchmark.tasks.CreatePartitionedRegion;
-import org.apache.geode.benchmark.tasks.GetTask;
+import org.apache.geode.benchmark.tasks.CreateReplicatedRegion;
 import org.apache.geode.benchmark.tasks.PrePopulateRegion;
+import org.apache.geode.benchmark.tasks.PutTask;
 import org.apache.geode.benchmark.tests.util.ClientServerTopology;
 import org.apache.geode.perftest.PerformanceTest;
 import org.apache.geode.perftest.TestConfig;
 import org.apache.geode.perftest.TestRunners;
 
 /**
- * Benchmark of gets on a partitioned region.
+ * Benchmark of puts on a replicated region.
  */
-public class PartitionedGetBenchmark implements PerformanceTest {
+public class ReplicatedPutBenchmark implements PerformanceTest {
 
   private long keyRange = 10000;
+
+  public ReplicatedPutBenchmark() {}
+
+  ReplicatedPutBenchmark(long keyRange) {
+    this.keyRange = keyRange;
+  }
 
   @Test
   public void run() throws Exception {
     TestRunners.defaultRunner().runTest(this);
-  }
-
-  public PartitionedGetBenchmark() {}
-
-  PartitionedGetBenchmark(long keyRange) {
-    this.keyRange = keyRange;
   }
 
   @Override
@@ -55,10 +54,10 @@ public class PartitionedGetBenchmark implements PerformanceTest {
     TestConfig config = GeodeBenchmark.createConfig();
     config.name(getClass().getName());
     ClientServerTopology.configure(config);
-    config.before(new CreatePartitionedRegion(), SERVER);
+    config.before(new CreateReplicatedRegion(), SERVER);
     config.before(new CreateClientProxyRegion(), CLIENT);
     config.before(new PrePopulateRegion(keyRange), SERVER);
-    config.workload(new GetTask(keyRange), CLIENT);
+    config.workload(new PutTask(keyRange), CLIENT);
     return config;
 
   }

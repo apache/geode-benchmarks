@@ -20,6 +20,8 @@ package org.apache.geode.benchmark.tests;
 import static org.apache.geode.benchmark.tests.util.ClientServerTopology.Roles.CLIENT;
 import static org.apache.geode.benchmark.tests.util.ClientServerTopology.Roles.SERVER;
 
+import org.junit.Test;
+
 import org.apache.geode.benchmark.tasks.CreateClientProxyRegion;
 import org.apache.geode.benchmark.tasks.CreatePartitionedRegion;
 import org.apache.geode.benchmark.tasks.PrePopulateRegion;
@@ -27,7 +29,11 @@ import org.apache.geode.benchmark.tasks.PutTask;
 import org.apache.geode.benchmark.tests.util.ClientServerTopology;
 import org.apache.geode.perftest.PerformanceTest;
 import org.apache.geode.perftest.TestConfig;
+import org.apache.geode.perftest.TestRunners;
 
+/**
+ * Benchmark of puts on a partitioned region.
+ */
 public class PartitionedPutBenchmark implements PerformanceTest {
 
   private long keyRange = 10000;
@@ -36,6 +42,11 @@ public class PartitionedPutBenchmark implements PerformanceTest {
 
   PartitionedPutBenchmark(long keyRange) {
     this.keyRange = keyRange;
+  }
+
+  @Test
+  public void run() throws Exception {
+    TestRunners.defaultRunner().runTest(this);
   }
 
   @Override

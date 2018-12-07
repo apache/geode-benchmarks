@@ -24,7 +24,7 @@ import static org.apache.geode.benchmark.tests.util.ClientServerTopology.Roles.S
 import org.junit.Test;
 
 import org.apache.geode.benchmark.tasks.CreateClientProxyRegion;
-import org.apache.geode.benchmark.tasks.CreatePartitionedRegion;
+import org.apache.geode.benchmark.tasks.CreateReplicatedRegion;
 import org.apache.geode.benchmark.tasks.GetTask;
 import org.apache.geode.benchmark.tasks.PrePopulateRegion;
 import org.apache.geode.benchmark.tests.util.ClientServerTopology;
@@ -33,9 +33,9 @@ import org.apache.geode.perftest.TestConfig;
 import org.apache.geode.perftest.TestRunners;
 
 /**
- * Benchmark of gets on a partitioned region.
+ * Benchmark of gets on a replicated region.
  */
-public class PartitionedGetBenchmark implements PerformanceTest {
+public class ReplicatedGetBenchmark implements PerformanceTest {
 
   private long keyRange = 10000;
 
@@ -44,9 +44,9 @@ public class PartitionedGetBenchmark implements PerformanceTest {
     TestRunners.defaultRunner().runTest(this);
   }
 
-  public PartitionedGetBenchmark() {}
+  public ReplicatedGetBenchmark() {}
 
-  PartitionedGetBenchmark(long keyRange) {
+  ReplicatedGetBenchmark(long keyRange) {
     this.keyRange = keyRange;
   }
 
@@ -55,7 +55,7 @@ public class PartitionedGetBenchmark implements PerformanceTest {
     TestConfig config = GeodeBenchmark.createConfig();
     config.name(getClass().getName());
     ClientServerTopology.configure(config);
-    config.before(new CreatePartitionedRegion(), SERVER);
+    config.before(new CreateReplicatedRegion(), SERVER);
     config.before(new CreateClientProxyRegion(), CLIENT);
     config.before(new PrePopulateRegion(keyRange), SERVER);
     config.workload(new GetTask(keyRange), CLIENT);
