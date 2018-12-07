@@ -24,5 +24,5 @@ NODE_GROUP="${PREFIX}-node-group"
 
 gcloud compute instance-groups managed delete ${PREFIX} --quiet
 gcloud compute instance-templates delete ${PREFIX}-template --quiet
-gcloud compute sole-tenancy node-groups delete ${NODE_GROUP}
-gcloud compute sole-tenancy node-templates delete ${NODE_TEMPLATE}
+gcloud compute sole-tenancy node-groups delete ${NODE_GROUP} --quiet
+gcloud compute sole-tenancy node-templates delete ${NODE_TEMPLATE} --quiet
