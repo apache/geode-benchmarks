@@ -32,8 +32,8 @@ public class Analyzer {
       return;
     }
 
-    String testResultArg = args[0];
-    String baselineResultArg = args[1];
+    String baselineResultArg = args[0];
+    String testResultArg = args[1];
 
     File testResultDir = new File(testResultArg);
     File baselineResultDir = new File(baselineResultArg);
@@ -61,7 +61,7 @@ public class Analyzer {
     analyzer.addProbe(new YardstickPercentileSensorParser());
     analyzer.addProbe(new YardstickHdrHistogramParser());
 
-    analyzer.analyzeTestRun(testResultDir, baselineResultDir)
+    analyzer.analyzeTestRun(baselineResultDir, testResultDir)
         .writeResult(new PrintWriter(System.out));
   }
 }
