@@ -24,6 +24,8 @@ version '1.0-SNAPSHOT'
 
 sourceCompatibility = 1.8
 
+def outputDir = project.hasProperty('outputDir') ? project.findProperty('outputDir') : new File(project.buildDir, "benchmarks").getAbsolutePath()
+
 repositories {
     mavenCentral()
 }
@@ -36,6 +38,7 @@ dependencies {
 }
 
 task benchmark(type: Test) {
+    outputs.upToDateWhen { false }
     testClassesDirs = project.sourceSets.main.output.classesDirs
     classpath = project.sourceSets.main.runtimeClasspath
 
@@ -45,14 +48,12 @@ task benchmark(type: Test) {
 
     forkEvery 1
 
-    def outputDir = project.hasProperty('outputDir') ? project.findProperty('outputDir') : new File(project.buildDir, "benchmarks").getAbsolutePath();
-
-    systemProperty 'TEST_HOSTS', project.findProperty('hosts');
-    systemProperty 'OUTPUT_DIR', outputDir;
+    systemProperty 'TEST_HOSTS', project.findProperty('hosts')
+    systemProperty 'OUTPUT_DIR', outputDir
 
     doFirst {
         if(!project.hasProperty('hosts')) {
-            throw new IllegalStateException("You must set the hosts property to a comma separated list of hosts. Eg ./gradlew benchmark -Phosts=localhost,localhost,localhost")
+            throw new GradleException("You must set the hosts property to a comma separated list of hosts. Eg ./gradlew benchmark -Phosts=localhost,localhost,localhost")
         }
     }
 }
