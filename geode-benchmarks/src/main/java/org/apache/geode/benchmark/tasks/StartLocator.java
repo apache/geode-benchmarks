@@ -21,6 +21,7 @@ import java.io.File;
 import java.net.InetAddress;
 import java.util.Properties;
 
+import org.apache.geode.benchmark.parameters.GeodeProperties;
 import org.apache.geode.distributed.ConfigurationProperties;
 import org.apache.geode.distributed.Locator;
 import org.apache.geode.perftest.Task;
@@ -38,13 +39,10 @@ public class StartLocator implements Task {
 
   @Override
   public void run(TestContext context) throws Exception {
-    Properties properties = new Properties();
+    Properties properties = GeodeProperties.serverProperties();
 
     String statsFile = new File(context.getOutputDir(), "stats.gfs").getAbsolutePath();
-    properties.setProperty(ConfigurationProperties.STATISTIC_SAMPLING_ENABLED, "true");
     properties.setProperty(ConfigurationProperties.STATISTIC_ARCHIVE_FILE, statsFile);
-    properties.setProperty(ConfigurationProperties.ENABLE_CLUSTER_CONFIGURATION, "false");
-    properties.setProperty(ConfigurationProperties.USE_CLUSTER_CONFIGURATION, "false");
 
     properties.setProperty(ConfigurationProperties.NAME, "locator-" + InetAddress.getLocalHost());
     Locator.startLocatorAndDS(locatorPort, null, properties);
