@@ -25,10 +25,12 @@ version '1.0-SNAPSHOT'
 sourceCompatibility = 1.8
 
 def outputDir = project.hasProperty('outputDir') ? project.findProperty('outputDir') : new File(project.buildDir, "benchmarks_" + getDate()).getAbsolutePath()
+def geodeVersion = project.hasProperty('geodeVersion') ? project.findProperty('geodeVersion') : '1.+'
 
 def getDate() {
     new Date().format('yyyyMMddHHmmss')
 }
+
 
 repositories {
     mavenCentral()
@@ -36,7 +38,7 @@ repositories {
 
 dependencies {
     compile(group: 'junit', name: 'junit', version: '4.12')
-    compile(group: 'org.apache.geode', name: 'geode-core', version: '1.7.0')
+    compile(group: 'org.apache.geode', name: 'geode-core', version: geodeVersion)
     compile(group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.25')
     compile(project(':harness'))
 }
