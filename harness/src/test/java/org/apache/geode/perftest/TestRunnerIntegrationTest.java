@@ -17,8 +17,8 @@
 
 package org.apache.geode.perftest;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
@@ -27,10 +27,10 @@ import java.nio.file.Path;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junitpioneer.jupiter.TempDirectory;
 
 import org.apache.geode.perftest.benchmarks.EmptyBenchmark;
 import org.apache.geode.perftest.infrastructure.local.LocalInfrastructureFactory;
@@ -38,18 +38,26 @@ import org.apache.geode.perftest.jvms.RemoteJVMFactory;
 import org.apache.geode.perftest.runner.DefaultTestRunner;
 import org.apache.geode.perftest.yardstick.analysis.YardstickThroughputSensorParser;
 
+@ExtendWith(TempDirectory.class)
 public class TestRunnerIntegrationTest {
-  @Rule
-  public TemporaryFolder temporaryFolder = new TemporaryFolder();
+
+  Path temporaryFolder;
+
+  @BeforeEach
+  void setup(@TempDirectory.TempDir Path tempDirPath) {
+    this.temporaryFolder = tempDirPath;
+    outputDir = temporaryFolder.toFile();
+    runner = new DefaultTestRunner(new RemoteJVMFactory(new LocalInfrastructureFactory()),
+        outputDir);
+  }
+
   private TestRunner runner;
   private File outputDir;
   public static final String SAMPLE_BENCHMARK = "SampleBenchmark";
 
-  @Before
+  @BeforeEach
   public void setup() throws IOException {
-    outputDir = temporaryFolder.newFolder();
-    runner = new DefaultTestRunner(new RemoteJVMFactory(new LocalInfrastructureFactory()),
-        outputDir);
+
   }
 
   @Test
@@ -96,10 +104,10 @@ public class TestRunnerIntegrationTest {
       testConfig.role("all", 1);
       testConfig.jvmArgs("all", "-Dprop1=true", "-Dprop2=5");
       testConfig.before(context -> {
-        assertTrue("Expecting system property to be set in launched JVM, but it was not present.",
-            Boolean.getBoolean("prop1"));
-        assertEquals("Expecting system property to be set in launched JVM, but it was not present.",
-            5, Integer.getInteger("prop2").intValue());
+        assertTrue(Boolean.getBoolean("prop1"),
+            "Expecting system property to be set in launched JVM, but it was not present.");
+        assertEquals(5, Integer.getInteger("prop2").intValue(),
+            "Expecting system property to be set in launched JVM, but it was not present.");
       }, "all");
       return testConfig;
     });

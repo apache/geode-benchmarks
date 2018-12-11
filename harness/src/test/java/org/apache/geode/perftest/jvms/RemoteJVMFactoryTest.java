@@ -32,8 +32,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 
 import org.apache.geode.perftest.infrastructure.Infrastructure;
@@ -51,7 +51,7 @@ public class RemoteJVMFactoryTest {
   private ControllerFactory controllerFactory;
   private Infrastructure infra;
 
-  @Before
+  @BeforeEach
   public void setUp() throws AlreadyBoundException, RemoteException {
     classPathCopier = mock(ClassPathCopier.class);
     jvmLauncher = mock(JVMLauncher.class);

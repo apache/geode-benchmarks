@@ -17,6 +17,8 @@
 
 package org.apache.geode.perftest.infrastructure.local;
 
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -95,7 +97,7 @@ public class LocalInfrastructure implements Infrastructure {
       destDir.toFile().mkdirs();
 
       for (File file : files) {
-        Files.copy(file.toPath(), destDir.resolve(file.getName()));
+        Files.copy(file.toPath(), destDir.resolve(file.getName()), REPLACE_EXISTING);
       }
     }
   }

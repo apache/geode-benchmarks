@@ -23,20 +23,30 @@ import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.io.File;
+import java.nio.file.Path;
+
 import org.assertj.core.api.Assertions;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junitpioneer.jupiter.TempDirectory;
 import org.mockito.InOrder;
 
 import org.apache.geode.perftest.jvms.RemoteJVMFactory;
 import org.apache.geode.perftest.jvms.RemoteJVMs;
 import org.apache.geode.perftest.runner.DefaultTestRunner;
 
+@ExtendWith(TempDirectory.class)
 public class TestRunnerJUnitTest {
 
-  @Rule
-  public TemporaryFolder folder = new TemporaryFolder();
+  private static File folder;
+
+  @BeforeAll
+  public static void createTemporaryFolder(@TempDirectory.TempDir Path tempFolder) {
+    folder = tempFolder.toFile();
+  }
+
 
   @Test
   public void testRunnerRunsBeforeAndAfterTasks() throws Exception {
@@ -47,7 +57,7 @@ public class TestRunnerJUnitTest {
     when(remoteJvmFactory.launch(any(), any())).thenReturn(remoteJVMs);
 
     TestRunner runner = new DefaultTestRunner(remoteJvmFactory,
-        folder.newFolder());
+        folder);
 
     Task before = mock(Task.class);
     Task after = mock(Task.class);
@@ -79,7 +89,7 @@ public class TestRunnerJUnitTest {
     when(remoteJvmFactory.launch(any(), any())).thenReturn(remoteJVMs);
 
     TestRunner runner = new DefaultTestRunner(remoteJvmFactory,
-        folder.newFolder());
+        folder);
 
     Task before = mock(Task.class);
 

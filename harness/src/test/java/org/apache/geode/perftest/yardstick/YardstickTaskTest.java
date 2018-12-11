@@ -17,14 +17,16 @@
 
 package org.apache.geode.perftest.yardstick;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.nio.file.Files;
+import java.nio.file.Path;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junitpioneer.jupiter.TempDirectory;
 
 import org.apache.geode.perftest.Task;
 import org.apache.geode.perftest.TestContext;
@@ -33,10 +35,15 @@ import org.apache.geode.perftest.benchmarks.EmptyBenchmark;
 import org.apache.geode.perftest.runner.DefaultTestContext;
 import org.apache.geode.perftest.yardstick.hdrhistogram.HdrHistogramWriter;
 
+@ExtendWith(TempDirectory.class)
 public class YardstickTaskTest {
 
-  @Rule
-  public final TemporaryFolder folder = new TemporaryFolder();
+  public Path folder;
+
+  @BeforeEach
+  void createTempFolder(@TempDirectory.TempDir Path tempDir) {
+    this.folder = tempDir;
+  }
 
   @Test
   public void testExecuteBenchmark() throws Exception {
@@ -44,7 +51,7 @@ public class YardstickTaskTest {
     WorkloadConfig workloadConfig = new WorkloadConfig();
     workloadConfig.threads(1);
     Task task = new YardstickTask(benchmark, workloadConfig);
-    File outputDir = folder.newFolder();
+    File outputDir = folder.toFile();
     TestContext context = new DefaultTestContext(null, outputDir, 1);
     task.run(context);
 

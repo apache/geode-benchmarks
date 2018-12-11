@@ -17,7 +17,7 @@
 
 package org.apache.geode.perftest.runner;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -29,7 +29,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.apache.geode.perftest.infrastructure.Infrastructure;
 import org.apache.geode.perftest.jvms.JVMMapping;
