@@ -78,11 +78,11 @@ public class TestRunners {
     return new DefaultTestRunner(new RemoteJVMFactory(new LocalInfrastructureFactory()),
         outputDir) {
       @Override
-      public void runTest(TestConfig config) throws Exception {
+      public void runTest(TestConfig config, String testName) throws Exception {
         config.warmupSeconds(0);
         config.durationSeconds(1);
         config.threads(1);
-        super.runTest(config);
+        super.runTest(config, testName);
       }
     };
   }

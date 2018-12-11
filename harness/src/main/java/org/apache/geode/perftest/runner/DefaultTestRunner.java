@@ -54,17 +54,14 @@ public class DefaultTestRunner implements TestRunner {
   @Override
   public void runTest(PerformanceTest test) throws Exception {
     TestConfig config = test.configure();
-    runTest(config);
+    String testName = test.getClass().getName();
+    runTest(config, testName);
   }
 
-  protected void runTest(TestConfig config)
+  protected void runTest(TestConfig config, String testName)
       throws Exception {
     int nodes = config.getTotalJVMs();
-
-    if (config.getName() == null) {
-      throw new IllegalStateException("Benchmark must have a name.");
-    }
-    File benchmarkOutput = new File(outputDir, config.getName());
+    File benchmarkOutput = new File(outputDir, testName);
     if (benchmarkOutput.exists()) {
       throw new IllegalStateException(
           "Benchmark output directory already exists: " + benchmarkOutput.getPath());

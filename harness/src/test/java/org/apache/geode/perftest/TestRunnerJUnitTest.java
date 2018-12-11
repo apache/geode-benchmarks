@@ -54,7 +54,6 @@ public class TestRunnerJUnitTest {
 
     PerformanceTest test = () -> {
       TestConfig config = new TestConfig();
-      config.name("SampleBenchmark");
       config.role("before", 1);
       config.role("workload", 1);
       config.role("after", 1);
@@ -85,7 +84,6 @@ public class TestRunnerJUnitTest {
 
     PerformanceTest test = () -> {
       TestConfig config = new TestConfig();
-      config.name("SampleBenchmark");
       config.role("before", 1);
 
       config.before(before);
