@@ -34,8 +34,8 @@ public class GeodeProperties {
     properties.setProperty(ConfigurationProperties.ARCHIVE_DISK_SPACE_LIMIT, "150");
     properties.setProperty(ConfigurationProperties.ARCHIVE_FILE_SIZE_LIMIT, "10");
     properties.setProperty(ConfigurationProperties.DISTRIBUTED_SYSTEM_ID, "0");
-    properties.setProperty(ConfigurationProperties.ENABLE_CLUSTER_CONFIGURATION, "true");
-    properties.setProperty(ConfigurationProperties.USE_CLUSTER_CONFIGURATION, "true");
+    properties.setProperty(ConfigurationProperties.ENABLE_CLUSTER_CONFIGURATION, "false");
+    properties.setProperty(ConfigurationProperties.USE_CLUSTER_CONFIGURATION, "false");
     return properties;
   }
 
