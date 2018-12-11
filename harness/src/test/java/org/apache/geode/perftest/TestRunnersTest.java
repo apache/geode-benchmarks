@@ -17,11 +17,12 @@
 
 package org.apache.geode.perftest;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.Arrays;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.apache.geode.perftest.infrastructure.ssh.SshInfrastructureFactory;
 import org.apache.geode.perftest.runner.DefaultTestRunner;
@@ -39,8 +40,9 @@ public class TestRunnersTest {
     assertEquals(Arrays.asList("localhost", "localhost"), infrastructureFactory.getHosts());
   }
 
-  @Test(expected = IllegalStateException.class)
+  @Test
   public void defaultRunnerShouldFailWithNoHosts() {
-    TestRunners.defaultRunner(null, null);
+
+    assertThrows(IllegalStateException.class, () -> TestRunners.defaultRunner(null, null));
   }
 }

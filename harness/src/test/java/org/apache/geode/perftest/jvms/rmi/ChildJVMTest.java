@@ -20,7 +20,7 @@ package org.apache.geode.perftest.jvms.rmi;
 import static org.apache.geode.perftest.jvms.RemoteJVMFactory.OUTPUT_DIR;
 import static org.apache.geode.perftest.jvms.RemoteJVMFactory.RMI_HOST;
 import static org.apache.geode.perftest.jvms.RemoteJVMFactory.RMI_PORT_PROPERTY;
-import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
@@ -30,34 +30,35 @@ import static org.mockito.Mockito.when;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junitpioneer.jupiter.TempDirectory;
 
 import org.apache.geode.perftest.jdk.RMI;
 import org.apache.geode.perftest.jdk.SystemInterface;
 import org.apache.geode.perftest.jvms.RemoteJVMFactory;
 
+@ExtendWith(TempDirectory.class)
 public class ChildJVMTest {
 
-  @Rule
-  public TemporaryFolder temporaryFolder = new TemporaryFolder();
+
   private RMI rmi;
   private ChildJVM jvm;
   private SystemInterface system;
   private Controller controller;
   private File folder;
 
-  @Before
-  public void setUp() throws IOException, NotBoundException {
+  @BeforeEach
+  public void setUp(@TempDirectory.TempDir Path tempDir) throws IOException, NotBoundException {
     system = mock(SystemInterface.class);
     when(system.getProperty(RMI_HOST)).thenReturn("something");
     when(system.getProperty(RMI_PORT_PROPERTY)).thenReturn("0");
-    folder = temporaryFolder.newFolder();
+    folder = tempDir.toFile();
     when(system.getProperty(OUTPUT_DIR)).thenReturn(folder.getAbsolutePath());
     rmi = mock(RMI.class);
     jvm = new ChildJVM(rmi, system, 1);

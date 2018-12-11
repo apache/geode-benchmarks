@@ -21,7 +21,7 @@ package org.apache.geode.benchmark.tests;
 import static org.apache.geode.benchmark.tests.util.ClientServerTopology.Roles.CLIENT;
 import static org.apache.geode.benchmark.tests.util.ClientServerTopology.Roles.SERVER;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.apache.geode.benchmark.tasks.CreateClientProxyRegion;
 import org.apache.geode.benchmark.tasks.CreatePartitionedRegion;

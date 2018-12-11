@@ -17,28 +17,37 @@
 
 package org.apache.geode.perftest.jvms;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.util.Collections;
 import java.util.Map;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junitpioneer.jupiter.TempDirectory;
 
 import org.apache.geode.perftest.infrastructure.local.LocalInfrastructureFactory;
 
+@ExtendWith(TempDirectory.class)
 public class RemoteJVMFactoryIntegrationTest {
-  @Rule
-  public final TemporaryFolder temporaryFolder = new TemporaryFolder();
+
+
+  Path temporaryFolder;
+
+  @BeforeEach
+  void createTemporaryFolder(@TempDirectory.TempDir Path temporaryFolder) {
+    this.temporaryFolder = temporaryFolder;
+  }
 
   @Test
   public void canExecuteCodeOnWorker() throws Exception {
     RemoteJVMFactory remoteJvmFactory = new RemoteJVMFactory(new LocalInfrastructureFactory());
     Map<String, Integer> roles = Collections.singletonMap("worker", 1);
     try (RemoteJVMs jvms = remoteJvmFactory.launch(roles, Collections.emptyMap())) {
-      File tempFile = new File(temporaryFolder.newFolder(), "tmpfile").getAbsoluteFile();
+      File tempFile = temporaryFolder.resolve("tmpfile").toFile();
       jvms.execute(context -> {
         tempFile.createNewFile();
       }, "worker");

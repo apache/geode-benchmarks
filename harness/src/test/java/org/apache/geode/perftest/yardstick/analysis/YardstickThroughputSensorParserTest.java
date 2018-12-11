@@ -15,25 +15,39 @@
 
 package org.apache.geode.perftest.yardstick.analysis;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Path;
 
-import org.junit.Assert;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junitpioneer.jupiter.TempDirectory;
 
 
+@ExtendWith(TempDirectory.class)
 public class YardstickThroughputSensorParserTest {
-  @Rule
-  public TemporaryFolder temporaryFolder = new TemporaryFolder();
+
+  public Path temporaryFolder;
+
+  @BeforeEach
+  void createTempFolder(@TempDirectory.TempDir Path tempDir) {
+    this.temporaryFolder = tempDir;
+  }
+
 
   @Test
   public void parsesInputFile() throws IOException {
-    final File testFolder = temporaryFolder.newFolder("testFolder");
+    final File testFolder = temporaryFolder.resolve("testFolder").toFile();
+    assertTrue(testFolder.mkdir());
     final File testFile = new File(testFolder, YardstickThroughputSensorParser.sensorOutputFile);
+    assertTrue(testFile.createNewFile());
     BufferedWriter output = new BufferedWriter(new FileWriter(testFile));
     output.write("1542151468,42906.00,371126.31");
     output.newLine();
@@ -47,20 +61,23 @@ public class YardstickThroughputSensorParserTest {
 
     YardstickThroughputSensorParser parser = new YardstickThroughputSensorParser();
     parser.parseResults(testFolder);
-    Assert.assertEquals(45674.5, parser.getAverageThroughput(), .01);
+    assertEquals(45674.5, parser.getAverageThroughput(), .01);
   }
 
-  @Test(expected = IOException.class)
+  @Test
   public void throwsExceptionOnMissingFile() throws IOException {
-    final File testFolder = temporaryFolder.newFolder("testFolder");
+    final File testFolder = temporaryFolder.resolve("testFolder").toFile();
+    assertTrue(testFolder.mkdirs());
     YardstickThroughputSensorParser parser = new YardstickThroughputSensorParser();
-    parser.parseResults(testFolder);
+    assertThrows(IOException.class, () -> parser.parseResults(testFolder));
   }
 
-  @Test(expected = IOException.class)
+  @Test
   public void throwsExceptionOnBadInput() throws IOException {
-    final File testFolder = temporaryFolder.newFolder("testFolder");
+    final File testFolder = temporaryFolder.resolve("testFolder").toFile();
+    assertTrue(testFolder.mkdirs());
     final File testFile = new File(testFolder, YardstickThroughputSensorParser.sensorOutputFile);
+    assertTrue(testFile.createNewFile());
     BufferedWriter output = new BufferedWriter(new FileWriter(testFile));
     output.write("1542151468,42906.00,371126.31");
     output.newLine();
@@ -73,13 +90,15 @@ public class YardstickThroughputSensorParserTest {
     output.close();
 
     YardstickThroughputSensorParser parser = new YardstickThroughputSensorParser();
-    parser.parseResults(testFolder);
+    assertThrows(IOException.class, () -> parser.parseResults(testFolder));
   }
 
   @Test
   public void ignoreYardstickCommentAndMetadataLines() throws IOException {
-    final File testFolder = temporaryFolder.newFolder("testFolder");
+    final File testFolder = temporaryFolder.resolve("testFolder").toFile();
+    assertTrue(testFolder.mkdirs());
     final File testFile = new File(testFolder, YardstickThroughputSensorParser.sensorOutputFile);
+    assertTrue(testFile.createNewFile());
     BufferedWriter output = new BufferedWriter(new FileWriter(testFile));
     output.write("--This is a comment");
     output.newLine();
@@ -93,6 +112,6 @@ public class YardstickThroughputSensorParserTest {
 
     YardstickThroughputSensorParser parser = new YardstickThroughputSensorParser();
     parser.parseResults(testFolder);
-    Assert.assertEquals(42906f, parser.getAverageThroughput(), .01);
+    assertEquals(42906f, parser.getAverageThroughput(), .01);
   }
 }

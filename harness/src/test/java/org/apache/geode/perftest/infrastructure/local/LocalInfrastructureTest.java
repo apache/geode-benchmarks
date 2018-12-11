@@ -17,34 +17,38 @@
 
 package org.apache.geode.perftest.infrastructure.local;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.concurrent.ExecutionException;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junitpioneer.jupiter.TempDirectory;
 
+@ExtendWith(TempDirectory.class)
 public class LocalInfrastructureTest {
-  @Rule
-  public TemporaryFolder temporaryFolder = new TemporaryFolder();
+
+  private Path temporaryFolder;
+
   private LocalInfrastructure infra;
   private LocalInfrastructure.LocalNode node;
 
-  @Before
-  public void createInfra() throws IOException {
+  @BeforeEach
+  public void createInfra(@TempDirectory.TempDir Path tempDir) throws IOException {
+    temporaryFolder = tempDir;
     infra = new LocalInfrastructure(1);
     node = (LocalInfrastructure.LocalNode) infra.getNodes().iterator().next();
   }
 
-  @After
+  @AfterEach
   public void deleteInfra() throws IOException, InterruptedException {
     infra.close();
   }
@@ -55,8 +59,7 @@ public class LocalInfrastructureTest {
 
     File nodedir = node.workingDir;
 
-    File someFile = temporaryFolder.newFile();
-
+    File someFile = temporaryFolder.toFile();
     File expectedDir = new File(nodedir, "lib");
     assertFalse(expectedDir.exists());
     infra.copyToNodes(Arrays.asList(someFile), node -> "lib", true);
@@ -90,7 +93,7 @@ public class LocalInfrastructureTest {
     File newFile = new File(node.workingDir, "someFile");
     newFile.createNewFile();
 
-    File destDirectory = temporaryFolder.newFolder();
+    File destDirectory = temporaryFolder.toFile();
     infra.copyFromNode(node, ".", destDirectory);
 
     assertTrue(new File(destDirectory, "someFile").exists());

@@ -15,47 +15,96 @@
 
 package org.apache.geode.perftest.analysis;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.StringWriter;
+import java.nio.file.Path;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junitpioneer.jupiter.TempDirectory;
 
 import org.apache.geode.perftest.yardstick.analysis.YardstickPercentileSensorParser;
 import org.apache.geode.perftest.yardstick.analysis.YardstickThroughputSensorParser;
 
+@ExtendWith(TempDirectory.class)
 public class BenchmarkRunAnalyzerTest {
-  @Rule
-  public TemporaryFolder temporaryFolder = new TemporaryFolder();
+  private Path temporaryFolder;
+
+  @BeforeEach
+  void createTempFolder(@TempDirectory.TempDir Path tempDir) {
+    temporaryFolder = tempDir;
+  }
 
   @Test
   public void verifyResultHarvester() throws IOException {
-    final File testFolder = temporaryFolder.newFolder("testFolder");
-    final File testBenchmarkA1 = temporaryFolder.newFolder("testFolder", "BenchmarkA", "client1",
-        "20181121-111516-yardstick-output");
-    final File testBenchmarkA2 = temporaryFolder.newFolder("testFolder", "BenchmarkA", "client2",
-        "20181121-111516-yardstick-output");
-    final File testBenchmarkB1 = temporaryFolder.newFolder("testFolder", "BenchmarkB", "client1",
-        "20181121-111516-yardstick-output");
-    final File testBenchmarkB2 = temporaryFolder.newFolder("testFolder", "BenchmarkB", "client2",
-        "20181121-111516-yardstick-output");
-    temporaryFolder.newFolder(testFolder.getName(), "junkfolder");
-    new File(testFolder, "junkfile").createNewFile();
-    final File baseFolder = temporaryFolder.newFolder("baseFolder");
-    final File baseBenchmarkA1 = temporaryFolder.newFolder("baseFolder", "BenchmarkA", "client1",
-        "20181121-111516-yardstick-output");
-    final File baseBenchmarkA2 = temporaryFolder.newFolder("baseFolder", "BenchmarkA", "client2",
-        "20181121-111516-yardstick-output");
-    final File baseBenchmarkB1 = temporaryFolder.newFolder("baseFolder", "BenchmarkB", "client1",
-        "20181121-111516-yardstick-output");
-    final File baseBenchmarkB2 = temporaryFolder.newFolder("baseFolder", "BenchmarkB", "client2",
-        "20181121-111516-yardstick-output");
+    final File testFolder = temporaryFolder.resolve("testFolder").toFile();
+    final File testBenchmarkA1 = temporaryFolder
+        .resolve("testFolder")
+        .resolve("BenchmarkA")
+        .resolve("client1")
+        .resolve("20181121-111516-yardstick-output")
+        .toFile();
+    assertTrue(testBenchmarkA1.mkdirs());
+    final File testBenchmarkA2 = temporaryFolder
+        .resolve("testFolder")
+        .resolve("BenchmarkA")
+        .resolve("client2")
+        .resolve("20181121-111516-yardstick-output")
+        .toFile();
+    assertTrue(testBenchmarkA2.mkdirs());
+    final File testBenchmarkB1 = temporaryFolder
+        .resolve("testFolder")
+        .resolve("BenchmarkB")
+        .resolve("client1")
+        .resolve("20181121-111516-yardstick-output")
+        .toFile();
+    assertTrue(testBenchmarkB1.mkdirs());
+    final File testBenchmarkB2 = temporaryFolder
+        .resolve("testFolder")
+        .resolve("BenchmarkB")
+        .resolve("client2")
+        .resolve("20181121-111516-yardstick-output")
+        .toFile();
+    assertTrue(testBenchmarkB2.mkdirs());
+    assertTrue(testFolder.toPath().resolve("junkfolder").toFile().mkdirs());
+    assertTrue(new File(testFolder, "junkfile").createNewFile());
+    final File baseFolder = temporaryFolder.resolve("baseFolder").toFile();
+    assertTrue(baseFolder.mkdirs());
+    final File baseBenchmarkA1 = temporaryFolder
+        .resolve("baseFolder")
+        .resolve("BenchmarkA")
+        .resolve("client1")
+        .resolve("20181121-111516-yardstick-output")
+        .toFile();
+    assertTrue(baseBenchmarkA1.mkdirs());
+    final File baseBenchmarkA2 = temporaryFolder
+        .resolve("baseFolder")
+        .resolve("BenchmarkA")
+        .resolve("client2")
+        .resolve("20181121-111516-yardstick-output")
+        .toFile();
+    assertTrue(baseBenchmarkA2.mkdirs());
+    final File baseBenchmarkB1 = temporaryFolder
+        .resolve("baseFolder")
+        .resolve("BenchmarkB")
+        .resolve("client1")
+        .resolve("20181121-111516-yardstick-output")
+        .toFile();
+    assertTrue(baseBenchmarkB1.mkdirs());
+    final File baseBenchmarkB2 = temporaryFolder
+        .resolve("baseFolder")
+        .resolve("BenchmarkB")
+        .resolve("client2")
+        .resolve("20181121-111516-yardstick-output")
+        .toFile();
+    assertTrue(baseBenchmarkB2.mkdirs());
 
     populateThroughputCSV(testBenchmarkA1, new double[] {10, 15, 20, 25, 30}); // Avg 20
     populatePercentileCSV(testBenchmarkA1, new double[] {0, 0, 99, 1}); // 200

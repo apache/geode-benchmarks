@@ -17,7 +17,7 @@
 
 package org.apache.geode.perftest.yardstick.hdrhistogram;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -26,8 +26,8 @@ import java.util.function.Consumer;
 
 import org.HdrHistogram.Histogram;
 import org.assertj.core.api.Assertions;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.yardstickframework.BenchmarkProbePoint;
 
 public class HdrHistogramProbeTest {
@@ -36,7 +36,7 @@ public class HdrHistogramProbeTest {
   private Clock clock;
   private Consumer consumer;
 
-  @Before
+  @BeforeEach
   public void setUp() {
     clock = mock(Clock.class);
     consumer = mock(Consumer.class);
