@@ -39,7 +39,7 @@ public class StartLocator implements Task {
 
   @Override
   public void run(TestContext context) throws Exception {
-    Properties properties = GeodeProperties.serverProperties();
+    Properties properties = GeodeProperties.locatorProperties();
 
     String statsFile = new File(context.getOutputDir(), "stats.gfs").getAbsolutePath();
     properties.setProperty(ConfigurationProperties.STATISTIC_ARCHIVE_FILE, statsFile);
