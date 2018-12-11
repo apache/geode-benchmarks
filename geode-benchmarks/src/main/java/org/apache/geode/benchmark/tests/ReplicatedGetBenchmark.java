@@ -53,7 +53,6 @@ public class ReplicatedGetBenchmark implements PerformanceTest {
   @Override
   public TestConfig configure() {
     TestConfig config = GeodeBenchmark.createConfig();
-    config.name(getClass().getName());
     ClientServerTopology.configure(config);
     config.before(new CreateReplicatedRegion(), SERVER);
     config.before(new CreateClientProxyRegion(), CLIENT);

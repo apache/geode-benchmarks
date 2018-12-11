@@ -24,7 +24,13 @@ version '1.0-SNAPSHOT'
 
 sourceCompatibility = 1.8
 
-def outputDir = project.hasProperty('outputDir') ? project.findProperty('outputDir') : new File(project.buildDir, "benchmarks").getAbsolutePath()
+def outputDir = project.hasProperty('outputDir') ? project.findProperty('outputDir') : new File(project.buildDir, "benchmarks_" + getDate()).getAbsolutePath()
+def geodeVersion = project.hasProperty('geodeVersion') ? project.findProperty('geodeVersion') : '1.+'
+
+def getDate() {
+    new Date().format('yyyyMMddHHmmss')
+}
+
 
 repositories {
     mavenCentral()
@@ -34,7 +40,7 @@ dependencies {
     testImplementation(group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: project.'junit-jupiter-api.version')
     testRuntimeOnly(group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: project.'junit-jupiter-engine.version')
     compile(group: 'org.junit-pioneer', name: 'junit-pioneer', version: project.'junit-pioneer.version')
-    compile(group: 'org.apache.geode', name: 'geode-core', version: project.'geode-core.version')
+    compile(group: 'org.apache.geode', name: 'geode-core', version: geodeVersion)
     compile(group: 'org.slf4j', name: 'slf4j-simple', version: project.'slf4j-simple.version')
     compile(project(':harness'))
 }

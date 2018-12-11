@@ -43,7 +43,6 @@ public class TestConfig implements Serializable {
   private List<TestStep> before = new ArrayList<>();
   private List<TestStep> workload = new ArrayList<>();
   private List<TestStep> after = new ArrayList<>();
-  private String name;
 
   /**
    * Define a role for the test.
@@ -116,14 +115,6 @@ public class TestConfig implements Serializable {
     workloadConfig.warmupSeconds(warmupSeconds);
   }
 
-  /**
-   * Set the name of this benchmark. This name must be unique within a benchmarking run. Comparisons
-   * between runs will use this name to identify the same benchmark in both runs.
-   */
-  public void name(String name) {
-    this.name = name;
-  }
-
   public long getDurationSeconds() {
     return workloadConfig.getDurationSeconds();
   }
@@ -146,10 +137,6 @@ public class TestConfig implements Serializable {
 
   public List<TestStep> getAfter() {
     return after;
-  }
-
-  public String getName() {
-    return name;
   }
 
   /**
