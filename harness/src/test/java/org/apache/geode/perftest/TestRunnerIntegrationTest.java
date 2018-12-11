@@ -56,25 +56,29 @@ public class TestRunnerIntegrationTest {
   public void runsBeforeWorkload() throws Exception {
     runner.runTest(() -> {
       TestConfig testConfig = new TestConfig();
-      testConfig.name(SAMPLE_BENCHMARK);
       testConfig.role("all", 1);
       testConfig.before(context -> System.out.println("hello"), "all");
       return testConfig;
     });
   }
 
-  @Test
-  public void generatesOutputDirectoryPerBenchmark() throws Exception {
+  public static class OutputDirectoryTest implements PerformanceTest {
 
-    runner.runTest(() -> {
+    @Override
+    public TestConfig configure() {
       TestConfig testConfig = new TestConfig();
-      testConfig.name(SAMPLE_BENCHMARK);
       testConfig.role("all", 1);
       testConfig.workload(new EmptyBenchmark(), "all");
       return testConfig;
-    });
+    }
+  }
 
-    File expectedBenchmarkDir = new File(outputDir, SAMPLE_BENCHMARK);
+  @Test
+  public void generatesOutputDirectoryPerBenchmark() throws Exception {
+
+    runner.runTest(new OutputDirectoryTest());
+
+    File expectedBenchmarkDir = new File(outputDir, OutputDirectoryTest.class.getName());
     assertTrue(expectedBenchmarkDir.exists());
 
     // Node directory name is the role + a number
@@ -92,7 +96,6 @@ public class TestRunnerIntegrationTest {
   public void configuresJVMOptions() throws Exception {
     runner.runTest(() -> {
       TestConfig testConfig = new TestConfig();
-      testConfig.name(SAMPLE_BENCHMARK);
       testConfig.role("all", 1);
       testConfig.jvmArgs("all", "-Dprop1=true", "-Dprop2=5");
       testConfig.before(context -> {
