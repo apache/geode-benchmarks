@@ -19,7 +19,7 @@ To run all benchmarks, run the benchmark task and pass in a list of hosts.
 
 For example:
 ```
-./gradlew benchmark -Phosts=localhost,localhost,localhost -PoutputDir=/tmp/results
+./gradlew benchmark -Phosts=localhost,localhost,localhost,localhost -PoutputDir=/tmp/results
 ```
 
 ### Running in google cloud
@@ -48,7 +48,7 @@ reported by the yardstick framework.
 * Benchmark configuration class, which defines the topology of the test and
 * the initialization tasks and workload tasks for the test.
 */
-public class PartitionedPutBenchmark {
+public class PartitionedPutBenchmark implements PerformanceTest {
 
   @Test
   public void run() throws Exception {
@@ -59,22 +59,25 @@ public class PartitionedPutBenchmark {
   * Declare the configuration of the test by calling methods
   * on TestConfig.
   */
-  public void configure(TestConfig config) {
-
+  public TestConfig configure() {
+    TestConfig testConfig = new TestConfig();
     int locatorPort = 10334;
 
     //This test has three roles, a geode locator, server, and client
     config.role("locator", 1);
-    config.role("server", 1);
+    config.role("server", 2);
     config.role("client", 1);
     
     //Define how the locator,server and client are initialized
     config.before(new StartLocator(locatorPort), "locator");
     config.before(new StartServer(locatorPort), "server");
     config.before(new StartClient(locatorPort), "client");
-    
+    config.before(new CreatePartitionedRegion(), "server");
+    config.before(new CreateClientProxyRegion(), "client");
     //Define the benchmarked workload, which runs in a client
     config.workload(new PutTask());
+    
+    return config;
   }
 }
 ```
@@ -87,6 +90,16 @@ public class PartitionedPutBenchmark {
 * for the duration of the test.
 */
 public class PutTask extends BenchmarkDriverAdapter implements Serializable {
+  private Region<Object, Object> region;
+  
+  @Override
+  public void setUp(BenchmarkConfiguration cfg) throws Exception {
+    super.setUp(cfg);
+    ClientCache cache = ClientCacheFactory.getAnyInstance();
+    region = cache.getRegion("region");
+  }
+
+  
   @Override
   public boolean test(Map<Object, Object> ctx) throws Exception {
     region.put(1,2);
