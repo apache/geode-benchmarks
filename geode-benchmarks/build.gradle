@@ -24,7 +24,11 @@ version '1.0-SNAPSHOT'
 
 sourceCompatibility = 1.8
 
-def outputDir = project.hasProperty('outputDir') ? project.findProperty('outputDir') : new File(project.buildDir, "benchmarks").getAbsolutePath()
+def outputDir = project.hasProperty('outputDir') ? project.findProperty('outputDir') : new File(project.buildDir, "benchmarks_" + getDate()).getAbsolutePath()
+
+def getDate() {
+    new Date().format('yyyyMMddHHmmss')
+}
 
 repositories {
     mavenCentral()
