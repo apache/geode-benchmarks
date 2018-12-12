@@ -26,11 +26,11 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Function;
 
 import org.apache.commons.io.FileUtils;
@@ -44,7 +44,7 @@ import org.apache.geode.perftest.infrastructure.Infrastructure;
 public class LocalInfrastructure implements Infrastructure {
 
   private final Set<LocalNode> nodes = new LinkedHashSet<>();
-  private final List<Process> processList = new ArrayList<Process>();
+  private final List<Process> processList = new CopyOnWriteArrayList<>();
 
   public LocalInfrastructure(int numNodes) throws IOException {
     for (int i = 0; i < numNodes; i++) {
