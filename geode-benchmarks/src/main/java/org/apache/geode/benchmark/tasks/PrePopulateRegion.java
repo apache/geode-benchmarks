@@ -21,10 +21,10 @@ import java.time.Instant;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.LongStream;
 
+import org.apache.benchmark.geode.data.Portfolio;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.apache.geode.benchmark.data.PortfolioPdx;
 import org.apache.geode.cache.Cache;
 import org.apache.geode.cache.Region;
 import org.apache.geode.perftest.Task;
@@ -56,7 +56,7 @@ public class PrePopulateRegion implements Task {
     Instant start = Instant.now();
     LongStream.range(0, keyRangeToPrepopulate).forEach(i -> {
       long value = ThreadLocalRandom.current().nextLong(0, keyRangeToPrepopulate);
-      region.put(i, new PortfolioPdx(value));
+      region.put(i, new Portfolio(value));
     });
     Instant finish = Instant.now();
     logger.info("*******************************************");

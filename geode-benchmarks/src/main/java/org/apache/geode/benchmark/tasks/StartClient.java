@@ -24,6 +24,7 @@ import org.apache.geode.benchmark.parameters.GeodeProperties;
 import org.apache.geode.cache.client.ClientCache;
 import org.apache.geode.cache.client.ClientCacheFactory;
 import org.apache.geode.distributed.ConfigurationProperties;
+import org.apache.geode.pdx.ReflectionBasedAutoSerializer;
 import org.apache.geode.perftest.Task;
 import org.apache.geode.perftest.TestContext;
 
@@ -45,6 +46,7 @@ public class StartClient implements Task {
     String statsFile = new File(context.getOutputDir(), "stats.gfs").getAbsolutePath();
 
     ClientCache clientCache = new ClientCacheFactory(GeodeProperties.clientProperties())
+        .setPdxSerializer(new ReflectionBasedAutoSerializer("org.apache.benchmark.geode.data.*"))
         .addPoolLocator(locator.getHostAddress(), locatorPort)
         .set(ConfigurationProperties.STATISTIC_ARCHIVE_FILE, statsFile)
         .create();
