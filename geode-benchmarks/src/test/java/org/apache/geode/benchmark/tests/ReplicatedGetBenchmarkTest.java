@@ -38,7 +38,9 @@ public class ReplicatedGetBenchmarkTest {
   @Test
   public void benchmarkRunsSuccessfully()
       throws Exception {
+    ReplicatedGetBenchmark test = new ReplicatedGetBenchmark();
+    test.setKeyRange(100);
     TestRunners.minimalRunner(folder)
-        .runTest(new ReplicatedGetBenchmark(100));
+        .runTest(test);
   }
 }

@@ -18,8 +18,8 @@
 package org.apache.geode.benchmark.tests;
 
 
-import static org.apache.geode.benchmark.tests.util.ClientServerTopology.Roles.CLIENT;
-import static org.apache.geode.benchmark.tests.util.ClientServerTopology.Roles.SERVER;
+import static org.apache.geode.benchmark.topology.ClientServerTopology.Roles.CLIENT;
+import static org.apache.geode.benchmark.topology.ClientServerTopology.Roles.SERVER;
 
 import org.junit.jupiter.api.Test;
 
@@ -27,7 +27,7 @@ import org.apache.geode.benchmark.tasks.CreateClientProxyRegion;
 import org.apache.geode.benchmark.tasks.CreateReplicatedRegion;
 import org.apache.geode.benchmark.tasks.GetTask;
 import org.apache.geode.benchmark.tasks.PrePopulateRegion;
-import org.apache.geode.benchmark.tests.util.ClientServerTopology;
+import org.apache.geode.benchmark.topology.ClientServerTopology;
 import org.apache.geode.perftest.PerformanceTest;
 import org.apache.geode.perftest.TestConfig;
 import org.apache.geode.perftest.TestRunners;
@@ -46,7 +46,7 @@ public class ReplicatedGetBenchmark implements PerformanceTest {
 
   public ReplicatedGetBenchmark() {}
 
-  ReplicatedGetBenchmark(long keyRange) {
+  public void setKeyRange(long keyRange) {
     this.keyRange = keyRange;
   }
 

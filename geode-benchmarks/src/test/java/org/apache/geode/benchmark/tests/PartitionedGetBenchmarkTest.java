@@ -38,7 +38,9 @@ public class PartitionedGetBenchmarkTest {
   @Test
   public void benchmarkRunsSuccessfully()
       throws Exception {
+    PartitionedGetBenchmark test = new PartitionedGetBenchmark();
+    test.setKeyRange(100);
     TestRunners.minimalRunner(folder)
-        .runTest(new PartitionedGetBenchmark(100));
+        .runTest(test);
   }
 }

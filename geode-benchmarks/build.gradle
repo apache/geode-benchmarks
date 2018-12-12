@@ -37,19 +37,22 @@ repositories {
 }
 
 dependencies {
-    testImplementation(group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: project.'junit-jupiter-api.version')
-    testRuntimeOnly(group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: project.'junit-jupiter-engine.version')
+    compile(group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: project.'junit-jupiter-engine.version')
     compile(group: 'org.junit-pioneer', name: 'junit-pioneer', version: project.'junit-pioneer.version')
     compile(group: 'org.apache.geode', name: 'geode-core', version: geodeVersion)
     compile(group: 'org.slf4j', name: 'slf4j-simple', version: project.'slf4j-simple.version')
     compile(project(':harness'))
 }
 
+test{
+    useJUnitPlatform()
+}
+
 task benchmark(type: Test) {
     outputs.upToDateWhen { false }
     testClassesDirs = project.sourceSets.main.output.classesDirs
     classpath = project.sourceSets.main.runtimeClasspath
-
+    useJUnitPlatform()
     testLogging {
         exceptionFormat = 'full'
     }
