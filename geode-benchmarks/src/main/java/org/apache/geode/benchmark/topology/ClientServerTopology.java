@@ -12,12 +12,12 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.apache.geode.benchmark.tests.util;
+package org.apache.geode.benchmark.topology;
 
-import static org.apache.geode.benchmark.tests.parameters.JVMParameters.JVM_ARGS;
-import static org.apache.geode.benchmark.tests.util.ClientServerTopology.Roles.CLIENT;
-import static org.apache.geode.benchmark.tests.util.ClientServerTopology.Roles.LOCATOR;
-import static org.apache.geode.benchmark.tests.util.ClientServerTopology.Roles.SERVER;
+import static org.apache.geode.benchmark.parameters.JVMParameters.JVM_ARGS;
+import static org.apache.geode.benchmark.topology.ClientServerTopology.Roles.CLIENT;
+import static org.apache.geode.benchmark.topology.ClientServerTopology.Roles.LOCATOR;
+import static org.apache.geode.benchmark.topology.ClientServerTopology.Roles.SERVER;
 
 import org.apache.geode.benchmark.tasks.StartClient;
 import org.apache.geode.benchmark.tasks.StartLocator;
