@@ -1,35 +1,23 @@
 package org.apache.geode.infrastructure.aws;
 
 
+import org.apache.geode.infrastructure.BenchmarkMetadata;
+import software.amazon.awssdk.services.ec2.Ec2Client;
+import software.amazon.awssdk.services.ec2.model.*;
+
 import java.io.IOException;
-import java.time.LocalDate;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
-import software.amazon.awssdk.services.ec2.Ec2Client;
-import software.amazon.awssdk.services.ec2.model.AuthorizeSecurityGroupIngressRequest;
-import software.amazon.awssdk.services.ec2.model.AuthorizeSecurityGroupIngressResponse;
-import software.amazon.awssdk.services.ec2.model.CreateLaunchTemplateRequest;
-import software.amazon.awssdk.services.ec2.model.CreateLaunchTemplateResponse;
-import software.amazon.awssdk.services.ec2.model.CreateSecurityGroupRequest;
-import software.amazon.awssdk.services.ec2.model.CreateSecurityGroupResponse;
-import software.amazon.awssdk.services.ec2.model.DescribeImagesRequest;
-import software.amazon.awssdk.services.ec2.model.Ec2Exception;
-import software.amazon.awssdk.services.ec2.model.Filter;
-import software.amazon.awssdk.services.ec2.model.Image;
-import software.amazon.awssdk.services.ec2.model.InstanceType;
-import software.amazon.awssdk.services.ec2.model.IpPermission;
-import software.amazon.awssdk.services.ec2.model.LaunchTemplatePlacementRequest;
-import software.amazon.awssdk.services.ec2.model.RequestLaunchTemplateData;
-import software.amazon.awssdk.services.ec2.model.Tenancy;
-
 
 public class LaunchCluster {
+  static Ec2Client ec2 = Ec2Client.create();
 
   public static void main(String[] args) throws IOException {
     boolean valid = true;
@@ -38,7 +26,6 @@ public class LaunchCluster {
       return;
     }
     String benchmarkTag = args[0];
-    final String benchmarkPrefix = "geode-benchmarks";
 
     if (benchmarkTag == null || benchmarkTag.isEmpty()) {
       valid = false;
@@ -48,70 +35,146 @@ public class LaunchCluster {
       System.exit(1);
       return;
     }
+    // create keypair
+    try {
+      DescribeKeyPairsResponse dkpr = ec2.describeKeyPairs(DescribeKeyPairsRequest.builder().keyNames(AwsBenchmarkMetadata.keyPair(benchmarkTag)).build());
+      System.out.println("SSH key pair for cluster '" + "' already exists!");
+      System.exit(1);
+    } catch(Ec2Exception e) {
+      if (!e.getMessage().contains("The key pair '" + AwsBenchmarkMetadata.keyPair(benchmarkTag) + "' does not exist")) {
+        System.out.println("Exception thrown: " + e.getMessage());
+        System.exit(1);
+      }
+    }
+    try {
+      CreateKeyPairResponse ckpr = ec2.createKeyPair(CreateKeyPairRequest.builder().keyName(benchmarkTag).build());
+      Files.createDirectories(Paths.get(BenchmarkMetadata.benchmarkKeyFileDirectory()));
+      Files.write(Paths.get(AwsBenchmarkMetadata.keyPairFileName(benchmarkTag)), ckpr.keyMaterial().getBytes());
+    } catch(Ec2Exception e) {
+      System.out.println("Exception thrown: " + e.getMessage());
+      System.exit(1);
+    }
 
+    System.exit(0);
+    Image newestImage = getNewestImage();
+    List<Tag> tags = getTags(benchmarkTag);
+
+    if (!createPlacementGroup(benchmarkTag)) {
+      System.exit(1);
+    }
+
+    if (!createSecurityGroup(benchmarkTag, tags)) {
+      System.exit(1);
+    }
+
+
+
+    if (!createLaunchTemplate(benchmarkTag, newestImage)) {
+      System.exit(1);
+    }
+  }
+
+  private static boolean createLaunchTemplate(String benchmarkTag, Image newestImage) {
+    ArrayList<String> securityGroupList = new ArrayList<>();
+    securityGroupList.add(AwsBenchmarkMetadata.securityGroup(benchmarkTag));
+
+    // Create the launch template
+    try {
+      CreateLaunchTemplateResponse cltresponse =
+          ec2.createLaunchTemplate(CreateLaunchTemplateRequest.builder()
+              .launchTemplateName(AwsBenchmarkMetadata.launchTemplate(benchmarkTag))
+              .launchTemplateData(RequestLaunchTemplateData.builder()
+                  .imageId(newestImage.imageId())
+                  .instanceType(AwsBenchmarkMetadata.instanceType())
+                  .placement(LaunchTemplatePlacementRequest.builder()
+                      .groupName(AwsBenchmarkMetadata.placementGroup(benchmarkTag))
+                      .tenancy(AwsBenchmarkMetadata.tenancy())
+                      .build())
+                  .securityGroups(securityGroupList)
+                  .build())
+              .build());
+
+      System.out.println("Launch Template for cluster '" + benchmarkTag + "' created.");
+    } catch(Ec2Exception e) {
+      System.out.println("Exception thrown: " + e.getMessage());
+      return false;
+    }
+    return true;
+  }
+
+  private static boolean createSecurityGroup(String benchmarkTag, List<Tag> tags) {
+    // Make a security group for the launch template
+    try {
+      CreateSecurityGroupResponse csgr = ec2.createSecurityGroup(CreateSecurityGroupRequest.builder()
+          .groupName(AwsBenchmarkMetadata.securityGroup(benchmarkTag))
+          .description(AwsBenchmarkMetadata.securityGroup(benchmarkTag))
+          .build());
+      String groupId = csgr.groupId();
+      ec2.createTags(CreateTagsRequest.builder().resources(groupId).tags(tags).build());
+      System.out.println("Security Group for cluster '" + benchmarkTag + "' created.");
+
+      // Allow all members of the security group to freely talk to each other
+      ec2.authorizeSecurityGroupIngress(AuthorizeSecurityGroupIngressRequest.builder()
+          .groupName(AwsBenchmarkMetadata.securityGroup(benchmarkTag))
+          .sourceSecurityGroupName(AwsBenchmarkMetadata.securityGroup(benchmarkTag))
+          .build());
+      System.out.println("Security Group permissions for cluster '" + benchmarkTag + "' set.");
+    } catch(Ec2Exception e) {
+      String message = e.getMessage();
+      if (message.contains("'" + AwsBenchmarkMetadata.securityGroup(benchmarkTag) + "' already exists")) {
+        System.out.println("Security group for tag " + benchmarkTag + " already exists. Cowardly refusing to continue.");
+      }
+      else {
+        System.out.println("Exception thrown: " + e.getMessage());
+      }
+      return false;
+    }
+    return true;
+  }
+
+  private static boolean createPlacementGroup(String benchmarkTag) {
+    // Make a placement group for the launch template
+    try {
+      CreatePlacementGroupResponse cpgr = ec2.createPlacementGroup(CreatePlacementGroupRequest.builder()
+              .groupName(AwsBenchmarkMetadata.placementGroup(benchmarkTag))
+              .strategy(AwsBenchmarkMetadata.placementGroupStrategy())
+              .build());
+//      ec2.createTags(CreateTagsRequest.builder().resources().build())
+      System.out.println("Placement Group for cluster '" + benchmarkTag + "' created.");
+    } catch(Ec2Exception e) {
+      System.out.println("Exception thrown: " + e.getMessage());
+      return false;
+    }
+    return true;
+  }
+
+  private static List<Tag> getTags(String benchmarkTag) {
+    // Create tags for everything
+    List<Tag> tags = new ArrayList<>();
+    tags.add(Tag.builder().key("purpose").value(BenchmarkMetadata.prefix).build());
+    tags.add(Tag.builder().key(BenchmarkMetadata.prefix).value(benchmarkTag).build());
+    return tags;
+  }
+
+  private static Image getNewestImage() {
     DateTimeFormatter
         inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.ENGLISH);
 
-    Ec2Client ec2 = Ec2Client.create();
+    // Find an appropriate AMI to launch our cluster with
     List<Image> benchmarkImages = ec2.describeImages(
         DescribeImagesRequest
             .builder()
             .filters(Filter.builder().name("tag:purpose").values("geode-benchmarks").build())
             .build()).images();
 
+    // benchmarkImages is an immutable list so we have to copy it
     List<Image>sortableImages = new ArrayList<>(benchmarkImages);
     sortableImages.sort(
         Comparator.comparing((Image i) -> LocalDateTime.parse(i.creationDate(), inputFormatter)));
-    Image newestImage = sortableImages.get(sortableImages.size() - 1);
-
-    final String benchmarkTagPrefix = benchmarkPrefix + "-" + benchmarkTag;
-    final String launchTemplateName = benchmarkTagPrefix + "-launch-template";
-    final InstanceType instanceType = InstanceType.C5_9_XLARGE;
-    final String placementGroup = benchmarkTagPrefix + "-placement-group";
-    final Tenancy tenancy = Tenancy.DEDICATED;
-    final String securityGroupName = benchmarkTagPrefix + "-security-group";
-    try {
-      ec2.createSecurityGroup(CreateSecurityGroupRequest.builder()
-          .groupName(securityGroupName)
-          .description(securityGroupName)
-          .build());
-      System.out.println("Security Group for cluster '" + benchmarkTag + "' created.");
-      ec2.authorizeSecurityGroupIngress(AuthorizeSecurityGroupIngressRequest.builder()
-          .groupName(securityGroupName)
-          .sourceSecurityGroupName(securityGroupName)
-          .build());
-      System.out.println("Security Group permissions for cluster '" + benchmarkTag + "' created.");
-    } catch(Ec2Exception e) {
-      String message = e.getMessage();
-      if (message.contains("'" + securityGroupName + "' already exists")) {
-        System.out.println("Security group for tag " + benchmarkTag + " already exists. Cowardly refusing to continue.");
-      }
-      else {
-        System.out.println("Exception thrown: " + e.getMessage());
-      }
+    if (sortableImages.size() < 1) {
+      System.out.println("No suitable AMIs available, exiting.");
       System.exit(1);
-      return;
     }
-    ArrayList<String> securityGroupList = new ArrayList<>();
-    securityGroupList.add(securityGroupName);
-    try {
-      CreateLaunchTemplateResponse cltresponse =
-          ec2.createLaunchTemplate(CreateLaunchTemplateRequest.builder()
-              .launchTemplateName(launchTemplateName)
-              .launchTemplateData(RequestLaunchTemplateData.builder()
-                  .imageId(newestImage.imageId())
-                  .instanceType(instanceType)
-                  .placement(LaunchTemplatePlacementRequest.builder()
-                      .groupName(placementGroup)
-                      .tenancy(tenancy)
-                      .build())
-                  .securityGroups(securityGroupList)
-                  .build())
-              .build());
-
-      System.out.println("Created launch template: " + cltresponse.launchTemplate().launchTemplateName());
-    } catch(Ec2Exception e) {
-      System.out.println("Exception thrown: " + e.getMessage());
-    }
+    return sortableImages.get(sortableImages.size() - 1);
   }
 }
