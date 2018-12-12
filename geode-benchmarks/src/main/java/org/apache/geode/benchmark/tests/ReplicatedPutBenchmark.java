@@ -40,7 +40,7 @@ public class ReplicatedPutBenchmark implements PerformanceTest {
 
   public ReplicatedPutBenchmark() {}
 
-  ReplicatedPutBenchmark(long keyRange) {
+  public void setKeyRange(long keyRange) {
     this.keyRange = keyRange;
   }
 

@@ -40,7 +40,9 @@ public class ReplicatedPutBenchmarkTest {
   @Test
   public void benchmarkRunsSuccessfully()
       throws Exception {
+    ReplicatedPutBenchmark test = new ReplicatedPutBenchmark();
+    test.setKeyRange(100);
     TestRunners.minimalRunner(folder)
-        .runTest(new ReplicatedPutBenchmark(100));
+        .runTest(test);
   }
 }

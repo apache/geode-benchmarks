@@ -46,7 +46,7 @@ public class PartitionedGetBenchmark implements PerformanceTest {
 
   public PartitionedGetBenchmark() {}
 
-  PartitionedGetBenchmark(long keyRange) {
+  public void setKeyRange(long keyRange) {
     this.keyRange = keyRange;
   }
 

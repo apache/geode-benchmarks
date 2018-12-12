@@ -40,7 +40,7 @@ public class PartitionedPutBenchmark implements PerformanceTest {
 
   public PartitionedPutBenchmark() {}
 
-  PartitionedPutBenchmark(long keyRange) {
+  public void setKeyRange(long keyRange) {
     this.keyRange = keyRange;
   }
 

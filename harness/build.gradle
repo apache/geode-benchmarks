@@ -35,8 +35,7 @@ task(analyzeRun, dependsOn: 'classes', type: JavaExec) {
 }
 
 dependencies {
-    testImplementation(group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: project.'junit-jupiter-api.version')
-    testRuntimeOnly(group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: project.'junit-jupiter-engine.version')
+    compile(group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: project.'junit-jupiter-engine.version')
     compile(group: 'org.junit-pioneer', name: 'junit-pioneer', version: project.'junit-pioneer.version')
     compile(group: 'com.hierynomus', name: 'sshj', version: project.'sshj.version')
     compile(group: 'commons-io', name: 'commons-io', version: project.'commons-io.version')
@@ -47,4 +46,8 @@ dependencies {
     testCompile(group: 'org.slf4j', name: 'slf4j-simple', version: project.'slf4j-simple.version')
     testCompile(group: 'org.apache.sshd', name: 'sshd-core', version: project.'sshd-core.version')
     testCompile(group: 'org.assertj', name: 'assertj-core', version: project.'assertj-core.version')
+}
+
+test{
+    useJUnitPlatform()
 }

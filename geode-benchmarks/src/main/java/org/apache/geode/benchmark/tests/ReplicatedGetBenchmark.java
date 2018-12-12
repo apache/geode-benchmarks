@@ -46,7 +46,7 @@ public class ReplicatedGetBenchmark implements PerformanceTest {
 
   public ReplicatedGetBenchmark() {}
 
-  ReplicatedGetBenchmark(long keyRange) {
+  public void setKeyRange(long keyRange) {
     this.keyRange = keyRange;
   }
 

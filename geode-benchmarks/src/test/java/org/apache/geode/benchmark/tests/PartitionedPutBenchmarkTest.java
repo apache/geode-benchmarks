@@ -42,7 +42,9 @@ public class PartitionedPutBenchmarkTest {
   @Test
   public void benchmarkRunsSuccessfully()
       throws Exception {
+    PartitionedPutBenchmark test = new PartitionedPutBenchmark();
+    test.setKeyRange(100);
     TestRunners.minimalRunner(folder)
-        .runTest(new PartitionedPutBenchmark(100));
+        .runTest(test);
   }
 }
