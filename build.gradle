@@ -21,6 +21,7 @@ buildscript {
     dependencies {
         classpath 'com.bmuschko:gradle-docker-plugin:4.0.4'
         classpath "com.diffplug.spotless:spotless-plugin-gradle:3.16.0"
+        classpath "io.spring.gradle:dependency-management-plugin:1.0.3.RELEASE"
     }
 }
 
