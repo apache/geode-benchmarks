@@ -1,20 +1,28 @@
 package org.apache.geode.infrastructure.aws;
 
 
+import static java.lang.Thread.sleep;
+
 import java.io.IOException;
 import java.nio.file.DirectoryNotEmptyException;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Paths;
+import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import software.amazon.awssdk.services.ec2.Ec2Client;
 import software.amazon.awssdk.services.ec2.model.*;
+
+import org.apache.geode.infrastructure.BenchmarkMetadata;
 
 
 public class DestroyCluster {
   static Ec2Client ec2 = Ec2Client.create();
 
-  public static void main(String[] args) throws IOException {
+  public static void main(String[] args) throws IOException, InterruptedException {
     boolean valid = true;
     if (args.length != 1) {
       System.out.println("This takes one argument, the cluster tag to work with.");
@@ -32,6 +40,7 @@ public class DestroyCluster {
       System.exit(1);
       return;
     }
+    deleteInstances(benchmarkTag);
     deleteLaunchTemplate(benchmarkTag);
     deleteSecurityGroup(benchmarkTag);
     deletePlacementGroup(benchmarkTag);
@@ -52,8 +61,56 @@ public class DestroyCluster {
     catch(IOException e)
     {
       System.out.println("Unable to delete key pair file for cluster '" + benchmarkTag + "'.");
+      System.out.println("Exception message: " + e.getMessage());
     }
+    System.out.println("Key Pair for cluster'" + benchmarkTag + "' deleted.");
+  }
 
+  private static void deleteInstances(String benchmarkTag) throws InterruptedException {
+    // delete instances
+    try {
+      DescribeInstancesResponse dir = ec2.describeInstances(DescribeInstancesRequest.builder()
+          .filters(Filter.builder().name("tag:" + BenchmarkMetadata.prefix).values(benchmarkTag).build())
+          .build());
+      Stream<Instance> instanceStream = dir.reservations()
+          .stream()
+          .flatMap(reservation -> reservation.instances().stream());
+
+      List<String>
+          instanceIds = dir
+          .reservations()
+          .stream()
+          .flatMap(reservation -> reservation
+              .instances()
+              .stream())
+          .map(Instance::instanceId)
+          .collect(Collectors.toList());
+
+//      dir.reservations().stream().findFirst().instances().stream().map(reservation -> reservation.)
+      ec2.terminateInstances(TerminateInstancesRequest.builder()
+          .instanceIds(instanceIds)
+          .build());
+      System.out.println("Waiting for cluster instances to terminate.");
+      while (ec2.describeInstances(DescribeInstancesRequest.builder()
+          .instanceIds(instanceIds)
+          .filters(Filter.builder()
+              .name("instance-state-name")
+              .values("pending", "running", "shutting-down", "stopping", "stopped")
+              .build())
+          .build()).reservations().stream().flatMap(reservation -> reservation.instances().stream()).count() > 0) {
+         sleep(60000);
+         System.out.println("Continuing to wait.");
+      }
+
+    } catch(Ec2Exception e) {
+      System.out.println("We got an exception while deleting the instances");
+      System.out.println("Exception message: " + e.getMessage());
+
+      // we don't care what happens.
+
+    }
+    //
+    System.out.println("Instances for cluster '" + benchmarkTag + "' deleted.");
   }
 
   private static void deletePlacementGroup(String benchmarkTag) {
@@ -66,6 +123,7 @@ public class DestroyCluster {
       System.out.println("Placement Group for cluster '" + benchmarkTag + "' deleted.");
     } catch(Ec2Exception e) {
       System.out.println("We got an exception while deleting the placement group");
+      System.out.println("Exception message: " + e.getMessage());
 
       // we don't care what happens.
     }
@@ -81,6 +139,7 @@ public class DestroyCluster {
       System.out.println("Security Group for cluster '" + benchmarkTag + "' deleted.");
     } catch(Ec2Exception e) {
       System.out.println("We got an exception while deleting the security group");
+      System.out.println("Exception message: " + e.getMessage());
 
       // we don't care what happens.
     }
@@ -96,6 +155,7 @@ public class DestroyCluster {
       System.out.println("Launch template for cluster '" + benchmarkTag + "' deleted.");
     } catch(Ec2Exception e) {
       System.out.println("We got an exception while deleting the launch template");
+      System.out.println("Exception message: " + e.getMessage());
     }
   }
 }

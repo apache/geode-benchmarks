@@ -13,7 +13,7 @@ public interface BenchmarkMetadata {
     }
 
     static String benchmarkKeyFileDirectory() {
-        return(System.getProperty("user.home") + sshDirectory);
+        return(System.getProperty("user.home") + "/" + sshDirectory);
     }
 
     static String benchmarkKeyFileName(String tag) {

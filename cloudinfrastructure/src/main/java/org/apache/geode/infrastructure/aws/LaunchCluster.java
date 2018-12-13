@@ -35,28 +35,11 @@ public class LaunchCluster {
       System.exit(1);
       return;
     }
-    // create keypair
-    try {
-      DescribeKeyPairsResponse dkpr = ec2.describeKeyPairs(DescribeKeyPairsRequest.builder().keyNames(AwsBenchmarkMetadata.keyPair(benchmarkTag)).build());
-      System.out.println("SSH key pair for cluster '" + "' already exists!");
-      System.exit(1);
-    } catch(Ec2Exception e) {
-      if (!e.getMessage().contains("The key pair '" + AwsBenchmarkMetadata.keyPair(benchmarkTag) + "' does not exist")) {
-        System.out.println("Exception thrown: " + e.getMessage());
-        System.exit(1);
-      }
-    }
-    try {
-      CreateKeyPairResponse ckpr = ec2.createKeyPair(CreateKeyPairRequest.builder().keyName(benchmarkTag).build());
-      Files.createDirectories(Paths.get(BenchmarkMetadata.benchmarkKeyFileDirectory()));
-      Files.write(Paths.get(AwsBenchmarkMetadata.keyPairFileName(benchmarkTag)), ckpr.keyMaterial().getBytes());
-    } catch(Ec2Exception e) {
-      System.out.println("Exception thrown: " + e.getMessage());
-      System.exit(1);
-    }
 
-    System.exit(0);
+    createKeyPair(benchmarkTag);
+
     Image newestImage = getNewestImage();
+
     List<Tag> tags = getTags(benchmarkTag);
 
     if (!createPlacementGroup(benchmarkTag)) {
@@ -70,6 +53,52 @@ public class LaunchCluster {
 
 
     if (!createLaunchTemplate(benchmarkTag, newestImage)) {
+      System.exit(1);
+    }
+
+    // launch instances
+
+    try {
+      ec2.runInstances(RunInstancesRequest.builder()
+          .launchTemplate(LaunchTemplateSpecification.builder()
+              .launchTemplateName(AwsBenchmarkMetadata.launchTemplate(benchmarkTag))
+              .build())
+          .tagSpecifications(TagSpecification.builder()
+              .tags(tags)
+              .resourceType(ResourceType.INSTANCE)
+              .build())
+          .minCount(4)
+          .maxCount(4)
+          .build());
+    } catch(Ec2Exception e) {
+      System.out.println("Launch Instances Exception thrown: " + e.getMessage());
+      System.exit(1);
+    }
+
+  }
+
+  private static void createKeyPair(String benchmarkTag) throws IOException {
+    // create keypair
+    try {
+      DescribeKeyPairsResponse
+          dkpr = ec2.describeKeyPairs(
+          DescribeKeyPairsRequest.builder().keyNames(AwsBenchmarkMetadata.keyPair(benchmarkTag)).build());
+      System.out.println("SSH key pair for cluster '" + benchmarkTag + "' already exists!");
+      System.exit(1);
+    } catch(Ec2Exception e) {
+      if (!e.getMessage().contains("The key pair '" + AwsBenchmarkMetadata.keyPair(benchmarkTag) + "' does not exist")) {
+        System.out.println("Exception thrown: " + e.getMessage());
+        System.exit(1);
+      }
+    }
+    try {
+      CreateKeyPairResponse
+          ckpr = ec2.createKeyPair(
+          CreateKeyPairRequest.builder().keyName(AwsBenchmarkMetadata.keyPair(benchmarkTag)).build());
+      Files.createDirectories(Paths.get(BenchmarkMetadata.benchmarkKeyFileDirectory()));
+      Files.write(Paths.get(AwsBenchmarkMetadata.keyPairFileName(benchmarkTag)), ckpr.keyMaterial().getBytes());
+    } catch(Ec2Exception e) {
+      System.out.println("Exception thrown: " + e.getMessage());
       System.exit(1);
     }
   }
@@ -90,6 +119,7 @@ public class LaunchCluster {
                       .groupName(AwsBenchmarkMetadata.placementGroup(benchmarkTag))
                       .tenancy(AwsBenchmarkMetadata.tenancy())
                       .build())
+                  .keyName(AwsBenchmarkMetadata.keyPair(benchmarkTag))
                   .securityGroups(securityGroupList)
                   .build())
               .build());
@@ -117,6 +147,13 @@ public class LaunchCluster {
       ec2.authorizeSecurityGroupIngress(AuthorizeSecurityGroupIngressRequest.builder()
           .groupName(AwsBenchmarkMetadata.securityGroup(benchmarkTag))
           .sourceSecurityGroupName(AwsBenchmarkMetadata.securityGroup(benchmarkTag))
+          .build());
+      ec2.authorizeSecurityGroupIngress(AuthorizeSecurityGroupIngressRequest.builder()
+          .groupName(AwsBenchmarkMetadata.securityGroup(benchmarkTag))
+          .cidrIp("0.0.0.0/0")
+          .ipProtocol("tcp")
+          .toPort(22)
+          .fromPort(22)
           .build());
       System.out.println("Security Group permissions for cluster '" + benchmarkTag + "' set.");
     } catch(Ec2Exception e) {
