@@ -49,44 +49,23 @@ public class LaunchCluster {
   static Ec2Client ec2 = Ec2Client.create();
 
   public static void main(String[] args) throws IOException {
-    boolean valid = true;
     if (args.length != 1) {
-      System.exit(1);
-      return;
+      throw new IllegalStateException("Usage: LaunchCluster <tag>");
     }
     String benchmarkTag = args[0];
 
     if (benchmarkTag == null || benchmarkTag.isEmpty()) {
-      valid = false;
-    }
-
-    if (!valid) {
-      System.exit(1);
-      return;
+      throw new IllegalStateException("Usage: LaunchCluster <tag>");
     }
 
     createKeyPair(benchmarkTag);
-
     Image newestImage = getNewestImage();
-
     List<Tag> tags = getTags(benchmarkTag);
 
-    if (!createPlacementGroup(benchmarkTag)) {
-      System.exit(1);
-    }
-
-    if (!createSecurityGroup(benchmarkTag, tags)) {
-      System.exit(1);
-    }
-
-
-
-    if (!createLaunchTemplate(benchmarkTag, newestImage)) {
-      System.exit(1);
-    }
-
+    createPlacementGroup(benchmarkTag);
+    createSecurityGroup(benchmarkTag, tags);
+    createLaunchTemplate(benchmarkTag, newestImage);
     launchInstances(benchmarkTag, tags);
-
   }
 
   private static void launchInstances(String benchmarkTag, List<Tag> tags) {
@@ -136,36 +115,28 @@ public class LaunchCluster {
 
   private static void createKeyPair(String benchmarkTag) throws IOException {
     // create keypair
-    try {
-      DescribeKeyPairsResponse
-          dkpr = ec2.describeKeyPairs(
-          DescribeKeyPairsRequest.builder().keyNames(AwsBenchmarkMetadata.keyPair(benchmarkTag)).build());
-      System.out.println("SSH key pair for cluster '" + benchmarkTag + "' already exists!");
-      System.exit(1);
-    } catch(Ec2Exception e) {
-      if (!e.getMessage().contains("The key pair '" + AwsBenchmarkMetadata.keyPair(benchmarkTag) + "' does not exist")) {
-        System.out.println("Exception thrown: " + e.getMessage());
-        System.exit(1);
-      }
-    }
-    try {
+//    try {
+//      DescribeKeyPairsResponse
+//          dkpr = ec2.describeKeyPairs(
+//          DescribeKeyPairsRequest.builder().keyNames(AwsBenchmarkMetadata.keyPair(benchmarkTag)).build());
+//      throw new IllegalStateException("SSH key pair for cluster '" + benchmarkTag + "' already exists!");
+//    } catch(Ec2Exception e) {
+//      if (!e.getMessage().contains("The key pair '" + AwsBenchmarkMetadata.keyPair(benchmarkTag) + "' does not exist")) {
+//        throw e;
+//      }
+//    }
       CreateKeyPairResponse
           ckpr = ec2.createKeyPair(
           CreateKeyPairRequest.builder().keyName(AwsBenchmarkMetadata.keyPair(benchmarkTag)).build());
       Files.createDirectories(Paths.get(BenchmarkMetadata.benchmarkKeyFileDirectory()));
       Files.write(Paths.get(AwsBenchmarkMetadata.keyPairFileName(benchmarkTag)), ckpr.keyMaterial().getBytes());
-    } catch(Ec2Exception e) {
-      System.out.println("Exception thrown: " + e.getMessage());
-      System.exit(1);
-    }
   }
 
-  private static boolean createLaunchTemplate(String benchmarkTag, Image newestImage) {
+  private static void createLaunchTemplate(String benchmarkTag, Image newestImage) {
     ArrayList<String> securityGroupList = new ArrayList<>();
     securityGroupList.add(AwsBenchmarkMetadata.securityGroup(benchmarkTag));
 
     // Create the launch template
-    try {
       CreateLaunchTemplateResponse cltresponse =
           ec2.createLaunchTemplate(CreateLaunchTemplateRequest.builder()
               .launchTemplateName(AwsBenchmarkMetadata.launchTemplate(benchmarkTag))
@@ -182,16 +153,10 @@ public class LaunchCluster {
               .build());
 
       System.out.println("Launch Template for cluster '" + benchmarkTag + "' created.");
-    } catch(Ec2Exception e) {
-      System.out.println("Exception thrown: " + e.getMessage());
-      return false;
-    }
-    return true;
   }
 
-  private static boolean createSecurityGroup(String benchmarkTag, List<Tag> tags) {
+  private static void createSecurityGroup(String benchmarkTag, List<Tag> tags) {
     // Make a security group for the launch template
-    try {
       CreateSecurityGroupResponse csgr = ec2.createSecurityGroup(CreateSecurityGroupRequest.builder()
           .groupName(AwsBenchmarkMetadata.securityGroup(benchmarkTag))
           .description(AwsBenchmarkMetadata.securityGroup(benchmarkTag))
@@ -213,33 +178,14 @@ public class LaunchCluster {
           .fromPort(22)
           .build());
       System.out.println("Security Group permissions for cluster '" + benchmarkTag + "' set.");
-    } catch(Ec2Exception e) {
-      String message = e.getMessage();
-      if (message.contains("'" + AwsBenchmarkMetadata.securityGroup(benchmarkTag) + "' already exists")) {
-        System.out.println("Security group for tag " + benchmarkTag + " already exists. Cowardly refusing to continue.");
-      }
-      else {
-        System.out.println("Exception thrown: " + e.getMessage());
-      }
-      return false;
-    }
-    return true;
   }
 
-  private static boolean createPlacementGroup(String benchmarkTag) {
-    // Make a placement group for the launch template
-    try {
-      CreatePlacementGroupResponse cpgr = ec2.createPlacementGroup(CreatePlacementGroupRequest.builder()
+  private static void createPlacementGroup(String benchmarkTag) {
+      ec2.createPlacementGroup(CreatePlacementGroupRequest.builder()
               .groupName(AwsBenchmarkMetadata.placementGroup(benchmarkTag))
               .strategy(AwsBenchmarkMetadata.placementGroupStrategy())
               .build());
-//      ec2.createTags(CreateTagsRequest.builder().resources().build())
       System.out.println("Placement Group for cluster '" + benchmarkTag + "' created.");
-    } catch(Ec2Exception e) {
-      System.out.println("Exception thrown: " + e.getMessage());
-      return false;
-    }
-    return true;
   }
 
   private static List<Tag> getTags(String benchmarkTag) {
