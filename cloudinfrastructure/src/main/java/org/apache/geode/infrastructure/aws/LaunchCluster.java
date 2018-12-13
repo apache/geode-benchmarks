@@ -1,6 +1,8 @@
 package org.apache.geode.infrastructure.aws;
 
 
+import static java.lang.Thread.sleep;
+
 import org.apache.geode.infrastructure.BenchmarkMetadata;
 import software.amazon.awssdk.services.ec2.Ec2Client;
 import software.amazon.awssdk.services.ec2.model.*;
@@ -14,6 +16,8 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 
 public class LaunchCluster {
@@ -56,10 +60,17 @@ public class LaunchCluster {
       System.exit(1);
     }
 
+    launchInstances(benchmarkTag, tags);
+
+  }
+
+  private static void launchInstances(String benchmarkTag, List<Tag> tags) {
     // launch instances
 
+    int instanceCount = 4;
+
     try {
-      ec2.runInstances(RunInstancesRequest.builder()
+      RunInstancesResponse rir = ec2.runInstances(RunInstancesRequest.builder()
           .launchTemplate(LaunchTemplateSpecification.builder()
               .launchTemplateName(AwsBenchmarkMetadata.launchTemplate(benchmarkTag))
               .build())
@@ -67,14 +78,35 @@ public class LaunchCluster {
               .tags(tags)
               .resourceType(ResourceType.INSTANCE)
               .build())
-          .minCount(4)
-          .maxCount(4)
+          .minCount(instanceCount)
+          .maxCount(instanceCount)
           .build());
+
+      List<String>
+          instanceIds = rir.instances()
+              .stream()
+          .map(Instance::instanceId)
+          .collect(Collectors.toList());
+
+      System.out.println("Waiting for cluster instances to go fully online.");
+
+      while (ec2.describeInstances(DescribeInstancesRequest.builder()
+          .instanceIds(instanceIds)
+          .filters(Filter.builder()
+              .name("instance-state-name")
+              .values("running")
+              .build())
+          .build()).reservations().stream().flatMap(reservation -> reservation.instances().stream()).count() > instanceCount) {
+        sleep(60000);
+        System.out.println("Continuing to wait.");
+      }
     } catch(Ec2Exception e) {
       System.out.println("Launch Instances Exception thrown: " + e.getMessage());
       System.exit(1);
     }
-
+    catch(InterruptedException e) {
+      System.out.println("InterruptedException caught");
+    }
   }
 
   private static void createKeyPair(String benchmarkTag) throws IOException {
