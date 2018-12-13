@@ -9,18 +9,27 @@ import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import software.amazon.awssdk.services.ec2.Ec2Client;
-import software.amazon.awssdk.services.ec2.model.*;
+import software.amazon.awssdk.services.ec2.model.DeleteKeyPairRequest;
+import software.amazon.awssdk.services.ec2.model.DeleteKeyPairResponse;
+import software.amazon.awssdk.services.ec2.model.DeleteLaunchTemplateRequest;
+import software.amazon.awssdk.services.ec2.model.DeletePlacementGroupRequest;
+import software.amazon.awssdk.services.ec2.model.DeleteSecurityGroupRequest;
+import software.amazon.awssdk.services.ec2.model.DescribeInstancesRequest;
+import software.amazon.awssdk.services.ec2.model.DescribeInstancesResponse;
+import software.amazon.awssdk.services.ec2.model.Ec2Exception;
+import software.amazon.awssdk.services.ec2.model.Filter;
+import software.amazon.awssdk.services.ec2.model.Instance;
+import software.amazon.awssdk.services.ec2.model.TerminateInstancesRequest;
 
 import org.apache.geode.infrastructure.BenchmarkMetadata;
 
 
 public class DestroyCluster {
-  static Ec2Client ec2 = Ec2Client.create();
+  private static Ec2Client ec2 = Ec2Client.create();
 
   public static void main(String[] args) throws IOException, InterruptedException {
     boolean valid = true;
@@ -70,7 +79,7 @@ public class DestroyCluster {
     // delete instances
     try {
       DescribeInstancesResponse dir = ec2.describeInstances(DescribeInstancesRequest.builder()
-          .filters(Filter.builder().name("tag:" + BenchmarkMetadata.prefix).values(benchmarkTag).build())
+          .filters(Filter.builder().name("tag:" + BenchmarkMetadata.PREFIX).values(benchmarkTag).build())
           .build());
       Stream<Instance> instanceStream = dir.reservations()
           .stream()

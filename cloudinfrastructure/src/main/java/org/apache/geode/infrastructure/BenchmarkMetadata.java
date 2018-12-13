@@ -1,22 +1,25 @@
 package org.apache.geode.infrastructure;
 
-public interface BenchmarkMetadata {
-    String prefix = "geode-benchmarks";
-    String sshDirectory = ".ssh/geode-benchmarks";
+/**
+ * Static methods to generate common strings used by the infrastructure.
+ */
+public class BenchmarkMetadata {
+    public static String PREFIX = "geode-benchmarks";
+    public static String SSH_DIRECTORY = ".ssh/geode-benchmarks";
 
-    static String benchmarkPrefix(String tag) {
-        return(prefix + "-" + tag);
+    public static String benchmarkPrefix(String tag) {
+        return PREFIX + "-" + tag;
     }
 
-    static String benchmarkString(String tag, String suffix) {
-        return(benchmarkPrefix(tag) + "-" + suffix);
+    public static String benchmarkString(String tag, String suffix) {
+        return benchmarkPrefix(tag) + "-" + suffix;
     }
 
-    static String benchmarkKeyFileDirectory() {
-        return(System.getProperty("user.home") + "/" + sshDirectory);
+    public static String benchmarkKeyFileDirectory() {
+        return System.getProperty("user.home") + "/" + SSH_DIRECTORY;
     }
 
-    static String benchmarkKeyFileName(String tag) {
-        return(benchmarkKeyFileDirectory() + "/" + tag + ".pem");
+    public static String benchmarkKeyFileName(String tag) {
+        return benchmarkKeyFileDirectory() + "/" + tag + ".pem";
     }
 }

@@ -3,10 +3,6 @@ package org.apache.geode.infrastructure.aws;
 
 import static java.lang.Thread.sleep;
 
-import org.apache.geode.infrastructure.BenchmarkMetadata;
-import software.amazon.awssdk.services.ec2.Ec2Client;
-import software.amazon.awssdk.services.ec2.model.*;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -17,7 +13,36 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
+
+import software.amazon.awssdk.services.ec2.Ec2Client;
+import software.amazon.awssdk.services.ec2.model.AuthorizeSecurityGroupIngressRequest;
+import software.amazon.awssdk.services.ec2.model.CreateKeyPairRequest;
+import software.amazon.awssdk.services.ec2.model.CreateKeyPairResponse;
+import software.amazon.awssdk.services.ec2.model.CreateLaunchTemplateRequest;
+import software.amazon.awssdk.services.ec2.model.CreateLaunchTemplateResponse;
+import software.amazon.awssdk.services.ec2.model.CreatePlacementGroupRequest;
+import software.amazon.awssdk.services.ec2.model.CreatePlacementGroupResponse;
+import software.amazon.awssdk.services.ec2.model.CreateSecurityGroupRequest;
+import software.amazon.awssdk.services.ec2.model.CreateSecurityGroupResponse;
+import software.amazon.awssdk.services.ec2.model.CreateTagsRequest;
+import software.amazon.awssdk.services.ec2.model.DescribeImagesRequest;
+import software.amazon.awssdk.services.ec2.model.DescribeInstancesRequest;
+import software.amazon.awssdk.services.ec2.model.DescribeKeyPairsRequest;
+import software.amazon.awssdk.services.ec2.model.DescribeKeyPairsResponse;
+import software.amazon.awssdk.services.ec2.model.Ec2Exception;
+import software.amazon.awssdk.services.ec2.model.Filter;
+import software.amazon.awssdk.services.ec2.model.Image;
+import software.amazon.awssdk.services.ec2.model.Instance;
+import software.amazon.awssdk.services.ec2.model.LaunchTemplatePlacementRequest;
+import software.amazon.awssdk.services.ec2.model.LaunchTemplateSpecification;
+import software.amazon.awssdk.services.ec2.model.RequestLaunchTemplateData;
+import software.amazon.awssdk.services.ec2.model.ResourceType;
+import software.amazon.awssdk.services.ec2.model.RunInstancesRequest;
+import software.amazon.awssdk.services.ec2.model.RunInstancesResponse;
+import software.amazon.awssdk.services.ec2.model.Tag;
+import software.amazon.awssdk.services.ec2.model.TagSpecification;
+
+import org.apache.geode.infrastructure.BenchmarkMetadata;
 
 
 public class LaunchCluster {
@@ -220,8 +245,8 @@ public class LaunchCluster {
   private static List<Tag> getTags(String benchmarkTag) {
     // Create tags for everything
     List<Tag> tags = new ArrayList<>();
-    tags.add(Tag.builder().key("purpose").value(BenchmarkMetadata.prefix).build());
-    tags.add(Tag.builder().key(BenchmarkMetadata.prefix).value(benchmarkTag).build());
+    tags.add(Tag.builder().key("purpose").value(BenchmarkMetadata.PREFIX).build());
+    tags.add(Tag.builder().key(BenchmarkMetadata.PREFIX).value(benchmarkTag).build());
     return tags;
   }
 
