@@ -51,6 +51,7 @@ public class ClientServerTopology {
 
     testConfig.jvmArgs(CLIENT, JVM_ARGS);
     testConfig.jvmArgs(LOCATOR, JVM_ARGS);
+    testConfig.jvmArgs(SERVER, JVM_ARGS);
 
     testConfig.before(new StartLocator(LOCATOR_PORT), LOCATOR);
     testConfig.before(new StartServer(LOCATOR_PORT), SERVER);
