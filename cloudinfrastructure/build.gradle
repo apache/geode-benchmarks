@@ -11,7 +11,8 @@ repositories {
 }
 
 dependencies {
-    compile 'software.amazon.awssdk:ec2'
+    implementation 'software.amazon.awssdk:ec2'
+    implementation(group: 'com.hierynomus', name: 'sshj', version: project.'sshj.version')
     testImplementation(group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: project.'junit-jupiter-api.version')
     testRuntimeOnly(group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: project.'junit-jupiter-engine.version')
 }

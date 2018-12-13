@@ -45,11 +45,12 @@ public class DestroyCluster {
 
   private static void deleteKeyPair(String benchmarkTag) {
     try {
-        ec2.deleteKeyPair(
-        DeleteKeyPairRequest.builder().keyName(AwsBenchmarkMetadata.keyPair(benchmarkTag)).build());
+      ec2.deleteKeyPair(
+          DeleteKeyPairRequest.builder().keyName(AwsBenchmarkMetadata.keyPair(benchmarkTag))
+              .build());
       Files.deleteIfExists(Paths.get(AwsBenchmarkMetadata.keyPairFileName(benchmarkTag)));
       System.out.println("Key Pair for cluster'" + benchmarkTag + "' deleted.");
-    } catch(Exception e) {
+    } catch (Exception e) {
       System.out.println("We got an exception while deleting the Key pair");
       System.out.println("Exception message: " + e);
     }
@@ -59,14 +60,14 @@ public class DestroyCluster {
     // delete instances
     try {
       DescribeInstancesResponse dir = ec2.describeInstances(DescribeInstancesRequest.builder()
-          .filters(Filter.builder().name("tag:" + BenchmarkMetadata.PREFIX).values(benchmarkTag).build())
+          .filters(
+              Filter.builder().name("tag:" + BenchmarkMetadata.PREFIX).values(benchmarkTag).build())
           .build());
       Stream<Instance> instanceStream = dir.reservations()
           .stream()
           .flatMap(reservation -> reservation.instances().stream());
 
-      List<String>
-          instanceIds = dir
+      List<String> instanceIds = dir
           .reservations()
           .stream()
           .flatMap(reservation -> reservation
@@ -85,13 +86,14 @@ public class DestroyCluster {
               .name("instance-state-name")
               .values("pending", "running", "shutting-down", "stopping", "stopped")
               .build())
-          .build()).reservations().stream().flatMap(reservation -> reservation.instances().stream()).count() > 0) {
-         sleep(60000);
-         System.out.println("Continuing to wait.");
+          .build()).reservations().stream().flatMap(reservation -> reservation.instances().stream())
+          .count() > 0) {
+        sleep(60000);
+        System.out.println("Continuing to wait.");
       }
 
       System.out.println("Instances for cluster '" + benchmarkTag + "' deleted.");
-    } catch(Exception e) {
+    } catch (Exception e) {
       System.out.println("We got an exception while deleting the instances");
       System.out.println("Exception message: " + e);
     }
@@ -105,7 +107,7 @@ public class DestroyCluster {
           .build());
 
       System.out.println("Placement Group for cluster '" + benchmarkTag + "' deleted.");
-    } catch(Exception e) {
+    } catch (Exception e) {
       System.out.println("We got an exception while deleting the placement group");
       System.out.println("Exception message: " + e);
     }
@@ -119,7 +121,7 @@ public class DestroyCluster {
           .build());
 
       System.out.println("Security Group for cluster '" + benchmarkTag + "' deleted.");
-    } catch(Exception e) {
+    } catch (Exception e) {
       System.out.println("We got an exception while deleting the security group");
       System.out.println("Exception message: " + e);
     }
@@ -133,7 +135,7 @@ public class DestroyCluster {
           .build());
 
       System.out.println("Launch template for cluster '" + benchmarkTag + "' deleted.");
-    } catch(Exception e) {
+    } catch (Exception e) {
       System.out.println("We got an exception while deleting the launch template");
       System.out.println("Exception message: " + e);
     }
