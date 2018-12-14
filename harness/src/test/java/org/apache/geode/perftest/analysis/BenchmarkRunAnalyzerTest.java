@@ -135,9 +135,13 @@ public class BenchmarkRunAnalyzerTest {
     BenchmarkRunResult expectedBenchmarkResult = new BenchmarkRunResult();
     BenchmarkRunResult.BenchmarkResult resultA = expectedBenchmarkResult.addBenchmark("BenchmarkA");
     resultA.addProbeResult(YardstickThroughputSensorParser.probeResultDescription, 25, 20);
+    resultA.addProbeResult("ops/second standard error", 2.36, 2.36);
+    resultA.addProbeResult("ops/second standard deviation", 7.45, 7.45);
     resultA.addProbeResult(YardstickPercentileSensorParser.probeResultDescription, 200, 300);
     BenchmarkRunResult.BenchmarkResult resultB = expectedBenchmarkResult.addBenchmark("BenchmarkB");
     resultB.addProbeResult(YardstickThroughputSensorParser.probeResultDescription, 20, 25);
+    resultB.addProbeResult("ops/second standard error", 2.36, 2.77);
+    resultB.addProbeResult("ops/second standard deviation", 7.45, 10.38);
     resultB.addProbeResult(YardstickPercentileSensorParser.probeResultDescription, 400, 400);
     assertEquals(expectedBenchmarkResult, results);
   }
