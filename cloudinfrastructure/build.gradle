@@ -13,8 +13,7 @@ repositories {
 dependencies {
     implementation 'software.amazon.awssdk:ec2'
     implementation(group: 'com.hierynomus', name: 'sshj', version: project.'sshj.version')
-    testImplementation(group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: project.'junit-jupiter-api.version')
-    testRuntimeOnly(group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: project.'junit-jupiter-engine.version')
+    runtime(group: 'org.slf4j', name: 'slf4j-simple', version: project.'slf4j-simple.version')
 }
 
 apply plugin: "io.spring.dependency-management"
@@ -27,6 +26,12 @@ dependencyManagement {
 
 task(launchCluster, dependsOn: 'classes', type: JavaExec) {
     main = 'org.apache.geode.infrastructure.aws.LaunchCluster'
+    workingDir = rootDir
+    classpath = sourceSets.main.runtimeClasspath
+}
+
+task(destroyCluster, dependsOn: 'classes', type: JavaExec) {
+    main = 'org.apache.geode.infrastructure.aws.DestroyCluster'
     workingDir = rootDir
     classpath = sourceSets.main.runtimeClasspath
 }

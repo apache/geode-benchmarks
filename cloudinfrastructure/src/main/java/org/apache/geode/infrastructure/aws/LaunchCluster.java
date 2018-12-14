@@ -48,13 +48,15 @@ public class LaunchCluster {
   static Ec2Client ec2 = Ec2Client.create();
 
   public static void main(String[] args) throws IOException, InterruptedException {
-    if (args.length != 1) {
-      throw new IllegalStateException("Usage: LaunchCluster <tag>");
+    if (args.length != 2) {
+      usage("Usage: LaunchCluster <tag> <count>");
+      return;
     }
     String benchmarkTag = args[0];
+    int count = Integer.parseInt(args[1]);
 
     if (benchmarkTag == null || benchmarkTag.isEmpty()) {
-      throw new IllegalStateException("Usage: LaunchCluster <tag>");
+      usage("Usage: LaunchCluster <tag> <count>");
     }
 
     List<Tag> tags = getTags(benchmarkTag);
@@ -65,12 +67,16 @@ public class LaunchCluster {
     createSecurityGroup(benchmarkTag, tags);
     createLaunchTemplate(benchmarkTag, newestImage);
 
-    List<String> instanceIds = launchInstances(benchmarkTag, tags, 2);
+    List<String> instanceIds = launchInstances(benchmarkTag, tags, count);
     DescribeInstancesResponse instances = waitForInstances(instanceIds);
 
     List<String> publicIps = installPrivateKey(benchmarkTag, instances);
 
     System.out.println("Instances successfully launched! Public IPs: " + publicIps);
+  }
+
+  private static void usage(String s) {
+    throw new IllegalStateException(s);
   }
 
   private static List<String> launchInstances(String benchmarkTag, List<Tag> tags,
@@ -104,7 +110,7 @@ public class LaunchCluster {
 
     DescribeInstancesResponse describeInstancesResponse = describeInstances(instanceIds, "running");
     while (instanceCount(describeInstancesResponse) < instanceIds.size()) {
-      sleep(60000);
+      sleep(AwsBenchmarkMetadata.POLL_INTERVAL);
       System.out.println("Continuing to wait.");
       describeInstancesResponse = describeInstances(instanceIds, "running");
     }

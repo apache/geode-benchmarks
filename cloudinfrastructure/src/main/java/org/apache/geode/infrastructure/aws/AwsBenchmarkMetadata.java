@@ -11,6 +11,7 @@ import org.apache.geode.infrastructure.BenchmarkMetadata;
  */
 class AwsBenchmarkMetadata extends BenchmarkMetadata {
   public static final String USER = "geode";
+  public static final int POLL_INTERVAL = 15000;
   public static InstanceType INSTANCE_TYPE = InstanceType.C5_9_XLARGE;
   public static Tenancy TENANCY = Tenancy.DEDICATED;
 

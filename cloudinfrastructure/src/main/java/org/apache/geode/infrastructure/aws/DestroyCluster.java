@@ -88,7 +88,7 @@ public class DestroyCluster {
               .build())
           .build()).reservations().stream().flatMap(reservation -> reservation.instances().stream())
           .count() > 0) {
-        sleep(60000);
+        sleep(AwsBenchmarkMetadata.POLL_INTERVAL);
         System.out.println("Continuing to wait.");
       }
 

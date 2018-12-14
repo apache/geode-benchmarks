@@ -19,6 +19,7 @@ package org.apache.geode.infrastructure.aws;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.net.ConnectException;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Collections;
@@ -34,6 +35,7 @@ import net.schmizz.sshj.xfer.FileSystemFile;
 
 public class KeyInstaller {
   public static final Config CONFIG = new DefaultConfig();
+  private static final int RETRIES = 30;
   private final String user;
   private final Path privateKey;
 
@@ -50,7 +52,7 @@ public class KeyInstaller {
   private void installKey(String host) {
     try (SSHClient client = new SSHClient(CONFIG)) {
       client.addHostKeyVerifier(new PromiscuousVerifier());
-      client.connect(host);
+      connect(host, client);
       client.authPublickey(user, privateKey.toFile().getAbsolutePath());
       SFTPClient sftpClient = client.newSFTPClient();
       String dest = "/home/" + user + "/.ssh/id_rsa";
@@ -59,6 +61,27 @@ public class KeyInstaller {
           .withPermissions(Collections.singleton(FilePermission.USR_R)).build());
     } catch (IOException e) {
       throw new UncheckedIOException(e);
+    } catch (InterruptedException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  private void connect(String host, SSHClient client) throws IOException, InterruptedException {
+
+    int i = 0;
+    while (true) {
+      try {
+        i++;
+        client.connect(host);
+        return;
+      } catch (ConnectException e) {
+        if (i >= RETRIES) {
+          throw e;
+        }
+
+        System.out.println("Failed to connect, retrying...");
+        Thread.sleep(AwsBenchmarkMetadata.POLL_INTERVAL);
+      }
     }
   }
 }
