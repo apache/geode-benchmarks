@@ -60,7 +60,12 @@ public class YardstickThroughputSensorParser implements ProbeResultParser {
   @Override
   public List<ResultData> getProbeResults() {
     List<ResultData> results = new ArrayList<>(1);
-    results.add(new ResultData(probeResultDescription, getAverageThroughput()));
+    double averageThroughput = getAverageThroughput();
+    double standardDeviation = getStandardDeviation(averageThroughput);
+    double standardError = standardDeviation / Math.sqrt(datapoints.size());
+    results.add(new ResultData(probeResultDescription, averageThroughput));
+    results.add(new ResultData("ops/second standard error", standardError));
+    results.add(new ResultData("ops/second standard deviation", standardDeviation));
 
     return results;
   }
@@ -71,6 +76,15 @@ public class YardstickThroughputSensorParser implements ProbeResultParser {
       accumulator += datapoint.opsPerSec;
     }
     return accumulator / datapoints.size();
+  }
+
+  public double getStandardDeviation(double average) {
+    double accumulator = 0;
+    for (SensorDatapoint datapoint : datapoints) {
+      double deviation = datapoint.opsPerSec - average;
+      accumulator += deviation * deviation;
+    }
+    return Math.sqrt(accumulator / (datapoints.size() - 1));
   }
 
   private static class SensorDatapoint {
