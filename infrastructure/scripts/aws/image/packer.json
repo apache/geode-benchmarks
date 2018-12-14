@@ -1,0 +1,54 @@
+{
+  "variables": {
+    "aws_access_key": "",
+    "aws_secret_key": ""
+  },
+  "builders": [
+    {
+      "type": "amazon-ebs",
+      "name": "geode-benchmarks",
+      "region": "us-west-2",
+      "source_ami_filter": {
+        "filters": {
+          "virtualization-type": "hvm",
+          "name": "ubuntu/images/*ubuntu-bionic-18.04-amd64-server-*",
+          "root-device-type": "ebs"
+        },
+        "owners": ["099720109477"],
+        "most_recent": true
+      },
+      "instance_type": "t2.small",
+      "ssh_username": "geode",
+      "ami_name": "geode-benchmarks-{{timestamp}}",
+      "communicator": "ssh",
+      "ssh_pty": "true",
+      "ami_virtualization_type": "hvm",
+      "user_data_file": "./files/defaults.cfg",
+      "tags": {
+        "OS_Version": "Ubuntu",
+        "Release": "Latest",
+        "Base_AMI_Name": "{{ .SourceAMIName }}",
+        "Extra": "{{ .SourceAMITags.TagName }}",
+        "purpose": "geode-benchmarks"
+      }
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "file",
+      "source": "./files/defaults.cfg",
+      "destination": "/tmp/defaults.cfg"
+    },
+    {
+      "type": "shell",
+      "inline": [
+        "sudo apt update",
+        "sudo apt upgrade -y",
+        "sudo apt install -y openjdk-8-jdk unzip dstat",
+        "sudo update-java-alternatives -s java-1.8.0-openjdk-amd64",
+        "sudo mv /tmp/defaults.cfg /etc/cloud/cloud.cfg.d/defaults.cfg",
+        "sudo sh -c \"echo 'StrictHostKeyChecking no' >> /etc/ssh/ssh_config\""
+      ]
+    }
+  ]
+}

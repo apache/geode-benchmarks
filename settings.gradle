@@ -19,3 +19,5 @@ rootProject.name = 'geode-benchmarks'
 
 include 'harness'
 include 'geode-benchmarks'
+include 'infrastructure'
+

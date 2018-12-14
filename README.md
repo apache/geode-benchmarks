@@ -27,6 +27,11 @@ For example:
 This project includes some scripts to automate running benchmarks in google cloud. See the 
 [README.md](infrastructure/google_cloud/README.md) in the infrastructure/google_cloud directory.
 
+### Running in aws
+
+This project includes some scripts to automate running benchmarks in AWS. See the 
+[README.md](infrastructure/aws/README.md) in the infrastructure/aws directory.
+
 ## Project structure
 
 The project is divided into two modules
