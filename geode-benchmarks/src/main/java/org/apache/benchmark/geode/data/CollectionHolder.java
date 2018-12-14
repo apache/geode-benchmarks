@@ -12,19 +12,13 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.apache.geode.benchmark.data;
+package org.apache.benchmark.geode.data;
 
 
-import java.io.DataInput;
-import java.io.DataOutput;
-import java.io.IOException;
-import java.io.Serializable;
 import java.util.Arrays;
 
-import org.apache.geode.DataSerializable;
-import org.apache.geode.DataSerializer;
 
-public class CollectionHolder implements Serializable, DataSerializable {
+public class CollectionHolder {
 
   public String[] arr;
   public static String secIds[] = {"SUN", "IBM", "YHOO", "GOOG", "MSFT", "AOL", "APPL", "ORCL",
@@ -43,15 +37,11 @@ public class CollectionHolder implements Serializable, DataSerializable {
   }
 
   public String[] getArr() {
-    return this.arr;
+    return arr;
   }
 
-  public void fromData(DataInput in) throws IOException, ClassNotFoundException {
-    this.arr = DataSerializer.readStringArray(in);
-  }
-
-  public void toData(DataOutput out) throws IOException {
-    DataSerializer.writeStringArray(this.arr, out);
+  public void setArr(String[] arr) {
+    this.arr = arr;
   }
 
   @Override
