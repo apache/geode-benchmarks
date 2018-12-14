@@ -22,9 +22,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 
+import org.apache.benchmark.geode.data.Portfolio;
 import org.junit.jupiter.api.Test;
-
-import org.apache.geode.benchmark.data.PortfolioPdx;
 
 class PrePopulateRegionTest {
 
@@ -32,7 +31,7 @@ class PrePopulateRegionTest {
   public void putsEntriesForServer() throws InterruptedException {
     PrePopulateRegion prePopulateRegion = new PrePopulateRegion(100);
 
-    Map<Long, PortfolioPdx> region = new ConcurrentHashMap<>();
+    Map<Long, Portfolio> region = new ConcurrentHashMap<>();
 
     prePopulateRegion.run(region, 1, 2, 2);
 
@@ -45,7 +44,7 @@ class PrePopulateRegionTest {
     PrePopulateRegion prePopulateRegion = new PrePopulateRegion(100);
     prePopulateRegion.setBatchSize(2);
 
-    Map<Long, PortfolioPdx> region = new ConcurrentHashMap<>();
+    Map<Long, Portfolio> region = new ConcurrentHashMap<>();
 
     prePopulateRegion.run(region, 1, 2, 2);
 
@@ -53,7 +52,7 @@ class PrePopulateRegionTest {
     verifyKeys(region, 50, 100);
   }
 
-  private void verifyKeys(Map<Long, PortfolioPdx> region, int startInclusive, int endExclusive) {
+  private void verifyKeys(Map<Long, Portfolio> region, int startInclusive, int endExclusive) {
     List<Long> expectedKeys = LongStream.range(startInclusive, endExclusive)
         .mapToObj(Long::new)
         .collect(Collectors.toList());
