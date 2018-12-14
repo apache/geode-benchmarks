@@ -17,11 +17,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-set -e
-
 TAG=${1}
-COUNT=${2}
 
-pushd ../../
-./gradlew launchCluster --args "${TAG} ${COUNT}"
+pushd ../../../
+./gradlew destroyCluster --args "${TAG}"
 popd
