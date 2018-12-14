@@ -22,7 +22,8 @@ TAG=${1}
 BRANCH=${2:-develop}
 OUTPUT=${3:-output-${DATE}-${TAG}}
 BENCHMARK_BRANCH=${4:-develop}
-PREFIX="geode-performance-${TAG}"
+PREFIX="geode-benchmarks-${TAG}"
+export AWS_PROFILE="geode-benchmarks"
 
 SSH_OPTIONS="-i ~/.ssh/geode-benchmarks/${TAG}.pem"
 HOSTS=`aws ec2 describe-instances --query 'Reservations[*].Instances[*].PrivateIpAddress' --filter "Name=tag:geode-benchmarks,Values=${TAG}" --output text`

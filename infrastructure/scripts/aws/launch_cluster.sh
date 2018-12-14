@@ -21,6 +21,7 @@ set -e
 
 TAG=${1}
 COUNT=${2}
+export AWS_PROFILE="geode-benchmarks"
 
 pushd ../../../
 ./gradlew launchCluster --args "${TAG} ${COUNT}"

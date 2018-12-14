@@ -19,6 +19,8 @@
 
 TAG=${1}
 
+export AWS_PROFILE="geode-benchmarks"
+
 pushd ../../../
 ./gradlew destroyCluster --args "${TAG}"
 popd
