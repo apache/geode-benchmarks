@@ -34,9 +34,12 @@ FIRST_INSTANCE=$(echo ${INSTANCES} | awk '{print $1}' )
 gcloud compute ssh geode@$FIRST_INSTANCE --command="\
   rm -rf geode-benchmarks geode && \
   git clone --depth=1 https://github.com/apache/geode --branch ${BRANCH} geode && \
+  cd geode && \
+  ./gradlew pTML -PversionNumber=${DATE} -PreleaseType="-BENCHMARKBUILD" && \
+  cd .. && \
   git clone https://github.com/apache/geode-benchmarks --branch ${BENCHMARK_BRANCH} && \
   cd geode-benchmarks && \
-  ./gradlew --include-build ../geode benchmark -Phosts=${HOSTS}"
+  ./gradlew -PgeodeVersion=${DATE}-BENCHMARKBUILD benchmark -Phosts=${HOSTS}"
 
 
 mkdir -p ${OUTPUT}
