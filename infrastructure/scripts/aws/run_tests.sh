@@ -37,11 +37,11 @@ ssh ${SSH_OPTIONS} geode@$FIRST_INSTANCE "\
   git clone --depth=1 https://github.com/apache/geode --branch ${BRANCH} geode && \
   git clone https://github.com/apache/geode-benchmarks --branch ${BENCHMARK_BRANCH} && \
   cd geode-benchmarks && \
-  ./gradlew --include-build ../geode benchmark -Phosts=${HOSTS}"
+  ./gradlew benchmark -Phosts=${HOSTS}"
 
 
 mkdir -p ${OUTPUT}
 
 scp ${SSH_OPTIONS} -r geode@${FIRST_INSTANCE}:geode-benchmarks/geode-benchmarks/build/reports ${OUTPUT}/reports
 
-scp ${SSH_OPTIONS} -r geode@${FIRST_INSTANCE}:geode-benchmarks/geode-benchmarks/build/benchmarks ${OUTPUT}
+scp ${SSH_OPTIONS} -r geode@${FIRST_INSTANCE}:geode-benchmarks/geode-benchmarks/build/benchmarks* ${OUTPUT}
