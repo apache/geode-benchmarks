@@ -36,7 +36,7 @@ import org.apache.geode.perftest.TestRunners;
  */
 public class ReplicatedPutBenchmark implements PerformanceTest {
 
-  private long keyRange = 10000;
+  private long keyRange = 1000000;
 
   public ReplicatedPutBenchmark() {}
 
