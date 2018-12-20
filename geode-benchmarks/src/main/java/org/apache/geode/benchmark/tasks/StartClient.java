@@ -48,6 +48,7 @@ public class StartClient implements Task {
     ClientCache clientCache = new ClientCacheFactory(GeodeProperties.clientProperties())
         .setPdxSerializer(new ReflectionBasedAutoSerializer("org.apache.benchmark.geode.data.*"))
         .addPoolLocator(locator.getHostAddress(), locatorPort)
+        .setPoolThreadLocalConnections(true)
         .set(ConfigurationProperties.STATISTIC_ARCHIVE_FILE, statsFile)
         .create();
 
