@@ -32,7 +32,7 @@ import org.apache.geode.perftest.yardstick.YardstickTask;
 public class WorkloadConfig implements Serializable {
   long durationSeconds = 1;
   long warmupSeconds = 0;
-  int threads = 32;
+  int threads = 64;
 
   public WorkloadConfig() {}
 
