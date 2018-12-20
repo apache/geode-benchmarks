@@ -33,6 +33,7 @@ def getDate() {
 
 
 repositories {
+    mavenLocal()
     mavenCentral()
 }
 

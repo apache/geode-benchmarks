@@ -2,4 +2,4 @@
 out
 .gradle
 build/
-output/
+output*/
