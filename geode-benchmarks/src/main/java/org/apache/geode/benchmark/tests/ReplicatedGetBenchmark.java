@@ -37,7 +37,7 @@ import org.apache.geode.perftest.TestRunners;
  */
 public class ReplicatedGetBenchmark implements PerformanceTest {
 
-  private long keyRange = 10000;
+  private long keyRange = 1000000;
 
   @Test
   public void run() throws Exception {

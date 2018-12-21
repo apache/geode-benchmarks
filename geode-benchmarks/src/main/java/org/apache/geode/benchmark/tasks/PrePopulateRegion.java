@@ -131,7 +131,7 @@ public class PrePopulateRegion implements Task {
 
       if (putIndex % getBatchSize() == 0) {
         region.putAll(valueMap);
-        valueMap.clear();
+        valueMap = new HashMap<>();
       }
     }
 
