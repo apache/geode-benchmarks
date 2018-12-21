@@ -126,11 +126,12 @@ public class PrePopulateRegion implements Task {
     Map<Long, Portfolio> valueMap = new HashMap<>();
     for (long putIndex = lowBound; putIndex < highBound; putIndex++) {
       // build a map of to put to the server
-      valueMap = new HashMap<>();
+
       valueMap.put(putIndex, new Portfolio(putIndex));
 
       if (putIndex % getBatchSize() == 0) {
         region.putAll(valueMap);
+        valueMap.clear();
       }
     }
 
