@@ -26,6 +26,7 @@ import java.util.stream.Stream;
 
 import software.amazon.awssdk.services.ec2.Ec2Client;
 import software.amazon.awssdk.services.ec2.model.DeleteKeyPairRequest;
+import software.amazon.awssdk.services.ec2.model.DeleteKeyPairResponse;
 import software.amazon.awssdk.services.ec2.model.DeleteLaunchTemplateRequest;
 import software.amazon.awssdk.services.ec2.model.DeletePlacementGroupRequest;
 import software.amazon.awssdk.services.ec2.model.DeleteSecurityGroupRequest;
@@ -59,11 +60,12 @@ public class DestroyCluster {
 
   private static void deleteKeyPair(String benchmarkTag) {
     try {
-      ec2.deleteKeyPair(
-          DeleteKeyPairRequest.builder().keyName(AwsBenchmarkMetadata.keyPair(benchmarkTag))
-              .build());
+      System.out.println("Deleting cluster keypair: " + AwsBenchmarkMetadata.keyPair(benchmarkTag));
+      ec2.deleteKeyPair(DeleteKeyPairRequest.builder()
+          .keyName(AwsBenchmarkMetadata.keyPair(benchmarkTag))
+          .build());
       Files.deleteIfExists(Paths.get(AwsBenchmarkMetadata.keyPairFileName(benchmarkTag)));
-      System.out.println("Key Pair for cluster'" + benchmarkTag + "' deleted.");
+      System.out.println("Key Pair for cluster '" + benchmarkTag + "' deleted.");
     } catch (Exception e) {
       System.out.println("We got an exception while deleting the Key pair");
       System.out.println("Exception message: " + e);
@@ -74,8 +76,8 @@ public class DestroyCluster {
     // delete instances
     try {
       DescribeInstancesResponse dir = ec2.describeInstances(DescribeInstancesRequest.builder()
-          .filters(
-              Filter.builder().name("tag:" + BenchmarkMetadata.PREFIX).values(benchmarkTag).build())
+          .filters(Filter.builder()
+              .name("tag:" + BenchmarkMetadata.PREFIX).values(benchmarkTag).build())
           .build());
       Stream<Instance> instanceStream = dir.reservations()
           .stream()
