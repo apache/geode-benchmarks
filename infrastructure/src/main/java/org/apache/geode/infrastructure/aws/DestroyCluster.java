@@ -26,7 +26,6 @@ import java.util.stream.Stream;
 
 import software.amazon.awssdk.services.ec2.Ec2Client;
 import software.amazon.awssdk.services.ec2.model.DeleteKeyPairRequest;
-import software.amazon.awssdk.services.ec2.model.DeleteKeyPairResponse;
 import software.amazon.awssdk.services.ec2.model.DeleteLaunchTemplateRequest;
 import software.amazon.awssdk.services.ec2.model.DeletePlacementGroupRequest;
 import software.amazon.awssdk.services.ec2.model.DeleteSecurityGroupRequest;
