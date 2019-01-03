@@ -25,6 +25,8 @@ import java.util.Set;
 public interface TestContext extends Serializable {
   Set<InetAddress> getHostsForRole(String role);
 
+  Set<Integer> getHostsIDsForRole(String role);
+
   File getOutputDir();
 
   /**
