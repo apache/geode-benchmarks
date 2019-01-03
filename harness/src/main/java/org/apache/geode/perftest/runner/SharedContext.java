@@ -45,4 +45,11 @@ public class SharedContext implements Serializable {
         .map(mapping -> mapping.getNode().getAddress())
         .collect(Collectors.toSet());
   }
+
+  public Set<Integer> getHostIDsForRole(String role) {
+    return jvmMappings.stream()
+        .filter(mapping -> mapping.getRole().equals(role))
+        .map(mapping -> mapping.getId())
+        .collect(Collectors.toSet());
+  }
 }

@@ -60,8 +60,8 @@ public class PrePopulateRegion implements Task {
   public void run(TestContext context) throws InterruptedException {
     Cache serverCache = (Cache) context.getAttribute("SERVER_CACHE");
     Region<Long, Portfolio> region = serverCache.getRegion("region");
-    int numLocators = context.getHostsForRole(LOCATOR).size();
-    int numServers = context.getHostsForRole(SERVER).size();
+    int numLocators = context.getHostsIDsForRole(LOCATOR).size();
+    int numServers = context.getHostsIDsForRole(SERVER).size();
     int jvmID = context.getJvmID();
 
     run(region, numLocators, numServers, jvmID);

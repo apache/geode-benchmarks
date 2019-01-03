@@ -49,6 +49,11 @@ public class DefaultTestContext implements TestContext {
   }
 
   @Override
+  public Set<Integer> getHostsIDsForRole(String role) {
+    return sharedContext.getHostIDsForRole(role);
+  }
+
+  @Override
   public void setAttribute(String attribute, Object value) {
     attributeMap.put(attribute, value);
   }
