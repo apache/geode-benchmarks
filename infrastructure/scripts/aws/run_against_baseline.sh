@@ -20,9 +20,9 @@
 DATE=$(date '+%m-%d-%Y-%H-%M-%S')
 TAG=${1}
 BRANCH=${2:-develop}
-BASELINE=${3:-"rel/v1.7.0"}
+BASELINE=${3:-"rel/v1.8.0"}
 BENCHMARK_BRANCH=${4:-develop}
-OUTPUT=output-${DATE}-${TAG}
-
-./run_tests.sh ${TAG} ${BRANCH} ${OUTPUT}/branch ${BENCHMARK_BRANCH}
-./run_tests.sh ${TAG} ${BASELINE} ${OUTPUT}/baseline ${BENCHMARK_BRANCH}
+DEFAULT_OUTPUT_DIR=output-${DATE}-${TAG}
+OUTPUT=${5:-${DEFAULT_OUTPUT_DIR}}
+./run_tests.sh ${TAG} ${BRANCH} ${BENCHMARK_BRANCH} ${OUTPUT}/branch
+./run_tests.sh ${TAG} ${BASELINE} ${BENCHMARK_BRANCH} ${OUTPUT}/baseline

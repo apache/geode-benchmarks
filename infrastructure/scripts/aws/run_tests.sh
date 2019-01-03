@@ -20,12 +20,12 @@ DATE=$(date '+%m-%d-%Y-%H-%M-%S')
 
 TAG=${1}
 BRANCH=${2:-develop}
-OUTPUT=${3:-output-${DATE}-${TAG}}
-BENCHMARK_BRANCH=${4:-develop}
-PREFIX="geode-benchmarks-${TAG}"
+BENCHMARK_BRANCH=${3:-develop}
+OUTPUT=${4:-output-${DATE}-${TAG}}
+PREFIX="geode-performance-${TAG}"
 export AWS_PROFILE="geode-benchmarks"
 
-SSH_OPTIONS="-i ~/.ssh/geode-benchmarks/${TAG}.pem"
+SSH_OPTIONS="-o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i ~/.ssh/geode-benchmarks/${TAG}.pem"
 HOSTS=`aws ec2 describe-instances --query 'Reservations[*].Instances[*].PrivateIpAddress' --filter "Name=tag:geode-benchmarks,Values=${TAG}" --output text`
 HOSTS=$(echo ${HOSTS} | tr ' ' ',')
 FIRST_INSTANCE=`aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --filter "Name=tag:geode-benchmarks,Values=${TAG}" --output text | cut -f 1`
@@ -35,14 +35,16 @@ echo "HOSTS=${HOSTS}"
 
 ssh ${SSH_OPTIONS} geode@$FIRST_INSTANCE "\
   rm -rf geode-benchmarks geode && \
-  git clone --depth=1 https://github.com/apache/geode --branch ${BRANCH} geode && \
+  git clone https://github.com/apache/geode geode && \
+  (pushd geode; git checkout ${BRANCH}) && \
+  (pushd geode; ./gradlew pTML -PversionNumber=${DATE} -PreleaseType="-BENCHMARKBUILD") && \
   git clone https://github.com/apache/geode-benchmarks --branch ${BENCHMARK_BRANCH} && \
   cd geode-benchmarks && \
-  ./gradlew --include-build ../geode benchmark -Phosts=${HOSTS}"
+  ./gradlew -PgeodeVersion=${DATE}-BENCHMARKBUILD benchmark -Phosts=${HOSTS}"
 
 
 mkdir -p ${OUTPUT}
 
 scp ${SSH_OPTIONS} -r geode@${FIRST_INSTANCE}:geode-benchmarks/geode-benchmarks/build/reports ${OUTPUT}/reports
-
-scp ${SSH_OPTIONS} -r geode@${FIRST_INSTANCE}:geode-benchmarks/geode-benchmarks/build/benchmarks ${OUTPUT}
+BENCHMARK_DIRECTORY="$(ssh ${SSH_OPTIONS} geode@${FIRST_INSTANCE} ls -l geode-benchmarks/geode-benchmarks/build/ | grep benchmark | awk 'NF>1{print $NF}')"
+scp ${SSH_OPTIONS} -r geode@${FIRST_INSTANCE}:geode-benchmarks/geode-benchmarks/build/${BENCHMARK_DIRECTORY} ${OUTPUT}
