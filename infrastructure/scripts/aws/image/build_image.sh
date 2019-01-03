@@ -17,10 +17,5 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-TAG=${1}
-
 export AWS_PROFILE="geode-benchmarks"
-
-pushd ../../../
-./gradlew destroyCluster --args "${TAG}"
-popd
+packer build packer.json
