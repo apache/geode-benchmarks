@@ -22,8 +22,8 @@ Runs benchmark tests against a single branch of `geode`. Arguments are (in order
 
 * tag (the same as the cluster launched via `launch_cluster.sh`)
 * branch of geode (must exist in the apache geode repository)
-* output directory for results
 * branch of benchmark code to use (must exist in the apache geode-benchmarks repository)
+* (Optional) output directory for results
 
 # run_against_baseline.sh
 Runs benchmark tests against two branches of geode for comparison purposes. Arguments are (in order)
