@@ -36,6 +36,7 @@ public class GeodeProperties {
     properties.setProperty(ConfigurationProperties.DISTRIBUTED_SYSTEM_ID, "0");
     properties.setProperty(ConfigurationProperties.ENABLE_CLUSTER_CONFIGURATION, "false");
     properties.setProperty(ConfigurationProperties.USE_CLUSTER_CONFIGURATION, "false");
+    properties.setProperty(ConfigurationProperties.SOCKET_BUFFER_SIZE, "4000000");
     return properties;
   }
 
