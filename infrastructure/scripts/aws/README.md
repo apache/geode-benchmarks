@@ -4,7 +4,7 @@ These utilities create instances and run tests in your AWS account
 
 # Prerequisites
 * You must have the aws cli installed.
-* You must also set your secret key for the CLI. You must set up a proflie named `geode-benchmarks`, so use the command `aws configure --prefix geode-benchmarks` to configure the CLI. See [Amazon's instructions](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html)
+* You must also set your secret key for the CLI. You must set up a proflie named `geode-benchmarks`, so use the command `aws configure --profile geode-benchmarks` to configure the CLI. See [Amazon's instructions](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html)
 * To build the image, you must have packer installed
 
 # Image
