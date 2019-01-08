@@ -19,7 +19,9 @@
 
 TAG=${1}
 
-export AWS_PROFILE="geode-benchmarks"
+if [[ -z "${AWS_ACCESS_KEY_ID}" ]]; then
+  export AWS_PROFILE="geode-benchmarks"
+fi
 
 pushd ../../../
 ./gradlew destroyCluster --args "${TAG}"
