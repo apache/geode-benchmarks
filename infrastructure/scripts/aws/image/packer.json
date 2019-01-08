@@ -43,11 +43,12 @@
       "type": "shell",
       "inline": [
         "sudo apt update",
-        "sudo apt upgrade -y",
+        "sudo UCF_FORCE_CONFFOLD= UCF_FORCE_CONFFNEW=YES apt upgrade -y",
         "sudo apt install -y openjdk-8-jdk unzip dstat",
         "sudo update-java-alternatives -s java-1.8.0-openjdk-amd64",
         "sudo mv /tmp/defaults.cfg /etc/cloud/cloud.cfg.d/defaults.cfg",
-        "sudo sh -c \"echo 'StrictHostKeyChecking no' >> /etc/ssh/ssh_config\""
+        "sudo sh -c \"echo 'StrictHostKeyChecking no' >> /etc/ssh/ssh_config\"",
+        "sudo sh -c \"echo 'net.ipv4.tcp_syncookies = 0' >> /etc/sysctl.conf\""
       ]
     }
   ]
