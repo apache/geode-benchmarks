@@ -21,7 +21,7 @@ import java.io.Serializable;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 
-import org.apache.benchmark.geode.data.Portfolio;
+import benchmark.geode.data.Portfolio;
 import org.yardstickframework.BenchmarkConfiguration;
 import org.yardstickframework.BenchmarkDriverAdapter;
 

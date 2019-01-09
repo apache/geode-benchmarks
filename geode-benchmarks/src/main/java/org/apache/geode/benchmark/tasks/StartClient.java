@@ -46,7 +46,7 @@ public class StartClient implements Task {
     String statsFile = new File(context.getOutputDir(), "stats.gfs").getAbsolutePath();
 
     ClientCache clientCache = new ClientCacheFactory(GeodeProperties.clientProperties())
-        .setPdxSerializer(new ReflectionBasedAutoSerializer("org.apache.benchmark.geode.data.*"))
+        .setPdxSerializer(new ReflectionBasedAutoSerializer("benchmark.geode.data.*"))
         .addPoolLocator(locator.getHostAddress(), locatorPort)
         .set(ConfigurationProperties.STATISTIC_ARCHIVE_FILE, statsFile)
         .create();
