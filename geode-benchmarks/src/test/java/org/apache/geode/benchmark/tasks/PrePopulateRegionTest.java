@@ -22,7 +22,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 
-import org.apache.benchmark.geode.data.Portfolio;
+import benchmark.geode.data.Portfolio;
 import org.junit.jupiter.api.Test;
 
 class PrePopulateRegionTest {
