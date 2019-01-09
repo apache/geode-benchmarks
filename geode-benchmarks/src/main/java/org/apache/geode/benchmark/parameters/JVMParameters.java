@@ -39,8 +39,8 @@ public class JVMParameters {
       "-Dsun.rmi.dgc.server.gcInterval=9223372036854775806",
       "-Dgemfire.OSProcess.ENABLE_OUTPUT_REDIRECTION=true",
       "-Dgemfire.launcher.registerSignalHandlers=true",
-      "-Xmx3g",
-      "-Xms3g"
+      "-Xmx8g",
+      "-Xms8g"
 
   };
 
