@@ -14,7 +14,17 @@ These benchmarks are under development.
 
 ## Running the benchmarks
 The benchmarks require machines with passwordless ssh enabled in order to run.
-
+Also, ensure that the authentication key pair for SSH does not have a passphrase. If you had 
+already previously created a key pair with a passphrase, you can create a different key pair which
+is of a different type than the previously created one.
+Use one of the following commands to create a new key pair.
+```
+ssh-keygen -t ed25519
+ssh-keygen -t rsa -b 4096
+ssh-keygen -t dsa
+ssh-keygen -t ecdsa -b 521
+```
+ 
 To run all benchmarks, run the benchmark task and pass in a list of hosts.
 
 For example:
