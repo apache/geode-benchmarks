@@ -39,11 +39,17 @@ echo "HOSTS=${HOSTS}"
 ssh ${SSH_OPTIONS} geode@$FIRST_INSTANCE "\
   rm -rf geode-benchmarks geode && \
   git clone https://github.com/apache/geode geode && \
-  (pushd geode; git checkout ${BRANCH}) && \
-  (pushd geode; ./gradlew pTML -PversionNumber=${DATE} -PreleaseType="-BENCHMARKBUILD") && \
+  (pushd geode && git checkout ${BRANCH}) && \
+  (pushd geode && ./gradlew install installDist)"
+
+
+VERSION=$(ssh ${SSH_OPTIONS} geode@$FIRST_INSTANCE geode/geode-assembly/build/install/apache-geode/bin/gfsh version)
+
+
+ssh ${SSH_OPTIONS} geode@$FIRST_INSTANCE "\
   git clone https://github.com/apache/geode-benchmarks --branch ${BENCHMARK_BRANCH} && \
   cd geode-benchmarks && \
-  ./gradlew -PgeodeVersion=${DATE}-BENCHMARKBUILD benchmark -Phosts=${HOSTS}"
+  ./gradlew -PgeodeVersion=${VERSION} benchmark -Phosts=${HOSTS}"
 
 
 mkdir -p ${OUTPUT}
