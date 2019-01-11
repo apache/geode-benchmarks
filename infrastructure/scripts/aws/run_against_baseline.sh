@@ -26,3 +26,4 @@ DEFAULT_OUTPUT_DIR=output-${DATE}-${TAG}
 OUTPUT=${5:-${DEFAULT_OUTPUT_DIR}}
 ./run_tests.sh ${TAG} ${BRANCH} ${BENCHMARK_BRANCH} ${OUTPUT}/branch
 ./run_tests.sh ${TAG} ${BASELINE} ${BENCHMARK_BRANCH} ${OUTPUT}/baseline
+./analyze_tests.sh ${OUTPUT}
