@@ -17,16 +17,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-DATE=$(date '+%m-%d-%Y-%H-%M-%S')
-TAG=${1}
-BRANCH=${2:-develop}
-BASELINE=${3:-"rel/v1.8.0"}
-BENCHMARK_BRANCH=${4:-develop}
-DEFAULT_OUTPUT_DIR=output-${DATE}-${TAG}
-OUTPUT=${5:-${DEFAULT_OUTPUT_DIR}}
-if ! [[ "$OUTPUT" = /* ]]; then
-  OUTPUT="$(pwd)/${OUTPUT}"
-fi
-./run_tests.sh ${TAG} ${BRANCH} ${BENCHMARK_BRANCH} ${OUTPUT}/branch
-./run_tests.sh ${TAG} ${BASELINE} ${BENCHMARK_BRANCH} ${OUTPUT}/baseline
-./analyze_tests.sh ${OUTPUT}
+OUTPUT_DIR=${1}
+
+TOP_DIR=$(git rev-parse --show-toplevel)
+
+echo ${TOP_DIR}
+
+BASELINE_DIR="${OUTPUT_DIR}/baseline"
+BRANCH_DIR="${OUTPUT_DIR}/branch"
+BASELINE_BENCHMARKS="$(ls -td ${BASELINE_DIR}/benchmarks_* | tail -1)"
+BRANCH_BENCHMARKS="$(ls -td ${BRANCH_DIR}/benchmarks_* | tail -1)"
+pushd ${TOP_DIR}
+./gradlew analyzeRun --args "${BASELINE_BENCHMARKS} ${BRANCH_BENCHMARKS}"
+popd
