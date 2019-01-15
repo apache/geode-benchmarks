@@ -17,6 +17,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+set -e -o pipefail
+
 DATE=$(date '+%m-%d-%Y-%H-%M-%S')
 TAG=${1}
 BRANCH=${2:-develop}
@@ -27,6 +29,7 @@ OUTPUT=${5:-${DEFAULT_OUTPUT_DIR}}
 if ! [[ "$OUTPUT" = /* ]]; then
   OUTPUT="$(pwd)/${OUTPUT}"
 fi
+
 ./run_tests.sh ${TAG} ${BRANCH} ${BENCHMARK_BRANCH} ${OUTPUT}/branch
 ./run_tests.sh ${TAG} ${BASELINE} ${BENCHMARK_BRANCH} ${OUTPUT}/baseline
 ./analyze_tests.sh ${OUTPUT}
