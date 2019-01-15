@@ -16,6 +16,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
+set -e -o pipefail
+
 DATE=$(date '+%m-%d-%Y-%H-%M-%S')
 
 TAG=${1}
