@@ -17,14 +17,50 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-set -e -o pipefail
+set -x -e -o pipefail
+
+BENCHMARK_BRANCH='develop'
+
+TEMP=`getopt t:b:v:m:o:h "$@"`
+eval set -- "$TEMP"
+
+while true ; do
+    case "$1" in
+        -t)
+            TAG=$2 ; shift 2 ;;
+        -m)
+            BENCHMARK_BRANCH=$2 ; shift 2 ;;
+        -o)
+            OUTPUT=$2 ; shift 2 ;;
+        -b)
+            BRANCH=$2 ; shift 2 ;;
+        -v)
+            VERSION=$2 ; shift 2 ;;
+        -h)
+            echo "Usage: run_test.sh -t [tag] [-v [version] | -b [branch]] <options...>"
+            echo "Options:"
+            echo "-m : Benchmark branch (optional - defaults to develop)"
+            echo "-o : Output directory (optional - defaults to ./output-<date>-<tag>"
+            echo "-v : Geode Version"
+            echo "-b : Geode Branch"
+            echo "-t : Cluster tag"
+            echo "-h : This help message"
+            shift 2
+            exit 1 ;;
+        --) shift ; break ;;
+        *) echo "Internal error!" ; exit 1 ;;
+    esac
+done
+
 
 DATE=$(date '+%m-%d-%Y-%H-%M-%S')
 
-TAG=${1}
-BRANCH=${2:-develop}
-BENCHMARK_BRANCH=${3:-develop}
-OUTPUT=${4:-output-${DATE}-${TAG}}
+if [ -z "${TAG}" ]; then
+  echo "--tag argument is required."
+  exit 1
+fi
+
+OUTPUT=${OUTPUT:-output-${DATE}-${TAG}}
 PREFIX="geode-performance-${TAG}"
 
 if [[ -z "${AWS_ACCESS_KEY_ID}" ]]; then
@@ -39,21 +75,33 @@ FIRST_INSTANCE=`aws ec2 describe-instances --query 'Reservations[*].Instances[*]
 echo "FIRST_INSTANCE=${FIRST_INSTANCE}"
 echo "HOSTS=${HOSTS}"
 
+if [ ! -z "${BRANCH}" ]; then
+  if [ ! -z "${VERSION}" ]; then
+    echo "Specify --version or --branch."
+    exit 1
+  fi
+
+  ssh ${SSH_OPTIONS} geode@$FIRST_INSTANCE "\
+    rm -rf geode && \
+    git clone https://github.com/apache/geode --branch ${BRANCH} && \
+    cd geode && \
+    ./gradlew install installDist"
+
+
+  VERSION=$(ssh ${SSH_OPTIONS} geode@$FIRST_INSTANCE geode/geode-assembly/build/install/apache-geode/bin/gfsh version)
+fi
+
+if [ -z "${VERSION}" ]; then
+  echo "Either --version or --branch is required."
+  exit 1
+fi
+
+
 ssh ${SSH_OPTIONS} geode@$FIRST_INSTANCE "\
-  rm -rf geode-benchmarks geode && \
-  git clone https://github.com/apache/geode geode && \
-  (pushd geode && git checkout ${BRANCH}) && \
-  (pushd geode && ./gradlew install installDist)"
-
-
-VERSION=$(ssh ${SSH_OPTIONS} geode@$FIRST_INSTANCE geode/geode-assembly/build/install/apache-geode/bin/gfsh version)
-
-
-ssh ${SSH_OPTIONS} geode@$FIRST_INSTANCE "\
+  rm -rf geode-benchmarks && \
   git clone https://github.com/apache/geode-benchmarks --branch ${BENCHMARK_BRANCH} && \
   cd geode-benchmarks && \
   ./gradlew -PgeodeVersion=${VERSION} benchmark -Phosts=${HOSTS}"
-
 
 mkdir -p ${OUTPUT}
 
