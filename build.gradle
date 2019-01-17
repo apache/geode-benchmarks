@@ -49,3 +49,4 @@ task buildTestingImage(type: DockerBuildImage) {
 
 apply from: "gradle/spotless.gradle"
 apply from: "gradle/rat.gradle"
+apply from: "gradle/resolve-dependencies.gradle"
