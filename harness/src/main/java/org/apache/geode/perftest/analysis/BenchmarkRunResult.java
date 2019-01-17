@@ -40,7 +40,7 @@ public class BenchmarkRunResult implements Serializable {
         stream.print(String.format("  %30s", probeResult.description));
         stream.print(String.format("  Baseline: %12.2f", probeResult.baseline));
         stream.print(String.format("  Test: %12.2f", probeResult.test));
-        stream.print(String.format("  Ratio: %2.2f", probeResult.test / probeResult.baseline));
+        stream.print(String.format("  Difference: %+6.1f%%", probeResult.getDifference() * 100));
         stream.println();
       }
     }
@@ -83,8 +83,8 @@ public class BenchmarkRunResult implements Serializable {
   }
 
   static class BenchmarkResult implements Serializable {
-    private final String name;
-    private final List<ProbeResult> probeResults = new ArrayList<>();
+    final String name;
+    final List<ProbeResult> probeResults = new ArrayList<>();
 
     public BenchmarkResult(String name) {
       this.name = name;
@@ -114,15 +114,19 @@ public class BenchmarkRunResult implements Serializable {
     }
   }
 
-  private static class ProbeResult implements Serializable {
-    private final String description;
-    private final double baseline;
-    private final double test;
+  static class ProbeResult implements Serializable {
+    final String description;
+    final double baseline;
+    final double test;
 
     public ProbeResult(String description, double baseline, double test) {
       this.description = description;
       this.baseline = baseline;
       this.test = test;
+    }
+
+    public double getDifference() {
+      return (test - baseline) / baseline;
     }
 
     @Override
