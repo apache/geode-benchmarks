@@ -19,17 +19,70 @@
 
 set -e -o pipefail
 
+BENCHMARK_BRANCH='develop'
+
+TEMP=`getopt t:b::v::B::V::m::o::h "$@"`
+eval set -- "$TEMP"
+
+while true ; do
+    case "$1" in
+        -t)
+            TAG=$2 ; shift 2 ;;
+        -m)
+            BENCHMARK_BRANCH=$2 ; shift 2 ;;
+        -o)
+            OUTPUT=$2 ; shift 2 ;;
+        -b)
+            BRANCH=$2 ; shift 2 ;;
+        -v)
+            VERSION=$2 ; shift 2 ;;
+        -B)
+            BASELINE_BRANCH=$2 ; shift 2 ;;
+        -V)
+            BASELINE_VERSION=$2 ; shift 2 ;;
+        -h)
+            echo "Usage: run_test.sh -t [tag] [-v [version] | -b [branch]] [-V [baseline version] | -B [baseline branch]] <options...>"
+            echo "Options:"
+            echo "-m : Benchmark branch (optional - defaults to develop)"
+            echo "-o : Output directory (optional - defaults to ./output-<date>-<tag>"
+            echo "-v : Geode Version"
+            echo "-b : Geode Branch"
+            echo "-V : Geode Baseline Version"
+            echo "-B : Geode Baseline Branch"
+            echo "-t : Cluster tag"
+            echo "-h : This help message"
+            shift 2
+            exit 1 ;;
+        --) shift ; break ;;
+        *) echo "Internal error!" ; exit 1 ;;
+    esac
+done
+
+
+
 DATE=$(date '+%m-%d-%Y-%H-%M-%S')
-TAG=${1}
-BRANCH=${2:-develop}
-BASELINE=${3:-"rel/v1.8.0"}
-BENCHMARK_BRANCH=${4:-develop}
-DEFAULT_OUTPUT_DIR=output-${DATE}-${TAG}
-OUTPUT=${5:-${DEFAULT_OUTPUT_DIR}}
+
+if [ -z "${TAG}" ]; then
+  echo "--tag argument is required."
+  exit 1
+fi
+
+OUTPUT=${OUTPUT:-output-${DATE}-${TAG}}
+
 if ! [[ "$OUTPUT" = /* ]]; then
   OUTPUT="$(pwd)/${OUTPUT}"
 fi
 
-./run_tests.sh ${TAG} ${BRANCH} ${BENCHMARK_BRANCH} ${OUTPUT}/branch
-./run_tests.sh ${TAG} ${BASELINE} ${BENCHMARK_BRANCH} ${OUTPUT}/baseline
+if [ -z "${VERSION}" ]; then
+  ./run_tests.sh -t ${TAG} -b ${BRANCH} -m ${BENCHMARK_BRANCH} -o ${OUTPUT}/branch
+else
+  ./run_tests.sh -t ${TAG} -v ${VERSION} -m ${BENCHMARK_BRANCH} -o ${OUTPUT}/branch
+fi
+
+if [ -z "${BASELINE_VERSION}" ]; then
+./run_tests.sh -t ${TAG} -b ${BASELINE_BRANCH} -m ${BENCHMARK_BRANCH} -o ${OUTPUT}/baseline
+else
+./run_tests.sh -t ${TAG} -v ${BASELINE_VERSION} -m ${BENCHMARK_BRANCH} -o ${OUTPUT}/baseline
+fi
+
 ./analyze_tests.sh ${OUTPUT}
