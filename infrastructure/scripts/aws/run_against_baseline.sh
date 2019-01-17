@@ -20,6 +20,7 @@
 set -e -o pipefail
 
 BENCHMARK_BRANCH='develop'
+BRANCH='develop'
 
 TEMP=`getopt t:b::v::B::V::m::o::h "$@"`
 eval set -- "$TEMP"

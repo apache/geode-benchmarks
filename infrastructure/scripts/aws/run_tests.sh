@@ -83,7 +83,19 @@ if [ ! -z "${BRANCH}" ]; then
 
   ssh ${SSH_OPTIONS} geode@$FIRST_INSTANCE "\
     rm -rf geode && \
-    git clone https://github.com/apache/geode --branch ${BRANCH} && \
+    git clone https://github.com/apache/geode --branch ${BRANCH}"
+
+  set +e
+  for i in {1..5}; do
+    if ssh ${SSH_OPTIONS} geode@$FIRST_INSTANCE "\
+      cd geode && \
+      ./gradlew resolveDependencies"; then
+      break
+    fi
+  done
+  set -e
+
+  ssh ${SSH_OPTIONS} geode@$FIRST_INSTANCE "\
     cd geode && \
     ./gradlew install installDist"
 
