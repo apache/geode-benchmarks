@@ -61,16 +61,19 @@ public class Analyzer {
     analyzer.addProbe(new YardstickPercentileSensorParser());
     analyzer.addProbe(new YardstickHdrHistogramParser());
 
-    BenchmarkRunResult benchmarkRunResult = analyzer.analyzeTestRun(baselineResultDir, testResultDir);
+    BenchmarkRunResult benchmarkRunResult =
+        analyzer.analyzeTestRun(baselineResultDir, testResultDir);
     benchmarkRunResult.writeResult(new PrintWriter(System.out));
     /* throw exc if failed? */
 
     StringBuilder message = new StringBuilder();
-    for (BenchmarkRunResult.BenchmarkResult benchmarkResult : benchmarkRunResult.getBenchmarkResults()) {
+    for (BenchmarkRunResult.BenchmarkResult benchmarkResult : benchmarkRunResult
+        .getBenchmarkResults()) {
       for (BenchmarkRunResult.ProbeResult probeResult : benchmarkResult.probeResults) {
         if (probeResult.description.equals("average latency")) {
           if (probeResult.getDifference() >= 0.05) {
-            message.append("BENCHMARK FAILED: ").append(benchmarkResult.name).append(" average latency is 5% worse than baseline.\n");
+            message.append("BENCHMARK FAILED: ").append(benchmarkResult.name)
+                .append(" average latency is 5% worse than baseline.\n");
           }
         }
       }
