@@ -70,6 +70,7 @@ fi
 
 OUTPUT=${OUTPUT:-output-${DATE}-${TAG}}
 
+set -x
 if ! [[ "$OUTPUT" = /* ]]; then
   OUTPUT="$(pwd)/${OUTPUT}"
 fi
@@ -85,5 +86,6 @@ if [ -z "${BASELINE_VERSION}" ]; then
 else
 ./run_tests.sh -t ${TAG} -v ${BASELINE_VERSION} -m ${BENCHMARK_BRANCH} -o ${OUTPUT}/baseline
 fi
+set +x
 
 ./analyze_tests.sh ${OUTPUT}
