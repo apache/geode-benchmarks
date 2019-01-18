@@ -83,7 +83,8 @@ if [ ! -z "${BRANCH}" ]; then
 
   ssh ${SSH_OPTIONS} geode@$FIRST_INSTANCE "\
     rm -rf geode && \
-    git clone https://github.com/apache/geode --branch ${BRANCH}"
+    git clone https://github.com/apache/geode && \
+    cd geode && git checkout ${BRANCH}"
 
   set +e
   for i in {1..5}; do
