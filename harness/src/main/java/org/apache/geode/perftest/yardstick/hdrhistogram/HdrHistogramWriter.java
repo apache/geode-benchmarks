@@ -20,15 +20,20 @@ import java.io.UncheckedIOException;
 import java.util.function.Consumer;
 
 import org.HdrHistogram.Histogram;
+import org.HdrHistogram.HistogramLogProcessor;
 import org.HdrHistogram.HistogramLogWriter;
 
 public class HdrHistogramWriter implements Consumer<Histogram> {
 
   public static final String FILE_NAME = "latency.hlog";
+  public static final String FILE_NAME_HDR = "latency_hdr";
+
   private final File outputFile;
+  private final File outputHDRFile;
 
   public HdrHistogramWriter(File outputDir) {
     this.outputFile = new File(outputDir, FILE_NAME);
+    this.outputHDRFile = new File(outputDir, FILE_NAME_HDR);
   }
 
   @Override
@@ -38,9 +43,14 @@ public class HdrHistogramWriter implements Consumer<Histogram> {
       HistogramLogWriter writer = new HistogramLogWriter(outputFile);
       try {
         writer.outputIntervalHistogram(histogram);
+        writer.outputIntervalHistogram(histogram);
       } finally {
         writer.close();
       }
+      HistogramLogProcessor histogramLogProcessor =
+          new HistogramLogProcessor(new String[] {"-i", outputFile.getAbsolutePath(), "-o",
+              outputHDRFile.getAbsolutePath()});
+      histogramLogProcessor.run();
     } catch (FileNotFoundException e) {
       throw new UncheckedIOException(e);
     }
