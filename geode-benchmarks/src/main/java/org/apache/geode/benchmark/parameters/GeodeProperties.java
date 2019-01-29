@@ -36,6 +36,8 @@ public class GeodeProperties {
     properties.setProperty(ConfigurationProperties.DISTRIBUTED_SYSTEM_ID, "0");
     properties.setProperty(ConfigurationProperties.ENABLE_CLUSTER_CONFIGURATION, "false");
     properties.setProperty(ConfigurationProperties.USE_CLUSTER_CONFIGURATION, "false");
+    properties.setProperty(ConfigurationProperties.SERIALIZABLE_OBJECT_FILTER,
+        "benchmark.geode.data.**");
     return properties;
   }
 
