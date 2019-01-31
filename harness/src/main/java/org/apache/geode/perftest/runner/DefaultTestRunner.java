@@ -18,6 +18,8 @@
 package org.apache.geode.perftest.runner;
 
 import java.io.File;
+import java.io.FileWriter;
+import java.io.PrintWriter;
 import java.util.List;
 import java.util.Map;
 
@@ -66,7 +68,20 @@ public class DefaultTestRunner implements TestRunner {
       throw new IllegalStateException(
           "Benchmark output directory already exists: " + benchmarkOutput.getPath());
     }
+    benchmarkOutput.mkdirs();
 
+    String metadata = System.getProperty("TEST_METADATA");
+    if(!(metadata == null) && !metadata.isEmpty()) {
+      File metadataOutput = new File(outputDir, "metadata.json");
+      metadataOutput.createNewFile();
+      FileWriter metadataWriter = new FileWriter(metadataOutput.getAbsoluteFile(), true);
+
+      String[] metadataEntries = metadata.split(",");
+      for(String data : metadataEntries) {
+        metadataWriter.write(data + "\n");
+      }
+      metadataWriter.flush();
+    }
 
     Map<String, Integer> roles = config.getRoles();
     Map<String, List<String>> jvmArgs = config.getJvmArgs();

@@ -21,7 +21,7 @@ set -x -e -o pipefail
 
 BENCHMARK_BRANCH='develop'
 
-TEMP=`getopt t:b:v:m:o:h "$@"`
+TEMP=`getopt t:b:v:m:e:o:h "$@"`
 eval set -- "$TEMP"
 
 while true ; do
@@ -29,6 +29,8 @@ while true ; do
         -t)
             TAG=$2 ; shift 2 ;;
         -m)
+            METADATA=$2 ; shift 2 ;;
+        -e)
             BENCHMARK_BRANCH=$2 ; shift 2 ;;
         -o)
             OUTPUT=$2 ; shift 2 ;;
@@ -39,11 +41,12 @@ while true ; do
         -h)
             echo "Usage: run_test.sh -t [tag] [-v [version] | -b [branch]] <options...>"
             echo "Options:"
-            echo "-m : Benchmark branch (optional - defaults to develop)"
+            echo "-e : Benchmark branch (optional - defaults to develop)"
             echo "-o : Output directory (optional - defaults to ./output-<date>-<tag>"
             echo "-v : Geode Version"
             echo "-b : Geode Branch"
             echo "-t : Cluster tag"
+            echo "-m : Test metadata to output to file, comma-delimited (optional)"
             echo "-h : This help message"
             shift 2
             exit 1 ;;
@@ -109,12 +112,16 @@ if [ -z "${VERSION}" ]; then
   exit 1
 fi
 
+if [ -z "${METADATA}" ]; then
+  METADATA="'geode branch':'${BRANCH}','geode version':'${VERSION}','benchmark branch':'${BENCHMARK_BRANCH}'"
+fi
+
 
 ssh ${SSH_OPTIONS} geode@$FIRST_INSTANCE "\
   rm -rf geode-benchmarks && \
   git clone https://github.com/apache/geode-benchmarks --branch ${BENCHMARK_BRANCH} && \
   cd geode-benchmarks && \
-  ./gradlew -PgeodeVersion=${VERSION} benchmark -Phosts=${HOSTS}"
+  ./gradlew -PgeodeVersion=${VERSION} benchmark -Phosts=${HOSTS} -Pmetadata=${METADATA}
 
 mkdir -p ${OUTPUT}
 
