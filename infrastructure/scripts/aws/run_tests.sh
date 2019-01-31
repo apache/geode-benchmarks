@@ -42,7 +42,7 @@ while true ; do
             echo "Usage: run_test.sh -t [tag] [-v [version] | -b [branch]] <options...>"
             echo "Options:"
             echo "-e : Benchmark branch (optional - defaults to develop)"
-            echo "-o : Output directory (optional - defaults to ./output-<date>-<tag>"
+            echo "-o : Output directory (optional - defaults to ./output-<date>-<tag>)"
             echo "-v : Geode Version"
             echo "-b : Geode Branch"
             echo "-t : Cluster tag"
