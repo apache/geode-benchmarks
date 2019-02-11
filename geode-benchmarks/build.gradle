@@ -64,6 +64,7 @@ task benchmark(type: Test) {
     forkEvery 1
 
     systemProperty 'TEST_HOSTS', project.findProperty('hosts')
+    systemProperty 'TEST_METADATA', project.findProperty('metadata')
     systemProperty 'OUTPUT_DIR', outputDir
 
     doFirst {

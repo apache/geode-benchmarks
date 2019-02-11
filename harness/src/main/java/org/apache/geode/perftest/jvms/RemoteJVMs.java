@@ -73,7 +73,6 @@ public class RemoteJVMs implements AutoCloseable {
    * Copy results to the provided output directory
    */
   public void copyResults(File benchmarkOutput) throws IOException {
-    benchmarkOutput.mkdirs();
     for (JVMMapping jvm : jvmMappings) {
       infra.copyFromNode(jvm.getNode(), jvm.getOutputDir(),
           new File(benchmarkOutput, jvm.getRole() + "-" + jvm.getId()));
