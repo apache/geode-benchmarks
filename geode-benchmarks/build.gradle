@@ -61,6 +61,7 @@ task benchmark(type: Test) {
         exceptionFormat = 'full'
     }
 
+    exclude "**/*Function*Benchmark.class"
     forkEvery 1
 
     systemProperty 'TEST_HOSTS', project.findProperty('hosts')
