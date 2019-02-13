@@ -62,6 +62,7 @@ task benchmark(type: Test) {
     }
 
     exclude "**/*Function*Benchmark.class"
+    exclude "**/PartitionedIndexQueryBenchmark.class"
     forkEvery 1
 
     systemProperty 'TEST_HOSTS', project.findProperty('hosts')
