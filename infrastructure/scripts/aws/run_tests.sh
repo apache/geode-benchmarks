@@ -19,42 +19,63 @@
 
 set -x -e -o pipefail
 
+BENCHMARK_REPO='https://github.com/apache/geode-benchmarks'
 BENCHMARK_BRANCH='develop'
 
-TEMP=`getopt t:b:v:m:e:o:h "$@"`
-eval set -- "$TEMP"
+REPO='https://github.com/apache/geode'
 
-while true ; do
-    case "$1" in
-        -t)
-            TAG=$2 ; shift 2 ;;
-        -m)
-            METADATA=$2 ; shift 2 ;;
-        -e)
-            BENCHMARK_BRANCH=$2 ; shift 2 ;;
-        -o)
-            OUTPUT=$2 ; shift 2 ;;
-        -b)
-            BRANCH=$2 ; shift 2 ;;
-        -v)
-            VERSION=$2 ; shift 2 ;;
-        -h)
-            echo "Usage: run_test.sh -t [tag] [-v [version] | -b [branch]] <options...>"
-            echo "Options:"
-            echo "-e : Benchmark branch (optional - defaults to develop)"
-            echo "-o : Output directory (optional - defaults to ./output-<date>-<tag>)"
-            echo "-v : Geode Version"
-            echo "-b : Geode Branch"
-            echo "-t : Cluster tag"
-            echo "-m : Test metadata to output to file, comma-delimited (optional)"
-            echo "-h : This help message"
-            shift 2
-            exit 1 ;;
-        --) shift ; break ;;
-        *) echo "Internal error!" ; exit 1 ;;
-    esac
+while getopts ":t:r:b:v:p:e:R:B:V:m:o:h" opt; do
+  case ${opt} in
+    t )
+      TAG=$OPTARG
+      ;;
+    p )
+      BENCHMARK_REPO=$OPTARG
+      ;;
+    e )
+      BENCHMARK_BRANCH=$OPTARG
+      ;;
+    m )
+      METADATA=$OPTARG
+      ;;
+    o )
+      OUTPUT=$OPTARG
+      ;;
+    r )
+      REPO=$OPTARG
+      ;;
+    b )
+      BRANCH=$OPTARG
+      ;;
+    v )
+      VERSION=$OPTARG
+      ;;
+    h )
+      echo "Usage: run_test.sh -t [tag] [-v [version] | -b [branch]] <options...>"
+      echo "Options:"
+      echo "-p : Benchmark repo (optional - defaults to Apache)"
+      echo "-e : Benchmark branch (optional - defaults to develop)"
+      echo "-o : Output directory (optional - defaults to ./output-<date>-<tag>)"
+      echo "-v : Geode version"
+      echo "-r : Geode repo (optional - defaults to Apache)"
+      echo "-b : Geode branch"
+      echo "-t : Cluster tag"
+      echo "-m : Test metadata to output to file, comma-delimited (optional)"
+      echo "-h : This help message"
+      exit 1
+      ;;
+    \? )
+      echo "Invalid option: $OPTARG" 1>&2
+      ;;
+    : )
+      echo "Invalid option: $OPTARG requires an argument" 1>&2
+      ;;
+  esac
 done
+shift $((OPTIND -1))
 
+BENCHMARK_ARGS=($@)
+echo "${BENCHMARK_ARGS[@]}"
 
 DATE=$(date '+%m-%d-%Y-%H-%M-%S')
 
@@ -86,7 +107,7 @@ if [ ! -z "${BRANCH}" ]; then
 
   ssh ${SSH_OPTIONS} geode@$FIRST_INSTANCE "\
     rm -rf geode && \
-    git clone https://github.com/apache/geode && \
+    git clone ${REPO} && \
     cd geode && git checkout ${BRANCH}"
 
   set +e
@@ -119,9 +140,10 @@ fi
 
 ssh ${SSH_OPTIONS} geode@$FIRST_INSTANCE "\
   rm -rf geode-benchmarks && \
-  git clone https://github.com/apache/geode-benchmarks --branch ${BENCHMARK_BRANCH} && \
+  git clone ${BENCHMARK_REPO} --branch ${BENCHMARK_BRANCH} && \
   cd geode-benchmarks && \
-  ./gradlew -PgeodeVersion=${VERSION} benchmark -Phosts=${HOSTS} -Pmetadata=${METADATA}"
+  ./gradlew -PgeodeVersion=${VERSION} benchmark -Phosts=${HOSTS} -Pmetadata=\"${METADATA}\" \
+    $(printf "\"%s\" " "${BENCHMARK_ARGS[@]}")"
 
 mkdir -p ${OUTPUT}
 
