@@ -121,7 +121,7 @@ ssh ${SSH_OPTIONS} geode@$FIRST_INSTANCE "\
   rm -rf geode-benchmarks && \
   git clone https://github.com/apache/geode-benchmarks --branch ${BENCHMARK_BRANCH} && \
   cd geode-benchmarks && \
-  ./gradlew -PgeodeVersion=${VERSION} benchmark -Phosts=${HOSTS} -Pmetadata=${METADATA}"
+  ./gradlew -PgeodeVersion=${VERSION} benchmark -Phosts=${HOSTS} -Pmetadata=${METADATA} --tests org.apache.geode.benchmark.tests.PartitionedFunctionExecutionBenchmark"
 
 mkdir -p ${OUTPUT}
 

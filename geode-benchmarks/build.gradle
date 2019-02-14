@@ -61,7 +61,6 @@ task benchmark(type: Test) {
         exceptionFormat = 'full'
     }
 
-    exclude "**/*Function*Benchmark.class"
     exclude "**/PartitionedIndexQueryBenchmark.class"
     forkEvery 1
 
