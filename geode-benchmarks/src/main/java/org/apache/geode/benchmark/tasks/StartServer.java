@@ -51,6 +51,7 @@ public class StartServer implements Task {
         .set(ConfigurationProperties.NAME,
             "server-" + context.getJvmID() + "-" + InetAddress.getLocalHost())
         .set(ConfigurationProperties.STATISTIC_ARCHIVE_FILE, statsFile)
+        .set(ConfigurationProperties.LOG_LEVEL, "fine")
         .create();
     CacheServer cacheServer = cache.addCacheServer();
     cacheServer.setPort(0);
