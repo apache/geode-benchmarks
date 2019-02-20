@@ -74,9 +74,6 @@ while getopts ":t:r:b:v:p:e:R:B:V:m:o:h" opt; do
 done
 shift $((OPTIND -1))
 
-BENCHMARK_ARGS=($@)
-echo "${BENCHMARK_ARGS[@]}"
-
 DATE=$(date '+%m-%d-%Y-%H-%M-%S')
 
 if [ -z "${TAG}" ]; then
@@ -138,12 +135,11 @@ if [ -z "${METADATA}" ]; then
 fi
 
 
-ssh ${SSH_OPTIONS} geode@$FIRST_INSTANCE "\
-  rm -rf geode-benchmarks && \
-  git clone ${BENCHMARK_REPO} --branch ${BENCHMARK_BRANCH} && \
-  cd geode-benchmarks && \
-  ./gradlew -PgeodeVersion=${VERSION} benchmark -Phosts=${HOSTS} -Pmetadata=\"${METADATA}\" \
-    $(printf "\"%s\" " "${BENCHMARK_ARGS[@]}")"
+ssh ${SSH_OPTIONS} geode@$FIRST_INSTANCE \
+  rm -rf geode-benchmarks '&&' \
+  git clone ${BENCHMARK_REPO} --branch ${BENCHMARK_BRANCH} '&&' \
+  cd geode-benchmarks '&&' \
+  ./gradlew -PgeodeVersion=${VERSION} benchmark -Phosts=${HOSTS} -Pmetadata="${METADATA}" "$@"
 
 mkdir -p ${OUTPUT}
 
