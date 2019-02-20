@@ -19,14 +19,20 @@
 
 set -e -o pipefail
 
-BENCHMARK_REPO='https://github.com/apache/geode-benchmarks'
-BENCHMARK_BRANCH='develop'
+DEFAULT_BENCHMARK_REPO='https://github.com/apache/geode-benchmarks'
+BENCHMARK_REPO=${DEFAULT_BENCHMARK_REPO}
+DEFAULT_BENCHMARK_BRANCH='develop'
+BENCHMARK_BRANCH=${DEFAULT_BENCHMARK_BRANCH}
 
-REPO='https://github.com/apache/geode'
-BRANCH='develop'
+DEFAULT_REPO='https://github.com/apache/geode'
+REPO=${DEFAULT_REPO}
+DEFAULT_BRANCH='develop'
+BRANCH=${DEFAULT_BRANCH}
 
-BASELINE_REPO='https://github.com/apache/geode'
-BASELINE_VERSION=1.8.0
+DEFAULT_BASELINE_REPO='https://github.com/apache/geode'
+BASELINE_REPO=${DEFAULT_BASELINE_REPO}
+DEFAULT_BASELINE_VERSION=1.8.0
+BASELINE_VERSION=${DEFAULT_BASELINE_VERSION}
 
 while getopts ":t:r:b:v:p:e:R:B:V:m:o:h" opt; do
   case ${opt} in
@@ -64,19 +70,20 @@ while getopts ":t:r:b:v:p:e:R:B:V:m:o:h" opt; do
       BASELINE_VERSION=$OPTARG
       ;;
     h )
-      echo "Usage: run_test.sh -t [tag] [-v [version] | -b [branch]] [-V [baseline version] | -B [baseline branch]] <options...>"
+      echo "Usage: $(basename "$0") -t tag [options ...] [-- arguments ...]"
       echo "Options:"
-      echo "-p : Benchmark repo (optional - defaults to Apache)"
-      echo "-e : Benchmark branch (optional - defaults to develop)"
-      echo "-o : Output directory (optional - defaults to ./output-<date>-<tag>)"
-      echo "-v : Geode version"
-      echo "-r : Geode repo (optional - defaults to Apache)"
-      echo "-b : Geode branch"
-      echo "-V : Geode baseline version"
-      echo "-R : Geode baseline repo (optional - defaults to Apache)"
-      echo "-B : Geode baseline branch"
       echo "-t : Cluster tag"
-      echo "-m : Test metadata to output to file, comma-delimited (optional)"
+      echo "-p : Benchmark repo (default: ${DEFAULT_BENCHMARK_REPO})"
+      echo "-e : Benchmark branch (default: ${DEFAULT_BENCHMARK_BRANCH})"
+      echo "-o : Output directory (defaults: ./output-<date>-<tag>)"
+      echo "-v : Geode version"
+      echo "-r : Geode repo (default: ${DEFAULT_REPO})"
+      echo "-b : Geode branch (default: ${DEFAULT_BRANCH})"
+      echo "-V : Geode baseline version (default: ${DEFAULT_BASELINE_VERSION})"
+      echo "-R : Geode baseline repo (default: ${DEFAULT_BASELINE_REPO})"
+      echo "-B : Geode baseline branch"
+      echo "-m : Test metadata to output to file, comma-delimited"
+      echo "-- : All subsequent arguments are passed to the benchmark task as arguments."
       echo "-h : This help message"
       exit 1
       ;;
