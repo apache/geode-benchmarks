@@ -19,50 +19,76 @@
 
 set -e -o pipefail
 
+BENCHMARK_REPO='https://github.com/apache/geode-benchmarks'
 BENCHMARK_BRANCH='develop'
+
+REPO='https://github.com/apache/geode'
 BRANCH='develop'
 
-TEMP=`getopt t:b:v:e:B:V:m:o:h "$@"`
-eval set -- "$TEMP"
+BASELINE_REPO='https://github.com/apache/geode'
+BASELINE_VERSION=1.8.0
 
-while true ; do
-    case "$1" in
-        -t)
-            TAG=$2 ; shift 2 ;;
-        -e)
-            BENCHMARK_BRANCH=$2 ; shift 2 ;;
-        -m)
-            METADATA=$2 ; shift 2 ;;
-        -o)
-            OUTPUT=$2 ; shift 2 ;;
-        -b)
-            BRANCH=$2 ; shift 2 ;;
-        -v)
-            VERSION=$2 ; shift 2 ;;
-        -B)
-            BASELINE_BRANCH=$2 ; shift 2 ;;
-        -V)
-            BASELINE_VERSION=$2 ; shift 2 ;;
-        -h)
-            echo "Usage: run_test.sh -t [tag] [-v [version] | -b [branch]] [-V [baseline version] | -B [baseline branch]] <options...>"
-            echo "Options:"
-            echo "-e : Benchmark branch (optional - defaults to develop)"
-            echo "-o : Output directory (optional - defaults to ./output-<date>-<tag>)"
-            echo "-v : Geode Version"
-            echo "-b : Geode Branch"
-            echo "-V : Geode Baseline Version"
-            echo "-B : Geode Baseline Branch"
-            echo "-t : Cluster tag"
-            echo "-m : Test metadata to output to file, comma-delimited (optional)"
-            echo "-h : This help message"
-            shift 2
-            exit 1 ;;
-        --) shift ; break ;;
-        *) echo "Internal error!" ; exit 1 ;;
-    esac
+while getopts ":t:r:b:v:p:e:R:B:V:m:o:h" opt; do
+  case ${opt} in
+    t )
+      TAG=$OPTARG
+      ;;
+    p )
+      BENCHMARK_REPO=$OPTARG
+      ;;
+    e )
+      BENCHMARK_BRANCH=$OPTARG
+      ;;
+    m )
+      METADATA=$OPTARG
+      ;;
+    o )
+      OUTPUT=$OPTARG
+      ;;
+    r )
+      REPO=$OPTARG
+      ;;
+    b )
+      BRANCH=$OPTARG
+      ;;
+    v )
+      VERSION=$OPTARG
+      ;;
+    R )
+      BASELINE_REPO=$OPTARG
+      ;;
+    B )
+      BASELINE_BRANCH=$OPTARG
+      ;;
+    V )
+      BASELINE_VERSION=$OPTARG
+      ;;
+    h )
+      echo "Usage: run_test.sh -t [tag] [-v [version] | -b [branch]] [-V [baseline version] | -B [baseline branch]] <options...>"
+      echo "Options:"
+      echo "-p : Benchmark repo (optional - defaults to Apache)"
+      echo "-e : Benchmark branch (optional - defaults to develop)"
+      echo "-o : Output directory (optional - defaults to ./output-<date>-<tag>)"
+      echo "-v : Geode version"
+      echo "-r : Geode repo (optional - defaults to Apache)"
+      echo "-b : Geode branch"
+      echo "-V : Geode baseline version"
+      echo "-R : Geode baseline repo (optional - defaults to Apache)"
+      echo "-B : Geode baseline branch"
+      echo "-t : Cluster tag"
+      echo "-m : Test metadata to output to file, comma-delimited (optional)"
+      echo "-h : This help message"
+      exit 1
+      ;;
+    \? )
+      echo "Invalid option: $OPTARG" 1>&2
+      ;;
+    : )
+      echo "Invalid option: $OPTARG requires an argument" 1>&2
+      ;;
+  esac
 done
-
-
+shift $((OPTIND -1))
 
 DATE=$(date '+%m-%d-%Y-%H-%M-%S')
 
@@ -83,15 +109,45 @@ if ! [[ "$OUTPUT" = /* ]]; then
 fi
 
 if [ -z "${VERSION}" ]; then
-  ./run_tests.sh -t ${TAG} -b ${BRANCH} -e ${BENCHMARK_BRANCH} -o ${OUTPUT}/branch -m ${METADATA}
+  ./run_tests.sh \
+      -t ${TAG} \
+      -r ${REPO} \
+      -b ${BRANCH} \
+      -p ${BENCHMARK_REPO} \
+      -e ${BENCHMARK_BRANCH} \
+      -o ${OUTPUT}/branch \
+      -m "${METADATA}" \
+      -- "$@"
 else
-  ./run_tests.sh -t ${TAG} -v ${VERSION} -e ${BENCHMARK_BRANCH} -o ${OUTPUT}/branch -m ${METADATA}
+  ./run_tests.sh \
+      -t ${TAG} \
+      -v ${VERSION} \
+      -p ${BENCHMARK_REPO} \
+      -e ${BENCHMARK_BRANCH} \
+      -o ${OUTPUT}/branch \
+      -m "${METADATA}" \
+      -- "$@"
 fi
 
 if [ -z "${BASELINE_VERSION}" ]; then
-./run_tests.sh -t ${TAG} -b ${BASELINE_BRANCH} -e ${BENCHMARK_BRANCH} -o ${OUTPUT}/baseline -m ${METADATA}
+  ./run_tests.sh \
+      -t ${TAG} \
+      -r ${BASELINE_REPO} \
+      -b ${BASELINE_BRANCH} \
+      -p ${BENCHMARK_REPO} \
+      -e ${BENCHMARK_BRANCH} \
+      -o ${OUTPUT}/baseline \
+      -m "${METADATA}" \
+      -- "$@"
 else
-./run_tests.sh -t ${TAG} -v ${BASELINE_VERSION} -e ${BENCHMARK_BRANCH} -o ${OUTPUT}/baseline -m ${METADATA}
+  ./run_tests.sh \
+      -t ${TAG} \
+      -v ${BASELINE_VERSION} \
+      -p ${BENCHMARK_REPO} \
+      -e ${BENCHMARK_BRANCH} \
+      -o ${OUTPUT}/baseline \
+      -m "${METADATA}" \
+      -- "$@"
 fi
 set +x
 
