@@ -103,8 +103,8 @@ FIRST_INSTANCE=`aws ec2 describe-instances --query 'Reservations[*].Instances[*]
 echo "FIRST_INSTANCE=${FIRST_INSTANCE}"
 echo "HOSTS=${HOSTS}"
 
-if [ ! -z "${BRANCH}" ]; then
-  if [ ! -z "${VERSION}" ]; then
+if [ -z "${VERSION}" ]; then
+  if [ -z "${BRANCH}" ]; then
     echo "Specify --version or --branch."
     exit 1
   fi
