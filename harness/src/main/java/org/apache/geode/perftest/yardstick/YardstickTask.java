@@ -27,7 +27,6 @@ import org.yardstickframework.BenchmarkProbe;
 import org.yardstickframework.impl.BenchmarkLoader;
 import org.yardstickframework.impl.BenchmarkProbeSet;
 import org.yardstickframework.impl.BenchmarkRunner;
-import org.yardstickframework.probes.DStatProbe;
 import org.yardstickframework.probes.PercentileProbe;
 import org.yardstickframework.probes.ThroughputLatencyProbe;
 import org.yardstickframework.probes.VmStatProbe;
@@ -95,7 +94,7 @@ public class YardstickTask implements Task {
     Collection<BenchmarkProbe> probes =
         Arrays.asList(new HdrHistogramProbe(new HdrHistogramWriter(context.getOutputDir())),
             new ThroughputLatencyProbe(),
-            new PercentileProbe(), new DStatProbe(), new VmStatProbe(),
+            new PercentileProbe(), new VmStatProbe(),
             testDoneProbe);
     BenchmarkLoader loader = new BenchmarkLoader();
     loader.initialize(cfg);

@@ -21,8 +21,6 @@ import java.io.File;
 import java.io.PrintStream;
 import java.rmi.RemoteException;
 
-import org.apache.commons.io.FileUtils;
-
 import org.apache.geode.perftest.jdk.RMI;
 import org.apache.geode.perftest.jdk.SystemInterface;
 import org.apache.geode.perftest.jvms.RemoteJVMFactory;
@@ -62,9 +60,6 @@ public class ChildJVM {
       }
 
       File outputDir = new File(OUTPUT_DIR);
-      // Clean up the output directory before the test runs
-      FileUtils.deleteQuietly(outputDir);
-      outputDir.mkdirs();
       try (PrintStream out = new PrintStream(new File(outputDir, "system.log"))) {
         system.setOut(out);
         system.setErr(out);
