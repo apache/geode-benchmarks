@@ -20,7 +20,6 @@ package org.apache.geode.perftest.jvms.rmi;
 import static org.apache.geode.perftest.jvms.RemoteJVMFactory.OUTPUT_DIR;
 import static org.apache.geode.perftest.jvms.RemoteJVMFactory.RMI_HOST;
 import static org.apache.geode.perftest.jvms.RemoteJVMFactory.RMI_PORT_PROPERTY;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
@@ -83,15 +82,4 @@ public class ChildJVMTest {
 
     verify(controller, times(3)).ping();
   }
-
-  @Test
-  public void childCleansOutputDir() throws IOException {
-    File expectedFile = new File(folder, "somefile.txt");
-    expectedFile.createNewFile();
-
-    jvm.run();
-
-    assertFalse(expectedFile.exists());
-  }
-
 }

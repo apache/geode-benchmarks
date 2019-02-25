@@ -25,6 +25,8 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.geode.perftest.Task;
@@ -39,6 +41,7 @@ public class Controller extends UnicastRemoteObject implements ControllerRemote 
   private final Map<Integer, WorkerRemote> workers = new ConcurrentHashMap<>();
   private final CountDownLatch workersStarted;
   private volatile boolean isClosed;
+  private ExecutorService workerExecutionPool = Executors.newCachedThreadPool();
 
 
   Controller(int numWorkers, Registry registry, SharedContext context) throws RemoteException {
@@ -85,6 +88,6 @@ public class Controller extends UnicastRemoteObject implements ControllerRemote 
       } catch (Exception e) {
         throw new RuntimeException(e);
       }
-    });
+    }, workerExecutionPool);
   }
 }

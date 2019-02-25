@@ -56,6 +56,8 @@ class JVMLauncher {
       public void run() {
 
         try {
+          infra.onNode(jvmConfig.getNode(), new String[] {"rm", "-rf", jvmConfig.getOutputDir()});
+          infra.onNode(jvmConfig.getNode(), new String[] {"mkdir", "-p", jvmConfig.getOutputDir()});
           int result = infra.onNode(jvmConfig.getNode(), shellCommand);
           if (result != 0) {
             logger.error("ChildJVM exited with error code " + result);
@@ -83,6 +85,7 @@ class JVMLauncher {
     command.add("-D" + RemoteJVMFactory.RMI_PORT_PROPERTY + "=" + rmiPort);
     command.add("-D" + RemoteJVMFactory.JVM_ID + "=" + jvmConfig.getId());
     command.add("-D" + RemoteJVMFactory.OUTPUT_DIR + "=" + jvmConfig.getOutputDir());
+    command.add("-Xloggc:" + jvmConfig.getOutputDir() + "/gc.log");
     command.addAll(jvmConfig.getJvmArgs());
     command.add(ChildJVM.class.getName());
 

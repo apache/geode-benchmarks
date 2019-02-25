@@ -31,6 +31,8 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -52,6 +54,7 @@ public class SshInfrastructure implements Infrastructure {
   private final String user;
   private final int port;
   public static final Config CONFIG = new DefaultConfig();
+  private ExecutorService streamReaderThreadPool = Executors.newCachedThreadPool();
 
   public SshInfrastructure(Collection<String> hosts, String user) {
     this(hosts, user, 22);
@@ -88,18 +91,36 @@ public class SshInfrastructure implements Infrastructure {
       try (Session session = client.startSession()) {
         logger.info("Executing " + script + " on " + node.getAddress());
         final Session.Command cmd = session.exec(script);
-        cmd.join();
-        copyStream(cmd.getInputStream(), System.out);
-        copyStream(cmd.getErrorStream(), System.err);
+        CompletableFuture<Void> copyStdout =
+            copyStreamAsynchronously(cmd.getInputStream(), System.out);
+        CompletableFuture<Void> copyStdErr =
+            copyStreamAsynchronously(cmd.getErrorStream(), System.err);
 
         cmd.join();
+        copyStdout.join();
+        copyStdErr.join();
         return cmd.getExitStatus();
       }
     }
   }
 
-  private void copyStream(InputStream inputStream, PrintStream out) throws IOException {
-    org.apache.commons.io.IOUtils.copy(inputStream, out);
+  private CompletableFuture<Void> copyStreamAsynchronously(InputStream inputStream,
+      PrintStream out) {
+    return CompletableFuture.runAsync(() -> {
+      try {
+        org.apache.commons.io.IOUtils.copy(inputStream, out);
+      } catch (IOException e) {
+        throw new UncheckedIOException(e);
+      }
+    }, streamReaderThreadPool);
+  }
+
+  private void copyStream(InputStream inputStream, PrintStream out) {
+    try {
+      org.apache.commons.io.IOUtils.copy(inputStream, out);
+    } catch (IOException e) {
+      throw new UncheckedIOException(e);
+    }
   }
 
   @Override
