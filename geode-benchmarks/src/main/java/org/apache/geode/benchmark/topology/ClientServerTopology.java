@@ -62,7 +62,7 @@ public class ClientServerTopology {
     testConfig.before(new StartClient(LOCATOR_PORT), CLIENT);
   }
 
-  static private final String[] appendIfNotEmpty(String[] a, String b) {
+  private static final String[] appendIfNotEmpty(String[] a, String b) {
     if (StringUtils.isEmpty(b)) {
       return a;
     }
