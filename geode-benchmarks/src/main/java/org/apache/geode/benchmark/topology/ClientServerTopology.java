@@ -19,6 +19,9 @@ import static org.apache.geode.benchmark.topology.ClientServerTopology.Roles.CLI
 import static org.apache.geode.benchmark.topology.ClientServerTopology.Roles.LOCATOR;
 import static org.apache.geode.benchmark.topology.ClientServerTopology.Roles.SERVER;
 
+import org.apache.commons.lang3.StringUtils;
+import org.bouncycastle.util.Arrays;
+
 import org.apache.geode.benchmark.tasks.StartClient;
 import org.apache.geode.benchmark.tasks.StartLocator;
 import org.apache.geode.benchmark.tasks.StartServer;
@@ -49,12 +52,21 @@ public class ClientServerTopology {
     testConfig.role(SERVER, NUM_SERVERS);
     testConfig.role(CLIENT, NUM_CLIENTS);
 
-    testConfig.jvmArgs(CLIENT, JVM_ARGS);
-    testConfig.jvmArgs(LOCATOR, JVM_ARGS);
-    testConfig.jvmArgs(SERVER, JVM_ARGS);
+    String profilerArgument = System.getProperty("benchmark.profiler.argument");
+    testConfig.jvmArgs(CLIENT, appendIfNotEmpty(JVM_ARGS, profilerArgument));
+    testConfig.jvmArgs(LOCATOR, appendIfNotEmpty(JVM_ARGS, profilerArgument));
+    testConfig.jvmArgs(SERVER, appendIfNotEmpty(JVM_ARGS, profilerArgument));
 
     testConfig.before(new StartLocator(LOCATOR_PORT), LOCATOR);
     testConfig.before(new StartServer(LOCATOR_PORT), SERVER);
     testConfig.before(new StartClient(LOCATOR_PORT), CLIENT);
+  }
+
+  static private final String[] appendIfNotEmpty(String[] a, String b) {
+    if (StringUtils.isEmpty(b)) {
+      return a;
+    }
+
+    return Arrays.append(a, b);
   }
 }
