@@ -56,7 +56,7 @@ public class HdrHistogramWriter implements Consumer<Histogram> {
       histogramLogProcessor.run();
       HistogramLogProcessor histogramLogProcessorCSV =
           new HistogramLogProcessor(new String[] {"-csv", "-i", outputFile.getAbsolutePath(), "-o",
-          outputCSVFile.getAbsolutePath()});
+              outputCSVFile.getAbsolutePath()});
       histogramLogProcessorCSV.run();
     } catch (FileNotFoundException e) {
       throw new UncheckedIOException(e);
