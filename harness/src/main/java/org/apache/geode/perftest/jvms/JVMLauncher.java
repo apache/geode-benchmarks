@@ -86,9 +86,17 @@ class JVMLauncher {
     command.add("-D" + RemoteJVMFactory.JVM_ID + "=" + jvmConfig.getId());
     command.add("-D" + RemoteJVMFactory.OUTPUT_DIR + "=" + jvmConfig.getOutputDir());
     command.add("-Xloggc:" + jvmConfig.getOutputDir() + "/gc.log");
-    command.addAll(jvmConfig.getJvmArgs());
+    command.addAll(replaceTokens(jvmConfig.getJvmArgs(), jvmConfig));
     command.add(ChildJVM.class.getName());
 
     return command.toArray(new String[0]);
+  }
+
+  private static final List<String> replaceTokens(List<String> args, JVMMapping jvmConfig) {
+    List<String> replaced = new ArrayList<>(args.size());
+    for (String arg : args) {
+      replaced.add(arg.replace("OUTPUT_DIR", jvmConfig.getOutputDir()));
+    }
+    return replaced;
   }
 }
