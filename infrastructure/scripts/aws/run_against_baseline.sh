@@ -136,11 +136,10 @@ else
       -- "$@"
 fi
 
-if [ -z "${BASELINE_VERSION}" ]; then
+if [ -z "${BENCHMARK_BRANCH}" ]; then
   ./run_tests.sh \
       -t ${TAG} \
-      -r ${BASELINE_REPO} \
-      -b ${BASELINE_BRANCH} \
+      -v ${BASELINE_VERSION} \
       -p ${BENCHMARK_REPO} \
       -e ${BENCHMARK_BRANCH} \
       -o ${OUTPUT}/baseline \
@@ -149,7 +148,8 @@ if [ -z "${BASELINE_VERSION}" ]; then
 else
   ./run_tests.sh \
       -t ${TAG} \
-      -v ${BASELINE_VERSION} \
+      -r ${BASELINE_REPO} \
+      -b ${BASELINE_BRANCH} \
       -p ${BENCHMARK_REPO} \
       -e ${BENCHMARK_BRANCH} \
       -o ${OUTPUT}/baseline \
