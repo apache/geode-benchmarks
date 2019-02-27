@@ -28,6 +28,7 @@ repositories {
 }
 
 dependencies {
+    implementation(group: 'org.json', name: 'json', version: project.'JSON.version')
     implementation 'software.amazon.awssdk:ec2'
     implementation(group: 'com.hierynomus', name: 'sshj', version: project.'sshj.version')
     runtime(group: 'org.slf4j', name: 'slf4j-simple', version: project.'slf4j-simple.version')

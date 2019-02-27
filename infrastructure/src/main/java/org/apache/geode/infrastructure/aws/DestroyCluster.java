@@ -55,6 +55,7 @@ public class DestroyCluster {
     deleteSecurityGroup(benchmarkTag);
     deletePlacementGroup(benchmarkTag);
     deleteKeyPair(benchmarkTag);
+    deleteMetadata(benchmarkTag);
   }
 
   private static void deleteKeyPair(String benchmarkTag) {
@@ -65,6 +66,16 @@ public class DestroyCluster {
           .build());
       Files.deleteIfExists(Paths.get(AwsBenchmarkMetadata.keyPairFileName(benchmarkTag)));
       System.out.println("Key Pair for cluster '" + benchmarkTag + "' deleted.");
+    } catch (Exception e) {
+      System.out.println("We got an exception while deleting the Key pair");
+      System.out.println("Exception message: " + e);
+    }
+  }
+
+  private static void deleteMetadata(String benchmarkTag) {
+    try {
+      Files.deleteIfExists(Paths.get(AwsBenchmarkMetadata.metadataFileName(benchmarkTag)));
+      System.out.println("Metadata for cluster '" + benchmarkTag + "' deleted.");
     } catch (Exception e) {
       System.out.println("We got an exception while deleting the Key pair");
       System.out.println("Exception message: " + e);

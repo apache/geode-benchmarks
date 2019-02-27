@@ -41,6 +41,7 @@ dependencies {
     compile(group: 'commons-io', name: 'commons-io', version: project.'commons-io.version')
     compile(group: 'org.yardstickframework', name: 'yardstick', version: project.'yardstick.version')
     compile(group: 'org.hdrhistogram', name: 'HdrHistogram', version: project.'HdrHistogram.version')
+    compile(group: 'org.json', name: 'json', version: project.'JSON.version')
     testCompile(group: 'org.mockito', name: 'mockito-all', version: project.'mockito-all.version')
     testCompile(group: 'org.awaitility', name: 'awaitility', version: project.'awaitility.version')
     testCompile(group: 'org.slf4j', name: 'slf4j-simple', version: project.'slf4j-simple.version')

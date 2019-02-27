@@ -29,8 +29,11 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
 import software.amazon.awssdk.services.ec2.Ec2Client;
 import software.amazon.awssdk.services.ec2.model.AuthorizeSecurityGroupIngressRequest;
 import software.amazon.awssdk.services.ec2.model.CreateKeyPairRequest;
@@ -83,10 +86,18 @@ public class LaunchCluster {
 
     List<String> instanceIds = launchInstances(benchmarkTag, tags, count);
     DescribeInstancesResponse instances = waitForInstances(instanceIds);
-
-    List<String> publicIps = installPrivateKey(benchmarkTag, instances);
+    List<String> publicIps = getPublicIps(instances);
+    createMetadata(benchmarkTag, publicIps);
+    installPrivateKey(benchmarkTag, publicIps);
+    installMetadata(benchmarkTag, publicIps);
 
     System.out.println("Instances successfully launched! Public IPs: " + publicIps);
+  }
+
+  private static List<String> getPublicIps(DescribeInstancesResponse describeInstancesResponse) {
+    return describeInstancesResponse.reservations().stream()
+        .flatMap(reservation -> reservation.instances().stream())
+        .map(Instance::publicIpAddress).collect(Collectors.toList());
   }
 
   private static void usage(String s) {
@@ -132,19 +143,16 @@ public class LaunchCluster {
     return describeInstancesResponse;
   }
 
-  private static List<String> installPrivateKey(String benchmarkTag,
-      DescribeInstancesResponse describeInstancesResponse) {
-    List<String> publicIps =
-        describeInstancesResponse.reservations().stream()
-            .flatMap(reservation -> reservation.instances().stream())
-            .map(Instance::publicIpAddress).collect(Collectors.toList());
-
-    new KeyInstaller(AwsBenchmarkMetadata.USER,
-        Paths.get(AwsBenchmarkMetadata.keyPairFileName(benchmarkTag))).installPrivateKey(publicIps);
-
+  private static void installPrivateKey(String benchmarkTag,
+      List<String> publicIps) {
+    new KeyInstaller(benchmarkTag).installPrivateKey(publicIps);
     System.out.println("Private key installed on all instances for passwordless ssh");
+  }
 
-    return publicIps;
+  private static void installMetadata(String benchmarkTag,
+      List<String> publicIps) {
+    new MetadataInstaller(benchmarkTag).installMetadata(publicIps);
+    System.out.println("Instance ID information installed on all instances");
   }
 
   private static long instanceCount(DescribeInstancesResponse describeInstancesResponse) {
@@ -164,12 +172,34 @@ public class LaunchCluster {
   }
 
   private static void createKeyPair(String benchmarkTag) throws IOException {
+    Path configDirectory = Paths.get(BenchmarkMetadata.benchmarkConfigDirectory());
     CreateKeyPairResponse ckpr = ec2.createKeyPair(
         CreateKeyPairRequest.builder().keyName(AwsBenchmarkMetadata.keyPair(benchmarkTag)).build());
-    Files.createDirectories(Paths.get(BenchmarkMetadata.benchmarkKeyFileDirectory()));
+
+    if (!configDirectory.toFile().exists()) {
+      Files.createDirectories(Paths.get(BenchmarkMetadata.benchmarkConfigDirectory()));
+    }
     Path privateKey = Files.write(Paths.get(AwsBenchmarkMetadata.keyPairFileName(benchmarkTag)),
         ckpr.keyMaterial().getBytes());
     Files.setPosixFilePermissions(privateKey, PosixFilePermissions.fromString("rw-------"));
+  }
+
+  private static void createMetadata(String benchmarkTag, List<String> publicIps)
+      throws IOException {
+    UUID instanceId = UUID.randomUUID();
+    JSONObject metadataJSON = new JSONObject();
+
+    metadataJSON.put("instanceId", instanceId.toString());
+    metadataJSON.put("publicIps", new JSONArray(publicIps));
+    Path configDirectory = Paths.get(BenchmarkMetadata.benchmarkConfigDirectory());
+
+    if (!configDirectory.toFile().exists()) {
+      Files.createDirectories(Paths.get(BenchmarkMetadata.benchmarkConfigDirectory()));
+    }
+
+    Path metadata = Files.write(Paths.get(AwsBenchmarkMetadata.metadataFileName(benchmarkTag)),
+        metadataJSON.toString().getBytes());
+    Files.setPosixFilePermissions(metadata, PosixFilePermissions.fromString("rw-------"));
   }
 
   private static void createLaunchTemplate(String benchmarkTag, Image newestImage) {
@@ -233,6 +263,8 @@ public class LaunchCluster {
     List<Tag> tags = new ArrayList<>();
     tags.add(Tag.builder().key("purpose").value(BenchmarkMetadata.PREFIX).build());
     tags.add(Tag.builder().key(BenchmarkMetadata.PREFIX).value(benchmarkTag).build());
+    tags.add(Tag.builder().key(BenchmarkMetadata.benchmarkString(benchmarkTag, "instanceId"))
+        .value(UUID.randomUUID().toString()).build());
     return tags;
   }
 

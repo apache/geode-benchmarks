@@ -21,7 +21,6 @@ package org.apache.geode.infrastructure;
  */
 public class BenchmarkMetadata {
   public static String PREFIX = "geode-benchmarks";
-  public static String SSH_DIRECTORY = ".ssh/geode-benchmarks";
 
   public static String benchmarkPrefix(String tag) {
     return PREFIX + "-" + tag;
@@ -31,11 +30,16 @@ public class BenchmarkMetadata {
     return benchmarkPrefix(tag) + "-" + suffix;
   }
 
-  public static String benchmarkKeyFileDirectory() {
-    return System.getProperty("user.home") + "/" + SSH_DIRECTORY;
+  public static String benchmarkConfigDirectory() {
+    return System.getProperty("user.home") + "/." + PREFIX;
   }
 
-  public static String benchmarkKeyFileName(String tag) {
-    return benchmarkKeyFileDirectory() + "/" + tag + ".pem";
+
+  public static String benchmarkPrivateKeyFileName(String tag) {
+    return benchmarkConfigDirectory() + "/" + tag + "-privkey.pem";
+  }
+
+  public static String benchmarkMetadataFileName(String tag) {
+    return benchmarkConfigDirectory() + "/" + tag + "-metadata.json";
   }
 }
