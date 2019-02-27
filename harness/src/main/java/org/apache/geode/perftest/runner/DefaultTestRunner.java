@@ -22,6 +22,7 @@ import java.io.FileWriter;
 import java.util.List;
 import java.util.Map;
 
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -76,9 +77,15 @@ public class DefaultTestRunner implements TestRunner {
       FileWriter metadataWriter = new FileWriter(metadataOutput.getAbsoluteFile(), true);
 
       String[] metadataEntries = metadata.split(",");
+      JSONObject JSONmetadata = new JSONObject();
+
       for (String data : metadataEntries) {
-        metadataWriter.write(data + "\n");
+        String[] kv = data.split(":");
+        if (kv.length == 2) {
+          JSONmetadata.put(kv[0], kv[1]);
+        }
       }
+      metadataWriter.write(JSONmetadata.toString());
       metadataWriter.flush();
     }
 

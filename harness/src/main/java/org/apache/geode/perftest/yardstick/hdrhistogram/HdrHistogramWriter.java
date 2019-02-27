@@ -26,14 +26,17 @@ import org.HdrHistogram.HistogramLogWriter;
 public class HdrHistogramWriter implements Consumer<Histogram> {
 
   public static final String FILE_NAME = "latency.hlog";
+  public static final String FILE_NAME_CSV = "latency_csv";
   public static final String FILE_NAME_HDR = "latency_hdr";
 
   private final File outputFile;
   private final File outputHDRFile;
+  private final File outputCSVFile;
 
   public HdrHistogramWriter(File outputDir) {
     this.outputFile = new File(outputDir, FILE_NAME);
     this.outputHDRFile = new File(outputDir, FILE_NAME_HDR);
+    this.outputCSVFile = new File(outputDir, FILE_NAME_CSV);
   }
 
   @Override
@@ -51,6 +54,10 @@ public class HdrHistogramWriter implements Consumer<Histogram> {
           new HistogramLogProcessor(new String[] {"-i", outputFile.getAbsolutePath(), "-o",
               outputHDRFile.getAbsolutePath()});
       histogramLogProcessor.run();
+      HistogramLogProcessor histogramLogProcessorCSV =
+          new HistogramLogProcessor(new String[] {"-csv", "-i", outputFile.getAbsolutePath(), "-o",
+              outputCSVFile.getAbsolutePath()});
+      histogramLogProcessorCSV.run();
     } catch (FileNotFoundException e) {
       throw new UncheckedIOException(e);
     }

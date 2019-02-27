@@ -34,29 +34,33 @@ import net.schmizz.sshj.transport.verification.PromiscuousVerifier;
 import net.schmizz.sshj.xfer.FilePermission;
 import net.schmizz.sshj.xfer.FileSystemFile;
 
-public class KeyInstaller {
+
+public class MetadataInstaller {
   public static final Config CONFIG = new DefaultConfig();
   private static final int RETRIES = 30;
   private final String user;
+  private final Path metadata;
   private final Path privateKey;
 
-  public KeyInstaller(String benchmarkTag) {
+  public MetadataInstaller(String benchmarkTag) {
     this.user = AwsBenchmarkMetadata.USER;
     this.privateKey = Paths.get(AwsBenchmarkMetadata.keyPairFileName(benchmarkTag));
+    this.metadata = Paths.get(AwsBenchmarkMetadata.metadataFileName(benchmarkTag));
   }
 
-  public void installPrivateKey(Collection<String> hosts) {
-    hosts.forEach(this::installKey);
+  public void installMetadata(Collection<String> hosts) {
+    hosts.forEach(this::installMetadata);
   }
 
-  private void installKey(String host) {
+  private void installMetadata(String host) {
     try (SSHClient client = new SSHClient(CONFIG)) {
       client.addHostKeyVerifier(new PromiscuousVerifier());
       connect(host, client);
       client.authPublickey(user, privateKey.toFile().getAbsolutePath());
       SFTPClient sftpClient = client.newSFTPClient();
-      String dest = "/home/" + user + "/.ssh/id_rsa";
-      sftpClient.put(new FileSystemFile(privateKey.toFile()), dest);
+      String dest = "/home/" + user + "/geode-benchmarks-metadata.json";
+
+      sftpClient.put(new FileSystemFile(metadata.toFile()), dest);
       sftpClient.setattr(dest, new FileAttributes.Builder()
           .withPermissions(Collections.singleton(FilePermission.USR_R)).build());
     } catch (IOException e) {
