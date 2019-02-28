@@ -95,8 +95,15 @@ class JVMLauncher {
   private static final List<String> replaceTokens(List<String> args, JVMMapping jvmConfig) {
     List<String> replaced = new ArrayList<>(args.size());
     for (String arg : args) {
-      replaced.add(arg.replace("OUTPUT_DIR", jvmConfig.getOutputDir()));
+      replaced.add(replaceTokens(arg, jvmConfig));
     }
     return replaced;
+  }
+
+  private static String replaceTokens(String arg, JVMMapping jvmConfig) {
+    arg = arg.replace("OUTPUT_DIR", jvmConfig.getOutputDir());
+    arg = arg.replace("JVM_ROLE", jvmConfig.getRole());
+    arg = arg.replace("JVM_ID", Integer.toString(jvmConfig.getId()));
+    return arg;
   }
 }
