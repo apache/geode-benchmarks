@@ -19,9 +19,13 @@ package org.apache.geode.perftest.runner;
 
 import java.io.File;
 import java.io.FileWriter;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,26 +72,51 @@ public class DefaultTestRunner implements TestRunner {
       throw new IllegalStateException(
           "Benchmark output directory already exists: " + benchmarkOutput.getPath());
     }
+
     benchmarkOutput.mkdirs();
+    String metadataFilename = outputDir + "/metadata.json";
+    Path metadataOutput = Paths.get(metadataFilename);
+    JSONObject JSONmetadata = new JSONObject();
 
-    String metadata = System.getProperty("TEST_METADATA");
-    if (!(metadata == null) && !metadata.isEmpty()) {
-      File metadataOutput = new File(outputDir, "metadata.json");
-      metadataOutput.createNewFile();
-      FileWriter metadataWriter = new FileWriter(metadataOutput.getAbsoluteFile(), true);
-
-      String[] metadataEntries = metadata.split(",");
-      JSONObject JSONmetadata = new JSONObject();
-
-      for (String data : metadataEntries) {
-        String[] kv = data.split(":");
-        if (kv.length == 2) {
-          JSONmetadata.put(kv[0], kv[1]);
-        }
+    if (metadataOutput.toFile().exists()) {
+      JSONmetadata = new JSONObject(new String(Files.readAllBytes(metadataOutput)));
+    } else {
+      String instanceMetadataFilename =
+          "/home/" + System.getProperty("user.home") + "/geode-benchmarks-metadata.json";
+      Path instanceMetadataFile = Paths.get(instanceMetadataFilename);
+      JSONmetadata = new JSONObject();
+      JSONObject instanceMetadata;
+      if (instanceMetadataFile.toFile().exists()) {
+        instanceMetadata = new JSONObject(new String(Files.readAllBytes(instanceMetadataFile)));
+        JSONmetadata.put("instanceId", instanceMetadata.getString("instanceId"));
       }
-      metadataWriter.write(JSONmetadata.toString());
-      metadataWriter.flush();
+      String metadata = System.getProperty("TEST_METADATA");
+      if (!(metadata == null) && !metadata.isEmpty()) {
+        JSONObject testMetadata = new JSONObject();
+        String[] metadataEntries = metadata.split(",");
+        for (String data : metadataEntries) {
+          String[] kv = data.split(":");
+          if (kv.length == 2) {
+            testMetadata.put(kv[0], kv[1]);
+          }
+        }
+        JSONmetadata.put("testMetadata", testMetadata);
+      }
     }
+
+    try {
+      JSONArray testNames = JSONmetadata.getJSONArray("testNames");
+      testNames.put(testName);
+      JSONmetadata.put("testNames", testNames);
+    } catch (org.json.JSONException e) {
+      JSONArray testNames = new JSONArray();
+      testNames.put(testName);
+      JSONmetadata.put("testNames", testNames);
+    }
+
+    FileWriter metadataWriter = new FileWriter(metadataOutput.toFile().getAbsoluteFile());
+    metadataWriter.write(JSONmetadata.toString());
+    metadataWriter.flush();
 
     Map<String, Integer> roles = config.getRoles();
     Map<String, List<String>> jvmArgs = config.getJvmArgs();
