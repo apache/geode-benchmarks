@@ -104,7 +104,7 @@ if [ -z "${TAG}" ]; then
   exit 1
 fi
 
-if [ -z "${METADATA}" ]; then
+if [[ -z "${METADATA}" ]]; then
   METADATA="'geode branch':'${BRANCH}','geode version':'${VERSION}','baseline branch':'${BASELINE_BRANCH}','baseline version':'${BASELINE_VERSION}','benchmark branch':'${BENCHMARK_BRANCH}'"
 fi
 
@@ -115,7 +115,7 @@ if ! [[ "$OUTPUT" = /* ]]; then
   OUTPUT="$(pwd)/${OUTPUT}"
 fi
 
-if [ -z "${VERSION}" ]; then
+if [[ -z "${VERSION}" ]]; then
   ./run_tests.sh \
       -t ${TAG} \
       -r ${REPO} \
@@ -136,7 +136,7 @@ else
       -- "$@"
 fi
 
-if [ -z "${BENCHMARK_BRANCH}" ]; then
+if [[ -z "${BASELINE_BRANCH}" ]]; then
   ./run_tests.sh \
       -t ${TAG} \
       -v ${BASELINE_VERSION} \
