@@ -6,12 +6,15 @@ import pprint as pp
 import psycopg2
 import sys, os
 import creds
+import csv
+import glob
 
 parser = argparse.ArgumentParser()
 parser.add_argument('benchmark_dir', help='Directory containing the benchmark to be submitted')
 args = parser.parse_args()
 
-with open(f"{args.benchmark_dir}/metadata.json", "r") as read_file:
+benchmark_dir = args.benchmark_dir.rstrip('/')
+with open(f"{benchmark_dir}/metadata.json", "r") as read_file:
     data = json.load(read_file)
 
 
@@ -64,10 +67,22 @@ print("Completed command.")
 
 conn.commit()
 
-cursor.execute("select * from public.benchmark_build")
+if data["testNames"] is not None:
+    testnames = data["testNames"]
+    for testname in testnames:
+        testdir = f"{benchmark_dir}/{testname}"
+        clientdirs = glob.glob(f"{testdir}/client-*")
+        for clientdir in clientdirs:
+            latencyfilename = f"{clientdir}/latency_csv.hgrm"
+            sql_command = f"INSERT INTO public.latency_result(build_id, benchmark_test, value, percentile, total_count, one_by_one_minus_percentile) values({build_id}, '{testname}', %s, %s, %s, %s)"
+            with open(latencyfilename) as f:
+                reader = csv.DictReader(filter(lambda row: row[0]!='#', f))
+                data = [r for r in reader]
+                for datum in data:
+                    pp.pprint(datum)
+                    if datum['1/(1-Percentile)'] != 'Infinity':
+                        cursor.execute(sql_command, (datum['Value'], datum['Percentile'], datum['TotalCount'], datum['1/(1-Percentile)']))
+                conn.commit()
 
-x = cursor.fetchall()
-
-pp.pprint(x)
 cursor.close()
 conn.close()
