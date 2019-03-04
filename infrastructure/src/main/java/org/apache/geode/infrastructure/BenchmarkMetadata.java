@@ -23,7 +23,7 @@ public class BenchmarkMetadata {
   public static String PREFIX = "geode-benchmarks";
 
   public static String benchmarkPrefix(String tag) {
-    return PREFIX + "-" + tag;
+    return PREFIX + "-" + System.getProperty("user.name") + "-" + tag;
   }
 
   public static String benchmarkString(String tag, String suffix) {
