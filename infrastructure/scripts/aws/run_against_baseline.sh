@@ -34,78 +34,118 @@ BASELINE_REPO=${DEFAULT_BASELINE_REPO}
 DEFAULT_BASELINE_VERSION=1.8.0
 BASELINE_VERSION=${DEFAULT_BASELINE_VERSION}
 
-while getopts ":t:r:b:v:p:e:R:B:V:m:o:h" opt; do
-  case ${opt} in
-    t )
-      TAG=$OPTARG
+TAG=
+METADATA=
+OUTPUT=
+
+while :; do
+  case $1 in
+    -t|--tag )
+      if [ "$2" ]; then
+        TAG=$2
+        shift
+      else
+        echo 'ERROR: "--tag" requires a non-empty option argument.'
+        exit 1
+      fi
       ;;
-    p )
-      BENCHMARK_REPO=$OPTARG
+    -p|--br|--benchmark-repo )
+      if [ "$2" ]; then
+        BENCHMARK_REPO=$2
+        shift
+      fi
       ;;
-    e )
-      BENCHMARK_BRANCH=$OPTARG
+    -e|--bb|--benchmark-branch )
+      if [ "$2" ]; then
+        BENCHMARK_BRANCH=$2
+        shift
+      fi
       ;;
-    m )
-      METADATA=$OPTARG
+    -m|--metadata )
+      if [ "$2" ]; then
+        METADATA=$2
+        shift
+      fi
       ;;
-    o )
-      OUTPUT=$OPTARG
+    -o|--output )
+      if [ "$2" ]; then
+        OUTPUT=$2
+        shift
+      fi
       ;;
-    r )
-      REPO=$OPTARG
+    -r|--gr|--repo|--geode-repo )
+      if [ "$2" ]; then
+        REPO=$2
+        shift
+      fi
       ;;
-    b )
-      BRANCH=$OPTARG
+    -b|--gb|--branch|--geode-branch )
+      if [ "$2" ]; then
+        BRANCH=$2
+        shift
+      fi
       ;;
-    v )
-      VERSION=$OPTARG
+    -v|--version|--geode-version )
+      if [ "$2" ]; then
+        VERSION=$2
+        shift
+      fi
       ;;
-    R )
-      BASELINE_REPO=$OPTARG
+    -R|--bgr|--baseline-repo|--baseline-geode-repo )
+      if [ "$2" ]; then
+        BASELINE_REPO=$2
+        shift
+      fi
       ;;
-    B )
-      BASELINE_BRANCH=$OPTARG
+    -B|--bgb|--baseline-branch|--baseline-geode-branch )
+      if [ "$2" ]; then
+        BASELINE_BRANCH=$2
+        shift
+      fi
       ;;
-    V )
-      BASELINE_VERSION=$OPTARG
+    -V|--bv|--baseline-version|--baseline-geode-version )
+      if [ "$2" ]; then
+        BASELINE_VERSION=$2
+        shift
+      fi
       ;;
-    h )
+    -h|--help|-\? )
       echo "Usage: $(basename "$0") -t tag [options ...] [-- arguments ...]"
       echo "Options:"
-      echo "-t : Cluster tag"
-      echo "-p : Benchmark repo (default: ${DEFAULT_BENCHMARK_REPO})"
-      echo "-e : Benchmark branch (default: ${DEFAULT_BENCHMARK_BRANCH})"
-      echo "-o : Output directory (defaults: ./output-<date>-<tag>)"
-      echo "-v : Geode version"
-      echo "-r : Geode repo (default: ${DEFAULT_REPO})"
-      echo "-b : Geode branch (default: ${DEFAULT_BRANCH})"
-      echo "-V : Geode baseline version (default: ${DEFAULT_BASELINE_VERSION})"
-      echo "-R : Geode baseline repo (default: ${DEFAULT_BASELINE_REPO})"
-      echo "-B : Geode baseline branch"
-      echo "-m : Test metadata to output to file, comma-delimited"
+      echo "-t|--tag : Cluster tag"
+      echo "-p|--benchmark-repo : Benchmark repo (default: ${DEFAULT_BENCHMARK_REPO})"
+      echo "-e|--benchmark-branch : Benchmark branch (default: ${DEFAULT_BENCHMARK_BRANCH})"
+      echo "-o|--output : Output directory (defaults: ./output-<date>-<tag>)"
+      echo "-v|--geode-version : Geode version"
+      echo "-r|--geode-repo : Geode repo (default: ${DEFAULT_REPO})"
+      echo "-b|--geode-branch : Geode branch (default: ${DEFAULT_BRANCH})"
+      echo "-V|--baseline-geode-version : Geode baseline version (default: ${DEFAULT_BASELINE_VERSION})"
+      echo "-R|--baseline-geode-repo : Geode baseline repo (default: ${DEFAULT_BASELINE_REPO})"
+      echo "-B|--baseline-geode-branch : Geode baseline branch"
+      echo "-m|--metadata : Test metadata to output to file, comma-delimited"
       echo "-- : All subsequent arguments are passed to the benchmark task as arguments."
-      echo "-h : This help message"
+      echo "-h|--help|-? : This help message"
       exit 1
       ;;
-    \? )
-      echo "Invalid option: $OPTARG" 1>&2
+    -- )
+      shift
+      break
       ;;
-    : )
-      echo "Invalid option: $OPTARG requires an argument" 1>&2
+    -?* )
+      printf 'Invalid option: %s\n' "$1" >&2
+      break
       ;;
+    * )
+      break
   esac
+  shift
 done
-shift $((OPTIND -1))
 
 DATE=$(date '+%m-%d-%Y-%H-%M-%S')
 
 if [ -z "${TAG}" ]; then
   echo "--tag argument is required."
   exit 1
-fi
-
-if [[ -z "${METADATA}" ]]; then
-  METADATA="'geode branch':'${BRANCH}','geode version':'${VERSION}','baseline branch':'${BASELINE_BRANCH}','baseline version':'${BASELINE_VERSION}','benchmark branch':'${BENCHMARK_BRANCH}'"
 fi
 
 OUTPUT=${OUTPUT:-output-${DATE}-${TAG}}
