@@ -44,6 +44,9 @@ dependencies {
     compile(group: 'org.slf4j', name: 'slf4j-simple', version: project.'slf4j-simple.version')
     compile(project(':harness'))
 
+    // Required for missing dependency on geode-core.
+    runtime(group: 'org.eclipse.jetty', name: 'jetty-webapp', version: '9.4.12.v20180830')
+
     testCompile(group: 'org.mockito', name: 'mockito-all', version: project.'mockito-all.version')
     testCompile(group: 'org.assertj', name: 'assertj-core', version: project.'assertj-core.version')
 }
