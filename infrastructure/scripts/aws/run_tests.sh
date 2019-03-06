@@ -27,59 +27,94 @@ BENCHMARK_BRANCH=${DEFAULT_BENCHMARK_BRANCH}
 DEFAULT_REPO='https://github.com/apache/geode'
 REPO=${DEFAULT_REPO}
 DEFAULT_BRANCH='develop'
-BRANCH=${DEFAULT_BRANCH}
+BRANCH=${DEAULT_BRANCH}
 
+TAG=
+METADATA=
+OUTPUT=
+VERSION=
 
-while getopts ":t:r:b:v:p:e:R:B:V:m:o:h" opt; do
-  case ${opt} in
-    t )
-      TAG=$OPTARG
+while :; do
+  case $1 in
+    -t|--tag )
+      if [ "$2" ]; then
+        TAG=$2
+        shift
+      else
+        echo 'ERROR: "--tag" requires a non-empty option argument.'
+        exit 1
+      fi
       ;;
-    p )
-      BENCHMARK_REPO=$OPTARG
+    -p|--br|--benchmark-repo )
+      if [ "$2" ]; then
+        BENCHMARK_REPO=$2
+        shift
+      fi
       ;;
-    e )
-      BENCHMARK_BRANCH=$OPTARG
+    -e|--bb|--benchmark-branch )
+      if [ "$2" ]; then
+        BENCHMARK_BRANCH=$2
+        shift
+      fi
       ;;
-    m )
-      METADATA=$OPTARG
+    -m|--metadata )
+      if [ "$2" ]; then
+        METADATA=$2
+        shift
+      fi
       ;;
-    o )
-      OUTPUT=$OPTARG
+    -o|--output )
+      if [ "$2" ]; then
+        OUTPUT=$2
+        shift
+      fi
       ;;
-    r )
-      REPO=$OPTARG
+    -r|--gr|--repo|--geode-repo )
+      if [ "$2" ]; then
+        REPO=$2
+        shift
+      fi
       ;;
-    b )
-      BRANCH=$OPTARG
+    -b|--gb|--branch|--geode-branch )
+      if [ "$2" ]; then
+        BRANCH=$2
+        shift
+      fi
       ;;
-    v )
-      VERSION=$OPTARG
+    -v|--version|--geode-version )
+      if [ "$2" ]; then
+        VERSION=$2
+        shift
+      fi
       ;;
-    h )
+    -h|--help|-\? )
       echo "Usage: $(basename "$0") -t tag [options ...] [-- arguments ...]"
       echo "Options:"
-      echo "-t : Cluster tag"
-      echo "-p : Benchmark repo (default: ${DEFAULT_BENCHMARK_REPO})"
-      echo "-e : Benchmark branch (default: ${DEFAULT_BENCHMARK_BRANCH})"
-      echo "-o : Output directory (defaults: ./output-<date>-<tag>)"
-      echo "-v : Geode version"
-      echo "-r : Geode repo (default: ${DEFAULT_REPO})"
-      echo "-b : Geode branch (default: ${DEFAULT_BRANCH})"
-      echo "-m : Test metadata to output to file, comma-delimited (optional)"
+      echo "-t|--tag : Cluster tag"
+      echo "-p|--benchmark-repo : Benchmark repo (default: ${DEFAULT_BENCHMARK_REPO})"
+      echo "-e|--benchmark-branch : Benchmark branch (default: ${DEFAULT_BENCHMARK_BRANCH})"
+      echo "-o|--output : Output directory (defaults: ./output-<date>-<tag>)"
+      echo "-v|--geode-version : Geode version"
+      echo "-r|--geode-repo : Geode repo (default: ${DEFAULT_REPO})"
+      echo "-b|--geode-branch : Geode branch (default: ${DEFAULT_BRANCH})"
+      echo "-m|--metadata : Test metadata to output to file, comma-delimited (optional)"
       echo "-- : All subsequent arguments are passed to the benchmark task as arguments."
-      echo "-h : This help message"
+      echo "-h|--help : This help message"
       exit 1
       ;;
-    \? )
-      echo "Invalid option: $OPTARG" 1>&2
+    -- )
+      shift
+      break
       ;;
-    : )
-      echo "Invalid option: $OPTARG requires an argument" 1>&2
+    -?* )
+      printf 'Invalid option: %s\n' "$1" >&2
+      break
       ;;
+    * )
+      break
   esac
+  shift
 done
-shift $((OPTIND -1))
 
 DATE=$(date '+%m-%d-%Y-%H-%M-%S')
 
@@ -94,6 +129,19 @@ PREFIX="geode-performance-${TAG}"
 if [[ -z "${AWS_ACCESS_KEY_ID}" ]]; then
   export AWS_PROFILE="geode-benchmarks"
 fi
+
+fixRepoName() {
+  if [ -z "$1" ]; then
+    return 1
+  elif [ ${1:0:5} = "https" ]; then
+    echo ${1}
+  else
+    echo "https://github.com/${1}"
+  fi
+}
+
+BENCHMARK_REPO=$(fixRepoName ${BENCHMARK_REPO})
+REPO=$(fixRepoName ${REPO})
 
 SSH_OPTIONS="-o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i ~/.geode-benchmarks/${TAG}-privkey.pem"
 HOSTS=`aws ec2 describe-instances --query 'Reservations[*].Instances[*].PrivateIpAddress' --filter "Name=tag:geode-benchmarks,Values=${TAG}" --output text`
@@ -138,9 +186,8 @@ if [ -z "${VERSION}" ]; then
 fi
 
 if [ -z "${METADATA}" ]; then
-  METADATA="'geode branch':'${BRANCH}','geode version':'${VERSION}','benchmark branch':'${BENCHMARK_BRANCH}'"
+  METADATA="'geode repo':'${GEODE_REPO}','geode branch':'${BRANCH}','geode version':'${VERSION}','benchmark repo':'${BENCHMARK_REPO}','benchmark branch':'${BENCHMARK_BRANCH}'"
 fi
-
 
 ssh ${SSH_OPTIONS} geode@$FIRST_INSTANCE \
   rm -rf geode-benchmarks '&&' \
