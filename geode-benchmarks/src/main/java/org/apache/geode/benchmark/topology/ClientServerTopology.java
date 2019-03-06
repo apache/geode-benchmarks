@@ -19,7 +19,6 @@ import static org.apache.geode.benchmark.topology.ClientServerTopology.Roles.CLI
 import static org.apache.geode.benchmark.topology.ClientServerTopology.Roles.LOCATOR;
 import static org.apache.geode.benchmark.topology.ClientServerTopology.Roles.SERVER;
 
-import org.apache.commons.lang3.StringUtils;
 import org.bouncycastle.util.Arrays;
 
 import org.apache.geode.benchmark.tasks.StartClient;
@@ -63,7 +62,7 @@ public class ClientServerTopology {
   }
 
   private static final String[] appendIfNotEmpty(String[] a, String b) {
-    if (StringUtils.isEmpty(b)) {
+    if (null == b || b.length() == 0) {
       return a;
     }
 
