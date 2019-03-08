@@ -17,12 +17,54 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-TAG=${1}
+TAG=
+CI=
+
+while :; do
+  case $1 in
+    -t|--tag )
+      if [ "$2" ]; then
+        TAG=$2
+        shift
+      else
+        echo 'ERROR: "--tag" requires a non-empty argument.'
+        exit 1
+      fi
+      ;;
+    --ci )
+      CI=1
+      ;;
+    -h|--help|-\? )
+      echo "Usage: $(basename "$0") -t tag -c 4 [options ...] [-- arguments ...]"
+      echo "Options:"
+      echo "-t|--tag : Cluster tag"
+      echo "--ci : Set if starting instances for Continuous Integration"
+      echo "-- : All subsequent arguments are passed to the benchmark task as arguments."
+      echo "-h|--help : This help message"
+      exit 1
+      ;;
+    -- )
+      shift
+      break
+      ;;
+    -?* )
+      printf 'Invalid option: %s\n' "$1" >&2
+      break
+      ;;
+    * )
+      break
+  esac
+  shift
+done
 
 if [[ -z "${AWS_ACCESS_KEY_ID}" ]]; then
   export AWS_PROFILE="geode-benchmarks"
 fi
 
+if [ -z "${CI}" ]; then
+  CI=0
+fi
+
 pushd ../../../
-./gradlew destroyCluster --args "${TAG}"
+./gradlew destroyCluster -Pci=${CI} --args "${TAG}"
 popd
