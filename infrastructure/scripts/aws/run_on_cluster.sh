@@ -24,38 +24,45 @@ BENCHMARK_BRANCH='develop'
 
 REPO='https://github.com/apache/geode'
 
-while getopts ":t:h" opt; do
-  case ${opt} in
-    t )
-      TAG=$OPTARG
+while :; do
+  case $1 in
+    -t|--tag )
+      if [ "$2" ]; then
+        TAG=$2
+        shift
+      else
+        echo 'ERROR: "--tag" requires a non-empty argument.'
+        exit 1
+      fi
       ;;
-    h )
-      echo "Usage: $(basename "$0") -t tag -- command args ..."
+    -h|--help|-\? )
+      echo "Usage: $(basename "$0") -t tag [options ...] [-- arguments ...]"
       echo "Options:"
-      echo "-t : Cluster tag"
-      echo "-h : This help message"
+      echo "-t|--tag : Cluster tag"
+      echo "--ci : Set if starting instances for Continuous Integration"
+      echo "-- : All subsequent arguments are passed to the benchmark task as arguments."
+      echo "-h|--help : This help message"
       exit 1
       ;;
-    \? )
-      echo "Invalid option: $OPTARG" 1>&2
+    -- )
+      shift
+      break 2
       ;;
-    : )
-      echo "Invalid option: $OPTARG requires an argument" 1>&2
+    -?* )
+      printf 'Invalid option: %s\n' "$1" >&2
+      break
       ;;
+    * )
+      break
   esac
+  shift
 done
-shift $((OPTIND -1))
-
-if [ -z "${TAG}" ]; then
-  echo "--tag argument is required."
-  exit 1
-fi
 
 if [[ -z "${AWS_ACCESS_KEY_ID}" ]]; then
   export AWS_PROFILE="geode-benchmarks"
 fi
 
-SSH_OPTIONS="-o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i ~/.ssh/geode-benchmarks/${TAG}.pem"
+SSH_OPTIONS="-o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i ~/.geode-benchmarks/${TAG}-privkey.pem"
 HOSTS=`aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --filter "Name=tag:geode-benchmarks,Values=${TAG}" --output text`
 
 for host in ${HOSTS}; do
