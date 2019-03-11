@@ -35,7 +35,7 @@ while :; do
       CI=1
       ;;
     -h|--help|-\? )
-      echo "Usage: $(basename "$0") -t tag -c 4 [options ...] [-- arguments ...]"
+      echo "Usage: $(basename "$0") -t tag [options ...] [-- arguments ...]"
       echo "Options:"
       echo "-t|--tag : Cluster tag"
       echo "--ci : Set if starting instances for Continuous Integration"
@@ -45,7 +45,7 @@ while :; do
       ;;
     -- )
       shift
-      break
+      break 2
       ;;
     -?* )
       printf 'Invalid option: %s\n' "$1" >&2

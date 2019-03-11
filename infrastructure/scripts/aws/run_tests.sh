@@ -104,7 +104,7 @@ while :; do
       ;;
     -- )
       shift
-      break
+      break 2
       ;;
     -?* )
       printf 'Invalid option: %s\n' "$1" >&2
