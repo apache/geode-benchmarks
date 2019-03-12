@@ -123,8 +123,8 @@ public class DefaultTestRunner implements TestRunner {
 
     logger.info("Lauching JVMs...");
     // launch JVMs in parallel, hook them up
-    try (RemoteJVMs remoteJVMs = remoteJvmFactory.launch(roles, jvmArgs)) {
-
+    RemoteJVMs remoteJVMs = remoteJvmFactory.launch(roles, jvmArgs);
+    try {
       logger.info("Starting before tasks...");
       runTasks(config.getBefore(), remoteJVMs);
 
@@ -133,11 +133,16 @@ public class DefaultTestRunner implements TestRunner {
 
       logger.info("Starting after tasks...");
       runTasks(config.getAfter(), remoteJVMs);
+    } finally {
+      // Close before copy otherwise logs, stats, and profiles are incomplete or missing.
+      remoteJVMs.closeController();
 
       logger.info("Copying results...");
       remoteJVMs.copyResults(benchmarkOutput);
 
+      remoteJVMs.closeInfra();
     }
+
   }
 
   private void runTasks(List<TestConfig.TestStep> steps,

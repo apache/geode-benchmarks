@@ -69,6 +69,7 @@ task benchmark(type: Test) {
     systemProperty 'TEST_HOSTS', project.findProperty('hosts')
     systemProperty 'TEST_METADATA', project.findProperty('metadata')
     systemProperty 'OUTPUT_DIR', outputDir
+    systemProperty 'benchmark.profiler.argument', project.findProperty('benchmark.profiler.argument')
 
     doFirst {
         if(!project.hasProperty('hosts')) {
