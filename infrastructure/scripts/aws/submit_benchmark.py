@@ -24,14 +24,19 @@ import creds
 import csv
 import glob
 import datetime
+import pprint as pp
+
 parser = argparse.ArgumentParser()
-parser.add_argument('benchmark_dir', help='Directory containing the benchmark to be submitted')
+parser.add_argument('--benchmark_dir', '-b',
+                    help='Directory containing the benchmark to be submitted')
+parser.add_argument('--identifier', '-i', help='Unique identifier for this benchmark result')
 args = parser.parse_args()
 
 benchmark_dir = args.benchmark_dir.rstrip('/')
+build_identifier = args.identifier
+
 with open(f"{benchmark_dir}/metadata.json", "r") as read_file:
     data = json.load(read_file)
-
 
 # what we need to create a benchmark_build entry
 geode_ci_sha = ""
@@ -51,9 +56,12 @@ if data["testMetadata"] is not None:
         geode_build_version = testmetadata["geode version"]
 
 # Set up a connection to the postgres server.
-conn_string = "host="+ creds.PGHOST +" port="+ "5432" +" dbname="+ creds.PGDATABASE +" user=" + creds.PGUSER \
-              +" password="+ creds.PGPASSWORD
-conn=psycopg2.connect(conn_string)
+conn_string = "host=" + creds.PGHOST + \
+              " port=5432" + \
+              " dbname=" + creds.PGDATABASE + \
+              " user=" + creds.PGUSER + \
+              " password=" + creds.PGPASSWORD
+conn = psycopg2.connect(conn_string)
 print("Connected!")
 
 # Create a cursor object
@@ -68,13 +76,24 @@ table_columns = [
     "geode_build_sha"
 ]
 
+if build_identifier is not None:
+    table_columns.append("build_identifier")
+
 table_values = []
 for junk in table_columns:
     table_values.append("%s")
 
-sql_command = f"INSERT INTO public.benchmark_build({','.join(table_columns)}) values ({','.join(table_values)}) returning build_id"
+sql_command = f"INSERT INTO public.benchmark_build({','.join(table_columns)}) " \
+    f"values ({','.join(table_values)}) returning build_id"
 
-cursor.execute(sql_command, (geode_ci_sha, geode_benchmark_sha, geode_build_version, instance_id, benchmarks_raw_results_uri, notes, geode_build_sha))
+if build_identifier is not None:
+    sql_tuple = (geode_ci_sha, geode_benchmark_sha, geode_build_version, instance_id,
+                 benchmarks_raw_results_uri, notes, geode_build_sha, build_identifier)
+else:
+    sql_tuple = (geode_ci_sha, geode_benchmark_sha, geode_build_version, instance_id,
+             benchmarks_raw_results_uri, notes, geode_build_sha)
+
+cursor.execute(sql_command, sql_tuple)
 build_id = cursor.fetchone()[0]
 conn.commit()
 
@@ -85,26 +104,39 @@ if data["testNames"] is not None:
         clientdirs = glob.glob(f"{testdir}/client-*")
         for clientdir in clientdirs:
             latencyfilename = f"{clientdir}/latency_csv.hgrm"
-            sql_command = f"INSERT INTO public.latency_result(build_id, benchmark_test, value, percentile, total_count, one_by_one_minus_percentile) values({build_id}, '{testname}', %s, %s, %s, %s)"
+            sql_command = f"INSERT INTO " \
+                f"public.latency_result(build_id, benchmark_test, value, percentile, " \
+                f"total_count, one_by_one_minus_percentile) values({build_id}, '{testname}'," \
+                f" %s, %s, %s, %s)"
             print(f"Submitting latency data for {testname}")
             with open(latencyfilename) as f:
-                reader = csv.DictReader(filter(lambda row: row[0]!='#', f))
+                reader = csv.DictReader(filter(lambda row: row[0] != '#', f))
                 data = [r for r in reader]
                 for datum in data:
                     if datum['1/(1-Percentile)'] != 'Infinity':
-                        cursor.execute(sql_command, (datum['Value'], datum['Percentile'], datum['TotalCount'], datum['1/(1-Percentile)']))
+                        cursor.execute(sql_command, (datum['Value'],
+                                                     datum['Percentile'],
+                                                     datum['TotalCount'],
+                                                     datum['1/(1-Percentile)']))
             # conn.commit()
             yardstickdirs = glob.glob(f"{clientdir}/*-yardstick-output")
             yardstickdir = yardstickdirs[0] if (yardstickdirs is not None) else None
             if yardstickdir is not None:
                 throughputfilename = f"{yardstickdir}/ThroughputLatencyProbe.csv"
-                sql_command = f"INSERT INTO public.throughput_result(build_id, benchmark_test, timestamp, ops_per_sec) values({build_id}, '{testname}', %s, %s)"
+                sql_command = f"INSERT INTO public.throughput_result(build_id, benchmark_test, " \
+                    f"timestamp, ops_per_sec) values({build_id}, '{testname}', %s, %s)"
                 print(f"Submitting throughput data for {testname}")
                 with open(throughputfilename) as f:
-                    reader = csv.DictReader(filter(lambda row: row[0] != '#' and row[0] != '-' and row[0] != '@' and row[0] != '*', f), fieldnames=('time', 'operations', 'latency'))
+                    reader = csv.DictReader(filter(lambda row: row[0] != '#' and
+                                                               row[0] != '-' and
+                                                               row[0] != '@' and
+                                                               row[0] != '*', f),
+                                            fieldnames=('time', 'operations', 'latency'))
                     data = [r for r in reader]
                     for datum in data:
-                        cursor.execute(sql_command, (datetime.datetime.fromtimestamp(int(datum['time'])), int(float(datum['operations']))))
+                        cursor.execute(sql_command,
+                                       (datetime.datetime.fromtimestamp(int(datum['time'])),
+                                        int(float(datum['operations']))))
             conn.commit()
 
 cursor.close()
