@@ -3,13 +3,13 @@
 These utilities create instances and run tests in your AWS account
 
 # Prerequisites
-* You must have the aws cli installed.
-* You must also set your secret key for the CLI. You must set up a profile named `geode-benchmarks`, so use the command `aws configure --profile geode-benchmarks` to configure the CLI. See [Amazon's instructions](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html)
-* To build the image, you must have packer installed
+* You must have the aws cli installed. If `aws` is not on your path then you can try to install it with `pip3 install awscli --upgrade --user`. See [Amazon's aws cli installation instructions](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html)
+* You must also set your secret key for the CLI. You must set up a profile named `geode-benchmarks`, so use the command `aws configure --profile geode-benchmarks` to configure the CLI. You will need to specify the "AWS Access Key ID" and "AWS Secret Access Key". You can get these from an existing team member. Set the "Default region name" to "us-west-2". See [Amazon's instructions](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html)
 
 # Image
 
-Before using the scripts below, build the image in the image directory using the `build_image.sh` script.
+If you need to build the image, you must have packer installed. But you can run the following scripts (launch, run, destroy) without building the image.
+Build the image in the image directory using the `build_image.sh` script.
 
 # launch_cluster.sh
 Creates an instance group in AWS based on an image created.
@@ -30,7 +30,7 @@ Runs benchmark tests against a single branch of `geode` on the AWS instances wit
 
 Usage: 
 
-    run_test.sh -t [tag] [-v [version] | -b [branch]] <options...>
+    run_tests.sh -t [tag] [-v [version] | -b [branch]] <options...>
 
 Options:
     
@@ -51,7 +51,7 @@ the specified tag.
 
 Usage: 
     
-    run_test.sh -t [tag] [-v [version] | -b [branch]] [-V [baseline version] | -B [baseline branch]] <options...>"
+    run_against_baseline.sh -t [tag] [-v [version] | -b [branch]] [-V [baseline version] | -B [baseline branch]] <options...>"
 
 Options:
            
@@ -95,6 +95,6 @@ Example 1 - run_test.sh:
 Example 2 - run_against_baseline.sh:
 ```bash
 ./launch_cluster.sh --tag mycluster --count 4
-./run-tests --tag mycluster --geode-branch develop --benchmark-branch benchmarkBranch --metadata "'name':'HelenaTestingCPUs','CPU':'256','geodeBranch':'CPUTest'"
+./run_against_baseline.sh --tag mycluster --geode-branch develop --benchmark-branch benchmarkBranch --metadata "'name':'HelenaTestingCPUs','CPU':'256','geodeBranch':'CPUTest'"
 ./destroy_cluster.sh --tag mycluster
 ```
