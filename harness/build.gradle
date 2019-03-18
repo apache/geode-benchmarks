@@ -24,7 +24,10 @@ version '1.0-SNAPSHOT'
 
 sourceCompatibility = 1.8
 
+def geodeVersion = project.hasProperty('geodeVersion') ? project.findProperty('geodeVersion') : '1.+'
+
 repositories {
+    mavenLocal()
     mavenCentral()
 }
 
@@ -42,6 +45,7 @@ dependencies {
     compile(group: 'org.yardstickframework', name: 'yardstick', version: project.'yardstick.version')
     compile(group: 'org.hdrhistogram', name: 'HdrHistogram', version: project.'HdrHistogram.version')
     compile(group: 'org.json', name: 'json', version: project.'JSON.version')
+    compile(group: 'org.apache.geode', name: 'geode-core', version: geodeVersion)
     testCompile(group: 'org.mockito', name: 'mockito-all', version: project.'mockito-all.version')
     testCompile(group: 'org.awaitility', name: 'awaitility', version: project.'awaitility.version')
     testCompile(group: 'org.slf4j', name: 'slf4j-simple', version: project.'slf4j-simple.version')

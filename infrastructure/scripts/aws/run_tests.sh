@@ -27,7 +27,7 @@ BENCHMARK_BRANCH=${DEFAULT_BENCHMARK_BRANCH}
 DEFAULT_REPO='https://github.com/apache/geode'
 REPO=${DEFAULT_REPO}
 DEFAULT_BRANCH='develop'
-BRANCH=${DEAULT_BRANCH}
+BRANCH=${DEFAULT_BRANCH}
 
 TAG=
 METADATA=
@@ -151,8 +151,8 @@ FIRST_INSTANCE=`aws ec2 describe-instances --query 'Reservations[*].Instances[*]
 echo "FIRST_INSTANCE=${FIRST_INSTANCE}"
 echo "HOSTS=${HOSTS}"
 
-if [ -z "${VERSION}" ]; then
-  if [ -z "${BRANCH}" ]; then
+if [[ -z "${VERSION}" ]]; then
+  if [[ -z "${BRANCH}" ]]; then
     echo "Specify --version or --branch."
     exit 1
   fi
@@ -176,22 +176,36 @@ if [ -z "${VERSION}" ]; then
     cd geode && \
     ./gradlew install installDist"
 
-
   VERSION=$(ssh ${SSH_OPTIONS} geode@$FIRST_INSTANCE geode/geode-assembly/build/install/apache-geode/bin/gfsh version)
 fi
 
-if [ -z "${VERSION}" ]; then
+if [[ -z "${VERSION}" ]]; then
   echo "Either --version or --branch is required."
   exit 1
 fi
 
-if [ -z "${METADATA}" ]; then
-  METADATA="'geode repo':'${GEODE_REPO}','geode branch':'${BRANCH}','geode version':'${VERSION}','benchmark repo':'${BENCHMARK_REPO}','benchmark branch':'${BENCHMARK_BRANCH}'"
-fi
+set +e
+ssh ${SSH_OPTIONS} geode@$FIRST_INSTANCE "
+  [[ ! -r .geode-benchmarks-identifier ]] && \
+  uuidgen > .geode-benchmarks-identifier"
+set -e
 
-ssh ${SSH_OPTIONS} geode@$FIRST_INSTANCE \
+instance_id=$(ssh ${SSH_OPTIONS} geode@$FIRST_INSTANCE cat .geode-benchmarks-identifier)
+
+
+ssh ${SSH_OPTIONS} geode@${FIRST_INSTANCE} \
   rm -rf geode-benchmarks '&&' \
-  git clone ${BENCHMARK_REPO} --branch ${BENCHMARK_BRANCH} '&&' \
+  git clone ${BENCHMARK_REPO} --branch ${BENCHMARK_BRANCH}
+
+BENCHMARK_SHA=$(ssh ${SSH_OPTIONS} geode@${FIRST_INSTANCE} \
+  cd geode-benchmarks '&&' \
+  git rev-parse --verify -q HEAD)
+
+BUILD_IDENTIFIER="$(uuidgen)"
+
+METADATA="${METADATA},'source_repo':'${GEODE_REPO}','benchmark_repo':'${BENCHMARK_REPO}','benchmark_branch':'${BENCHMARK_BRANCH}','instance_id':'${instance_id}','benchmark_sha':'${BENCHMARK_SHA}','build_identifier':'${BUILD_IDENTIFIER}'"
+
+ssh ${SSH_OPTIONS} geode@${FIRST_INSTANCE} \
   cd geode-benchmarks '&&' \
   ./gradlew -PgeodeVersion=${VERSION} benchmark -Phosts=${HOSTS} -Pmetadata="${METADATA}" "$@"
 
