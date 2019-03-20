@@ -104,13 +104,27 @@ Example 2 - run_against_baseline.sh:
 ## Prerequisites
 * You must have fulfilled the prerequisites at the beginning of this doc
 * You must have YourKit installed
+* Launch YourKit
+* In the top menu bar, select `Filters...` under the `Settings` dropdown
+  * Uncheck the filter with the name  `org.apache`
+  * Click the `Ok` button to save the configuration
+    * About this setting: When this box is checked, classes in the `org.apache` namespace will not 
+    be profiled, so it must be unchecked to profile geode or geode-benchmarks
+* Quit YourKit
+* Use your chosen text editor to edit your `/Users/<yourUsername>/.yjp/ui.ini` and add 
+`-Dyjp.zero.time.methods=false`. Restart the profiler for this change to take effect. 
+  * About this setting: When this value is set to true, Unsafe Park and Unsafe Wait are ignored, 
+  which results in Reentrant Locks not appearing in the profiler. Setting this value to false will 
+  result in some noise from pools that are waiting for work, but is also necessary in order to see 
+  contention around reentrant locks.
 
 ## Running in AWS
 * Launch YourKit
 * On the YourKit "Welcome" page, under the "Monitor Applications" section, hit the green plus to add
 a configuration
 * In the configuration window, fill in the following:
-  * `Connection name`: the name of the member that you want to connect to
+  * `Connection name`: some name for the configuration (the name of the member that is being 
+  connected is usually a good choice)
   * `Host or IP Address`: the public IP of the AWS VM hosting the member with which you want to 
   connect (the launch cluster script prints these in the order that they were started: 
   [locator-0, server-1, server-2, client-3])
@@ -119,7 +133,7 @@ a configuration
     * `SSH port`: `22`
     * Click on "Authentication Settings..." and on that window, fill in the following:
       * `Authentication method`: `private key`
-      * `Private Key`: `~/.geode-benchmarks/\<clusterTag\>-privkey.pem`
+      * `Private Key`: `/Users/<yourUsername>/.geode-benchmarks/<clusterTag>-privkey.pem`
       * `Passphrase`: leave blank
 * Once you have saved the configuration, it should show up under the "Monitor Applications" section 
 of the page with the connection status. If the machines are running, the status should be "No 
@@ -127,7 +141,8 @@ applications running". If there is a test in progress, you should be able to cli
 monitor the test.
 * Pull up a terminal and navigate to `geode-benchmarks/infrastructure/scripts/aws`
 * Copy the YourKit file to the AWS VMs using the following command
-  * `./copy_to_cluster.sh --tag <clusterTag> <path to libyjpagent.so> .`
+  * `./copy_to_cluster.sh -tag <clusterTag> <path to libyjpagent.so> .`
+  * Your path to the `libyjpagent.so` is probably `/Applications/YourKit-Java-Profiler-2019.1.app/Contents/Resources/bin/linux-x86-64/libyjpagent.so` 
 * Run the test using the `run_tests.sh` script, with the additional CLI option `-Pbenchmark.profiler.argument`:
   * `./run_tests.sh --tag <clusterTag> [other CLI options] -- -i -Pbenchmark.profiler.argument=-agentpath:/home/geode/libyjpagent.so=disablestacktelemetry,exceptions=disable,delay=60000,sessionname=JVM_ROLE-JVM_ID`
 * Return to YourKit and profile as usual
