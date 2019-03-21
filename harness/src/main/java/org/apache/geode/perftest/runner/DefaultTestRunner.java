@@ -21,12 +21,9 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -151,7 +148,8 @@ public class DefaultTestRunner implements TestRunner {
 
   private Properties getVersionProperties() throws IOException {
     Properties versionProperties = new Properties();
-    InputStream in = ClassLoader.getSystemResourceAsStream("org/apache/geode/internal/GemFireVersion.properties");
+    InputStream in = ClassLoader
+        .getSystemResourceAsStream("org/apache/geode/internal/GemFireVersion.properties");
     versionProperties.load(in);
     return versionProperties;
   }
