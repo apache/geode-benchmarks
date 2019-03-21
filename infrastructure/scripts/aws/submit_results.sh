@@ -27,12 +27,12 @@ for i in $(ls ${RESULTS_CACHE_DIR}); do
   tar zxf ${ABSOLUTE_FILENAME} -C ${RESULTS_TEMP_DIR}
 
   RESULTS_BASE_DIR=$(ls -d ${RESULTS_TEMP_DIR}/*)
-
+  INSTANCE_ID=$(basename ${RESULTS_BASE_DIR})
   for results_dir in $(ls ${RESULTS_BASE_DIR}); do
     full_results_dir=$(ls -d ${RESULTS_BASE_DIR}/${results_dir}/benchmarks_*)
 
     echo "Processing results for ${full_results_dir}"
-    ./submit_benchmark.py  --benchmark_dir ${full_results_dir}
+    ./submit_benchmark.py  --benchmark_dir ${full_results_dir} --instance_id ${INSTANCE_ID}
   done
   rm -rf ${RESULTS_TEMP_DIR}
 done

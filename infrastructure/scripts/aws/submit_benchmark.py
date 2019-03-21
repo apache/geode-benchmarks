@@ -24,12 +24,12 @@ import creds
 import csv
 import glob
 import datetime
-import pprint as pp
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--benchmark_dir', '-b',
                     help='Directory containing the benchmark to be submitted')
 parser.add_argument('--identifier', '-i', help='Unique identifier for this benchmark result')
+parser.add_argument('--instance_id', '-I', help='instance id to use if not present in metadata')
 args = parser.parse_args()
 
 benchmark_dir = args.benchmark_dir.rstrip('/')
@@ -50,15 +50,19 @@ build_sha = ""
 
 if data["testMetadata"] is not None:
     testmetadata = data["testMetadata"]
-    if testmetadata["instance_id"] is not None:
+    if 'instance_id' in testmetadata and testmetadata["instance_id"] is not None:
         instance_id = testmetadata["instance_id"]
-    if testmetadata["source_version"] is not None:
+        if (instance_id is None or instance_id == "") and args.instance_id is not None:
+            instance_id = args.instance_id
+    if 'source_version' in testmetadata and testmetadata["source_version"] is not None:
         build_version = testmetadata["source_version"]
-    if testmetadata["source_revision"] is not None:
+    if 'source_revision' in testmetadata and testmetadata["source_revision"] is not None:
         build_sha = testmetadata["source_revision"]
-    if testmetadata["benchmark_sha"] is not None:
+    if 'benchmark_sha' in testmetadata and testmetadata["benchmark_sha"] is not None:
         benchmark_sha = testmetadata["benchmark_sha"]
-    if (build_identifier is None or build_identifier == "") and testmetadata["build_identifier"] is not None:
+    if (build_identifier is None or build_identifier == "") and \
+            'build_identifier' in testmetadata and \
+            testmetadata["build_identifier"] is not None:
         build_identifier = testmetadata["build_identifier"]
 
 # Set up a connection to the postgres server.
