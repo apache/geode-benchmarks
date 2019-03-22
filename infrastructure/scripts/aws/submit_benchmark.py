@@ -24,12 +24,12 @@ import creds
 import csv
 import glob
 import datetime
-import pprint as pp
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--benchmark_dir', '-b',
                     help='Directory containing the benchmark to be submitted')
 parser.add_argument('--identifier', '-i', help='Unique identifier for this benchmark result')
+parser.add_argument('--instance_id', '-I', help='instance id to use if not present in metadata')
 args = parser.parse_args()
 
 benchmark_dir = args.benchmark_dir.rstrip('/')
@@ -38,22 +38,32 @@ build_identifier = args.identifier
 with open(f"{benchmark_dir}/metadata.json", "r") as read_file:
     data = json.load(read_file)
 
+
 # what we need to create a benchmark_build entry
-geode_ci_sha = ""
-geode_benchmark_sha = ""
-geode_build_version = ""
+ci_sha = ""
+benchmark_sha = ""
+build_version = ""
 instance_id = ""
 benchmarks_raw_results_uri = ""
 notes = ""
-geode_build_sha = ""
-
-if data["instanceId"] is not None:
-    instance_id = data["instanceId"]
+build_sha = ""
 
 if data["testMetadata"] is not None:
     testmetadata = data["testMetadata"]
-    if testmetadata["geode version"] is not None:
-        geode_build_version = testmetadata["geode version"]
+    if 'instance_id' in testmetadata and testmetadata["instance_id"] is not None:
+        instance_id = testmetadata["instance_id"]
+    if (instance_id is None or instance_id == "") and args.instance_id is not None:
+        instance_id = args.instance_id
+    if 'source_version' in testmetadata and testmetadata["source_version"] is not None:
+        build_version = testmetadata["source_version"]
+    if 'source_revision' in testmetadata and testmetadata["source_revision"] is not None:
+        build_sha = testmetadata["source_revision"]
+    if 'benchmark_sha' in testmetadata and testmetadata["benchmark_sha"] is not None:
+        benchmark_sha = testmetadata["benchmark_sha"]
+    if (build_identifier is None or build_identifier == "") and \
+            'build_identifier' in testmetadata and \
+            testmetadata["build_identifier"] is not None:
+        build_identifier = testmetadata["build_identifier"]
 
 # Set up a connection to the postgres server.
 conn_string = "host=" + creds.PGHOST + \
@@ -66,18 +76,27 @@ print("Connected!")
 
 # Create a cursor object
 cursor = conn.cursor()
+
+# figure out if we've already submitted the data
+identifier_command = f"select build_id from public.benchmark_build where build_identifier = %s"
+cursor.execute(identifier_command, (build_identifier,))
+rows = cursor.fetchall()
+
+if len(rows) > 0:
+    print("This build data has already been submitted to the database.")
+    exit(1)
+
+
 table_columns = [
-    "geode_ci_sha",
-    "geode_benchmark_sha",
-    "geode_build_version",
+    "ci_sha",
+    "benchmark_sha",
+    "build_version",
     "instance_id",
     "benchmarks_raw_results_uri",
     "notes",
-    "geode_build_sha"
+    "build_sha",
+    "build_identifier"
 ]
-
-if build_identifier is not None:
-    table_columns.append("build_identifier")
 
 table_values = []
 for junk in table_columns:
@@ -86,14 +105,7 @@ for junk in table_columns:
 sql_command = f"INSERT INTO public.benchmark_build({','.join(table_columns)}) " \
     f"values ({','.join(table_values)}) returning build_id"
 
-if build_identifier is not None:
-    sql_tuple = (geode_ci_sha, geode_benchmark_sha, geode_build_version, instance_id,
-                 benchmarks_raw_results_uri, notes, geode_build_sha, build_identifier)
-else:
-    sql_tuple = (geode_ci_sha, geode_benchmark_sha, geode_build_version, instance_id,
-             benchmarks_raw_results_uri, notes, geode_build_sha)
-
-cursor.execute(sql_command, sql_tuple)
+cursor.execute(sql_command, (ci_sha, benchmark_sha, build_version, instance_id, benchmarks_raw_results_uri, notes, build_sha, build_identifier))
 build_id = cursor.fetchone()[0]
 conn.commit()
 

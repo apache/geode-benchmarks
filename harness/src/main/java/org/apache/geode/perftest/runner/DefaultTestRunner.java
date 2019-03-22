@@ -19,11 +19,14 @@ package org.apache.geode.perftest.runner;
 
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -81,15 +84,6 @@ public class DefaultTestRunner implements TestRunner {
     if (metadataOutput.toFile().exists()) {
       JSONmetadata = new JSONObject(new String(Files.readAllBytes(metadataOutput)));
     } else {
-      String instanceMetadataFilename =
-          "/home/" + System.getProperty("user.home") + "/geode-benchmarks-metadata.json";
-      Path instanceMetadataFile = Paths.get(instanceMetadataFilename);
-      JSONmetadata = new JSONObject();
-      JSONObject instanceMetadata;
-      if (instanceMetadataFile.toFile().exists()) {
-        instanceMetadata = new JSONObject(new String(Files.readAllBytes(instanceMetadataFile)));
-        JSONmetadata.put("instanceId", instanceMetadata.getString("instanceId"));
-      }
       String metadata = System.getProperty("TEST_METADATA");
       if (!(metadata == null) && !metadata.isEmpty()) {
         JSONObject testMetadata = new JSONObject();
@@ -100,6 +94,7 @@ public class DefaultTestRunner implements TestRunner {
             testMetadata.put(kv[0], kv[1]);
           }
         }
+        addVersionProperties(testMetadata, getVersionProperties());
         JSONmetadata.put("testMetadata", testMetadata);
       }
     }
@@ -143,6 +138,20 @@ public class DefaultTestRunner implements TestRunner {
       remoteJVMs.closeInfra();
     }
 
+  }
+
+  private void addVersionProperties(JSONObject jsonMetadata, Properties versionProperties) {
+    jsonMetadata.put("source_version", versionProperties.getProperty("Product-Version"));
+    jsonMetadata.put("source_branch", versionProperties.getProperty("Source-Repository"));
+    jsonMetadata.put("source_revision", versionProperties.getProperty("Source-Revision"));
+  }
+
+  private Properties getVersionProperties() throws IOException {
+    Properties versionProperties = new Properties();
+    InputStream in = ClassLoader
+        .getSystemResourceAsStream("org/apache/geode/internal/GemFireVersion.properties");
+    versionProperties.load(in);
+    return versionProperties;
   }
 
   private void runTasks(List<TestConfig.TestStep> steps,
