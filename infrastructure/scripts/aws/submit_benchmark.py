@@ -52,8 +52,8 @@ if data["testMetadata"] is not None:
     testmetadata = data["testMetadata"]
     if 'instance_id' in testmetadata and testmetadata["instance_id"] is not None:
         instance_id = testmetadata["instance_id"]
-        if (instance_id is None or instance_id == "") and args.instance_id is not None:
-            instance_id = args.instance_id
+    if (instance_id is None or instance_id == "") and args.instance_id is not None:
+        instance_id = args.instance_id
     if 'source_version' in testmetadata and testmetadata["source_version"] is not None:
         build_version = testmetadata["source_version"]
     if 'source_revision' in testmetadata and testmetadata["source_revision"] is not None:
