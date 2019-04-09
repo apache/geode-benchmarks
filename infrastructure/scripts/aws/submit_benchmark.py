@@ -18,7 +18,11 @@
 # limitations under the License.
 
 import argparse
+import hashlib
 import json
+import os
+import re
+
 import psycopg2
 import creds
 import csv
@@ -31,12 +35,17 @@ parser.add_argument('--benchmark_dir', '-b',
 parser.add_argument('--identifier', '-i', help='Unique identifier for this benchmark result')
 parser.add_argument('--instance_id', '-I', help='instance id to use if not present in metadata')
 args = parser.parse_args()
-
+build_identifier = ""
 benchmark_dir = args.benchmark_dir.rstrip('/')
-build_identifier = args.identifier
+print("***************************")
+print(f"processing benchmark data set in {benchmark_dir}.")
 
-with open(f"{benchmark_dir}/metadata.json", "r") as read_file:
-    data = json.load(read_file)
+if args.identifier is not None:
+    build_identifier = args.identifier
+metadata_file = f"{benchmark_dir}/metadata.json"
+with open(metadata_file, "r") as read_file:
+    metadata_string = read_file.read()
+    data = json.loads(metadata_string)
 
 
 # what we need to create a benchmark_build entry
@@ -65,6 +74,22 @@ if data["testMetadata"] is not None:
             testmetadata["build_identifier"] is not None:
         build_identifier = testmetadata["build_identifier"]
 
+if build_identifier == "":
+    m = hashlib.sha1()
+    m.update(metadata_string.encode('utf-8'))
+    m.update(f"{os.path.getmtime(metadata_file):.9f}".encode('utf-8'))
+    build_identifier = m.hexdigest()
+
+print(f"The build identifier for this benchmark dataset is {build_identifier} ")
+
+if instance_id == "":
+    possible_benchmark_archive_dir = benchmark_dir + "/../.."
+    possible_instance_id = os.path.basename(os.path.abspath(possible_benchmark_archive_dir))
+    if re.search(r'Benchmark-\d+-\d+',possible_instance_id) is not None:
+        instance_id = possible_instance_id
+
+print(f"The instance id for this benchmark dataset is {instance_id}")
+
 # Set up a connection to the postgres server.
 conn_string = "host=" + creds.PGHOST + \
               " port=5432" + \
@@ -72,7 +97,7 @@ conn_string = "host=" + creds.PGHOST + \
               " user=" + creds.PGUSER + \
               " password=" + creds.PGPASSWORD
 conn = psycopg2.connect(conn_string)
-print("Connected!")
+print("Connected to database!")
 
 # Create a cursor object
 cursor = conn.cursor()
@@ -83,7 +108,7 @@ cursor.execute(identifier_command, (build_identifier,))
 rows = cursor.fetchall()
 
 if len(rows) > 0:
-    print("This build data has already been submitted to the database.")
+    print("* This build data has already been submitted to the database.")
     exit(1)
 
 
