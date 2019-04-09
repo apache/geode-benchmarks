@@ -57,3 +57,9 @@ task(destroyCluster, dependsOn: 'classes', type: JavaExec) {
 
     systemProperty 'TEST_CI', project.findProperty('ci')
 }
+
+task(expireClusters, dependsOn: 'classes', type: JavaExec) {
+    main = 'org.apache.geode.infrastructure.aws.ExpireClusters'
+    workingDir = rootDir
+    classpath = sourceSets.main.runtimeClasspath
+}
