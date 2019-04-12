@@ -63,17 +63,21 @@ public class ExpireClusters {
                 .values("running")
                 .build())
             .build());
-    Stream<Instance> instances = describeInstancesResponse.reservations().stream().flatMap(reservation -> reservation.instances().stream());
+    Stream<Instance> instances = describeInstancesResponse.reservations().stream()
+        .flatMap(reservation -> reservation.instances().stream());
 
-    Stream<Instance> expiredInstances = instances.filter(instance -> isBefore(instance.getValueForField("LaunchTime", Instant.class), expirationTime));
+    Stream<Instance> expiredInstances = instances
+        .filter(instance -> isBefore(instance.getValueForField("LaunchTime", Instant.class),
+            expirationTime));
     Stream<String> tags = expiredInstances.map(ExpireClusters::getTagForInstance);
-    List<String> distinctTags = tags.distinct().filter(tag -> !tag.isEmpty()).collect(Collectors.toList());
+    List<String> distinctTags =
+        tags.distinct().filter(tag -> !tag.isEmpty()).collect(Collectors.toList());
     return distinctTags;
   }
 
   private static boolean isBefore(Optional<Instant> launchTime, Instant expirationTime) {
-    if(launchTime.isPresent()) {
-      if(launchTime.get().isBefore(expirationTime)) {
+    if (launchTime.isPresent()) {
+      if (launchTime.get().isBefore(expirationTime)) {
         return true;
       }
     }
@@ -82,29 +86,30 @@ public class ExpireClusters {
 
   private static String getTagForInstance(Instance expiredInstance) {
     Stream<Tag> expiredInstanceTagStream = expiredInstance.tags().stream();
-    Stream<Tag> geodeBenchmarksTagStream = expiredInstanceTagStream.filter(tag -> tag.key().equals("geode-benchmarks"));
-    List<String> expiredTags = geodeBenchmarksTagStream.map(Tag::value).collect(Collectors.toList());
+    Stream<Tag> geodeBenchmarksTagStream =
+        expiredInstanceTagStream.filter(tag -> tag.key().equals("geode-benchmarks"));
+    List<String> expiredTags =
+        geodeBenchmarksTagStream.map(Tag::value).collect(Collectors.toList());
     if (expiredTags.size() > 0) {
       return expiredTags.get(0);
-    }
-    else {
+    } else {
       return "";
     }
   }
 
-//  private static Date convertToDate(Optional<Instant> optionalDate) {
-//    try {
-//      // "2018-03-20T21:38:47.000Z"
-//      if(optionalDate.isPresent()) {
-//        String date = optionalDate.get();
-//        return new SimpleDateFormat("yyyy-MM-ddTHH:mm:ss.SSSZ").parse(date);
-//      }
-//    } catch (ParseException e) {
-//      e.printStackTrace();
-//    }
-//
-//    return null;
-//  }
+  // private static Date convertToDate(Optional<Instant> optionalDate) {
+  // try {
+  // // "2018-03-20T21:38:47.000Z"
+  // if(optionalDate.isPresent()) {
+  // String date = optionalDate.get();
+  // return new SimpleDateFormat("yyyy-MM-ddTHH:mm:ss.SSSZ").parse(date);
+  // }
+  // } catch (ParseException e) {
+  // e.printStackTrace();
+  // }
+  //
+  // return null;
+  // }
 
   private static void usage(String s) {
     throw new IllegalStateException(s);
