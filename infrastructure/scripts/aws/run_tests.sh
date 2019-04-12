@@ -17,7 +17,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-set -e -o pipefail
+set -o pipefail
 
 DEFAULT_BENCHMARK_REPO='https://github.com/apache/geode-benchmarks'
 BENCHMARK_REPO=${DEFAULT_BENCHMARK_REPO}
@@ -170,7 +170,6 @@ if [[ -z "${VERSION}" ]]; then
       break
     fi
   done
-  set -e
 
   ssh ${SSH_OPTIONS} geode@$FIRST_INSTANCE "\
     cd geode && \
@@ -188,7 +187,6 @@ set +e
 ssh ${SSH_OPTIONS} geode@$FIRST_INSTANCE "
   [[ ! -r .geode-benchmarks-identifier ]] && \
   uuidgen > .geode-benchmarks-identifier"
-set -e
 
 instance_id=$(ssh ${SSH_OPTIONS} geode@$FIRST_INSTANCE cat .geode-benchmarks-identifier)
 
