@@ -38,7 +38,7 @@ TAG=
 METADATA=
 OUTPUT=
 
-while :; do
+while (( "$#" )); do
   case $1 in
     -t|--tag )
       if [ "$2" ]; then
@@ -133,10 +133,8 @@ while :; do
       ;;
     -?* )
       printf 'Invalid option: %s\n' "$1" >&2
-      break
+      exit 1
       ;;
-    * )
-      break
   esac
   shift
 done
@@ -153,6 +151,27 @@ OUTPUT=${OUTPUT:-output-${DATE}-${TAG}}
 set -x
 if ! [[ "$OUTPUT" = /* ]]; then
   OUTPUT="$(pwd)/${OUTPUT}"
+fi
+
+if [[ -z "${BASELINE_BRANCH}" ]]; then
+  ./run_tests.sh \
+      -t ${TAG} \
+      -v ${BASELINE_VERSION} \
+      -p ${BENCHMARK_REPO} \
+      -e ${BENCHMARK_BRANCH} \
+      -o ${OUTPUT}/baseline \
+      -m "${METADATA}" \
+      -- "$@"
+else
+  ./run_tests.sh \
+      -t ${TAG} \
+      -r ${BASELINE_REPO} \
+      -b ${BASELINE_BRANCH} \
+      -p ${BENCHMARK_REPO} \
+      -e ${BENCHMARK_BRANCH} \
+      -o ${OUTPUT}/baseline \
+      -m "${METADATA}" \
+      -- "$@"
 fi
 
 if [[ -z "${VERSION}" ]]; then
@@ -176,26 +195,6 @@ else
       -- "$@"
 fi
 
-if [[ -z "${BASELINE_BRANCH}" ]]; then
-  ./run_tests.sh \
-      -t ${TAG} \
-      -v ${BASELINE_VERSION} \
-      -p ${BENCHMARK_REPO} \
-      -e ${BENCHMARK_BRANCH} \
-      -o ${OUTPUT}/baseline \
-      -m "${METADATA}" \
-      -- "$@"
-else
-  ./run_tests.sh \
-      -t ${TAG} \
-      -r ${BASELINE_REPO} \
-      -b ${BASELINE_BRANCH} \
-      -p ${BENCHMARK_REPO} \
-      -e ${BENCHMARK_BRANCH} \
-      -o ${OUTPUT}/baseline \
-      -m "${METADATA}" \
-      -- "$@"
-fi
 set +x
 
 ./analyze_tests.sh ${OUTPUT}

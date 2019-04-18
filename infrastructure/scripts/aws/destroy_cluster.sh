@@ -20,7 +20,7 @@
 TAG=
 CI=
 
-while :; do
+while (( "$#" )); do
   case $1 in
     -t|--tag )
       if [ "$2" ]; then
@@ -49,10 +49,8 @@ while :; do
       ;;
     -?* )
       printf 'Invalid option: %s\n' "$1" >&2
-      break
+      exit 1
       ;;
-    * )
-      break
   esac
   shift
 done

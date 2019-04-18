@@ -23,8 +23,8 @@ TAG=
 COUNT=
 CI=
 
-while :; do
-  case $1 in
+while (( "$#" )); do
+  case "$1" in
     -t|--tag )
       if [ "$2" ]; then
         TAG=$2
@@ -62,10 +62,8 @@ while :; do
       ;;
     -?* )
       printf 'Invalid option: %s\n' "$1" >&2
-      break
+      exit 1
       ;;
-    * )
-      break
   esac
   shift
 done

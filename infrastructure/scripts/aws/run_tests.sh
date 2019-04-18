@@ -34,7 +34,7 @@ METADATA=
 OUTPUT=
 VERSION=
 
-while :; do
+while (( "$#" )); do
   case $1 in
     -t|--tag )
       if [ "$2" ]; then
@@ -108,10 +108,8 @@ while :; do
       ;;
     -?* )
       printf 'Invalid option: %s\n' "$1" >&2
-      break
+      exit 1
       ;;
-    * )
-      break
   esac
   shift
 done
@@ -195,7 +193,8 @@ instance_id=$(ssh ${SSH_OPTIONS} geode@$FIRST_INSTANCE cat .geode-benchmarks-ide
 
 ssh ${SSH_OPTIONS} geode@${FIRST_INSTANCE} \
   rm -rf geode-benchmarks '&&' \
-  git clone ${BENCHMARK_REPO} --branch ${BENCHMARK_BRANCH}
+  git clone ${BENCHMARK_REPO} '&&' \
+  cd geode-benchmarks '&&' git checkout ${BENCHMARK_BRANCH}
 
 BENCHMARK_SHA=$(ssh ${SSH_OPTIONS} geode@${FIRST_INSTANCE} \
   cd geode-benchmarks '&&' \
@@ -207,7 +206,7 @@ METADATA="${METADATA},'source_repo':'${GEODE_REPO}','benchmark_repo':'${BENCHMAR
 
 ssh ${SSH_OPTIONS} geode@${FIRST_INSTANCE} \
   cd geode-benchmarks '&&' \
-  ./gradlew -PgeodeVersion=${VERSION} benchmark -Phosts=${HOSTS} -Pmetadata="${METADATA}" "$@"
+  ./gradlew -PgeodeVersion=${VERSION} benchmark "-Phosts=${HOSTS}" "-Pmetadata=${METADATA}" "$@"
 
 mkdir -p ${OUTPUT}
 
