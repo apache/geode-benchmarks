@@ -17,7 +17,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-set -e -o pipefail
+set -x -e -o pipefail
 
 DEFAULT_BENCHMARK_REPO='https://github.com/apache/geode-benchmarks'
 BENCHMARK_REPO=${DEFAULT_BENCHMARK_REPO}
@@ -199,9 +199,10 @@ set -e
 instance_id=$(ssh ${SSH_OPTIONS} geode@$FIRST_INSTANCE cat .geode-benchmarks-identifier)
 
 
-ssh ${SSH_OPTIONS} geode@${FIRST_INSTANCE} "\
-  [ ! -d geode-benchmarks ] && git clone ${BENCHMARK_REPO}; \
-  cd geode-benchmarks && git fetch --all && git checkout ${BENCHMARK_BRANCH} && git pull"
+ssh ${SSH_OPTIONS} geode@${FIRST_INSTANCE} \
+  rm -rf geode-benchmarks '&&' \
+  git clone ${BENCHMARK_REPO} '&&' \
+  cd geode-benchmarks '&&' git checkout ${BENCHMARK_BRANCH}
 
 BENCHMARK_SHA=$(ssh ${SSH_OPTIONS} geode@${FIRST_INSTANCE} \
   cd geode-benchmarks '&&' \
