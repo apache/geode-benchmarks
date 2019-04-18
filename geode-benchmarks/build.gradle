@@ -64,6 +64,8 @@ task benchmark(type: Test) {
         exceptionFormat = 'full'
     }
 
+    exclude "**/*NonIndexedQueryBenchmark.class"
+
     forkEvery 1
 
     systemProperty 'TEST_HOSTS', project.findProperty('hosts')

@@ -17,7 +17,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-set -x -e -o pipefail
+set -e -o pipefail
 
 DEFAULT_BENCHMARK_REPO='https://github.com/apache/geode-benchmarks'
 BENCHMARK_REPO=${DEFAULT_BENCHMARK_REPO}
