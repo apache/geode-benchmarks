@@ -156,9 +156,8 @@ if [[ -z "${VERSION}" ]]; then
   fi
 
   ssh ${SSH_OPTIONS} geode@$FIRST_INSTANCE "\
-    rm -rf geode && \
-    git clone ${REPO} && \
-    cd geode && git checkout ${BRANCH}"
+    [ ! -d geode ] && git clone ${REPO}; \
+    cd geode && git fetch --all && git checkout ${BRANCH} && git pull"
 
   set +e
   for i in {1..5}; do
@@ -170,9 +169,18 @@ if [[ -z "${VERSION}" ]]; then
   done
   set -e
 
+  if ssh ${SSH_OPTIONS} geode@$FIRST_INSTANCE "\
+    cd geode && \
+    ./gradlew tasks --console plain | egrep '\publishToMavenLocal\b'"; then
+    install_target="publishToMavenLocal"
+   else
+    # install target is legacy but required for older releases
+    install_target="install"
+  fi
+
   ssh ${SSH_OPTIONS} geode@$FIRST_INSTANCE "\
     cd geode && \
-    ./gradlew install installDist"
+    ./gradlew ${install_target} installDist"
 
   VERSION=$(ssh ${SSH_OPTIONS} geode@$FIRST_INSTANCE geode/geode-assembly/build/install/apache-geode/bin/gfsh version)
 fi
@@ -191,10 +199,9 @@ set -e
 instance_id=$(ssh ${SSH_OPTIONS} geode@$FIRST_INSTANCE cat .geode-benchmarks-identifier)
 
 
-ssh ${SSH_OPTIONS} geode@${FIRST_INSTANCE} \
-  rm -rf geode-benchmarks '&&' \
-  git clone ${BENCHMARK_REPO} '&&' \
-  cd geode-benchmarks '&&' git checkout ${BENCHMARK_BRANCH}
+ssh ${SSH_OPTIONS} geode@${FIRST_INSTANCE} "\
+  [ ! -d geode-benchmarks ] && git clone ${BENCHMARK_REPO}; \
+  cd geode-benchmarks && git fetch --all && git checkout ${BENCHMARK_BRANCH} && git pull"
 
 BENCHMARK_SHA=$(ssh ${SSH_OPTIONS} geode@${FIRST_INSTANCE} \
   cd geode-benchmarks '&&' \
