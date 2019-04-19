@@ -65,7 +65,6 @@ task benchmark(type: Test) {
     }
 
     exclude "**/*IndexedQueryBenchmark.class"
-    exclude "**/*Function*Benchmark.class"
 
     forkEvery 1
 

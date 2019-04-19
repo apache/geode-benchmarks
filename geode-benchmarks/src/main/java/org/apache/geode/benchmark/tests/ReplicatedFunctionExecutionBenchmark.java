@@ -15,28 +15,15 @@
 package org.apache.geode.benchmark.tests;
 
 import static org.apache.geode.benchmark.topology.ClientServerTopology.Roles.CLIENT;
-import static org.apache.geode.benchmark.topology.ClientServerTopology.Roles.SERVER;
 
 import org.junit.jupiter.api.Test;
 
-import org.apache.geode.benchmark.tasks.CreateClientProxyRegion;
-import org.apache.geode.benchmark.tasks.CreateReplicatedRegion;
 import org.apache.geode.benchmark.tasks.ExecuteFunction;
-import org.apache.geode.benchmark.tasks.PrePopulateRegion;
-import org.apache.geode.benchmark.topology.ClientServerTopology;
-import org.apache.geode.perftest.PerformanceTest;
 import org.apache.geode.perftest.TestConfig;
 import org.apache.geode.perftest.TestRunners;
 
-public class ReplicatedFunctionExecutionBenchmark implements PerformanceTest {
-  private long keyRange = 1000000;
+public class ReplicatedFunctionExecutionBenchmark extends AbstractReplicatedFunctionBenchmark {
   private long functionIDRange = 1000;
-
-  public ReplicatedFunctionExecutionBenchmark() {}
-
-  public void setKeyRange(long keyRange) {
-    this.keyRange = keyRange;
-  }
 
   public void setFunctionIDRange(long functionIDRange) {
     this.functionIDRange = functionIDRange;
@@ -49,12 +36,8 @@ public class ReplicatedFunctionExecutionBenchmark implements PerformanceTest {
 
   @Override
   public TestConfig configure() {
-    TestConfig config = GeodeBenchmark.createConfig();
-    ClientServerTopology.configure(config);
-    config.before(new CreateReplicatedRegion(), SERVER);
-    config.before(new CreateClientProxyRegion(), CLIENT);
-    config.before(new PrePopulateRegion(keyRange), SERVER);
-    config.workload(new ExecuteFunction(keyRange, functionIDRange), CLIENT);
+    TestConfig config = super.configure();
+    config.workload(new ExecuteFunction(getKeyRange(), functionIDRange), CLIENT);
     return config;
   }
 }

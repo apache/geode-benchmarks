@@ -15,28 +15,16 @@
 package org.apache.geode.benchmark.tests;
 
 import static org.apache.geode.benchmark.topology.ClientServerTopology.Roles.CLIENT;
-import static org.apache.geode.benchmark.topology.ClientServerTopology.Roles.SERVER;
 
 import org.junit.jupiter.api.Test;
 
-import org.apache.geode.benchmark.tasks.CreateClientProxyRegion;
-import org.apache.geode.benchmark.tasks.CreatePartitionedRegion;
 import org.apache.geode.benchmark.tasks.ExecuteFilteredFunction;
-import org.apache.geode.benchmark.tasks.PrePopulateRegion;
-import org.apache.geode.benchmark.topology.ClientServerTopology;
-import org.apache.geode.perftest.PerformanceTest;
 import org.apache.geode.perftest.TestConfig;
 import org.apache.geode.perftest.TestRunners;
 
-public class PartitionedFunctionExecutionWithFiltersBenchmark implements PerformanceTest {
-  private long keyRange = 1000000;
+public class PartitionedFunctionExecutionWithFiltersBenchmark
+    extends AbstractPartitionedFunctionBenchmark {
   private long filterKeyRange = 1000;
-
-  public PartitionedFunctionExecutionWithFiltersBenchmark() {}
-
-  public void setKeyRange(long keyRange) {
-    this.keyRange = keyRange;
-  }
 
   public void setFilterKeyRange(long filterKeyRange) {
     this.filterKeyRange = filterKeyRange;
@@ -49,12 +37,8 @@ public class PartitionedFunctionExecutionWithFiltersBenchmark implements Perform
 
   @Override
   public TestConfig configure() {
-    TestConfig config = GeodeBenchmark.createConfig();
-    ClientServerTopology.configure(config);
-    config.before(new CreatePartitionedRegion(), SERVER);
-    config.before(new CreateClientProxyRegion(), CLIENT);
-    config.before(new PrePopulateRegion(keyRange), SERVER);
-    config.workload(new ExecuteFilteredFunction(keyRange, filterKeyRange), CLIENT);
+    TestConfig config = super.configure();
+    config.workload(new ExecuteFilteredFunction(getKeyRange(), filterKeyRange), CLIENT);
     return config;
   }
 }
