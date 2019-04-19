@@ -36,6 +36,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import software.amazon.awssdk.services.ec2.Ec2Client;
 import software.amazon.awssdk.services.ec2.model.AuthorizeSecurityGroupIngressRequest;
+import software.amazon.awssdk.services.ec2.model.BlockDeviceMapping;
 import software.amazon.awssdk.services.ec2.model.CreateKeyPairRequest;
 import software.amazon.awssdk.services.ec2.model.CreateKeyPairResponse;
 import software.amazon.awssdk.services.ec2.model.CreateLaunchTemplateRequest;
@@ -50,6 +51,8 @@ import software.amazon.awssdk.services.ec2.model.DescribeInstancesResponse;
 import software.amazon.awssdk.services.ec2.model.Filter;
 import software.amazon.awssdk.services.ec2.model.Image;
 import software.amazon.awssdk.services.ec2.model.Instance;
+import software.amazon.awssdk.services.ec2.model.LaunchTemplateBlockDeviceMappingRequest;
+import software.amazon.awssdk.services.ec2.model.LaunchTemplateEbsBlockDeviceRequest;
 import software.amazon.awssdk.services.ec2.model.LaunchTemplatePlacementRequest;
 import software.amazon.awssdk.services.ec2.model.LaunchTemplateSpecification;
 import software.amazon.awssdk.services.ec2.model.RequestLaunchTemplateData;
@@ -58,6 +61,7 @@ import software.amazon.awssdk.services.ec2.model.RunInstancesRequest;
 import software.amazon.awssdk.services.ec2.model.RunInstancesResponse;
 import software.amazon.awssdk.services.ec2.model.Tag;
 import software.amazon.awssdk.services.ec2.model.TagSpecification;
+import software.amazon.awssdk.services.ec2.model.VolumeType;
 
 import org.apache.geode.infrastructure.BenchmarkMetadata;
 
@@ -219,6 +223,13 @@ public class LaunchCluster {
                     .build())
                 .keyName(AwsBenchmarkMetadata.keyPair(benchmarkTag))
                 .securityGroups(securityGroupList)
+                .blockDeviceMappings(LaunchTemplateBlockDeviceMappingRequest.builder()
+                    .deviceName("/dev/sda1")
+                    .ebs(LaunchTemplateEbsBlockDeviceRequest.builder()
+                        .volumeType(VolumeType.GP2)
+                        .volumeSize(50)
+                        .build())
+                    .build())
                 .build())
             .build());
 
