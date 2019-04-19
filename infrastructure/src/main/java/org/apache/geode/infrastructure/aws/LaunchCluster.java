@@ -36,7 +36,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import software.amazon.awssdk.services.ec2.Ec2Client;
 import software.amazon.awssdk.services.ec2.model.AuthorizeSecurityGroupIngressRequest;
-import software.amazon.awssdk.services.ec2.model.BlockDeviceMapping;
 import software.amazon.awssdk.services.ec2.model.CreateKeyPairRequest;
 import software.amazon.awssdk.services.ec2.model.CreateKeyPairResponse;
 import software.amazon.awssdk.services.ec2.model.CreateLaunchTemplateRequest;
