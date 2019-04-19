@@ -156,8 +156,9 @@ if [[ -z "${VERSION}" ]]; then
   fi
 
   ssh ${SSH_OPTIONS} geode@$FIRST_INSTANCE "\
-    [ ! -d geode ] && git clone ${REPO}; \
-    cd geode && git fetch --all && git checkout ${BRANCH} && git pull"
+    rm -rf geode && \
+    git clone ${REPO} && \
+    cd geode && git checkout ${BRANCH}"
 
   set +e
   for i in {1..5}; do
