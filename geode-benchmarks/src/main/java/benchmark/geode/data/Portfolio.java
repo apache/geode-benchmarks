@@ -14,13 +14,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package benchmark.geode.data;
 
+package benchmark.geode.data;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -44,9 +43,8 @@ public class Portfolio {
   int position3Size;
   public String description;
   public long createTime;
-  public HashMap<String, Position> positions = new HashMap<String, Position>();
-  public HashMap<String, CollectionHolder> collectionHolderMap =
-      new HashMap<String, CollectionHolder>();
+  public HashMap<String, Position> positions = new HashMap<>();
+  public HashMap<String, CollectionHolder> collectionHolderMap = new HashMap<>();
   String type;
   public String status;
   public String[] names = {"aaa", "bbb", "ccc", "ddd"};
@@ -56,8 +54,7 @@ public class Portfolio {
       "SAP", "DELL", "RHAT", "NOVL", "HP"};
 
   static {
-    dayList = new ArrayList();
-    dayList.addAll(EnumSet.allOf(Day.class));
+    dayList = new ArrayList<>(EnumSet.allOf(Day.class));
   }
 
   public Portfolio() {}
@@ -259,20 +256,18 @@ public class Portfolio {
 
   @Override
   public int hashCode() {
-    return ((Long) this.ID).hashCode();
+    return Long.hashCode(ID);
   }
 
 
   public String toString() {
-    String out =
-        "PortfolioPdx [ID=" + ID + " status=" + status + " type=" + type + " pkid=" + pkid + "\n ";
-    Iterator iter = positions.entrySet().iterator();
-    while (iter.hasNext()) {
-      Map.Entry entry = (Map.Entry) iter.next();
-      out += entry.getKey() + ":" + entry.getValue() + ", ";
+    StringBuilder out = new StringBuilder(
+        "PortfolioPdx [ID=" + ID + " status=" + status + " type=" + type + " pkid=" + pkid + "\n ");
+    for (Map.Entry<String, Position> stringPositionEntry : positions.entrySet()) {
+      out.append(stringPositionEntry.getKey()).append(":").append(stringPositionEntry.getValue()).append(", ");
     }
-    out += "\n P1:" + position1 + ", P2:" + position2;
-    return out + "\n]";
+    out.append("\n P1:").append(position1).append(", P2:").append(position2).append("\n]");
+    return out.toString();
   }
 
 }
