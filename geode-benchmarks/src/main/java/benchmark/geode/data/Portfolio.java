@@ -264,7 +264,8 @@ public class Portfolio {
     StringBuilder out = new StringBuilder(
         "PortfolioPdx [ID=" + ID + " status=" + status + " type=" + type + " pkid=" + pkid + "\n ");
     for (Map.Entry<String, Position> stringPositionEntry : positions.entrySet()) {
-      out.append(stringPositionEntry.getKey()).append(":").append(stringPositionEntry.getValue()).append(", ");
+      out.append(stringPositionEntry.getKey()).append(":").append(stringPositionEntry.getValue())
+          .append(", ");
     }
     out.append("\n P1:").append(position1).append(", P2:").append(position2).append("\n]");
     return out.toString();
