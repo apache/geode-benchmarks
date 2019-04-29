@@ -141,8 +141,9 @@ applications running". If there is a test in progress, you should be able to cli
 monitor the test.
 * Pull up a terminal and navigate to `geode-benchmarks/infrastructure/scripts/aws`
 * Copy the YourKit file to the AWS VMs using the following command
-  * `./copy_to_cluster.sh -tag <clusterTag> <path to libyjpagent.so> .`
-  * Your path to the `libyjpagent.so` is probably `/Applications/YourKit-Java-Profiler-2019.1.app/Contents/Resources/bin/linux-x86-64/libyjpagent.so` 
+  * `./copy_to_cluster.sh -tag <clusterTag> -- <path to libyjpagent.so> <destination path>`
+  * Your path to the `libyjpagent.so` is probably `/Applications/YourKit-Java-Profiler-2019.1.app/Contents/Resources/bin/linux-x86-64/libyjpagent.so`
+  * Your destination path should probably be `.`, which will end up putting the file at `/home/geode/` 
 * Run the test using the `run_tests.sh` script, with the additional CLI option `-Pbenchmark.profiler.argument`:
   * `./run_tests.sh --tag <clusterTag> [other CLI options] -- -i -Pbenchmark.profiler.argument=-agentpath:/home/geode/libyjpagent.so=disablestacktelemetry,exceptions=disable,delay=60000,sessionname=JVM_ROLE-JVM_ID`
 * Return to YourKit and profile as usual
@@ -150,7 +151,7 @@ monitor the test.
 ## Example
 ```bash
 ./launch_cluster --tag profiling --count 4
-./copy_to_cluster.sh --tag profiling /Applications/YourKit-Java-Profiler-2019.1.app/Contents/Resources/bin/linux-x86-64/libyjpagent.so .
+./copy_to_cluster.sh --tag profiling -- /Applications/YourKit-Java-Profiler-2019.1.app/Contents/Resources/bin/linux-x86-64/libyjpagent.so .
 ./run_tests.sh --tag profiling --geode-branch develop -- -i -Pbenchmark.profiler.argument=-agentpath:/home/geode/libyjpagent.so=disablestacktelemetry,exceptions=disable,delay=60000,sessionname=JVM_ROLE-JVM_ID
 ./destroy_cluster.sh --tag profiling
 ```
