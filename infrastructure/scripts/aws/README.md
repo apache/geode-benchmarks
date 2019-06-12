@@ -11,6 +11,24 @@ These utilities create instances and run tests in your AWS account
 If you need to build the image, you must have packer installed. But you can run the following scripts (launch, run, destroy) without building the image.
 Build the image in the image directory using the `build_image.sh` script.
 
+
+# Using Environment Variables For configuration
+
+In order to have the scripts know which configuration data to use, the data must be provided.
+One of the ways that can be done is via environment variables.
+
+    prompt> aws configure
+    AWS Access Key ID [****************foo1]:
+    AWS Secret Access Key [****************bar2]:
+    Default region name [us-west-1]:
+
+Export environment variables as follows.
+
+    export AWS_ACCESS_KEY_ID=myaccesskeyfoo1
+    export AWS_SECRET_ACCESS_KEY=mysecretaccesskeybar2
+    export AWS_REGION="us-west-1"
+
+
 # launch_cluster.sh
 Creates an instance group in AWS based on an image created.
 
@@ -19,7 +37,7 @@ Usage:
     ./launch_cluster.sh -t [tag] -c [count] [--ci]
 
 Options:
-    
+
     -t|--tag     : Cluster tag to identify the cluster for use with other utilities
     -c|--count   : Number of AWS instances to start (recommended: 4)
     --ci         : (Optional) Set when the instances are being started for use in Continuous Integration
@@ -28,12 +46,12 @@ Options:
 # run_tests.sh
 Runs benchmark tests against a single branch of `geode` on the AWS instances with the specified tag.
 
-Usage: 
+Usage:
 
     run_tests.sh -t [tag] [-v [version] | -b [branch]] <options...>
 
 Options:
-    
+
     -t|--tag                        : Cluster tag
     -p|--br|--benchmark-repo        : Benchmark repo (default: apache/geode-benchmarks)
     -e|--bb|--benchmark-branch      : Benchmark branch (optional - defaults to develop)
@@ -67,6 +85,8 @@ Options:
     -B|--gbb|--baseline-branch|--baseline-geode-branch   : Geode Baseline Branch (default: develop)
     -m|--metadata                                        : Test metadata to output to file, comma-delimited (optional)
     -h|-?|--help                                         : Help message
+
+    e.g. ./run_against_baseline.sh -t test_environment  -v <sha1 of target version> -V <sha1 of base version>  -R <baseline repo e.g. user/geode> -B <baseline branch name> -b <target branch name> -r <target repo e.g. user/geode>
 
 
 # destroy_cluster.sh
