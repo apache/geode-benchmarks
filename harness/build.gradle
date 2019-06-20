@@ -36,7 +36,7 @@ task(analyzeRun, dependsOn: 'classes', type: JavaExec) {
     main = 'org.apache.geode.perftest.analysis.Analyzer'
     workingDir = rootDir
     classpath = sourceSets.main.runtimeClasspath
-    ci = isCI
+    systemProperty 'TEST_CI', isCI
 }
 
 dependencies {

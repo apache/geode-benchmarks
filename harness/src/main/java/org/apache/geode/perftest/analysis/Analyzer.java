@@ -34,14 +34,13 @@ public class Analyzer {
   public static void main(String[] args) throws IOException {
     if (args.length != 3) {
       System.out.println(
-          "Analyzer takes two test output directories as arguments and a flag to indicate if running in CI. Order matters: test results followed by baseline run result, followed by CI flag.");
+          "Analyzer takes two test output directories as arguments, test results followed by baseline run result.");
       System.exit(1);
       return;
     }
 
     String baselineResultArg = args[0];
     String testResultArg = args[1];
-    String isCIArg = args[2];
 
     File testResultDir = new File(testResultArg);
     File baselineResultDir = new File(baselineResultArg);
@@ -60,7 +59,7 @@ public class Analyzer {
       return;
     }
 
-    boolean isCI = isCIArg.equals("1");
+    boolean isCI = System.getProperty("TEST_CI").equals("1");
 
     System.out.println("Running analyzer");
     System.out.println(
