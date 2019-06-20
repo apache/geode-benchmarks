@@ -70,7 +70,7 @@ public class Analyzer {
 
     boolean isSignificantlyBetter = false;
     boolean isHighWaterCandidate = true;
-    StringBuilder message = new StringBuilder();
+    StringBuilder errorMessage = new StringBuilder();
     for (BenchmarkRunResult.BenchmarkResult benchmarkResult : benchmarkRunResult
         .getBenchmarkResults()) {
       for (BenchmarkRunResult.ProbeResult probeResult : benchmarkResult.probeResults) {
@@ -78,7 +78,7 @@ public class Analyzer {
           if (probeResult.getDifference() > 0) {
             isHighWaterCandidate = false;
             if (probeResult.getDifference() >= 0.05) {
-              message.append("BENCHMARK FAILED: ").append(benchmarkResult.name)
+              errorMessage.append("BENCHMARK FAILED: ").append(benchmarkResult.name)
                   .append(" average latency is 5% worse than baseline.\n");
             }
           } else if(probeResult.getDifference() <= -0.5) {
@@ -89,17 +89,11 @@ public class Analyzer {
     }
 
     if (isCI && isHighWaterCandidate && isSignificantlyBetter) {
-      String filePath = testResultDir + "/../isHighWatermark.txt";
-      File file = new File(filePath);
-      if(file.createNewFile()){
-        System.out.println(filePath + " File Created");
-      } else {
-        System.out.println("File " + filePath + " already exists");
-      }
+      System.out.println("NEW HIGH WATERMARK COMMIT: average latency for each test is <=0.0% change from baseline AND at least one test shows a >=5% improvement in performance.\n");
     }
 
-    if (message.length() > 0) {
-      System.out.println(message);
+    if (errorMessage.length() > 0) {
+      System.out.println(errorMessage);
       System.exit(1);
     }
 
