@@ -39,7 +39,7 @@ BASELINE_VERSION=${DEFAULT_BASELINE_VERSION}
 TAG=
 METADATA=
 OUTPUT=
-CI=0
+CI=
 
 while (( "$#" )); do
   case $1 in
@@ -203,4 +203,8 @@ fi
 
 set +x
 
-./analyze_tests.sh -o ${OUTPUT} --ci ${CI}
+if [[ -z "${CI}" ]]; then
+    ./analyze_tests.sh -o ${OUTPUT}
+else
+    ./analyze_tests.sh -o ${OUTPUT} --ci
+fi

@@ -17,13 +17,6 @@ package org.apache.geode.perftest.analysis;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Properties;
-
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.Session;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
 
 import org.apache.geode.perftest.yardstick.analysis.YardstickHdrHistogramParser;
 import org.apache.geode.perftest.yardstick.analysis.YardstickPercentileSensorParser;
@@ -32,7 +25,7 @@ import org.apache.geode.perftest.yardstick.analysis.YardstickThroughputSensorPar
 public class Analyzer {
 
   public static void main(String[] args) throws IOException {
-    if (args.length != 3) {
+    if (args.length != 2) {
       System.out.println(
           "Analyzer takes two test output directories as arguments, test results followed by baseline run result.");
       System.exit(1);
@@ -96,19 +89,13 @@ public class Analyzer {
     }
 
     if (isCI && isHighWaterCandidate && isSignificantlyBetter) {
-      // this commit is the new high water mark, send an email
-      Session session = Session.getDefaultInstance(new Properties(), null);
-      MimeMessage emailContent = new MimeMessage(session);
-      try {
-        emailContent.setFrom(new InternetAddress("hbales@pivotal.io"));
-        emailContent.addRecipient(Message.RecipientType.TO, new InternetAddress("hbales@pivotal.io"));
-        emailContent.setHeader("emailHeader","New high watermark");
-        emailContent.setText("Hello world");
-      } catch (MessagingException e) {
-        e.printStackTrace();
+      String filePath = testResultDir + "/../isHighWatermark.txt";
+      File file = new File(filePath);
+      if(file.createNewFile()){
+        System.out.println(filePath + " File Created");
+      } else {
+        System.out.println("File " + filePath + " already exists");
       }
-
-
     }
 
     if (message.length() > 0) {

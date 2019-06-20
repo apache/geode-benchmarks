@@ -48,7 +48,6 @@ dependencies {
     compile(group: 'org.hdrhistogram', name: 'HdrHistogram', version: project.'HdrHistogram.version')
     compile(group: 'org.json', name: 'json', version: project.'JSON.version')
     compile(group: 'org.apache.geode', name: 'geode-core', version: geodeVersion)
-    compile(group: 'javax.mail', name: 'javax.mail-api', version: '1.5.1')
     testCompile(group: 'org.mockito', name: 'mockito-all', version: project.'mockito-all.version')
     testCompile(group: 'org.awaitility', name: 'awaitility', version: project.'awaitility.version')
     testCompile(group: 'org.slf4j', name: 'slf4j-simple', version: project.'slf4j-simple.version')
