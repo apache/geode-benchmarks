@@ -16,25 +16,38 @@ These benchmarks are under development.
 The benchmarks require machines with passwordless ssh enabled in order to run.
 So ensure that the authentication key pair for SSH does not have a passphrase. If you had 
 already previously created a key pair with a passphrase, you can create a different key pair which
-is of a different type than the previously created one.
-Use one of the following commands to create a new key pair.
+is of a different type than the previously created one. Public key needs to be in PEM format. Some newer OpenSSH
+versions default to a new format. Use `-m PEM` to force PEM format.
 ```
-ssh-keygen -t ed25519
-ssh-keygen -t rsa -b 4096
-ssh-keygen -t dsa
-ssh-keygen -t ecdsa -b 521
+ssh-keygen -m PEM -t rsa
 ```
 While runinng a test on a single machine (i.e. localhost) add the generated key to `authorized_keys` to authorize the user.
 ```
 cat <your_public_key_file> >> ~/.ssh/authorized_keys
+```
+Test if you can ssh to localhost.
+```
+ssh localhost
+```
+As long as that works, we are good to go.
+
+Get your local hosts name:
+```
+hostname
+```
+Edit /etc/hosts and add the local host name with and without domain to localhost entries.
+```
+127.0.0.1 localhost mycomputer mycomputer.mydomain
+::1       localhost mycomputer mycomputer.mydomain
 ```
  
 To run all benchmarks, run the benchmark task and pass in a list of hosts.
 
 For example:
 ```
-./gradlew benchmark -Phosts=localhost,localhost,localhost,localhost -PoutputDir=/tmp/results
+./gradlew benchmark -Phosts=localhost,localhost,localhost,localhost
 ```
+Optionally you can control the output directory with `-PoutputDir=/tmp/results`
 
 ### Running in aws
 
