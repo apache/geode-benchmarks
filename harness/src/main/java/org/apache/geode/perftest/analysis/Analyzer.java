@@ -81,7 +81,7 @@ public class Analyzer {
               errorMessage.append("BENCHMARK FAILED: ").append(benchmarkResult.name)
                   .append(" average latency is 5% worse than baseline.\n");
             }
-          } else if(probeResult.getDifference() <= -0.5) {
+          } else if (probeResult.getDifference() <= -0.5) {
             isSignificantlyBetter = true;
           }
         }
@@ -89,7 +89,8 @@ public class Analyzer {
     }
 
     if (isCI && isHighWaterCandidate && isSignificantlyBetter) {
-      System.out.println("NEW HIGH WATERMARK COMMIT: average latency for each test is <=0.0% change from baseline AND at least one test shows a >=5% improvement in performance.\n");
+      System.out.println(
+          "NEW HIGH WATERMARK COMMIT: average latency for each test is <=0.0% change from baseline AND at least one test shows a >=5% improvement in performance.\n");
     }
 
     if (errorMessage.length() > 0) {
