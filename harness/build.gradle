@@ -25,6 +25,7 @@ version '1.0-SNAPSHOT'
 sourceCompatibility = 1.8
 
 def geodeVersion = project.hasProperty('geodeVersion') ? project.findProperty('geodeVersion') : '1.+'
+def isCI = project.hasProperty('ci') ? project.findProperty('ci') : 0
 
 repositories {
     mavenLocal()
@@ -35,6 +36,7 @@ task(analyzeRun, dependsOn: 'classes', type: JavaExec) {
     main = 'org.apache.geode.perftest.analysis.Analyzer'
     workingDir = rootDir
     classpath = sourceSets.main.runtimeClasspath
+    systemProperty 'TEST_CI', isCI
 }
 
 dependencies {

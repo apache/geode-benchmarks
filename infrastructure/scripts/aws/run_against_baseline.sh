@@ -39,6 +39,7 @@ BASELINE_VERSION=${DEFAULT_BASELINE_VERSION}
 TAG=
 METADATA=
 OUTPUT=
+CI=
 
 while (( "$#" )); do
   case $1 in
@@ -110,6 +111,9 @@ while (( "$#" )); do
         BASELINE_VERSION=$2
         shift
       fi
+      ;;
+    --ci )
+      CI=1
       ;;
     -h|--help|-\? )
       echo "Usage: $(basename "$0") -t tag [options ...] [-- arguments ...]"
@@ -199,4 +203,8 @@ fi
 
 set +x
 
-./analyze_tests.sh ${OUTPUT}
+if [[ -z "${CI}" ]]; then
+    ./analyze_tests.sh -o ${OUTPUT}
+else
+    ./analyze_tests.sh -o ${OUTPUT} --ci
+fi
