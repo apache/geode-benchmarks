@@ -51,6 +51,7 @@ public class GeodeProperties {
     properties.setProperty(ConfigurationProperties.ENABLE_TIME_STATISTICS, "true");
     properties.setProperty(ConfigurationProperties.LOG_LEVEL, "config");
     properties.setProperty(ConfigurationProperties.STATISTIC_SAMPLING_ENABLED, "true");
+    properties.setProperty(ConfigurationProperties.MEMBER_TIMEOUT, "8000");
     return properties;
 
   }
