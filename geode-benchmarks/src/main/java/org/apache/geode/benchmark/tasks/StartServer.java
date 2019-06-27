@@ -17,10 +17,12 @@
 
 package org.apache.geode.benchmark.tasks;
 
+import static org.apache.geode.benchmark.parameters.GeodeProperties.serverProperties;
+import static org.apache.geode.benchmark.parameters.GeodeProperties.withSsl;
+
 import java.io.File;
 import java.net.InetAddress;
 
-import org.apache.geode.benchmark.parameters.GeodeProperties;
 import org.apache.geode.cache.Cache;
 import org.apache.geode.cache.CacheFactory;
 import org.apache.geode.cache.server.CacheServer;
@@ -45,7 +47,7 @@ public class StartServer implements Task {
 
     String locatorString = LocatorUtil.getLocatorString(context, locatorPort);
     String statsFile = new File(context.getOutputDir(), "stats.gfs").getAbsolutePath();
-    Cache cache = new CacheFactory(GeodeProperties.serverProperties())
+    Cache cache = new CacheFactory(withSsl(serverProperties()))
         .setPdxSerializer(new ReflectionBasedAutoSerializer("benchmark.geode.data.*"))
         .set(ConfigurationProperties.LOCATORS, locatorString)
         .set(ConfigurationProperties.NAME,
