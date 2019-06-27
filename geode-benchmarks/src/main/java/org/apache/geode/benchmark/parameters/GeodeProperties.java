@@ -38,6 +38,8 @@ import static org.apache.geode.security.SecurableCommunicationChannels.ALL;
 
 import java.util.Properties;
 
+import org.apache.geode.distributed.ConfigurationProperties;
+
 public class GeodeProperties {
 
   public static Properties serverProperties() {
@@ -79,7 +81,7 @@ public class GeodeProperties {
 
 
   public static Properties withSsl(Properties properties) {
-    properties.setProperty(SSL_ENABLED_COMPONENTS, ALL);
+    //properties.setProperty(SSL_ENABLED_COMPONENTS, ALL);
 
     // TODO make configurable, relative, something?
     properties.setProperty(SSL_KEYSTORE, "/home/geode/selfsigned.jks");
