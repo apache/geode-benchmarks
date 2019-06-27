@@ -81,7 +81,7 @@ public class GeodeProperties {
 
 
   public static Properties withSsl(Properties properties) {
-    properties.setProperty(SSL_ENABLED_COMPONENTS, ALL);
+    //properties.setProperty(SSL_ENABLED_COMPONENTS, ALL);
 
     // TODO make configurable, relative, something?
     properties.setProperty(SSL_KEYSTORE, "/home/geode/selfsigned.jks");
