@@ -48,7 +48,7 @@ public class ClientServerTopology {
   static final int NUM_LOCATORS = 1;
   static final int NUM_SERVERS = 2;
   static final int NUM_CLIENTS = 1;
-  static final String WITH_SSL_ARGUMENT = "-DwithSsl";
+  private static final String WITH_SSL_ARGUMENT = "-DwithSsl";
 
   public static void configure(TestConfig testConfig) {
     testConfig.role(LOCATOR, NUM_LOCATORS);
@@ -60,8 +60,8 @@ public class ClientServerTopology {
     testConfig.jvmArgs(LOCATOR, appendIfNotEmpty(JVM_ARGS, profilerArgument));
     testConfig.jvmArgs(SERVER, appendIfNotEmpty(JVM_ARGS, profilerArgument));
 
-    final boolean isWithSsl = System.getProperty("withSsl") != null;
-    if (isWithSsl) {
+    String withSslArg = System.getProperty("withSsl");
+    if (withSslArg != null && withSslArg.equals("true")) {
       logger.info("Configuring JVMs to run with SSL enabled");
       testConfig.jvmArgs(CLIENT, Arrays.append(JVM_ARGS, WITH_SSL_ARGUMENT));
       testConfig.jvmArgs(LOCATOR, Arrays.append(JVM_ARGS, WITH_SSL_ARGUMENT));

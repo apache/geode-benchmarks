@@ -45,8 +45,9 @@ public class StartServer implements Task {
 
   @Override
   public void run(TestContext context) throws Exception {
-    boolean isWithSsl = System.getProperty("withSsl") != null;
-    Properties properties = isWithSsl ? withSsl(serverProperties()) : serverProperties();
+    String withSslArg = System.getProperty("withSsl");
+    Properties properties = (withSslArg != null)
+        ? withSsl(serverProperties()) : serverProperties();
 
     String locatorString = LocatorUtil.getLocatorString(context, locatorPort);
     String statsFile = new File(context.getOutputDir(), "stats.gfs").getAbsolutePath();

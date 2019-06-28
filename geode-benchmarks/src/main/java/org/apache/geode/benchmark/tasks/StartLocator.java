@@ -41,8 +41,9 @@ public class StartLocator implements Task {
 
   @Override
   public void run(TestContext context) throws Exception {
-    boolean isWithSsl = System.getProperty("withSsl") != null;
-    Properties properties = isWithSsl ? withSsl(locatorProperties()) : locatorProperties();
+    String withSslArg = System.getProperty("withSsl");
+    Properties properties = (withSslArg != null)
+        ? withSsl(locatorProperties()) : locatorProperties();
 
     String statsFile = new File(context.getOutputDir(), "stats.gfs").getAbsolutePath();
     properties.setProperty(ConfigurationProperties.STATISTIC_ARCHIVE_FILE, statsFile);

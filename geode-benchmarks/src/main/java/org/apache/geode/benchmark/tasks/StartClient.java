@@ -47,8 +47,9 @@ public class StartClient implements Task {
     InetAddress locator = context.getHostsForRole("locator").iterator().next();
 
     String statsFile = new File(context.getOutputDir(), "stats.gfs").getAbsolutePath();
-    boolean isWithSsl = System.getProperty("withSsl") != null;
-    Properties properties = isWithSsl ? withSsl(clientProperties()) : clientProperties();
+    String withSslArg = System.getProperty("withSsl");
+    Properties properties = (withSslArg != null)
+        ? withSsl(clientProperties()) : clientProperties();
 
     ClientCache clientCache = new ClientCacheFactory(properties)
         .setPdxSerializer(new ReflectionBasedAutoSerializer("benchmark.geode.data.*"))
