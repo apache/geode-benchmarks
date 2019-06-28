@@ -22,6 +22,7 @@ import static org.apache.geode.benchmark.parameters.GeodeProperties.withSsl;
 
 import java.io.File;
 import java.net.InetAddress;
+import java.util.Properties;
 
 import org.apache.geode.cache.Cache;
 import org.apache.geode.cache.CacheFactory;
@@ -44,10 +45,12 @@ public class StartServer implements Task {
 
   @Override
   public void run(TestContext context) throws Exception {
+    boolean isWithSsl = System.getProperty("withSsl") != null;
+    Properties properties = isWithSsl ? withSsl(serverProperties()) : serverProperties();
 
     String locatorString = LocatorUtil.getLocatorString(context, locatorPort);
     String statsFile = new File(context.getOutputDir(), "stats.gfs").getAbsolutePath();
-    Cache cache = new CacheFactory(withSsl(serverProperties()))
+    Cache cache = new CacheFactory(properties)
         .setPdxSerializer(new ReflectionBasedAutoSerializer("benchmark.geode.data.*"))
         .set(ConfigurationProperties.LOCATORS, locatorString)
         .set(ConfigurationProperties.NAME,

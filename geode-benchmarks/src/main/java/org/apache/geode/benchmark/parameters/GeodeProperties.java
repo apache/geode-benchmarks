@@ -38,7 +38,6 @@ import static org.apache.geode.security.SecurableCommunicationChannels.ALL;
 
 import java.util.Properties;
 
-import org.apache.geode.distributed.ConfigurationProperties;
 
 public class GeodeProperties {
 
