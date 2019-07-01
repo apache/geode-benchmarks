@@ -56,6 +56,9 @@ test{
 }
 
 task benchmark(type: Test) {
+    if (project.hasProperty('testJVM') && !testJVM.trim().isEmpty()) {
+        executable = "${testJVM}/bin/java"
+    }
     outputs.upToDateWhen { false }
     testClassesDirs = project.sourceSets.main.output.classesDirs
     classpath = project.sourceSets.main.runtimeClasspath
