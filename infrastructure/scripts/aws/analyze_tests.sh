@@ -36,7 +36,7 @@ while (( "$#" )); do
       CI=1
       ;;
     -h|--help|-\? )
-      echo "Usage: $(basename "$0") -t tag -c 4 [options ...] [-- arguments ...]"
+      echo "Usage: $(basename "$0") -o <output directory> [options ...] [-- arguments ...]"
       echo "Options:"
       echo "-o|--output|--outputDir : The directory containing benchmark results"
       echo "--ci : Set if starting instances for Continuous Integration"
