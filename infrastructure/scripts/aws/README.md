@@ -183,7 +183,7 @@ monitor the test.
 ## Prerequisites
 * You must have fulfilled the prerequisites at the beginning of this doc
 * Generate a self-signed SSL certificate using the keytool command:
-  * `keytool -genkey -keyalg RSA -alias tomcat -keystore selfsigned.jks -validity <days> -keysize 2048`
+  * `keytool -genkey -keyalg RSA -alias tomcat -keystore selfsigned.jks -validity 365 -keysize 2048`
   * The keystore password must be `123456`
 * Copy the generated certificate to the AWS VMs using the following command:
   * `./copy_to_cluster.sh -tag <clusterTag> -- <path to selfsigned.jks> /home/geode/selfsigned.jks`

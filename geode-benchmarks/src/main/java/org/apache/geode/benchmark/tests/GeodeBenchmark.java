@@ -16,7 +16,6 @@
 package org.apache.geode.benchmark.tests;
 
 import static java.util.concurrent.TimeUnit.MINUTES;
-import static java.util.concurrent.TimeUnit.SECONDS;
 
 import org.apache.geode.perftest.TestConfig;
 
@@ -25,17 +24,17 @@ public class GeodeBenchmark {
   /**
    * Warm up time for the benchmark running on the default runner
    */
-  private static final long WARM_UP_TIME = SECONDS.toSeconds(15);
+  private static final long WARM_UP_TIME = MINUTES.toSeconds(1);
 
   /**
    * Total duration for which the benchmark will run on the default runner
    */
-  private static final long BENCHMARK_DURATION = MINUTES.toSeconds(1);
+  private static final long BENCHMARK_DURATION = MINUTES.toSeconds(5);
 
   /**
    * Number of threads to run benchmark.
    */
-  private static final int THREADS = Runtime.getRuntime().availableProcessors() * 2;
+  private static final int THREADS = Runtime.getRuntime().availableProcessors() * 16;
 
 
   public static TestConfig createConfig() {
