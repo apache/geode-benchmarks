@@ -24,6 +24,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.geode.perftest.Task;
@@ -60,7 +61,7 @@ public class RemoteJVMs implements AutoCloseable {
         .filter(mapping -> roles.contains(mapping.getRole()))
         .map(mapping -> controller.onWorker(mapping.getId(), task));
 
-    futures.forEach(CompletableFuture::join);
+    futures.collect(Collectors.toList()).forEach(CompletableFuture::join);
   }
 
   public void close() throws IOException, ExecutionException, InterruptedException {
