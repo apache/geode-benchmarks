@@ -34,7 +34,7 @@ public class JVMParameters {
       "-Xmx8g",
       "-Xms8g"
   };
-  public static final String[] OLD_JVM_ARGS =  new String[] {
+  public static final String[] JVM8_ARGS = new String[] {
       "-XX:+PrintGCDetails",
       "-XX:+PrintGCTimeStamps",
       "-XX:+PrintGCDateStamps",

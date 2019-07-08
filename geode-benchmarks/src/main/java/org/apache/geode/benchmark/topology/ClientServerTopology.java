@@ -14,15 +14,13 @@
  */
 package org.apache.geode.benchmark.topology;
 
+import static org.apache.geode.benchmark.parameters.JVMParameters.JVM8_ARGS;
 import static org.apache.geode.benchmark.parameters.JVMParameters.JVM_ARGS;
-import static org.apache.geode.benchmark.parameters.JVMParameters.OLD_JVM_ARGS;
 import static org.apache.geode.benchmark.topology.ClientServerTopology.Roles.CLIENT;
 import static org.apache.geode.benchmark.topology.ClientServerTopology.Roles.LOCATOR;
 import static org.apache.geode.benchmark.topology.ClientServerTopology.Roles.SERVER;
 
 import org.bouncycastle.util.Arrays;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import org.apache.geode.benchmark.tasks.StartClient;
 import org.apache.geode.benchmark.tasks.StartLocator;
@@ -60,19 +58,17 @@ public class ClientServerTopology {
     testConfig.jvmArgs(LOCATOR, appendIfNotEmpty(JVM_ARGS, profilerArgument));
     testConfig.jvmArgs(SERVER, appendIfNotEmpty(JVM_ARGS, profilerArgument));
 
-    if (!System.getProperty("java.runtime.version").startsWith("11")) {
-      testConfig.jvmArgs(CLIENT, OLD_JVM_ARGS);
-      testConfig.jvmArgs(LOCATOR, OLD_JVM_ARGS);
-      testConfig.jvmArgs(SERVER, OLD_JVM_ARGS);
+    if (System.getProperty("java.runtime.version").startsWith("1.8")) {
+      testConfig.jvmArgs(CLIENT, JVM8_ARGS);
+      testConfig.jvmArgs(LOCATOR, JVM8_ARGS);
+      testConfig.jvmArgs(SERVER, JVM8_ARGS);
     }
 
     testConfig.before(new StartLocator(LOCATOR_PORT), LOCATOR);
     testConfig.before(new StartServer(LOCATOR_PORT), SERVER);
     testConfig.before(new StartClient(LOCATOR_PORT), CLIENT);
-
-    final Logger logger = LoggerFactory.getLogger(ClientServerTopology.class);
-    logger.info("===================================== " + testConfig.getJvmArgs().get(CLIENT).size());
   }
+
   private static final String[] appendIfNotEmpty(String[] a, String b) {
     if (null == b || b.length() == 0) {
       return a;
