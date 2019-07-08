@@ -47,7 +47,15 @@ For example:
 ```
 ./gradlew benchmark -Phosts=localhost,localhost,localhost,localhost
 ```
-Optionally you can control the output directory with `-PoutputDir=/tmp/results`
+
+Options:
+
+    -Phosts      : Hosts used by benchmarks on the order of client,locator,server,server (-Phosts=localhost,localhost,localhost,localhost)
+    -PoutputDir  : Results output directory (-PoutputDir=/tmp/results)
+    -PtestJVM    : Path to an alternative JVM for running the client, locator, and servers. If not specified JAVA_HOME will be used. Note all compilation tasks will still use JAVA_HOME.
+    --tests      : Specific benchmarks to run (--tests=PartitionedPutBenchmark)
+    -d           : Debug
+    -i           : Info
 
 ### Running in aws
 
