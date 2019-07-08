@@ -17,14 +17,6 @@ package org.apache.geode.benchmark.parameters;
 public class JVMParameters {
   public static final String[] JVM_ARGS = new String[] {
       "-XX:CMSInitiatingOccupancyFraction=60",
-//      "-XX:+PrintGCDetails",
-//      "-XX:+PrintGCTimeStamps",
-//      "-XX:+PrintGCDateStamps",
-//      "-XX:+PrintGCApplicationStoppedTime",
-//      "-XX:+PrintGCApplicationConcurrentTime",
-//      "-XX:+UseGCLogFileRotation",
-//      "-XX:NumberOfGCLogFiles=20",
-//      "-XX:GCLogFileSize=1M",
       "-XX:+UnlockDiagnosticVMOptions",
       "-XX:ParGCCardsPerStrideChunk=32768",
       "-XX:+UseNUMA",
@@ -41,7 +33,16 @@ public class JVMParameters {
       "-Dgemfire.launcher.registerSignalHandlers=true",
       "-Xmx8g",
       "-Xms8g"
-
+  };
+  public static final String[] OLD_JVM_ARGS =  new String[] {
+      "-XX:+PrintGCDetails",
+      "-XX:+PrintGCTimeStamps",
+      "-XX:+PrintGCDateStamps",
+      "-XX:+PrintGCApplicationStoppedTime",
+      "-XX:+PrintGCApplicationConcurrentTime",
+      "-XX:+UseGCLogFileRotation",
+      "-XX:NumberOfGCLogFiles=20",
+      "-XX:GCLogFileSize=1M"
   };
 
 }
