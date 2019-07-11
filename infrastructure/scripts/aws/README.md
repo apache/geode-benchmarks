@@ -84,6 +84,8 @@ Options:
     -V|--bgv|--baseline-version|--baseline-geode-version : Geode Baseline Version
     -B|--gbb|--baseline-branch|--baseline-geode-branch   : Geode Baseline Branch (default: develop)
     -m|--metadata                                        : Test metadata to output to file, comma-delimited (optional)
+    --ci                                                 : Set when the instances are being started for use in Continuous Integration
+    --                                                   : All subsequent arguments are passed to the benchmark tast as arguments
     -h|-?|--help                                         : Help message
 
     e.g. ./run_against_baseline.sh -t test_environment  -v <sha1 of target version> -V <sha1 of base version>  -R <baseline repo e.g. user/geode> -B <baseline branch name> -b <target branch name> -r <target repo e.g. user/geode>
@@ -174,4 +176,21 @@ monitor the test.
 ./copy_to_cluster.sh --tag profiling -- /Applications/YourKit-Java-Profiler-2019.1.app/Contents/Resources/bin/linux-x86-64/libyjpagent.so .
 ./run_tests.sh --tag profiling --geode-branch develop -- -i -Pbenchmark.profiler.argument=-agentpath:/home/geode/libyjpagent.so=disablestacktelemetry,exceptions=disable,delay=60000,sessionname=JVM_ROLE-JVM_ID
 ./destroy_cluster.sh --tag profiling
+```
+
+# Running with SSL enabled
+
+## Prerequisites
+* You must have fulfilled the prerequisites at the beginning of this doc
+* Generate a self-signed SSL certificate using the keytool command:
+  * `keytool -genkey -keyalg RSA -alias tomcat -keystore selfsigned.jks -validity 365 -keysize 2048`
+  * The keystore password must be `123456`
+* Copy the generated certificate to the AWS VMs using the following command:
+  * `./copy_to_cluster.sh -tag <clusterTag> -- <path to selfsigned.jks> /home/geode/selfsigned.jks`
+  * The destination path must be `/home/geode/selfsigned.jks`
+
+## Running in AWS
+To run benchmarks with SSL enabled, run the test using the `run_tests.sh` script, with the additional CLI option `-PwithSsl`:
+```
+./run_tests.sh --tag <clusterTag> [other CLI options] -- -PwithSsl
 ```

@@ -17,11 +17,13 @@
 
 package org.apache.geode.benchmark.tasks;
 
+import static org.apache.geode.benchmark.parameters.GeodeProperties.locatorProperties;
+import static org.apache.geode.benchmark.parameters.GeodeProperties.withSsl;
+
 import java.io.File;
 import java.net.InetAddress;
 import java.util.Properties;
 
-import org.apache.geode.benchmark.parameters.GeodeProperties;
 import org.apache.geode.distributed.ConfigurationProperties;
 import org.apache.geode.distributed.Locator;
 import org.apache.geode.perftest.Task;
@@ -39,7 +41,9 @@ public class StartLocator implements Task {
 
   @Override
   public void run(TestContext context) throws Exception {
-    Properties properties = GeodeProperties.locatorProperties();
+    String withSslArg = System.getProperty("withSsl");
+    Properties properties = (withSslArg != null)
+        ? withSsl(locatorProperties()) : locatorProperties();
 
     String statsFile = new File(context.getOutputDir(), "stats.gfs").getAbsolutePath();
     properties.setProperty(ConfigurationProperties.STATISTIC_ARCHIVE_FILE, statsFile);
