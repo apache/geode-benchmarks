@@ -21,6 +21,8 @@ import static org.apache.geode.benchmark.topology.ClientServerTopology.Roles.LOC
 import static org.apache.geode.benchmark.topology.ClientServerTopology.Roles.SERVER;
 
 import org.bouncycastle.util.Arrays;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.apache.geode.benchmark.tasks.StartClient;
 import org.apache.geode.benchmark.tasks.StartLocator;
@@ -28,6 +30,7 @@ import org.apache.geode.benchmark.tasks.StartServer;
 import org.apache.geode.perftest.TestConfig;
 
 public class ClientServerTopology {
+  private static final Logger logger = LoggerFactory.getLogger(ClientServerTopology.class);
 
   /**
    * All roles defined for the JVMs created for the benchmark
@@ -46,6 +49,7 @@ public class ClientServerTopology {
   static final int NUM_LOCATORS = 1;
   static final int NUM_SERVERS = 2;
   static final int NUM_CLIENTS = 1;
+  private static final String WITH_SSL_ARGUMENT = "-DwithSsl";
 
   public static void configure(TestConfig testConfig) {
     testConfig.role(LOCATOR, NUM_LOCATORS);
@@ -62,6 +66,14 @@ public class ClientServerTopology {
       testConfig.jvmArgs(CLIENT, JVM8_ARGS);
       testConfig.jvmArgs(LOCATOR, JVM8_ARGS);
       testConfig.jvmArgs(SERVER, JVM8_ARGS);
+    }
+
+    String withSslArg = System.getProperty("withSsl");
+    if (withSslArg != null && withSslArg.equals("true")) {
+      logger.info("Configuring JVMs to run with SSL enabled");
+      testConfig.jvmArgs(CLIENT, Arrays.append(JVM_ARGS, WITH_SSL_ARGUMENT));
+      testConfig.jvmArgs(LOCATOR, Arrays.append(JVM_ARGS, WITH_SSL_ARGUMENT));
+      testConfig.jvmArgs(SERVER, Arrays.append(JVM_ARGS, WITH_SSL_ARGUMENT));
     }
 
     testConfig.before(new StartLocator(LOCATOR_PORT), LOCATOR);

@@ -116,7 +116,7 @@ while (( "$#" )); do
       CI=1
       ;;
     -h|--help|-\? )
-      echo "Usage: $(basename "$0") -t tag [options ...] [-- arguments ...]"
+      echo "Usage: $(basename "$0") -t [tag] [-v [version] | -b [branch]] [-V [baseline version] | -B [baseline branch]] [--ci] <options...>"
       echo "Options:"
       echo "-t|--tag : Cluster tag"
       echo "-p|--benchmark-repo : Benchmark repo (default: ${DEFAULT_BENCHMARK_REPO})"
@@ -129,6 +129,7 @@ while (( "$#" )); do
       echo "-R|--baseline-geode-repo : Geode baseline repo (default: ${DEFAULT_BASELINE_REPO})"
       echo "-B|--baseline-geode-branch : Geode baseline branch"
       echo "-m|--metadata : Test metadata to output to file, comma-delimited"
+      echo "--ci : Set if starting instances for Continuous Integration"
       echo "-- : All subsequent arguments are passed to the benchmark task as arguments."
       echo "-h|--help|-? : This help message"
       exit 1

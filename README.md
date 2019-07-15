@@ -60,7 +60,7 @@ Options:
 ### Running in aws
 
 This project includes some scripts to automate running benchmarks in AWS. See the 
-[README.md](infrastructure/aws/README.md) in the infrastructure/aws directory.
+[README.md](infrastructure/scripts/aws/README.md) in the infrastructure/aws directory.
 
 ## Project structure
 
