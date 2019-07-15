@@ -49,7 +49,8 @@ public class ClientServerTopology {
   static final int NUM_LOCATORS = 1;
   static final int NUM_SERVERS = 2;
   static final int NUM_CLIENTS = 1;
-  private static final String WITH_SSL_ARGUMENT = "-DwithSsl";
+  private static final String WITH_SSL_ARGUMENT = "-DwithSsl=true";
+  private static final String WITH_SECURITY_MANAGER_ARGUMENT = "-DwithSecurityManager=true";
 
   public static void configure(TestConfig testConfig) {
     testConfig.role(LOCATOR, NUM_LOCATORS);
@@ -69,16 +70,24 @@ public class ClientServerTopology {
     }
 
     String withSslArg = System.getProperty("withSsl");
-    if (withSslArg != null && withSslArg.equals("true")) {
-      logger.info("Configuring JVMs to run with SSL enabled");
-      testConfig.jvmArgs(CLIENT, Arrays.append(JVM_ARGS, WITH_SSL_ARGUMENT));
-      testConfig.jvmArgs(LOCATOR, Arrays.append(JVM_ARGS, WITH_SSL_ARGUMENT));
-      testConfig.jvmArgs(SERVER, Arrays.append(JVM_ARGS, WITH_SSL_ARGUMENT));
-    }
+    addToTestConfig(testConfig, withSslArg, WITH_SSL_ARGUMENT);
+
+    String withSecurityManagerArg = System.getProperty("withSecurityManager");
+    addToTestConfig(testConfig, withSecurityManagerArg, WITH_SECURITY_MANAGER_ARGUMENT);
 
     testConfig.before(new StartLocator(LOCATOR_PORT), LOCATOR);
     testConfig.before(new StartServer(LOCATOR_PORT), SERVER);
     testConfig.before(new StartClient(LOCATOR_PORT), CLIENT);
+  }
+
+  private static void addToTestConfig(TestConfig testConfig, String systemPropertyValue,
+                                      String jvmArgument) {
+    if (systemPropertyValue != null && systemPropertyValue.equals("true")) {
+      logger.info("Configuring JVMs to run with " + jvmArgument);
+      testConfig.jvmArgs(CLIENT, Arrays.append(JVM_ARGS, jvmArgument));
+      testConfig.jvmArgs(LOCATOR, Arrays.append(JVM_ARGS, jvmArgument));
+      testConfig.jvmArgs(SERVER, Arrays.append(JVM_ARGS, jvmArgument));
+    }
   }
 
   private static final String[] appendIfNotEmpty(String[] a, String b) {

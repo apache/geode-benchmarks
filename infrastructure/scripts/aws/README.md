@@ -172,7 +172,7 @@ monitor the test.
   
 ## Example
 ```bash
-./launch_cluster --tag profiling --count 4
+./launch_cluster.sh --tag profiling --count 4
 ./copy_to_cluster.sh --tag profiling -- /Applications/YourKit-Java-Profiler-2019.1.app/Contents/Resources/bin/linux-x86-64/libyjpagent.so .
 ./run_tests.sh --tag profiling --geode-branch develop -- -i -Pbenchmark.profiler.argument=-agentpath:/home/geode/libyjpagent.so=disablestacktelemetry,exceptions=disable,delay=60000,sessionname=JVM_ROLE-JVM_ID
 ./destroy_cluster.sh --tag profiling
