@@ -17,6 +17,11 @@
 
 package org.apache.geode.perftest.jvms;
 
+import static org.apache.geode.distributed.ConfigurationProperties.SSL_KEYSTORE;
+import static org.apache.geode.distributed.ConfigurationProperties.SSL_KEYSTORE_PASSWORD;
+import static org.apache.geode.distributed.ConfigurationProperties.SSL_TRUSTSTORE;
+import static org.apache.geode.distributed.ConfigurationProperties.SSL_TRUSTSTORE_PASSWORD;
+
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -85,6 +90,13 @@ class JVMLauncher {
     command.add("-D" + RemoteJVMFactory.RMI_PORT_PROPERTY + "=" + rmiPort);
     command.add("-D" + RemoteJVMFactory.JVM_ID + "=" + jvmConfig.getId());
     command.add("-D" + RemoteJVMFactory.OUTPUT_DIR + "=" + jvmConfig.getOutputDir());
+    String withSslArg = System.getProperty("withSsl");
+    if (withSslArg != null) {
+      command.add("-Dgemfire." + SSL_KEYSTORE + "=" + jvmConfig.getLibDir() + "/selfsigned.jks");
+      command.add("-Dgemfire." + SSL_KEYSTORE_PASSWORD + "=123456");
+      command.add("-Dgemfire." + SSL_TRUSTSTORE + "=" + jvmConfig.getLibDir() + "/selfsigned.jks");
+      command.add("-Dgemfire." + SSL_TRUSTSTORE_PASSWORD + "=123456");
+    }
     command.add("-Xloggc:" + jvmConfig.getOutputDir() + "/gc.log");
     command.addAll(replaceTokens(jvmConfig.getJvmArgs(), jvmConfig));
     command.add(ChildJVM.class.getName());
