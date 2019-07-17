@@ -81,7 +81,7 @@ public class ClientServerTopology {
   }
 
   private static void addToTestConfig(TestConfig testConfig, String systemPropertyValue,
-                                      String jvmArgument) {
+      String jvmArgument) {
     if (systemPropertyValue != null && systemPropertyValue.equals("true")) {
       logger.info("Configuring JVMs to run with " + jvmArgument);
       testConfig.jvmArgs(CLIENT, Arrays.append(JVM_ARGS, jvmArgument));

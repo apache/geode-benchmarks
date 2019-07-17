@@ -23,7 +23,6 @@ import java.io.File;
 import java.net.InetAddress;
 import java.util.Properties;
 
-import org.apache.geode.benchmark.parameters.GeodeProperties;
 import org.apache.geode.cache.client.ClientCache;
 import org.apache.geode.cache.client.ClientCacheFactory;
 import org.apache.geode.distributed.ConfigurationProperties;

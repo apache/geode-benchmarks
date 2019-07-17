@@ -17,16 +17,12 @@
 
 package org.apache.geode.benchmark.tasks;
 
-import static org.apache.geode.benchmark.parameters.GeodeProperties.clientProperties;
 import static org.apache.geode.benchmark.parameters.GeodeProperties.serverProperties;
-import static org.apache.geode.benchmark.parameters.GeodeProperties.withSecurityManager;
-import static org.apache.geode.benchmark.parameters.GeodeProperties.withSsl;
 
 import java.io.File;
 import java.net.InetAddress;
 import java.util.Properties;
 
-import org.apache.geode.benchmark.parameters.GeodeProperties;
 import org.apache.geode.cache.Cache;
 import org.apache.geode.cache.CacheFactory;
 import org.apache.geode.cache.server.CacheServer;

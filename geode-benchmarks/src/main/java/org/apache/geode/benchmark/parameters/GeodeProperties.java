@@ -85,7 +85,8 @@ public class GeodeProperties {
   }
 
   public static Properties withSecurityManager(Properties properties) {
-    properties.setProperty(SECURITY_MANAGER, "org.apache.geode.examples.security.ExampleSecurityManager");
+    properties.setProperty(SECURITY_MANAGER,
+        "org.apache.geode.examples.security.ExampleSecurityManager");
     properties.setProperty("security-username", "superUser");
     properties.setProperty("security-password", "123");
     return properties;
@@ -116,8 +117,8 @@ public class GeodeProperties {
   }
 
   private static Properties withOptions(Properties properties) {
-    if(isSslEnabled()) {
-        properties = withSsl(properties);
+    if (isSslEnabled()) {
+      properties = withSsl(properties);
     }
 
     if (isSecurityManagerEnabled()) {

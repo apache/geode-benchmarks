@@ -60,7 +60,7 @@ public class ExampleAuthInit implements AuthInitialize {
   @Override
   @Deprecated
   public Properties getCredentials(Properties securityProps, DistributedMember server,
-                                   boolean isPeer) throws AuthenticationFailedException {
+      boolean isPeer) throws AuthenticationFailedException {
     return getCredentials(securityProps);
   }
 }
