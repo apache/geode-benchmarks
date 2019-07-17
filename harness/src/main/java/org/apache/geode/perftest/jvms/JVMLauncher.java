@@ -78,7 +78,7 @@ class JVMLauncher {
   String[] buildCommand(String rmiHost, int rmiPort, JVMMapping jvmConfig) {
 
     List<String> command = new ArrayList<String>();
-    command.add("java");
+    command.add(System.getProperty("java.home") + "/bin/java");
     command.add("-classpath");
     command.add(jvmConfig.getLibDir() + "/*");
     command.add("-D" + RemoteJVMFactory.RMI_HOST + "=" + rmiHost);

@@ -14,6 +14,7 @@
  */
 package org.apache.geode.benchmark.topology;
 
+import static org.apache.geode.benchmark.parameters.JVMParameters.JVM8_ARGS;
 import static org.apache.geode.benchmark.parameters.JVMParameters.JVM_ARGS;
 import static org.apache.geode.benchmark.topology.ClientServerTopology.Roles.CLIENT;
 import static org.apache.geode.benchmark.topology.ClientServerTopology.Roles.LOCATOR;
@@ -56,9 +57,16 @@ public class ClientServerTopology {
     testConfig.role(CLIENT, NUM_CLIENTS);
 
     String profilerArgument = System.getProperty("benchmark.profiler.argument");
+
     testConfig.jvmArgs(CLIENT, appendIfNotEmpty(JVM_ARGS, profilerArgument));
     testConfig.jvmArgs(LOCATOR, appendIfNotEmpty(JVM_ARGS, profilerArgument));
     testConfig.jvmArgs(SERVER, appendIfNotEmpty(JVM_ARGS, profilerArgument));
+
+    if (System.getProperty("java.runtime.version").startsWith("1.8")) {
+      testConfig.jvmArgs(CLIENT, JVM8_ARGS);
+      testConfig.jvmArgs(LOCATOR, JVM8_ARGS);
+      testConfig.jvmArgs(SERVER, JVM8_ARGS);
+    }
 
     String withSslArg = System.getProperty("withSsl");
     if (withSslArg != null && withSslArg.equals("true")) {
