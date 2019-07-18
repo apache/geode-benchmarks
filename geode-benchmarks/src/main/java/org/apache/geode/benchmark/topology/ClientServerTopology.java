@@ -69,24 +69,21 @@ public class ClientServerTopology {
       testConfig.jvmArgs(SERVER, JVM8_ARGS);
     }
 
-    String withSslArg = System.getProperty("withSsl");
-    addToTestConfig(testConfig, withSslArg, WITH_SSL_ARGUMENT);
-
-    String withSecurityManagerArg = System.getProperty("withSecurityManager");
-    addToTestConfig(testConfig, withSecurityManagerArg, WITH_SECURITY_MANAGER_ARGUMENT);
+    addToTestConfig(testConfig, "withSsl", WITH_SSL_ARGUMENT);
+    addToTestConfig(testConfig, "withSecurityManager", WITH_SECURITY_MANAGER_ARGUMENT);
 
     testConfig.before(new StartLocator(LOCATOR_PORT), LOCATOR);
     testConfig.before(new StartServer(LOCATOR_PORT), SERVER);
     testConfig.before(new StartClient(LOCATOR_PORT), CLIENT);
   }
 
-  private static void addToTestConfig(TestConfig testConfig, String systemPropertyValue,
+  private static void addToTestConfig(TestConfig testConfig, String systemPropertyKey,
       String jvmArgument) {
-    if (systemPropertyValue != null && systemPropertyValue.equals("true")) {
+    if (Boolean.getBoolean(systemPropertyKey)) {
       logger.info("Configuring JVMs to run with " + jvmArgument);
-      testConfig.jvmArgs(CLIENT, Arrays.append(JVM_ARGS, jvmArgument));
-      testConfig.jvmArgs(LOCATOR, Arrays.append(JVM_ARGS, jvmArgument));
-      testConfig.jvmArgs(SERVER, Arrays.append(JVM_ARGS, jvmArgument));
+      testConfig.jvmArgs(CLIENT, jvmArgument);
+      testConfig.jvmArgs(LOCATOR, jvmArgument);
+      testConfig.jvmArgs(SERVER, jvmArgument);
     }
   }
 
