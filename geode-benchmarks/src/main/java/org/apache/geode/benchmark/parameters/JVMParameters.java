@@ -12,10 +12,21 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
+
 package org.apache.geode.benchmark.parameters;
 
 public class JVMParameters {
+
   public static final String[] JVM_ARGS = new String[] {
+      "-Djava.awt.headless=true",
+      "-Dsun.rmi.dgc.server.gcInterval=9223372036854775806",
+      "-Dgemfire.OSProcess.ENABLE_OUTPUT_REDIRECTION=true",
+      "-Dgemfire.launcher.registerSignalHandlers=true",
+      "-Xmx8g",
+      "-Xms8g"
+  };
+
+  public static final String[] HOTSPOT_ARGS = new String[] {
       "-XX:CMSInitiatingOccupancyFraction=60",
       "-XX:+UnlockDiagnosticVMOptions",
       "-XX:ParGCCardsPerStrideChunk=32768",
@@ -26,15 +37,10 @@ public class JVMParameters {
       "-XX:+DisableExplicitGC",
       "-XX:+ScavengeBeforeFullGC",
       "-XX:+CMSScavengeBeforeRemark",
-      "-server",
-      "-Djava.awt.headless=true",
-      "-Dsun.rmi.dgc.server.gcInterval=9223372036854775806",
-      "-Dgemfire.OSProcess.ENABLE_OUTPUT_REDIRECTION=true",
-      "-Dgemfire.launcher.registerSignalHandlers=true",
-      "-Xmx8g",
-      "-Xms8g"
+      "-server"
   };
-  public static final String[] JVM8_ARGS = new String[] {
+
+  public static final String[] HOTSPOT_8_ARGS = new String[] {
       "-XX:+PrintGCDetails",
       "-XX:+PrintGCTimeStamps",
       "-XX:+PrintGCDateStamps",
@@ -43,6 +49,10 @@ public class JVMParameters {
       "-XX:+UseGCLogFileRotation",
       "-XX:NumberOfGCLogFiles=20",
       "-XX:GCLogFileSize=1M"
+  };
+
+  public static final String[] OPENJ9_ARGS = new String[] {
+      "-Xgcpolicy:balanced"
   };
 
 }

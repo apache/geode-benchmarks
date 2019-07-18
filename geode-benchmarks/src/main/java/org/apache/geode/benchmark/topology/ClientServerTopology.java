@@ -14,13 +14,14 @@
  */
 package org.apache.geode.benchmark.topology;
 
-import static org.apache.geode.benchmark.parameters.JVMParameters.JVM8_ARGS;
+import static org.apache.geode.benchmark.parameters.JVMParameters.HOTSPOT_8_ARGS;
+import static org.apache.geode.benchmark.parameters.JVMParameters.HOTSPOT_ARGS;
 import static org.apache.geode.benchmark.parameters.JVMParameters.JVM_ARGS;
+import static org.apache.geode.benchmark.parameters.JVMParameters.OPENJ9_ARGS;
 import static org.apache.geode.benchmark.topology.ClientServerTopology.Roles.CLIENT;
 import static org.apache.geode.benchmark.topology.ClientServerTopology.Roles.LOCATOR;
 import static org.apache.geode.benchmark.topology.ClientServerTopology.Roles.SERVER;
 
-import org.bouncycastle.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,11 +45,12 @@ public class ClientServerTopology {
   /**
    * The port used to create the locator for the tests
    */
-  public static final int LOCATOR_PORT = 10334;
+  private static final int LOCATOR_PORT = 10334;
 
-  static final int NUM_LOCATORS = 1;
-  static final int NUM_SERVERS = 2;
-  static final int NUM_CLIENTS = 1;
+  private static final int NUM_LOCATORS = 1;
+  private static final int NUM_SERVERS = 2;
+  private static final int NUM_CLIENTS = 1;
+
   private static final String WITH_SSL_ARGUMENT = "-DwithSsl";
 
   public static void configure(TestConfig testConfig) {
@@ -56,24 +58,24 @@ public class ClientServerTopology {
     testConfig.role(SERVER, NUM_SERVERS);
     testConfig.role(CLIENT, NUM_CLIENTS);
 
-    String profilerArgument = System.getProperty("benchmark.profiler.argument");
+    configure(testConfig, "default", JVM_ARGS);
 
-    testConfig.jvmArgs(CLIENT, appendIfNotEmpty(JVM_ARGS, profilerArgument));
-    testConfig.jvmArgs(LOCATOR, appendIfNotEmpty(JVM_ARGS, profilerArgument));
-    testConfig.jvmArgs(SERVER, appendIfNotEmpty(JVM_ARGS, profilerArgument));
-
-    if (System.getProperty("java.runtime.version").startsWith("1.8")) {
-      testConfig.jvmArgs(CLIENT, JVM8_ARGS);
-      testConfig.jvmArgs(LOCATOR, JVM8_ARGS);
-      testConfig.jvmArgs(SERVER, JVM8_ARGS);
+    if (System.getProperty("java.vendor").equals("Eclipse OpenJ9")) {
+      configure(testConfig, "OpenJ9", OPENJ9_ARGS);
+    } else {
+      configure(testConfig, "HotSpot", HOTSPOT_ARGS);
+      if (System.getProperty("java.runtime.version").startsWith("1.8")) {
+        configure(testConfig, "HotSpot 8", HOTSPOT_8_ARGS);
+      }
     }
 
-    String withSslArg = System.getProperty("withSsl");
-    if (withSslArg != null && withSslArg.equals("true")) {
-      logger.info("Configuring JVMs to run with SSL enabled");
-      testConfig.jvmArgs(CLIENT, Arrays.append(JVM_ARGS, WITH_SSL_ARGUMENT));
-      testConfig.jvmArgs(LOCATOR, Arrays.append(JVM_ARGS, WITH_SSL_ARGUMENT));
-      testConfig.jvmArgs(SERVER, Arrays.append(JVM_ARGS, WITH_SSL_ARGUMENT));
+    String profilerArgument = System.getProperty("benchmark.profiler.argument");
+    if (null != profilerArgument && profilerArgument.length() > 0) {
+      configure(testConfig, "profiler", profilerArgument);
+    }
+
+    if (Boolean.getBoolean("withSsl")) {
+      configure(testConfig, "SSL", WITH_SSL_ARGUMENT);
     }
 
     testConfig.before(new StartLocator(LOCATOR_PORT), LOCATOR);
@@ -81,11 +83,11 @@ public class ClientServerTopology {
     testConfig.before(new StartClient(LOCATOR_PORT), CLIENT);
   }
 
-  private static final String[] appendIfNotEmpty(String[] a, String b) {
-    if (null == b || b.length() == 0) {
-      return a;
-    }
-
-    return Arrays.append(a, b);
+  private static void configure(TestConfig testConfig, String variant, String... args) {
+    logger.info("Configuring {} JVM arguments.", variant);
+    testConfig.jvmArgs(CLIENT, args);
+    testConfig.jvmArgs(LOCATOR, args);
+    testConfig.jvmArgs(SERVER, args);
   }
+
 }

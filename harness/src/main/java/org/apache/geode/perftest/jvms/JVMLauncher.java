@@ -37,7 +37,7 @@ class JVMLauncher {
   CompletableFuture<Void> launchProcesses(Infrastructure infra, int rmiPort,
       List<JVMMapping> mapping)
       throws UnknownHostException {
-    List<CompletableFuture<Void>> futures = new ArrayList<CompletableFuture<Void>>();
+    List<CompletableFuture<Void>> futures = new ArrayList<>();
     for (JVMMapping entry : mapping) {
       CompletableFuture<Void> future = launchWorker(infra, rmiPort, entry);
       futures.add(future);
@@ -45,13 +45,13 @@ class JVMLauncher {
     return CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]));
   }
 
-  CompletableFuture<Void> launchWorker(Infrastructure infra, int rmiPort,
+  private CompletableFuture<Void> launchWorker(Infrastructure infra, int rmiPort,
       JVMMapping jvmConfig)
       throws UnknownHostException {
     String[] shellCommand =
         buildCommand(InetAddress.getLocalHost().getHostAddress(), rmiPort, jvmConfig);
 
-    CompletableFuture<Void> future = new CompletableFuture<Void>();
+    CompletableFuture<Void> future = new CompletableFuture<>();
     Thread thread = new Thread("Worker " + jvmConfig.getNode().getAddress()) {
       public void run() {
 
@@ -75,9 +75,9 @@ class JVMLauncher {
     return future;
   }
 
-  String[] buildCommand(String rmiHost, int rmiPort, JVMMapping jvmConfig) {
+  private String[] buildCommand(String rmiHost, int rmiPort, JVMMapping jvmConfig) {
 
-    List<String> command = new ArrayList<String>();
+    List<String> command = new ArrayList<>();
     command.add(System.getProperty("java.home") + "/bin/java");
     command.add("-classpath");
     command.add(jvmConfig.getLibDir() + "/*");
@@ -92,7 +92,7 @@ class JVMLauncher {
     return command.toArray(new String[0]);
   }
 
-  private static final List<String> replaceTokens(List<String> args, JVMMapping jvmConfig) {
+  private static List<String> replaceTokens(List<String> args, JVMMapping jvmConfig) {
     List<String> replaced = new ArrayList<>(args.size());
     for (String arg : args) {
       replaced.add(replaceTokens(arg, jvmConfig));
