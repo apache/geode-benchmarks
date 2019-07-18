@@ -92,9 +92,11 @@ class JVMLauncher {
     command.add("-D" + RemoteJVMFactory.OUTPUT_DIR + "=" + jvmConfig.getOutputDir());
 
     if (Boolean.getBoolean("withSsl")) {
-      command.add("-Dgemfire." + SSL_KEYSTORE + "=" + jvmConfig.getLibDir() + "/temp-self-signed.jks");
+      command
+          .add("-Dgemfire." + SSL_KEYSTORE + "=" + jvmConfig.getLibDir() + "/temp-self-signed.jks");
       command.add("-Dgemfire." + SSL_KEYSTORE_PASSWORD + "=123456");
-      command.add("-Dgemfire." + SSL_TRUSTSTORE + "=" + jvmConfig.getLibDir() + "/temp-self-signed.jks");
+      command.add(
+          "-Dgemfire." + SSL_TRUSTSTORE + "=" + jvmConfig.getLibDir() + "/temp-self-signed.jks");
       command.add("-Dgemfire." + SSL_TRUSTSTORE_PASSWORD + "=123456");
     }
     command.add("-Xloggc:" + jvmConfig.getOutputDir() + "/gc.log");
