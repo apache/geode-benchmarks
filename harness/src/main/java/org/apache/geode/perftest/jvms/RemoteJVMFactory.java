@@ -164,7 +164,7 @@ public class RemoteJVMFactory {
     ks.load(null, null);
     ks.setKeyEntry("default", privateKey, password, chain);
 
-    File jksFile = new File("selfsigned.jks");
+    File jksFile = new File("temp-self-signed.jks");
     FileOutputStream fos = new FileOutputStream(jksFile);
     ks.store(fos, password);
     fos.close();

@@ -90,11 +90,11 @@ class JVMLauncher {
     command.add("-D" + RemoteJVMFactory.RMI_PORT_PROPERTY + "=" + rmiPort);
     command.add("-D" + RemoteJVMFactory.JVM_ID + "=" + jvmConfig.getId());
     command.add("-D" + RemoteJVMFactory.OUTPUT_DIR + "=" + jvmConfig.getOutputDir());
-    String withSslArg = System.getProperty("withSsl");
-    if (withSslArg != null) {
-      command.add("-Dgemfire." + SSL_KEYSTORE + "=" + jvmConfig.getLibDir() + "/selfsigned.jks");
+
+    if (Boolean.getBoolean("withSsl")) {
+      command.add("-Dgemfire." + SSL_KEYSTORE + "=" + jvmConfig.getLibDir() + "/temp-self-signed.jks");
       command.add("-Dgemfire." + SSL_KEYSTORE_PASSWORD + "=123456");
-      command.add("-Dgemfire." + SSL_TRUSTSTORE + "=" + jvmConfig.getLibDir() + "/selfsigned.jks");
+      command.add("-Dgemfire." + SSL_TRUSTSTORE + "=" + jvmConfig.getLibDir() + "/temp-self-signed.jks");
       command.add("-Dgemfire." + SSL_TRUSTSTORE_PASSWORD + "=123456");
     }
     command.add("-Xloggc:" + jvmConfig.getOutputDir() + "/gc.log");

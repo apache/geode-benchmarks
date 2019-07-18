@@ -3,4 +3,4 @@ out
 .gradle
 build/
 output*/
-selfsigned.jks
+temp-self-signed.jks
