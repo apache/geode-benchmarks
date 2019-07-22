@@ -49,15 +49,16 @@ For example:
 ```
 
 Options:
-
-    -Phosts      : Hosts used by benchmarks on the order of client,locator,server,server (-Phosts=localhost,localhost,localhost,localhost)
-    -PoutputDir  : Results output directory (-PoutputDir=/tmp/results)
-    -PtestJVM    : Path to an alternative JVM for running the client, locator, and servers. If not specified JAVA_HOME will be used. Note all compilation tasks will still use JAVA_HOME.
-    -PwithSsl    : Flag to run geode with SSL. A self-signed certificate will be generated at runtime.
-    --tests      : Specific benchmarks to run (--tests=PartitionedPutBenchmark)
-    -d           : Debug
-    -i           : Info
-
+```
+    -Phosts               : Hosts used by benchmarks on the order of client,locator,server,server (-Phosts=localhost,localhost,localhost,localhost)
+    -PoutputDir           : Results output directory (-PoutputDir=/tmp/results)
+    -PtestJVM             : Path to an alternative JVM for running the client, locator, and servers. If not specified JAVA_HOME will be used. Note all compilation tasks will still use JAVA_HOME.
+    -PwithSsl             : Flag to run geode with SSL. A self-signed certificate will be generated at runtime.
+    -PwithSecurityManager : Flag to start Geode with the example implementation of SecurityManager
+    --tests               : Specific benchmarks to run (--tests=PartitionedPutBenchmark)
+    -d                    : Debug
+    -i                    : Info
+```    
 ### Running in aws
 
 This project includes some scripts to automate running benchmarks in AWS. See the 

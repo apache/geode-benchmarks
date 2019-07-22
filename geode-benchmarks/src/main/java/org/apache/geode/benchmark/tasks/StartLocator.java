@@ -18,7 +18,6 @@
 package org.apache.geode.benchmark.tasks;
 
 import static org.apache.geode.benchmark.parameters.GeodeProperties.locatorProperties;
-import static org.apache.geode.benchmark.parameters.GeodeProperties.withSsl;
 
 import java.io.File;
 import java.net.InetAddress;
@@ -41,9 +40,7 @@ public class StartLocator implements Task {
 
   @Override
   public void run(TestContext context) throws Exception {
-    String withSslArg = System.getProperty("withSsl");
-    Properties properties = (withSslArg != null)
-        ? withSsl(locatorProperties()) : locatorProperties();
+    Properties properties = locatorProperties();
 
     String statsFile = new File(context.getOutputDir(), "stats.gfs").getAbsolutePath();
     properties.setProperty(ConfigurationProperties.STATISTIC_ARCHIVE_FILE, statsFile);

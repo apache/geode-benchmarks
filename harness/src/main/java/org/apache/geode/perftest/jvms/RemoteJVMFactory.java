@@ -17,11 +17,13 @@
 
 package org.apache.geode.perftest.jvms;
 
+
 import static java.util.concurrent.TimeUnit.DAYS;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.security.InvalidKeyException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -41,6 +43,7 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sun.security.tools.keytool.CertAndKeyGen;
@@ -66,8 +69,8 @@ public class RemoteJVMFactory {
   public static final String OUTPUT_DIR = "OUTPUT_DIR";
   public static final String JVM_ID = "JVM_ID";
   public static final int RMI_PORT = 33333;
-  public static final String CLASSPATH = System.getProperty("java.class.path");
-  public static final String JAVA_HOME = System.getProperty("java.home");
+  private static final String CLASSPATH = System.getProperty("java.class.path");
+  private static final String JAVA_HOME = System.getProperty("java.home");
   private final JVMLauncher jvmLauncher;
   private final ClassPathCopier classPathCopier;
   private final ControllerFactory controllerFactory;
@@ -118,6 +121,11 @@ public class RemoteJVMFactory {
     File keyStore = createKeystore();
     infra.copyToNodes(Arrays.asList(keyStore), node -> getLibDir(mapping, node), false);
 
+    InputStream inputStream = getClass().getClassLoader().getResourceAsStream("security.json");
+    File file = new File("security.json");
+    FileUtils.copyInputStreamToFile(inputStream, file);
+    infra.copyToNodes(Arrays.asList(file), node -> getLibDir(mapping, node), false);
+
     CompletableFuture<Void> processesExited = jvmLauncher.launchProcesses(infra, RMI_PORT, mapping);
 
     if (!controller.waitForWorkers(5, TimeUnit.MINUTES)) {
@@ -137,11 +145,6 @@ public class RemoteJVMFactory {
   private String getLibDir(List<JVMMapping> mapping, Infrastructure.Node node) {
     return getJvmMapping(mapping, node)
         .getLibDir();
-  }
-
-  private String getOutputDir(List<JVMMapping> mapping, Infrastructure.Node node) {
-    return getJvmMapping(mapping, node)
-        .getOutputDir();
   }
 
   private File createKeystore()

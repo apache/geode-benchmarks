@@ -17,6 +17,7 @@ package org.apache.geode.benchmark.topology;
 
 
 import static org.apache.geode.benchmark.parameters.JVMParameters.JVM8_ARGS;
+import static org.apache.geode.benchmark.parameters.JVMParameters.JVM_ARGS;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.AfterEach;
@@ -32,6 +33,7 @@ public class ClientServerTopologyTest {
   @AfterEach
   public void clearProperties() {
     System.clearProperty("withSsl");
+    System.clearProperty("withSecurityManager");
   }
 
   @Test
@@ -39,14 +41,14 @@ public class ClientServerTopologyTest {
     System.setProperty("withSsl", "true");
     TestConfig testConfig = new TestConfig();
     ClientServerTopology.configure(testConfig);
-    assertThat(testConfig.getJvmArgs().get("client")).contains("-DwithSsl");
+    assertThat(testConfig.getJvmArgs().get("client")).contains("-DwithSsl=true");
   }
 
   @Test
   public void configWithNoSsl() {
     TestConfig testConfig = new TestConfig();
     ClientServerTopology.configure(testConfig);
-    assertThat(testConfig.getJvmArgs().get("client")).doesNotContain("-DwithSsl");
+    assertThat(testConfig.getJvmArgs().get("client")).doesNotContain("-DwithSsl=true");
   }
 
   @Test
@@ -54,36 +56,44 @@ public class ClientServerTopologyTest {
     System.setProperty("java.runtime.version", "1.8.0_212");
     TestConfig testConfig = new TestConfig();
     ClientServerTopology.configure(testConfig);
-    assertThat(testConfig.getJvmArgs().get("client")).doesNotContain("-DwithSsl");
     assertThat(testConfig.getJvmArgs().get("client")).contains(JVM8_ARGS);
   }
 
   @Test
-  public void configWithJava9OrHigher() {
+  public void configWithJava9() {
     System.setProperty("java.runtime.version", "9.0.1");
     TestConfig testConfig = new TestConfig();
     ClientServerTopology.configure(testConfig);
-    assertThat(testConfig.getJvmArgs().get("client")).doesNotContain("-DwithSsl");
     assertThat(testConfig.getJvmArgs().get("client")).doesNotContain(JVM8_ARGS);
   }
 
   @Test
-  public void configWithSslAndJava8() {
-    System.setProperty("withSsl", "true");
-    System.setProperty("java.runtime.version", "1.8.0_212");
+  public void configWithoutSecurityManager() {
     TestConfig testConfig = new TestConfig();
     ClientServerTopology.configure(testConfig);
-    assertThat(testConfig.getJvmArgs().get("client")).contains("-DwithSsl");
-    assertThat(testConfig.getJvmArgs().get("client")).contains(JVM8_ARGS);
+    assertThat(testConfig.getJvmArgs().get("client")).doesNotContain("-DwithSecurityManager=true");
   }
 
   @Test
-  public void configWithSslAndJava9() {
-    System.setProperty("withSsl", "true");
-    System.setProperty("java.runtime.version", "9.0.1");
+  public void configWithSecurityManager() {
+    System.setProperty("withSecurityManager", "true");
     TestConfig testConfig = new TestConfig();
     ClientServerTopology.configure(testConfig);
-    assertThat(testConfig.getJvmArgs().get("client")).contains("-DwithSsl");
+    assertThat(testConfig.getJvmArgs().get("client")).contains("-DwithSecurityManager=true");
+  }
+
+  @Test
+  public void configWithSecurityManagerAndSslAndJava9() {
+    System.setProperty("withSecurityManager", "true");
+    System.setProperty("java.runtime.version", "9.0.1");
+    System.setProperty("withSsl", "true");
+    TestConfig testConfig = new TestConfig();
+
+    ClientServerTopology.configure(testConfig);
+
+    assertThat(testConfig.getJvmArgs().get("client")).contains("-DwithSecurityManager=true");
+    assertThat(testConfig.getJvmArgs().get("client")).contains("-DwithSsl=true");
+    assertThat(testConfig.getJvmArgs().get("client")).contains(JVM_ARGS);
     assertThat(testConfig.getJvmArgs().get("client")).doesNotContain(JVM8_ARGS);
   }
 }

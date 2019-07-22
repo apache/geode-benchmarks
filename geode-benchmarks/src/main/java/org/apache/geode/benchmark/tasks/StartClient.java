@@ -18,7 +18,6 @@
 package org.apache.geode.benchmark.tasks;
 
 import static org.apache.geode.benchmark.parameters.GeodeProperties.clientProperties;
-import static org.apache.geode.benchmark.parameters.GeodeProperties.withSsl;
 
 import java.io.File;
 import java.net.InetAddress;
@@ -47,9 +46,7 @@ public class StartClient implements Task {
     InetAddress locator = context.getHostsForRole("locator").iterator().next();
 
     String statsFile = new File(context.getOutputDir(), "stats.gfs").getAbsolutePath();
-    String withSslArg = System.getProperty("withSsl");
-    Properties properties = (withSslArg != null)
-        ? withSsl(clientProperties()) : clientProperties();
+    Properties properties = clientProperties();
 
     ClientCache clientCache = new ClientCacheFactory(properties)
         .setPdxSerializer(new ReflectionBasedAutoSerializer("benchmark.geode.data.*"))
