@@ -179,17 +179,6 @@ monitor the test.
 ```
 
 # Running with SSL enabled
-
-## Prerequisites
-* You must have fulfilled the prerequisites at the beginning of this doc
-* Generate a self-signed SSL certificate using the keytool command:
-  * `keytool -genkey -keyalg RSA -alias tomcat -keystore selfsigned.jks -validity 365 -keysize 2048`
-  * The keystore password must be `123456`
-* Copy the generated certificate to the AWS VMs using the following command:
-  * `./copy_to_cluster.sh -tag <clusterTag> -- <path to selfsigned.jks> /home/geode/selfsigned.jks`
-  * The destination path must be `/home/geode/selfsigned.jks`
-
-## Running in AWS
 To run benchmarks with SSL enabled, run the test using the `run_tests.sh` script, with the additional CLI option `-PwithSsl`:
 ```
 ./run_tests.sh --tag <clusterTag> [other CLI options] -- -PwithSsl

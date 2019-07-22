@@ -17,8 +17,22 @@
 
 package org.apache.geode.perftest.jvms;
 
+
+import static java.util.concurrent.TimeUnit.DAYS;
+
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.security.InvalidKeyException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
+import java.security.PrivateKey;
+import java.security.SignatureException;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -32,6 +46,8 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import sun.security.tools.keytool.CertAndKeyGen;
+import sun.security.x509.X500Name;
 
 import org.apache.geode.perftest.infrastructure.Infrastructure;
 import org.apache.geode.perftest.infrastructure.InfrastructureFactory;
@@ -53,8 +69,8 @@ public class RemoteJVMFactory {
   public static final String OUTPUT_DIR = "OUTPUT_DIR";
   public static final String JVM_ID = "JVM_ID";
   public static final int RMI_PORT = 33333;
-  public static final String CLASSPATH = System.getProperty("java.class.path");
-  public static final String JAVA_HOME = System.getProperty("java.home");
+  private static final String CLASSPATH = System.getProperty("java.class.path");
+  private static final String JAVA_HOME = System.getProperty("java.home");
   private final JVMLauncher jvmLauncher;
   private final ClassPathCopier classPathCopier;
   private final ControllerFactory controllerFactory;
@@ -102,6 +118,8 @@ public class RemoteJVMFactory {
         controllerFactory.createController(new SharedContext(mapping), numWorkers);
 
     classPathCopier.copyToNodes(infra, node -> getLibDir(mapping, node));
+    File keyStore = createKeystore();
+    infra.copyToNodes(Arrays.asList(keyStore), node -> getLibDir(mapping, node), false);
 
     InputStream inputStream = getClass().getClassLoader().getResourceAsStream("security.json");
     File file = new File("security.json");
@@ -117,12 +135,44 @@ public class RemoteJVMFactory {
     return new RemoteJVMs(infra, mapping, controller, processesExited);
   }
 
-  private String getLibDir(List<JVMMapping> mapping, Infrastructure.Node node) {
+  private JVMMapping getJvmMapping(List<JVMMapping> mapping, Infrastructure.Node node) {
     return mapping.stream()
         .filter(entry -> entry.getNode().equals(node))
         .findFirst()
-        .orElseThrow(() -> new IllegalStateException("Could not find lib dir for node " + node))
+        .orElseThrow(() -> new IllegalStateException("Could not find node dir " + node));
+  }
+
+  private String getLibDir(List<JVMMapping> mapping, Infrastructure.Node node) {
+    return getJvmMapping(mapping, node)
         .getLibDir();
+  }
+
+  private File createKeystore()
+      throws KeyStoreException, IOException, CertificateException, NoSuchAlgorithmException,
+      NoSuchProviderException, InvalidKeyException, SignatureException {
+
+    CertAndKeyGen keyGen = new CertAndKeyGen("RSA", "SHA1WithRSA", null);
+    keyGen.generate(1024);
+
+    char[] password = "123456".toCharArray();
+    PrivateKey privateKey = keyGen.getPrivateKey();
+
+    // Generate self signed certificate
+    X509Certificate[] chain = new X509Certificate[1];
+    chain[0] = keyGen.getSelfCertificate(new X500Name("CN=ROOT"), DAYS.toSeconds(365));
+
+    logger.info("Certificate : {}", chain[0]);
+
+    KeyStore ks = KeyStore.getInstance(KeyStore.getDefaultType());
+    ks.load(null, null);
+    ks.setKeyEntry("default", privateKey, password, chain);
+
+    File jksFile = new File("temp-self-signed.jks");
+    FileOutputStream fos = new FileOutputStream(jksFile);
+    ks.store(fos, password);
+    fos.close();
+
+    return jksFile;
   }
 
   public InfrastructureFactory getInfrastructureFactory() {
