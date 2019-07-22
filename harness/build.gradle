@@ -55,6 +55,12 @@ dependencies {
     testCompile(group: 'org.assertj', name: 'assertj-core', version: project.'assertj-core.version')
 }
 
+compileJava {
+    options.fork = true
+    options.forkOptions.executable = 'javac'
+    options.compilerArgs << '-XDignore.symbol.file'
+}
+
 test{
     useJUnitPlatform()
 }

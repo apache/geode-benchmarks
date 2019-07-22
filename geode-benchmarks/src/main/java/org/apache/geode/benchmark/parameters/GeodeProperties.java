@@ -28,10 +28,6 @@ import static org.apache.geode.distributed.ConfigurationProperties.MEMBER_TIMEOU
 import static org.apache.geode.distributed.ConfigurationProperties.REMOVE_UNRESPONSIVE_CLIENT;
 import static org.apache.geode.distributed.ConfigurationProperties.SERIALIZABLE_OBJECT_FILTER;
 import static org.apache.geode.distributed.ConfigurationProperties.SSL_ENABLED_COMPONENTS;
-import static org.apache.geode.distributed.ConfigurationProperties.SSL_KEYSTORE;
-import static org.apache.geode.distributed.ConfigurationProperties.SSL_KEYSTORE_PASSWORD;
-import static org.apache.geode.distributed.ConfigurationProperties.SSL_TRUSTSTORE;
-import static org.apache.geode.distributed.ConfigurationProperties.SSL_TRUSTSTORE_PASSWORD;
 import static org.apache.geode.distributed.ConfigurationProperties.STATISTIC_SAMPLING_ENABLED;
 import static org.apache.geode.distributed.ConfigurationProperties.USE_CLUSTER_CONFIGURATION;
 import static org.apache.geode.security.SecurableCommunicationChannels.ALL;
@@ -81,12 +77,6 @@ public class GeodeProperties {
 
   public static Properties withSsl(Properties properties) {
     properties.setProperty(SSL_ENABLED_COMPONENTS, ALL);
-
-    properties.setProperty(SSL_KEYSTORE, "/home/geode/selfsigned.jks");
-    properties.setProperty(SSL_KEYSTORE_PASSWORD, "123456");
-    properties.setProperty(SSL_TRUSTSTORE, "/home/geode/selfsigned.jks");
-    properties.setProperty(SSL_TRUSTSTORE_PASSWORD, "123456");
-
     return properties;
   }
 }
