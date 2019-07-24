@@ -55,6 +55,7 @@ Options:
     -PtestJVM             : Path to an alternative JVM for running the client, locator, and servers. If not specified JAVA_HOME will be used. Note all compilation tasks will still use JAVA_HOME.
     -PwithSsl             : Flag to run geode with SSL. A self-signed certificate will be generated at runtime.
     -PwithSecurityManager : Flag to start Geode with the example implementation of SecurityManager
+    -PclientThreadCount   : Number of client threads to start.  If not specified, the value will default to (number of processors * 16).
     --tests               : Specific benchmarks to run (--tests=PartitionedPutBenchmark)
     -d                    : Debug
     -i                    : Info

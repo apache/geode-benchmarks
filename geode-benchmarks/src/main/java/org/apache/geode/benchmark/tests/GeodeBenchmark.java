@@ -17,32 +17,35 @@ package org.apache.geode.benchmark.tests;
 
 import static java.util.concurrent.TimeUnit.MINUTES;
 
+import java.util.Properties;
+
+import com.google.common.base.Strings;
+
 import org.apache.geode.perftest.TestConfig;
 
 public class GeodeBenchmark {
 
-  /**
-   * Warm up time for the benchmark running on the default runner
-   */
   private static final long WARM_UP_TIME = MINUTES.toSeconds(1);
 
-  /**
-   * Total duration for which the benchmark will run on the default runner
-   */
   private static final long BENCHMARK_DURATION = MINUTES.toSeconds(5);
 
-  /**
-   * Number of threads to run benchmark.
-   */
-  private static final int THREADS = Runtime.getRuntime().availableProcessors() * 16;
+  public static final int DEFAULT_THREADS_PER_PROCESSOR = 16;
 
 
   public static TestConfig createConfig() {
     TestConfig testConfig = new TestConfig();
     testConfig.warmupSeconds(WARM_UP_TIME);
     testConfig.durationSeconds(BENCHMARK_DURATION);
-    testConfig.threads(THREADS);
+    testConfig.threads(numThreads());
     return testConfig;
+  }
+
+  private static final int numThreads() {
+    Properties properties = System.getProperties();
+    if (Strings.isNullOrEmpty(properties.getProperty("clientThreadCount"))) {
+      return Runtime.getRuntime().availableProcessors() * DEFAULT_THREADS_PER_PROCESSOR;
+    }
+    return Integer.parseInt(properties.getProperty("clientThreadCount"));
   }
 
 }

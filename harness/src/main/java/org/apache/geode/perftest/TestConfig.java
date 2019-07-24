@@ -98,8 +98,7 @@ public class TestConfig implements Serializable {
   }
 
   /**
-   * Set the number of threads to run in each JVM for the workload test. Default
-   * is twice the number of available processors.
+   * Set the number of threads to run in each JVM for the workload test.
    */
   public void threads(int threads) {
     workloadConfig.threads(threads);
@@ -121,6 +120,10 @@ public class TestConfig implements Serializable {
 
   public long getWarmupSeconds() {
     return workloadConfig.getWarmupSeconds();
+  }
+
+  public int getThreads() {
+    return workloadConfig.getThreads();
   }
 
   public Map<String, Integer> getRoles() {
