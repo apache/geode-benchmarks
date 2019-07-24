@@ -53,7 +53,7 @@ public class ReplicatedPutAllBenchmark implements PerformanceTest {
 
   @Override
   public TestConfig configure() {
-    TestConfig config = GeodeBenchmark.createConfig();
+    TestConfig config = TestConfigFactory.build();
     config.threads(Runtime.getRuntime().availableProcessors() * 2);
     ClientServerTopology.configure(config);
     config.before(new CreateReplicatedRegion(), SERVER);

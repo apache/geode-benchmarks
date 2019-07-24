@@ -21,18 +21,18 @@ import org.junit.jupiter.api.Test;
 
 import org.apache.geode.perftest.TestConfig;
 
-class GeodeBenchmarkTest {
+class TestConfigFactoryTest {
 
   @Test
   void createConfigWithDefault() {
-    TestConfig config = GeodeBenchmark.createConfig();
+    TestConfig config = TestConfigFactory.build();
     assertThat(config.getThreads()).isEqualTo(Runtime.getRuntime().availableProcessors() * 16);
   }
 
   @Test
   void createConfigWithClientThreadCountPropertiesSet() {
     pushSystemProperty("clientThreadCount", "3", () -> {
-      TestConfig config = GeodeBenchmark.createConfig();
+      TestConfig config = TestConfigFactory.build();
       assertThat(config.getThreads()).isEqualTo(3);
     });
 

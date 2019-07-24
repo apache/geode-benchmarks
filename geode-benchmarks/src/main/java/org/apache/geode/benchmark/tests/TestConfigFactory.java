@@ -23,7 +23,7 @@ import com.google.common.base.Strings;
 
 import org.apache.geode.perftest.TestConfig;
 
-public class GeodeBenchmark {
+public class TestConfigFactory {
 
   private static final long WARM_UP_TIME = MINUTES.toSeconds(1);
 
@@ -32,7 +32,7 @@ public class GeodeBenchmark {
   public static final int DEFAULT_THREADS_PER_PROCESSOR = 16;
 
 
-  public static TestConfig createConfig() {
+  public static TestConfig build() {
     TestConfig testConfig = new TestConfig();
     testConfig.warmupSeconds(WARM_UP_TIME);
     testConfig.durationSeconds(BENCHMARK_DURATION);
