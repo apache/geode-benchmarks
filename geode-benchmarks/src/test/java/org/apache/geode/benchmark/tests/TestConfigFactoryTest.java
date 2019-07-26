@@ -25,14 +25,14 @@ class TestConfigFactoryTest {
 
   @Test
   void createConfigWithDefault() {
-    TestConfig config = TestConfigFactory.build();
-    assertThat(config.getThreads()).isEqualTo(Runtime.getRuntime().availableProcessors() * 16);
+    TestConfig config = new TestConfigFactory().withDefaultThreadCount(500).build();
+    assertThat(config.getThreads()).isEqualTo(500);
   }
 
   @Test
   void createConfigWithClientThreadCountPropertiesSet() {
     pushSystemProperty("clientThreadCount", "3", () -> {
-      TestConfig config = TestConfigFactory.build();
+      TestConfig config = new TestConfigFactory().withDefaultThreadCount(500).build();
       assertThat(config.getThreads()).isEqualTo(3);
     });
 

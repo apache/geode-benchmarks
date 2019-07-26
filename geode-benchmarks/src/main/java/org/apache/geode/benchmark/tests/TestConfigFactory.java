@@ -26,26 +26,29 @@ import org.apache.geode.perftest.TestConfig;
 public class TestConfigFactory {
 
   private static final long WARM_UP_TIME = MINUTES.toSeconds(1);
-
   private static final long BENCHMARK_DURATION = MINUTES.toSeconds(5);
 
-  public static final int DEFAULT_THREADS_PER_PROCESSOR = 16;
+  private int defaultThreadCount;
 
-
-  public static TestConfig build() {
+  public TestConfig build() {
     TestConfig testConfig = new TestConfig();
     testConfig.warmupSeconds(WARM_UP_TIME);
     testConfig.durationSeconds(BENCHMARK_DURATION);
     testConfig.threads(numThreads());
     return testConfig;
+
   }
 
-  private static final int numThreads() {
+  public TestConfigFactory withDefaultThreadCount(int defaultThreadCount) {
+    this.defaultThreadCount = defaultThreadCount;
+    return this;
+  }
+
+  private int numThreads() {
     Properties properties = System.getProperties();
     if (Strings.isNullOrEmpty(properties.getProperty("clientThreadCount"))) {
-      return Runtime.getRuntime().availableProcessors() * DEFAULT_THREADS_PER_PROCESSOR;
+      return this.defaultThreadCount;
     }
     return Integer.parseInt(properties.getProperty("clientThreadCount"));
   }
-
 }

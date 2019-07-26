@@ -51,7 +51,8 @@ public class ReplicatedPutBenchmark implements PerformanceTest {
 
   @Override
   public TestConfig configure() {
-    TestConfig config = TestConfigFactory.build();
+    TestConfig config = new TestConfigFactory()
+        .withDefaultThreadCount(Runtime.getRuntime().availableProcessors() * 16).build();
     ClientServerTopology.configure(config);
     config.before(new CreateReplicatedRegion(), SERVER);
     config.before(new CreateClientProxyRegion(), CLIENT);

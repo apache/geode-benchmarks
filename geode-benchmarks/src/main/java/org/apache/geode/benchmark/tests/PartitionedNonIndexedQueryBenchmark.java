@@ -49,8 +49,8 @@ public class PartitionedNonIndexedQueryBenchmark implements PerformanceTest {
 
   @Override
   public TestConfig configure() {
-    TestConfig config = TestConfigFactory.build();
-    config.threads(Runtime.getRuntime().availableProcessors() * 2);
+    TestConfig config = new TestConfigFactory()
+        .withDefaultThreadCount(Runtime.getRuntime().availableProcessors() * 2).build();
     ClientServerTopology.configure(config);
     config.before(new CreatePartitionedRegion(), SERVER);
     config.before(new CreateClientProxyRegion(), CLIENT);
