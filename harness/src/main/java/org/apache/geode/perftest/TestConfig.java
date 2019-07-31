@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import org.yardstickframework.BenchmarkDriver;
 
@@ -40,6 +41,7 @@ public class TestConfig implements Serializable {
   private final WorkloadConfig workloadConfig = new WorkloadConfig();
   private Map<String, Integer> roles = new LinkedHashMap<>();
   private Map<String, List<String>> jvmArgs = new HashMap<>();
+  private Map<String, Properties> props = new HashMap<>();
   private List<TestStep> before = new ArrayList<>();
   private List<TestStep> workload = new ArrayList<>();
   private List<TestStep> after = new ArrayList<>();
@@ -53,7 +55,6 @@ public class TestConfig implements Serializable {
   public void role(String role, int numberOfJVMs) {
     this.roles.put(role, numberOfJVMs);
   }
-
 
   /**
    * Add a before task to the test. Each before task is run in parallel on
@@ -84,7 +85,6 @@ public class TestConfig implements Serializable {
   public void workload(BenchmarkDriver benchmark, String... roles) {
     workload.add(new TestStep(new YardstickTask(benchmark, workloadConfig), roles));
   }
-
 
   /**
    * Set the duration of the workload phase. This is the amount of time that
@@ -161,6 +161,17 @@ public class TestConfig implements Serializable {
     return Collections.unmodifiableMap(jvmArgs);
   }
 
+  /**
+   * Add custom system properties to be used by Servers, Locators and Clients upon startup
+   */
+  public void props(String role, Properties props) {
+    this.props.put(role, props);
+  }
+
+  public Map<String, Properties> getProps() {
+    return Collections.unmodifiableMap(props);
+  }
+
   public static class TestStep {
     private final Task task;
     private final String[] roles;
@@ -180,5 +191,6 @@ public class TestConfig implements Serializable {
     public String[] getRoles() {
       return roles;
     }
+
   }
 }

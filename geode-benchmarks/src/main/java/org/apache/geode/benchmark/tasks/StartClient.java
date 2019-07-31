@@ -35,9 +35,11 @@ import org.apache.geode.perftest.TestContext;
  */
 public class StartClient implements Task {
   private int locatorPort;
+  private Properties props;
 
-  public StartClient(int locatorPort) {
+  public StartClient(int locatorPort, Properties props) {
     this.locatorPort = locatorPort;
+    this.props = props;
   }
 
   @Override
@@ -47,6 +49,12 @@ public class StartClient implements Task {
 
     String statsFile = new File(context.getOutputDir(), "stats.gfs").getAbsolutePath();
     Properties properties = clientProperties();
+
+    if (this.props != null) {
+      for (String propertyName : props.stringPropertyNames()) {
+        properties.setProperty(propertyName, props.getProperty(propertyName));
+      }
+    }
 
     ClientCache clientCache = new ClientCacheFactory(properties)
         .setPdxSerializer(new ReflectionBasedAutoSerializer("benchmark.geode.data.*"))

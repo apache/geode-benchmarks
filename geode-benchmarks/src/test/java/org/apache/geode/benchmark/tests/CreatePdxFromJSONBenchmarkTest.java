@@ -25,11 +25,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junitpioneer.jupiter.TempDirectory;
 
-import org.apache.geode.benchmark.LongRange;
 import org.apache.geode.perftest.TestRunners;
 
 @ExtendWith(TempDirectory.class)
-public class PartitionedPutBenchmarkTest {
+public class CreatePdxFromJSONBenchmarkTest {
 
   private File folder;
 
@@ -41,8 +40,7 @@ public class PartitionedPutBenchmarkTest {
   @Test
   public void benchmarkRunsSuccessfully()
       throws Exception {
-    PartitionedPutBenchmark test = new PartitionedPutBenchmark();
-    test.setKeyRange(new LongRange(0, 100));
+    CreatePdxFromJSONBenchmark test = new CreatePdxFromJSONBenchmark();
     TestRunners.minimalRunner(folder)
         .runTest(test);
   }
