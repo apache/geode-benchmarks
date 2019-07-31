@@ -20,6 +20,9 @@ import static org.apache.geode.benchmark.topology.ClientServerTopology.Roles.CLI
 import static org.apache.geode.benchmark.topology.ClientServerTopology.Roles.LOCATOR;
 import static org.apache.geode.benchmark.topology.ClientServerTopology.Roles.SERVER;
 
+import java.util.Map;
+import java.util.Properties;
+
 import org.bouncycastle.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -72,9 +75,11 @@ public class ClientServerTopology {
     addToTestConfig(testConfig, "withSsl", WITH_SSL_ARGUMENT);
     addToTestConfig(testConfig, "withSecurityManager", WITH_SECURITY_MANAGER_ARGUMENT);
 
-    testConfig.before(new StartLocator(LOCATOR_PORT), LOCATOR);
-    testConfig.before(new StartServer(LOCATOR_PORT), SERVER);
-    testConfig.before(new StartClient(LOCATOR_PORT), CLIENT);
+    Map<String, Properties> propertiesMap = testConfig.getProps();
+
+    testConfig.before(new StartLocator(LOCATOR_PORT, propertiesMap.get(LOCATOR)), LOCATOR);
+    testConfig.before(new StartServer(LOCATOR_PORT, propertiesMap.get(SERVER)), SERVER);
+    testConfig.before(new StartClient(LOCATOR_PORT, propertiesMap.get(CLIENT)), CLIENT);
   }
 
   private static void addToTestConfig(TestConfig testConfig, String systemPropertyKey,

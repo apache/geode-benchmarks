@@ -33,14 +33,22 @@ import org.apache.geode.perftest.TestContext;
  */
 public class StartLocator implements Task {
   private int locatorPort;
+  private Properties props;
 
-  public StartLocator(int locatorPort) {
+  public StartLocator(int locatorPort, Properties props) {
     this.locatorPort = locatorPort;
+    this.props = props;
   }
 
   @Override
   public void run(TestContext context) throws Exception {
     Properties properties = locatorProperties();
+
+    if (this.props != null) {
+      for (String propertyName : props.stringPropertyNames()) {
+        properties.setProperty(propertyName, props.getProperty(propertyName));
+      }
+    }
 
     String statsFile = new File(context.getOutputDir(), "stats.gfs").getAbsolutePath();
     properties.setProperty(ConfigurationProperties.STATISTIC_ARCHIVE_FILE, statsFile);
