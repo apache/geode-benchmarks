@@ -28,6 +28,7 @@ DEFAULT_REPO='https://github.com/apache/geode'
 REPO=${DEFAULT_REPO}
 DEFAULT_BRANCH='develop'
 BRANCH=${DEFAULT_BRANCH}
+ITERATIONS=
 
 TAG=
 METADATA=
@@ -87,6 +88,12 @@ while (( "$#" )); do
         shift
       fi
       ;;
+    --iterations )
+      if [ "$2" ]; then
+        ITERATIONS=$2
+        shift
+      fi
+      ;;
     -h|--help|-\? )
       echo "Usage: $(basename "$0") -t tag [options ...] [-- arguments ...]"
       echo "Options:"
@@ -121,6 +128,12 @@ if [ -z "${TAG}" ]; then
   exit 1
 fi
 
+if [ ! -z "${ITERATIONS}" ]; then
+  if [ -z "${OUTPUT}" ]; then
+    echo "--output argument is required when number of iterations is provided."
+    exit 1
+  fi
+fi
 OUTPUT=${OUTPUT:-output-${DATE}-${TAG}}
 PREFIX="geode-performance-${TAG}"
 
@@ -213,12 +226,32 @@ BUILD_IDENTIFIER="$(uuidgen)"
 
 METADATA="${METADATA},'source_repo':'${GEODE_REPO}','benchmark_repo':'${BENCHMARK_REPO}','benchmark_branch':'${BENCHMARK_BRANCH}','instance_id':'${instance_id}','benchmark_sha':'${BENCHMARK_SHA}','build_identifier':'${BUILD_IDENTIFIER}'"
 
-ssh ${SSH_OPTIONS} geode@${FIRST_INSTANCE} \
-  cd geode-benchmarks '&&' \
-  ./gradlew -PgeodeVersion=${VERSION} benchmark "-Phosts=${HOSTS}" "-Pmetadata=${METADATA}" "$@"
+run () {
+  OUTPUT_DIR=$1
+  shift
+  echo "Output directory: ${OUTPUT_DIR}"
 
-mkdir -p ${OUTPUT}
+  ssh ${SSH_OPTIONS} geode@${FIRST_INSTANCE} \
+    cd geode-benchmarks '&&' \
+    ./gradlew -PgeodeVersion=${VERSION} benchmark "-Phosts=${HOSTS}" "-Pmetadata=${METADATA}" "$@"
 
-scp ${SSH_OPTIONS} -r geode@${FIRST_INSTANCE}:geode-benchmarks/geode-benchmarks/build/reports ${OUTPUT}/reports
-BENCHMARK_DIRECTORY="$(ssh ${SSH_OPTIONS} geode@${FIRST_INSTANCE} ls -l geode-benchmarks/geode-benchmarks/build/ | grep benchmark | awk 'NF>1{print $NF}')"
-scp ${SSH_OPTIONS} -r geode@${FIRST_INSTANCE}:geode-benchmarks/geode-benchmarks/build/${BENCHMARK_DIRECTORY} ${OUTPUT}
+  mkdir -p ${OUTPUT_DIR}
+
+  scp ${SSH_OPTIONS} -r geode@${FIRST_INSTANCE}:geode-benchmarks/geode-benchmarks/build/reports ${OUTPUT_DIR}/reports
+  BENCHMARK_DIRECTORY="$(ssh ${SSH_OPTIONS} geode@${FIRST_INSTANCE} ls -l geode-benchmarks/geode-benchmarks/build/ | grep benchmark | awk 'NF>1{print $NF}')"
+  scp ${SSH_OPTIONS} -r geode@${FIRST_INSTANCE}:geode-benchmarks/geode-benchmarks/build/${BENCHMARK_DIRECTORY} ${OUTPUT_DIR}
+  ssh ${SSH_OPTIONS} geode@${FIRST_INSTANCE} rm -rf geode-benchmarks/geode-benchmarks/build/${BENCHMARK_DIRECTORY}
+}
+
+if [ ! -z "${ITERATIONS}" ]; then
+  i=1
+  while [[ ${i} -le "${ITERATIONS}" ]]
+  do
+    run ${OUTPUT}_${i} $@ || true
+    ((i = i + 1))
+    sleep 30
+  done
+else
+  run ${OUTPUT} $@
+fi
+
