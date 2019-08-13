@@ -18,10 +18,13 @@ package org.apache.geode.benchmark.tests;
 import static org.apache.geode.benchmark.topology.ClientServerTopology.Roles.CLIENT;
 import static org.apache.geode.benchmark.topology.ClientServerTopology.Roles.SERVER;
 
+import benchmark.geode.data.BenchmarkFunction;
+
 import org.apache.geode.benchmark.LongRange;
 import org.apache.geode.benchmark.tasks.CreateClientProxyRegion;
 import org.apache.geode.benchmark.tasks.CreatePartitionedRegion;
 import org.apache.geode.benchmark.tasks.PrePopulateRegion;
+import org.apache.geode.benchmark.tasks.RegisterFunction;
 import org.apache.geode.benchmark.topology.ClientServerTopology;
 import org.apache.geode.perftest.PerformanceTest;
 import org.apache.geode.perftest.TestConfig;
@@ -45,6 +48,7 @@ abstract class AbstractPartitionedFunctionBenchmark implements PerformanceTest {
     config.before(new CreatePartitionedRegion(), SERVER);
     config.before(new CreateClientProxyRegion(), CLIENT);
     config.before(new PrePopulateRegion(keyRange), SERVER);
+    config.before(new RegisterFunction(new BenchmarkFunction(keyRange)), SERVER);
     return config;
   }
 }

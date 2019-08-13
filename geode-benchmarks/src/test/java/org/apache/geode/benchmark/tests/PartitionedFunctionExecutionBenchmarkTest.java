@@ -37,7 +37,6 @@ public class PartitionedFunctionExecutionBenchmarkTest {
   public void benchmarkRunsSuccessfully() throws Exception {
     PartitionedFunctionExecutionBenchmark test = new PartitionedFunctionExecutionBenchmark();
     test.setKeyRange(new LongRange(0, 100));
-    test.setFunctionIDRange(5);
     TestRunners.minimalRunner(folder).runTest(test);
   }
 }

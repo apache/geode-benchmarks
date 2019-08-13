@@ -39,7 +39,6 @@ public class ReplicatedFunctionExecutionBenchmarkTest {
   void benchmarkRunsSuccessfully() throws Exception {
     ReplicatedFunctionExecutionBenchmark test = new ReplicatedFunctionExecutionBenchmark();
     test.setKeyRange(new LongRange(0, 100));
-    test.setFunctionIDRange(5);
     TestRunners.minimalRunner(folder).runTest(test);
   }
 }
