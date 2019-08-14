@@ -22,6 +22,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junitpioneer.jupiter.TempDirectory;
 
+import org.apache.geode.benchmark.LongRange;
 import org.apache.geode.perftest.TestRunners;
 
 @ExtendWith(TempDirectory.class)
@@ -37,7 +38,7 @@ public class ReplicatedFunctionExecutionWithFiltersBenchmarkTest {
   public void benchmarkRunsSuccessfully() throws Exception {
     ReplicatedFunctionExecutionWithFiltersBenchmark test =
         new ReplicatedFunctionExecutionWithFiltersBenchmark();
-    test.setKeyRange(100);
+    test.setKeyRange(new LongRange(0, 100));
     test.setFilterKeyRange(5);
     TestRunners.minimalRunner(folder).runTest(test);
   }

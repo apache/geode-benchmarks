@@ -35,6 +35,14 @@ public class LongRange implements Serializable {
   private final long max;
 
   public LongRange(long min, long max) {
+    try {
+      if (Math.subtractExact(max, min) <= 0) {
+        throw new IllegalArgumentException();
+      }
+    } catch (ArithmeticException e) {
+      throw new IllegalArgumentException(e);
+    }
+
     this.min = min;
     this.max = max;
   }
@@ -45,6 +53,10 @@ public class LongRange implements Serializable {
 
   public long getMax() {
     return max;
+  }
+
+  public long size() {
+    return max - min;
   }
 
   /**
@@ -84,6 +96,11 @@ public class LongRange implements Serializable {
         min + ((increment + 1) * min(remainder, index)) + (increment * max(0, index - remainder));
     final long sliceMax = sliceMin + increment + (index < remainder ? 1 : 0);
     return new LongRange(sliceMin, sliceMax);
+  }
+
+  public LongRange[] slicesOfSize(final long sliceSize) {
+    final int count = (int) Math.ceil((double) size() / sliceSize);
+    return slice(count);
   }
 
   /**

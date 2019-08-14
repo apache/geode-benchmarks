@@ -25,6 +25,7 @@ import benchmark.geode.data.BenchmarkFunction;
 import org.yardstickframework.BenchmarkConfiguration;
 import org.yardstickframework.BenchmarkDriverAdapter;
 
+import org.apache.geode.benchmark.LongRange;
 import org.apache.geode.cache.Region;
 import org.apache.geode.cache.client.ClientCache;
 import org.apache.geode.cache.client.ClientCacheFactory;
@@ -34,10 +35,10 @@ import org.apache.geode.cache.execute.ResultCollector;
 
 public class ExecuteFunction extends BenchmarkDriverAdapter implements Serializable {
   private Region region;
-  long keyRange;
+  LongRange keyRange;
   long functionIDRange;
 
-  public ExecuteFunction(long keyRange, long functionIDRange) {
+  public ExecuteFunction(LongRange keyRange, long functionIDRange) {
     this.keyRange = keyRange;
     this.functionIDRange = functionIDRange;
   }
@@ -51,7 +52,8 @@ public class ExecuteFunction extends BenchmarkDriverAdapter implements Serializa
 
   @Override
   public boolean test(Map<Object, Object> ctx) throws Exception {
-    long minId = ThreadLocalRandom.current().nextLong(0, this.keyRange - functionIDRange);
+    long minId = ThreadLocalRandom.current().nextLong(keyRange.getMin(),
+        keyRange.getMax() - functionIDRange);
     long maxId = minId + functionIDRange;
     Function function = new BenchmarkFunction(minId, maxId);
     FunctionService.registerFunction(function);

@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
 import org.yardstickframework.BenchmarkConfiguration;
 import org.yardstickframework.BenchmarkDriverAdapter;
 
+import org.apache.geode.benchmark.LongRange;
 import org.apache.geode.cache.Region;
 import org.apache.geode.cache.client.ClientCache;
 import org.apache.geode.cache.client.ClientCacheFactory;
@@ -38,11 +39,11 @@ import org.apache.geode.perftest.jvms.RemoteJVMFactory;
 public class OQLQuery extends BenchmarkDriverAdapter implements Serializable {
   private static final Logger logger = LoggerFactory.getLogger(RemoteJVMFactory.class);
   private Region<Object, Object> region;
-  private long keyRange;
+  private LongRange keyRange;
   private long queryRange;
   ClientCache cache;
 
-  public OQLQuery(long keyRange, long queryRange) {
+  public OQLQuery(LongRange keyRange, long queryRange) {
     this.keyRange = keyRange;
     this.queryRange = queryRange;
   }
@@ -56,7 +57,8 @@ public class OQLQuery extends BenchmarkDriverAdapter implements Serializable {
 
   @Override
   public boolean test(Map<Object, Object> ctx) throws Exception {
-    long minId = ThreadLocalRandom.current().nextLong(0, this.keyRange - queryRange);
+    long minId =
+        ThreadLocalRandom.current().nextLong(keyRange.getMin(), keyRange.getMax() - queryRange);
     long maxId = minId + queryRange;
 
     SelectResults results = executeQuery(minId, maxId);

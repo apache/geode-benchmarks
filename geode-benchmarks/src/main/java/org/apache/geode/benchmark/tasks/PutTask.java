@@ -19,12 +19,12 @@ package org.apache.geode.benchmark.tasks;
 
 import java.io.Serializable;
 import java.util.Map;
-import java.util.concurrent.ThreadLocalRandom;
 
 import benchmark.geode.data.Portfolio;
 import org.yardstickframework.BenchmarkConfiguration;
 import org.yardstickframework.BenchmarkDriverAdapter;
 
+import org.apache.geode.benchmark.LongRange;
 import org.apache.geode.cache.Region;
 import org.apache.geode.cache.client.ClientCache;
 import org.apache.geode.cache.client.ClientCacheFactory;
@@ -33,9 +33,9 @@ public class PutTask extends BenchmarkDriverAdapter implements Serializable {
 
   private Region<Object, Object> region;
 
-  private long keyRange;
+  private LongRange keyRange;
 
-  public PutTask(long keyRange) {
+  public PutTask(LongRange keyRange) {
     this.keyRange = keyRange;
   }
 
@@ -47,8 +47,8 @@ public class PutTask extends BenchmarkDriverAdapter implements Serializable {
   }
 
   @Override
-  public boolean test(Map<Object, Object> ctx) throws Exception {
-    long key = ThreadLocalRandom.current().nextLong(0, this.keyRange);
+  public boolean test(Map<Object, Object> ctx) {
+    long key = keyRange.random();
     region.put(key, new Portfolio(key));
     return true;
   }

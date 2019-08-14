@@ -19,11 +19,11 @@ package org.apache.geode.benchmark.tasks;
 
 import java.io.Serializable;
 import java.util.Map;
-import java.util.concurrent.ThreadLocalRandom;
 
 import org.yardstickframework.BenchmarkConfiguration;
 import org.yardstickframework.BenchmarkDriverAdapter;
 
+import org.apache.geode.benchmark.LongRange;
 import org.apache.geode.cache.Region;
 import org.apache.geode.cache.client.ClientCache;
 import org.apache.geode.cache.client.ClientCacheFactory;
@@ -34,23 +34,25 @@ import org.apache.geode.cache.client.ClientCacheFactory;
  */
 public class GetTask extends BenchmarkDriverAdapter implements Serializable {
 
-  private Region<Object, Object> region;
-  private long keyRange;
+  private final LongRange keyRange;
 
-  public GetTask(long keyRange) {
+  private Region<Object, Object> region;
+
+  public GetTask(LongRange keyRange) {
     this.keyRange = keyRange;
   }
 
   @Override
   public void setUp(BenchmarkConfiguration cfg) throws Exception {
     super.setUp(cfg);
-    ClientCache cache = ClientCacheFactory.getAnyInstance();
+
+    final ClientCache cache = ClientCacheFactory.getAnyInstance();
     region = cache.getRegion("region");
   }
 
   @Override
   public boolean test(Map<Object, Object> ctx) throws Exception {
-    long key = ThreadLocalRandom.current().nextLong(0, this.keyRange);
+    final long key = keyRange.random();
     region.get(key);
     return true;
   }

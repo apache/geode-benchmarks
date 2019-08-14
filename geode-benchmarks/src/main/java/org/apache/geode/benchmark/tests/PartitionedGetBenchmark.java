@@ -23,6 +23,7 @@ import static org.apache.geode.benchmark.topology.ClientServerTopology.Roles.SER
 
 import org.junit.jupiter.api.Test;
 
+import org.apache.geode.benchmark.LongRange;
 import org.apache.geode.benchmark.tasks.CreateClientProxyRegion;
 import org.apache.geode.benchmark.tasks.CreatePartitionedRegion;
 import org.apache.geode.benchmark.tasks.GetTask;
@@ -37,7 +38,7 @@ import org.apache.geode.perftest.TestRunners;
  */
 public class PartitionedGetBenchmark implements PerformanceTest {
 
-  private long keyRange = 1000000;
+  private LongRange keyRange = new LongRange(0, 1000000);
 
   @Test
   public void run() throws Exception {
@@ -46,7 +47,7 @@ public class PartitionedGetBenchmark implements PerformanceTest {
 
   public PartitionedGetBenchmark() {}
 
-  public void setKeyRange(long keyRange) {
+  public void setKeyRange(final LongRange keyRange) {
     this.keyRange = keyRange;
   }
 

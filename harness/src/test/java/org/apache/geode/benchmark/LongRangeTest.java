@@ -25,6 +25,26 @@ import org.junit.jupiter.api.Test;
 class LongRangeTest {
 
   @Test
+  public void constructValidRanges() {
+    new LongRange(0, 1);
+    new LongRange(0, Long.MAX_VALUE);
+    new LongRange(-1, 0);
+    new LongRange(Long.MIN_VALUE, -1);
+  }
+
+  @Test
+  public void constructInvalidRangesThrowsException() {
+    assertThatThrownBy(() -> new LongRange(0, 0)).isInstanceOf(IllegalArgumentException.class);
+    assertThatThrownBy(() -> new LongRange(1, 0)).isInstanceOf(IllegalArgumentException.class);
+    assertThatThrownBy(() -> new LongRange(Long.MIN_VALUE, Long.MAX_VALUE))
+        .isInstanceOf(IllegalArgumentException.class);
+    assertThatThrownBy(() -> new LongRange(-1, Long.MAX_VALUE))
+        .isInstanceOf(IllegalArgumentException.class);
+    assertThatThrownBy(() -> new LongRange(Long.MIN_VALUE, 0))
+        .isInstanceOf(IllegalArgumentException.class);
+  }
+
+  @Test
   public void getMin() {
     assertThat(new LongRange(1, 2).getMin()).isEqualTo(1);
   }
@@ -32,6 +52,12 @@ class LongRangeTest {
   @Test
   public void getMax() {
     assertThat(new LongRange(1, 2).getMax()).isEqualTo(2);
+  }
+
+  @Test
+  public void size() {
+    assertThat(new LongRange(1, 2).size()).isEqualTo(1);
+    assertThat(new LongRange(0, Long.MAX_VALUE).size()).isEqualTo(Long.MAX_VALUE);
   }
 
   @Test
@@ -67,6 +93,22 @@ class LongRangeTest {
     final LongRange range = new LongRange(0, 50);
     assertThatThrownBy(() -> range.sliceFor(5, -1)).isInstanceOf(IndexOutOfBoundsException.class);
     assertThatThrownBy(() -> range.sliceFor(5, 10)).isInstanceOf(IndexOutOfBoundsException.class);
+  }
+
+  @Test
+  void slicesOfSize() {
+    final LongRange[] slices = new LongRange(0, 50).slicesOfSize(10);
+    assertThat(slices).hasSize(5);
+    assertThat(slices).containsExactly(new LongRange(0, 10), new LongRange(10, 20),
+        new LongRange(20, 30), new LongRange(30, 40), new LongRange(40, 50));
+  }
+
+  @Test
+  void slicesOfSizeWithRemainer() {
+    final LongRange[] slices = new LongRange(0, 53).slicesOfSize(10);
+    assertThat(slices).hasSize(6);
+    assertThat(slices).containsExactly(new LongRange(0, 9), new LongRange(9, 18),
+        new LongRange(18, 27), new LongRange(27, 36), new LongRange(36, 45), new LongRange(45, 53));
   }
 
 }
