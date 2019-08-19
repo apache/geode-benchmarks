@@ -14,17 +14,19 @@
  */
 package org.apache.geode.benchmark.tests;
 
+import static org.apache.geode.benchmark.tasks.AggregateOQLQuery.QueryTypes.COUNT;
 import static org.apache.geode.benchmark.topology.ClientServerTopology.Roles.CLIENT;
 
 import org.junit.jupiter.api.Test;
 
-import org.apache.geode.benchmark.tasks.OQLQuery;
+import org.apache.geode.benchmark.tasks.AggregateOQLQuery;
 import org.apache.geode.perftest.TestConfig;
 import org.apache.geode.perftest.TestRunners;
 
-public class ReplicatedIndexedQueryBenchmark extends AbstractReplicatedIndexedQueryBenchmark {
+public class ReplicatedIndexedAggregateQueryCountBenchmark
+    extends AbstractReplicatedIndexedQueryBenchmark {
 
-  public ReplicatedIndexedQueryBenchmark() {}
+  public ReplicatedIndexedAggregateQueryCountBenchmark() {}
 
   @Test
   public void run() throws Exception {
@@ -34,7 +36,7 @@ public class ReplicatedIndexedQueryBenchmark extends AbstractReplicatedIndexedQu
   @Override
   public TestConfig configure() {
     TestConfig config = super.configure();
-    config.workload(new OQLQuery(getKeyRange(), getQueryRange()), CLIENT);
+    config.workload(new AggregateOQLQuery(getKeyRange(), getQueryRange(), COUNT), CLIENT);
     return config;
   }
 }

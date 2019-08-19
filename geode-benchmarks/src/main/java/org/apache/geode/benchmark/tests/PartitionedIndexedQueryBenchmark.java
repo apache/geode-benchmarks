@@ -15,33 +15,14 @@
 package org.apache.geode.benchmark.tests;
 
 import static org.apache.geode.benchmark.topology.ClientServerTopology.Roles.CLIENT;
-import static org.apache.geode.benchmark.topology.ClientServerTopology.Roles.SERVER;
 
 import org.junit.jupiter.api.Test;
 
-import org.apache.geode.benchmark.tasks.CreateClientProxyRegion;
-import org.apache.geode.benchmark.tasks.CreateIndexOnID;
-import org.apache.geode.benchmark.tasks.CreatePartitionedRegion;
 import org.apache.geode.benchmark.tasks.OQLQuery;
-import org.apache.geode.benchmark.tasks.PrePopulateRegion;
-import org.apache.geode.benchmark.topology.ClientServerTopology;
-import org.apache.geode.perftest.PerformanceTest;
 import org.apache.geode.perftest.TestConfig;
 import org.apache.geode.perftest.TestRunners;
 
-public class PartitionedIndexedQueryBenchmark implements PerformanceTest {
-  private long keyRange = 500000;
-  private long queryRange = 1000;
-
-  public PartitionedIndexedQueryBenchmark() {}
-
-  public void setKeyRange(long keyRange) {
-    this.keyRange = keyRange;
-  }
-
-  public void setQueryRange(long queryRange) {
-    this.queryRange = queryRange;
-  }
+public class PartitionedIndexedQueryBenchmark extends AbstractPartitionedIndexedQueryBenchmark {
 
   @Test
   public void run() throws Exception {
@@ -50,14 +31,8 @@ public class PartitionedIndexedQueryBenchmark implements PerformanceTest {
 
   @Override
   public TestConfig configure() {
-    TestConfig config = GeodeBenchmark.createConfig();
-    config.threads(Runtime.getRuntime().availableProcessors() * 2);
-    ClientServerTopology.configure(config);
-    config.before(new CreatePartitionedRegion(), SERVER);
-    config.before(new CreateClientProxyRegion(), CLIENT);
-    config.before(new CreateIndexOnID(), SERVER);
-    config.before(new PrePopulateRegion(keyRange), SERVER);
-    config.workload(new OQLQuery(keyRange, queryRange), CLIENT);
+    TestConfig config = super.configure();
+    config.workload(new OQLQuery(getKeyRange(), getQueryRange()), CLIENT);
     return config;
   }
 }

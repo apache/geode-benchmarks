@@ -14,27 +14,32 @@
  */
 package org.apache.geode.benchmark.tests;
 
-import static org.apache.geode.benchmark.topology.ClientServerTopology.Roles.CLIENT;
+import java.io.File;
+import java.nio.file.Path;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junitpioneer.jupiter.TempDirectory;
 
-import org.apache.geode.benchmark.tasks.OQLQuery;
-import org.apache.geode.perftest.TestConfig;
 import org.apache.geode.perftest.TestRunners;
 
-public class ReplicatedIndexedQueryBenchmark extends AbstractReplicatedIndexedQueryBenchmark {
+@ExtendWith(TempDirectory.class)
+public class PartitionedIndexedAggregateQueryCountBenchmarkTest {
+  private File folder;
 
-  public ReplicatedIndexedQueryBenchmark() {}
+  @BeforeEach
+  void createTemporaryFolder(@TempDirectory.TempDir Path tempFolder) {
+    folder = tempFolder.toFile();
+  }
 
   @Test
-  public void run() throws Exception {
-    TestRunners.defaultRunner().runTest(this);
+  public void benchmarkRunsSuccessfully() throws Exception {
+    PartitionedIndexedAggregateQueryCountBenchmark test =
+        new PartitionedIndexedAggregateQueryCountBenchmark();
+    test.setKeyRange(100);
+    test.setQueryRange(10);
+    TestRunners.minimalRunner(folder).runTest(test);
   }
 
-  @Override
-  public TestConfig configure() {
-    TestConfig config = super.configure();
-    config.workload(new OQLQuery(getKeyRange(), getQueryRange()), CLIENT);
-    return config;
-  }
 }
