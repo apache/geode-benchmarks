@@ -48,7 +48,9 @@
         "sudo update-java-alternatives -s java-1.8.0-openjdk-amd64",
         "sudo mv /tmp/defaults.cfg /etc/cloud/cloud.cfg.d/defaults.cfg",
         "sudo sh -c \"echo 'StrictHostKeyChecking no' >> /etc/ssh/ssh_config\"",
-        "sudo sh -c \"echo 'net.ipv4.tcp_syncookies = 0' >> /etc/sysctl.conf\""
+        "sudo sh -c \"echo 'net.ipv4.tcp_syncookies = 0' >> /etc/sysctl.conf\"",
+        "sudo apt-get remove -y unattended-upgrades",
+        "sudo apt-get -y autoremove"
       ]
     }
   ]
