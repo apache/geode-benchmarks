@@ -34,14 +34,14 @@ import org.apache.geode.cache.query.TypeMismatchException;
 public class AggregateOQLQuery extends BenchmarkDriverAdapter implements Serializable {
 
   public static class QueryTypes {
-    public static final String SUM = "SUM";
-    public static final String SUM_DISTINCT = "SUM DISTINCT";
-    public static final String AVG = "AVG";
-    public static final String AVG_DISTINCT = "AVG DISTINCT";
-    public static final String COUNT = "COUNT";
-    public static final String COUNT_DISTINCT = "COUNT DISTINCT";
-    public static final String MAX = "MAX";
-    public static final String MIN = "MIN";
+    public static final String SUM = "SUM(";
+    public static final String SUM_DISTINCT = "SUM(DISTINCT ";
+    public static final String AVG = "AVG(";
+    public static final String AVG_DISTINCT = "AVG(DISTINCT ";
+    public static final String COUNT = "COUNT(";
+    public static final String COUNT_DISTINCT = "COUNT(DISTINCT ";
+    public static final String MAX = "MAX(";
+    public static final String MIN = "MIN(";
   }
 
   private long keyRange;
@@ -76,7 +76,7 @@ public class AggregateOQLQuery extends BenchmarkDriverAdapter implements Seriali
       FunctionDomainException {
     QueryService queryService = cache.getQueryService();
     return (SelectResults) queryService
-        .newQuery("SELECT " + type + "(r.ID) FROM /region r WHERE r.ID >=" + minId + " AND r.ID <="
+        .newQuery("SELECT " + type + "r.ID) FROM /region r WHERE r.ID >=" + minId + " AND r.ID <="
             + maxId)
         .execute();
   }
