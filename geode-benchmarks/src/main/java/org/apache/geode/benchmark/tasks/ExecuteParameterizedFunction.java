@@ -37,14 +37,12 @@ import org.apache.geode.cache.execute.ResultCollector;
 public class ExecuteParameterizedFunction extends BenchmarkDriverAdapter implements Serializable {
 
   final LongRange keyRange;
-  final long functionIDRange;
   private final Function function;
 
   private Region region;
 
-  public ExecuteParameterizedFunction(final LongRange keyRange, final long functionIDRange) {
+  public ExecuteParameterizedFunction(final LongRange keyRange) {
     this.keyRange = keyRange;
-    this.functionIDRange = functionIDRange;
     function = new FunctionWithArguments();
   }
 
@@ -58,32 +56,12 @@ public class ExecuteParameterizedFunction extends BenchmarkDriverAdapter impleme
 
   @Override
   public boolean test(Map<Object, Object> ctx) throws Exception {
-    long minId = ThreadLocalRandom.current().nextLong(keyRange.getMin(),
-        keyRange.getMin() - functionIDRange);
-    long maxId = minId + functionIDRange;
-    Map<String, Long> argumentMap = new HashMap<>();
-    argumentMap.put("maxID", maxId);
-    argumentMap.put("minID", minId);
     ResultCollector resultCollector = FunctionService
         .onRegion(region)
-        .setArguments(argumentMap)
+        .setArguments(keyRange.random())
         .execute(function);
-    List results = (List) resultCollector.getResult();
-    validateResults(results, minId, maxId);
+    resultCollector.getResult();
     return true;
 
-  }
-
-  private void validateResults(List results, long minId, long maxId)
-      throws UnexpectedException {
-    for (Object result : results) {
-      ArrayList<Long> IDs = (ArrayList<Long>) result;
-      for (Long id : IDs) {
-        if (id < minId || id > maxId) {
-          throw new UnexpectedException("Invalid ID value received [minID= " + minId
-              + " maxID= " + maxId + " ] Portfolio ID received = " + id);
-        }
-      }
-    }
   }
 }

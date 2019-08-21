@@ -24,29 +24,15 @@ import org.apache.geode.cache.execute.FunctionContext;
 import org.apache.geode.cache.execute.RegionFunctionContext;
 
 public class FunctionWithArguments implements Function {
-  private long maxKey;
-  private long minKey;
 
   public FunctionWithArguments() {}
 
   @Override
-  public void execute(FunctionContext context) {
-    RegionFunctionContext regionFunctionContext = (RegionFunctionContext) context;
-    Region region = regionFunctionContext.getDataSet();
-    HashMap<String, Long> argumentsMap =
-        (HashMap<String, Long>) regionFunctionContext.getArguments();
-    maxKey = argumentsMap.get("maxID");
-    minKey = argumentsMap.get("minID");
-    List<Long> results = new ArrayList<>();
-
-    for (long i = minKey; i <= maxKey; i++) {
-      Portfolio portfolio = (Portfolio) region.get(i);
-      if (portfolio != null) {
-        results.add(portfolio.getID());
-      }
-    }
-
-    context.getResultSender().lastResult(results);
+  public void execute(final FunctionContext context) {
+    final RegionFunctionContext regionFunctionContext = (RegionFunctionContext) context;
+    final Region region = regionFunctionContext.getDataSet();
+    final Long key = (Long) regionFunctionContext.getArguments();
+    context.getResultSender().lastResult(region.get(key));
   }
 
   @Override
