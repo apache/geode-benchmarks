@@ -19,14 +19,13 @@ import static org.apache.geode.benchmark.topology.ClientServerTopology.Roles.CLI
 import static org.apache.geode.benchmark.topology.ClientServerTopology.Roles.SERVER;
 
 import org.apache.geode.benchmark.tasks.CreateClientProxyRegion;
-import org.apache.geode.benchmark.tasks.CreateIndexOnID;
-import org.apache.geode.benchmark.tasks.CreateReplicatedRegion;
+import org.apache.geode.benchmark.tasks.CreatePartitionedRegion;
 import org.apache.geode.benchmark.tasks.PrePopulateRegion;
 import org.apache.geode.benchmark.topology.ClientServerTopology;
 import org.apache.geode.perftest.PerformanceTest;
 import org.apache.geode.perftest.TestConfig;
 
-abstract class AbstractReplicatedIndexedQueryBenchmark implements PerformanceTest {
+abstract class AbstractPartitionedQueryBenchmark implements PerformanceTest {
   private long keyRange = 500000;
   private long queryRange = 1000;
 
@@ -51,9 +50,8 @@ abstract class AbstractReplicatedIndexedQueryBenchmark implements PerformanceTes
     TestConfig config = GeodeBenchmark.createConfig();
     config.threads(Runtime.getRuntime().availableProcessors() * 4);
     ClientServerTopology.configure(config);
-    config.before(new CreateReplicatedRegion(), SERVER);
+    config.before(new CreatePartitionedRegion(), SERVER);
     config.before(new CreateClientProxyRegion(), CLIENT);
-    config.before(new CreateIndexOnID(), SERVER);
     config.before(new PrePopulateRegion(keyRange), SERVER);
     return config;
   }

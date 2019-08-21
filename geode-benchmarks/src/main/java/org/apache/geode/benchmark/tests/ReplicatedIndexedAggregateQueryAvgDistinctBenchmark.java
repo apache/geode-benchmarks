@@ -16,15 +16,17 @@ package org.apache.geode.benchmark.tests;
 
 import static org.apache.geode.benchmark.tasks.AggregateOQLQuery.QueryTypes.AVG_DISTINCT;
 import static org.apache.geode.benchmark.topology.ClientServerTopology.Roles.CLIENT;
+import static org.apache.geode.benchmark.topology.ClientServerTopology.Roles.SERVER;
 
 import org.junit.jupiter.api.Test;
 
 import org.apache.geode.benchmark.tasks.AggregateOQLQuery;
+import org.apache.geode.benchmark.tasks.CreateIndexOnID;
 import org.apache.geode.perftest.TestConfig;
 import org.apache.geode.perftest.TestRunners;
 
 public class ReplicatedIndexedAggregateQueryAvgDistinctBenchmark
-    extends AbstractReplicatedIndexedQueryBenchmark {
+    extends AbstractReplicatedQueryBenchmark {
 
   public ReplicatedIndexedAggregateQueryAvgDistinctBenchmark() {}
 
@@ -36,6 +38,7 @@ public class ReplicatedIndexedAggregateQueryAvgDistinctBenchmark
   @Override
   public TestConfig configure() {
     TestConfig config = super.configure();
+    config.before(new CreateIndexOnID(), SERVER);
     config.workload(new AggregateOQLQuery(getKeyRange(), getQueryRange(), AVG_DISTINCT), CLIENT);
     return config;
   }
