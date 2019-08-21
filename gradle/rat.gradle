@@ -18,62 +18,56 @@
 apply plugin: "org.nosphere.apache.rat"
 
 rat {
-    excludes = [
-            '.travis.yml',
-            '.git/**',
-            '**/output/**',
-            '**/output-*/**',
-            '**/build/**',
-            '**/out/**',
-            'README.md',
-
-            // IDE
-            'etc/eclipse-java-google-style.xml',
-            'etc/intellij-java-modified-google-style.xml',
-            'etc/eclipseOrganizeImports.importorder',
-            '**/.project',
-            '**/.classpath',
-            '**/.settings/**',
-            '**/build-eclipse/**',
-            '**/*.iml',
-            '**/*.ipr',
-            '**/*.iws',
-            '.idea/**',
-            '**/tags',
-            '**/out/**',
-
-            // gradle
-            '**/.gradle/**',
-            '.gradle/**',
-            'gradlew*',
-            'gradle/**',
-            'gradle/wrapper/gradle-wrapper.properties',
-            'caches/**',
-            'daemon/**',
-            'native/**',
-            'wrapper/**',
-            '**/build/**',
-            '**/build-*/**',
-            '.buildinfo',
-
-            // text files
-            '**/*.fig',
-            '**/*.txt',
-            '**/*.md',
-            '**/*.json',
-            '**/*.tx0',
-            '**/*.txo',
-            '**/*.log',
-            '**/*.patch',
-            '**/*.diff',
-            '**/*.rej',
-            '**/*.orig',
-            '**/*.MF',
-            '**/*.cfg',
-
-    ]
+  excludes = [
+    '.travis.yml',
+    '.git/**',
+    '**/output/**',
+    '**/output-*/**',
+    '**/build/**',
+    '**/out/**',
+    'README.md',
+    // IDE
+    'etc/eclipse-java-google-style.xml',
+    'etc/intellij-java-modified-google-style.xml',
+    'etc/eclipseOrganizeImports.importorder',
+    '**/.project',
+    '**/.classpath',
+    '**/.settings/**',
+    '**/build-eclipse/**',
+    '**/*.iml',
+    '**/*.ipr',
+    '**/*.iws',
+    '.idea/**',
+    '**/tags',
+    '**/out/**',
+    // gradle
+    '**/.gradle/**',
+    '.gradle/**',
+    'gradlew*',
+    'gradle/**',
+    'gradle/wrapper/gradle-wrapper.properties',
+    'caches/**',
+    'daemon/**',
+    'native/**',
+    'wrapper/**',
+    '**/build/**',
+    '**/build-*/**',
+    '.buildinfo',
+    // text files
+    '**/*.fig',
+    '**/*.txt',
+    '**/*.md',
+    '**/*.json',
+    '**/*.tx0',
+    '**/*.txo',
+    '**/*.log',
+    '**/*.patch',
+    '**/*.diff',
+    '**/*.rej',
+    '**/*.orig',
+    '**/*.MF',
+    '**/*.cfg',
+  ]
 }
 
-subprojects {
-    check.dependsOn rat
-}
+subprojects { check.dependsOn rat }

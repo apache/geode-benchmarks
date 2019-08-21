@@ -15,51 +15,45 @@
  * limitations under the License.
  */
 
-plugins {
-    id 'java'
-}
+plugins { id 'java' }
 
 version '1.0-SNAPSHOT'
 
 sourceCompatibility = 1.8
 
-repositories {
-    mavenCentral()
-}
+repositories { mavenCentral() }
 
 dependencies {
-    implementation(group: 'org.json', name: 'json', version: project.'JSON.version')
-    implementation 'software.amazon.awssdk:ec2'
-    implementation(group: 'com.hierynomus', name: 'sshj', version: project.'sshj.version')
-    runtime(group: 'org.slf4j', name: 'slf4j-simple', version: project.'slf4j-simple.version')
+  implementation(group: 'org.json', name: 'json', version: project.'JSON.version')
+  implementation 'software.amazon.awssdk:ec2'
+  implementation(group: 'com.hierynomus', name: 'sshj', version: project.'sshj.version')
+  runtime(group: 'org.slf4j', name: 'slf4j-simple', version: project.'slf4j-simple.version')
 }
 
 apply plugin: "io.spring.dependency-management"
 
 dependencyManagement {
-    imports {
-        mavenBom 'software.amazon.awssdk:bom:' + project.'software-amazon-awssdk.version'
-    }
+  imports { mavenBom 'software.amazon.awssdk:bom:' + project.'software-amazon-awssdk.version' }
 }
 
 task(launchCluster, dependsOn: 'classes', type: JavaExec) {
-    main = 'org.apache.geode.infrastructure.aws.LaunchCluster'
-    workingDir = rootDir
-    classpath = sourceSets.main.runtimeClasspath
+  main = 'org.apache.geode.infrastructure.aws.LaunchCluster'
+  workingDir = rootDir
+  classpath = sourceSets.main.runtimeClasspath
 
-    systemProperty 'TEST_CI', project.findProperty('ci')
+  systemProperty 'TEST_CI', project.findProperty('ci')
 }
 
 task(destroyCluster, dependsOn: 'classes', type: JavaExec) {
-    main = 'org.apache.geode.infrastructure.aws.DestroyCluster'
-    workingDir = rootDir
-    classpath = sourceSets.main.runtimeClasspath
+  main = 'org.apache.geode.infrastructure.aws.DestroyCluster'
+  workingDir = rootDir
+  classpath = sourceSets.main.runtimeClasspath
 
-    systemProperty 'TEST_CI', project.findProperty('ci')
+  systemProperty 'TEST_CI', project.findProperty('ci')
 }
 
 task(expireClusters, dependsOn: 'classes', type: JavaExec) {
-    main = 'org.apache.geode.infrastructure.aws.ExpireClusters'
-    workingDir = rootDir
-    classpath = sourceSets.main.runtimeClasspath
+  main = 'org.apache.geode.infrastructure.aws.ExpireClusters'
+  workingDir = rootDir
+  classpath = sourceSets.main.runtimeClasspath
 }
