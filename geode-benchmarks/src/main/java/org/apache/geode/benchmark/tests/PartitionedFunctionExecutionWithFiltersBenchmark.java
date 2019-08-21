@@ -33,7 +33,7 @@ public class PartitionedFunctionExecutionWithFiltersBenchmark
   @Override
   public TestConfig configure() {
     TestConfig config = super.configure();
-    config.threads(Runtime.getRuntime().availableProcessors() * 4);
+    config.threads(Runtime.getRuntime().availableProcessors() * 8);
     config.workload(new ExecuteFilteredFunction(getKeyRange()), CLIENT);
     return config;
   }
