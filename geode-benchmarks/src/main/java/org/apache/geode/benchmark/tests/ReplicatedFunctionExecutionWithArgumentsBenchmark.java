@@ -33,6 +33,7 @@ public class ReplicatedFunctionExecutionWithArgumentsBenchmark
   @Override
   public TestConfig configure() {
     TestConfig config = super.configure();
+    config.threads(Runtime.getRuntime().availableProcessors() * 10);
     config.workload(new ExecuteParameterizedFunction(getKeyRange()), CLIENT);
     return config;
   }
