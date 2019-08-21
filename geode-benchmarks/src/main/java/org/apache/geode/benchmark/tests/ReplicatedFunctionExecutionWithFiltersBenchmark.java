@@ -33,7 +33,7 @@ public class ReplicatedFunctionExecutionWithFiltersBenchmark
   @Override
   public TestConfig configure() {
     TestConfig config = super.configure();
-    config.threads(Runtime.getRuntime().availableProcessors() * 16);
+    config.threads(Runtime.getRuntime().availableProcessors() * 24);
     config.workload(new ExecuteFilteredFunction(getKeyRange()), CLIENT);
     return config;
   }
