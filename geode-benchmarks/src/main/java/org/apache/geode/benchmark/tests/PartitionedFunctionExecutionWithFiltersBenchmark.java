@@ -24,11 +24,6 @@ import org.apache.geode.perftest.TestRunners;
 
 public class PartitionedFunctionExecutionWithFiltersBenchmark
     extends AbstractPartitionedFunctionBenchmark {
-  private long filterKeyRange = 1000;
-
-  public void setFilterKeyRange(long filterKeyRange) {
-    this.filterKeyRange = filterKeyRange;
-  }
 
   @Test
   public void run() throws Exception {
@@ -38,7 +33,7 @@ public class PartitionedFunctionExecutionWithFiltersBenchmark
   @Override
   public TestConfig configure() {
     TestConfig config = super.configure();
-    config.workload(new ExecuteFilteredFunction(getKeyRange(), filterKeyRange), CLIENT);
+    config.workload(new ExecuteFilteredFunction(getKeyRange()), CLIENT);
     return config;
   }
 }

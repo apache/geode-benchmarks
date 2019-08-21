@@ -16,11 +16,7 @@ package org.apache.geode.benchmark.tasks;
 
 import java.io.Serializable;
 import java.rmi.UnexpectedException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
 import benchmark.geode.data.FunctionWithFilter;
@@ -41,14 +37,12 @@ public class ExecuteFilteredFunction extends BenchmarkDriverAdapter implements S
   private static final Logger logger = LoggerFactory.getLogger(ExecuteFilteredFunction.class);
 
   final LongRange keyRange;
-  final long filterRange;
   private final Function function;
 
   private Region region;
 
-  public ExecuteFilteredFunction(final LongRange keyRange, final long filterRange) {
+  public ExecuteFilteredFunction(final LongRange keyRange) {
     this.keyRange = keyRange;
-    this.filterRange = filterRange;
     this.function = new FunctionWithFilter();
   }
 
@@ -61,34 +55,15 @@ public class ExecuteFilteredFunction extends BenchmarkDriverAdapter implements S
   }
 
   @Override
-  public boolean test(Map<Object, Object> ctx) throws Exception {
-    long minId =
-        ThreadLocalRandom.current().nextLong(keyRange.getMin(), keyRange.getMax() - filterRange);
-    long maxId = minId + filterRange;
-    Set<Long> filterSet = new HashSet<>();
-    for (long i = minId; i <= maxId; i++) {
-      filterSet.add(i);
-    }
-    ResultCollector resultCollector = FunctionService
+  public boolean test(Map<Object, Object> ctx) {
+    final Set<Long> filterSet = Collections.singleton(keyRange.random());
+    final ResultCollector resultCollector = FunctionService
         .onRegion(region)
         .withFilter(filterSet)
         .execute(function);
-    List results = (List) resultCollector.getResult();
-    validateResults(results, minId, maxId);
+    resultCollector.getResult();
     return true;
 
   }
 
-  private void validateResults(List results, long minId, long maxId)
-      throws UnexpectedException {
-    for (Object result : results) {
-      ArrayList<Long> IDs = (ArrayList<Long>) result;
-      for (Long id : IDs) {
-        if (id < minId || id > maxId) {
-          throw new UnexpectedException("Invalid ID value received [minID = " + minId + " maxID = "
-              + maxId + " ] Portfolio ID received = " + id);
-        }
-      }
-    }
-  }
 }

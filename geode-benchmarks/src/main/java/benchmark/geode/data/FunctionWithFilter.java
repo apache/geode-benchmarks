@@ -32,7 +32,7 @@ public class FunctionWithFilter implements Function {
     RegionFunctionContext regionFunctionContext = (RegionFunctionContext) context;
     Region region = regionFunctionContext.getDataSet();
     Set filterKeys = regionFunctionContext.getFilter();
-    List<Long> results = new ArrayList<>();
+    List<Long> results = new ArrayList<>(filterKeys.size());
 
     filterKeys.stream().forEach(key -> {
       Portfolio portfolio = (Portfolio) region.get(key);
@@ -40,6 +40,8 @@ public class FunctionWithFilter implements Function {
         results.add(portfolio.getID());
       }
     });
+
+
 
     context.getResultSender().lastResult(results);
   }
