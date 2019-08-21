@@ -18,12 +18,8 @@
 task resolveDependencies {
   doLast {
     project.rootProject.allprojects.each { subProject ->
-      subProject.buildscript.configurations.each { configuration ->
-        resolveConfiguration(configuration)
-      }
-      subProject.configurations.each { configuration ->
-        resolveConfiguration(configuration)
-      }
+      subProject.buildscript.configurations.each { configuration -> resolveConfiguration(configuration) }
+      subProject.configurations.each { configuration -> resolveConfiguration(configuration) }
     }
   }
 }
