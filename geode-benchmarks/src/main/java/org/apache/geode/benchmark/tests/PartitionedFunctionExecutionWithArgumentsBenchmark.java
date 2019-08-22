@@ -34,7 +34,7 @@ public class PartitionedFunctionExecutionWithArgumentsBenchmark
   @Override
   public TestConfig configure() {
     TestConfig config = super.configure();
-    config.threads(Runtime.getRuntime().availableProcessors() * 8);
+    config.threads(Runtime.getRuntime().availableProcessors() * 4);
     config.workload(new ExecuteParameterizedFunction(getKeyRange()), CLIENT);
     return config;
 
