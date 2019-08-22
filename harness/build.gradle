@@ -15,9 +15,7 @@
  * limitations under the License.
  */
 
-plugins {
-    id 'java'
-}
+plugins { id 'java' }
 
 group 'org.apache.geode-benchmark'
 version '1.0-SNAPSHOT'
@@ -28,39 +26,37 @@ def geodeVersion = project.hasProperty('geodeVersion') ? project.findProperty('g
 def isCI = project.hasProperty('ci') ? project.findProperty('ci') : 0
 
 repositories {
-    mavenLocal()
-    mavenCentral()
+  mavenLocal()
+  mavenCentral()
 }
 
 task(analyzeRun, dependsOn: 'classes', type: JavaExec) {
-    main = 'org.apache.geode.perftest.analysis.Analyzer'
-    workingDir = rootDir
-    classpath = sourceSets.main.runtimeClasspath
-    systemProperty 'TEST_CI', isCI
+  main = 'org.apache.geode.perftest.analysis.Analyzer'
+  workingDir = rootDir
+  classpath = sourceSets.main.runtimeClasspath
+  systemProperty 'TEST_CI', isCI
 }
 
 dependencies {
-    compile(group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: project.'junit-jupiter-engine.version')
-    compile(group: 'org.junit-pioneer', name: 'junit-pioneer', version: project.'junit-pioneer.version')
-    compile(group: 'com.hierynomus', name: 'sshj', version: project.'sshj.version')
-    compile(group: 'commons-io', name: 'commons-io', version: project.'commons-io.version')
-    compile(group: 'org.yardstickframework', name: 'yardstick', version: project.'yardstick.version')
-    compile(group: 'org.hdrhistogram', name: 'HdrHistogram', version: project.'HdrHistogram.version')
-    compile(group: 'org.json', name: 'json', version: project.'JSON.version')
-    compile(group: 'org.apache.geode', name: 'geode-core', version: geodeVersion)
-    testCompile(group: 'org.mockito', name: 'mockito-all', version: project.'mockito-all.version')
-    testCompile(group: 'org.awaitility', name: 'awaitility', version: project.'awaitility.version')
-    testCompile(group: 'org.slf4j', name: 'slf4j-simple', version: project.'slf4j-simple.version')
-    testCompile(group: 'org.apache.sshd', name: 'sshd-core', version: project.'sshd-core.version')
-    testCompile(group: 'org.assertj', name: 'assertj-core', version: project.'assertj-core.version')
+  compile(group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: project.'junit-jupiter-engine.version')
+  compile(group: 'org.junit-pioneer', name: 'junit-pioneer', version: project.'junit-pioneer.version')
+  compile(group: 'com.hierynomus', name: 'sshj', version: project.'sshj.version')
+  compile(group: 'commons-io', name: 'commons-io', version: project.'commons-io.version')
+  compile(group: 'org.yardstickframework', name: 'yardstick', version: project.'yardstick.version')
+  compile(group: 'org.hdrhistogram', name: 'HdrHistogram', version: project.'HdrHistogram.version')
+  compile(group: 'org.json', name: 'json', version: project.'JSON.version')
+  compile(group: 'org.apache.geode', name: 'geode-core', version: geodeVersion)
+  testCompile(group: 'org.mockito', name: 'mockito-all', version: project.'mockito-all.version')
+  testCompile(group: 'org.awaitility', name: 'awaitility', version: project.'awaitility.version')
+  testCompile(group: 'org.slf4j', name: 'slf4j-simple', version: project.'slf4j-simple.version')
+  testCompile(group: 'org.apache.sshd', name: 'sshd-core', version: project.'sshd-core.version')
+  testCompile(group: 'org.assertj', name: 'assertj-core', version: project.'assertj-core.version')
 }
 
 compileJava {
-    options.fork = true
-    options.forkOptions.executable = 'javac'
-    options.compilerArgs << '-XDignore.symbol.file'
+  options.fork = true
+  options.forkOptions.executable = 'javac'
+  options.compilerArgs << '-XDignore.symbol.file'
 }
 
-test{
-    useJUnitPlatform()
-}
+test{ useJUnitPlatform() }
