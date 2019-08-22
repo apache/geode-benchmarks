@@ -31,7 +31,7 @@ import org.apache.geode.cache.execute.ResultCollector;
 
 public class ExecuteParameterizedFunction extends BenchmarkDriverAdapter implements Serializable {
 
-  final LongRange keyRange;
+  private final LongRange keyRange;
   private final Function function;
 
   private Region region;
@@ -50,7 +50,7 @@ public class ExecuteParameterizedFunction extends BenchmarkDriverAdapter impleme
   }
 
   @Override
-  public boolean test(Map<Object, Object> ctx) throws Exception {
+  public boolean test(Map<Object, Object> ctx) {
     ResultCollector resultCollector = FunctionService
         .onRegion(region)
         .setArguments(keyRange.random())

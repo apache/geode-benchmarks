@@ -20,8 +20,6 @@ import java.util.Map;
 import java.util.Set;
 
 import benchmark.geode.data.FunctionWithFilter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.yardstickframework.BenchmarkConfiguration;
 import org.yardstickframework.BenchmarkDriverAdapter;
 
@@ -34,9 +32,8 @@ import org.apache.geode.cache.execute.FunctionService;
 import org.apache.geode.cache.execute.ResultCollector;
 
 public class ExecuteFilteredFunction extends BenchmarkDriverAdapter implements Serializable {
-  private static final Logger logger = LoggerFactory.getLogger(ExecuteFilteredFunction.class);
 
-  final LongRange keyRange;
+  private final LongRange keyRange;
   private final Function function;
 
   private Region region;
