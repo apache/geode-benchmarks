@@ -14,9 +14,6 @@
  */
 package benchmark.geode.data;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 
 import org.apache.geode.cache.Region;
 import org.apache.geode.cache.execute.Function;

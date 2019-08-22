@@ -15,12 +15,7 @@
 package org.apache.geode.benchmark.tasks;
 
 import java.io.Serializable;
-import java.rmi.UnexpectedException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ThreadLocalRandom;
 
 import benchmark.geode.data.FunctionWithArguments;
 import org.yardstickframework.BenchmarkConfiguration;

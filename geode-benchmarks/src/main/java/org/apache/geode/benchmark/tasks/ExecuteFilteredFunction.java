@@ -15,9 +15,9 @@
 package org.apache.geode.benchmark.tasks;
 
 import java.io.Serializable;
-import java.rmi.UnexpectedException;
-import java.util.*;
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Set;
 
 import benchmark.geode.data.FunctionWithFilter;
 import org.slf4j.Logger;

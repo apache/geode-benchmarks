@@ -14,9 +14,6 @@
  */
 package benchmark.geode.data;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.Set;
 
 import org.apache.geode.cache.Region;
