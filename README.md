@@ -13,19 +13,17 @@ test configuration and test execution framework.
 These benchmarks are under development.
 
 ## Running the benchmarks
-The benchmarks require machines with passwordless ssh enabled in order to run.
-So ensure that the authentication key pair for SSH does not have a passphrase. If you had 
-already previously created a key pair with a passphrase, you can create a different key pair which
-is of a different type than the previously created one. Public key needs to be in PEM format. Some newer OpenSSH
-versions default to a new format. Use `-m PEM` to force PEM format.
+The benchmarks require machines with passwordless ssh enabled in order to run, so ensure that the authentication key pair for SSH does not have a passphrase. If you have previously created a key pair with a passphrase, you can create a different key pair which
+is of a different type than the previously created one. Be sure to backup your existing key pair before creating a new one. The public key needs to be in PEM format, but some newer OpenSSH
+versions default to a new format. PEM format can be forced by using `-m PEM`:
 ```
 ssh-keygen -m PEM -t rsa
 ```
-While runinng a test on a single machine (i.e. localhost) add the generated key to `authorized_keys` to authorize the user.
+While runinng a test on a single machine (i.e. localhost) add the generated key to `authorized_keys` to authorize the user:
 ```
 cat <your_public_key_file> >> ~/.ssh/authorized_keys
 ```
-Test if you can ssh to localhost.
+Test if you can ssh to localhost:
 ```
 ssh localhost
 ```
@@ -59,9 +57,9 @@ Options:
     -d                    : Debug
     -i                    : Info
 ```    
-### Running in aws
+### Scripts for running in aws and analyzing results
 
-This project includes some scripts to automate running benchmarks in AWS. See the 
+This project includes some scripts to automate running benchmarks in AWS and analyzing the results produced (as well as the results produced from running locally). See the 
 [README.md](infrastructure/scripts/aws/README.md) in the infrastructure/aws directory.
 
 ## Project structure
@@ -72,12 +70,12 @@ The project is divided into two modules
 
 ## Sample benchmark
 
-Benchmarks are defined in a declarative configuration classes. Each configuration class is run as 
+Benchmarks are defined in declarative configuration classes. Each configuration class is run as 
 a junit test which calls the configure method and passes it to the TestRunner, which executes
 the test on the provided TEST_HOSTS.
 
-Benchmarks are composed of `before tasks`, `after tasks`, and `workload tasks`. The `before` and `after`
-tasks are run once. `Workload` tasks are run repeatedly and their execution time is measured and
+Benchmarks are composed of `before` tasks, `after` tasks, and `workload` tasks. Each seperate `before` and `after`
+task is run once. `Workload` tasks are run repeatedly and their execution time is measured and
 reported by the yardstick framework. 
 
 ```java
