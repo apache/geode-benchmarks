@@ -39,7 +39,6 @@ public class ReplicatedFunctionExecutionWithArgumentsBenchmarkTest {
     ReplicatedFunctionExecutionWithArgumentsBenchmark test =
         new ReplicatedFunctionExecutionWithArgumentsBenchmark();
     test.setKeyRange(new LongRange(0, 100));
-    test.setFunctionIDRange(5);
     TestRunners.minimalRunner(folder).runTest(test);
   }
 }

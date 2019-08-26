@@ -40,7 +40,6 @@ public class PartitionedFunctionExecutionWithFiltersBenchmarkTest {
     PartitionedFunctionExecutionWithFiltersBenchmark test =
         new PartitionedFunctionExecutionWithFiltersBenchmark();
     test.setKeyRange(new LongRange(0, 100));
-    test.setFilterKeyRange(5);
     TestRunners.minimalRunner(folder)
         .runTest(test);
   }
