@@ -21,6 +21,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junitpioneer.jupiter.TempDirectory;
 
+import org.apache.geode.benchmark.LongRange;
 import org.apache.geode.perftest.TestRunners;
 
 @ExtendWith(TempDirectory.class)
@@ -35,8 +36,7 @@ public class PartitionedFunctionExecutionBenchmarkTest {
 
   public void benchmarkRunsSuccessfully() throws Exception {
     PartitionedFunctionExecutionBenchmark test = new PartitionedFunctionExecutionBenchmark();
-    test.setKeyRange(100);
-    test.setFunctionIDRange(5);
+    test.setKeyRange(new LongRange(0, 100));
     TestRunners.minimalRunner(folder).runTest(test);
   }
 }

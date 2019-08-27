@@ -62,7 +62,6 @@ task benchmark(type: Test) {
   testLogging { exceptionFormat = 'full' }
 
   exclude "**/Replicated*QueryBenchmark.class"
-  exclude "**/ReplicatedFunctionExecution*Benchmark.class"
   exclude "**/PartitionedNonIndexedQueryBenchmark.class"
   exclude "**/*PutAllBenchmark.class"
 

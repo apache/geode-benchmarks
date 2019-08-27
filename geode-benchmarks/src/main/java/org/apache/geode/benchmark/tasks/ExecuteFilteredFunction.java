@@ -15,38 +15,31 @@
 package org.apache.geode.benchmark.tasks;
 
 import java.io.Serializable;
-import java.rmi.UnexpectedException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ThreadLocalRandom;
 
 import benchmark.geode.data.FunctionWithFilter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.yardstickframework.BenchmarkConfiguration;
 import org.yardstickframework.BenchmarkDriverAdapter;
 
+import org.apache.geode.benchmark.LongRange;
 import org.apache.geode.cache.Region;
 import org.apache.geode.cache.client.ClientCache;
 import org.apache.geode.cache.client.ClientCacheFactory;
 import org.apache.geode.cache.execute.Function;
 import org.apache.geode.cache.execute.FunctionService;
 import org.apache.geode.cache.execute.ResultCollector;
-import org.apache.geode.perftest.jvms.RemoteJVMFactory;
 
 public class ExecuteFilteredFunction extends BenchmarkDriverAdapter implements Serializable {
-  private Region region;
-  long keyRange;
-  long filterRange;
-  private Function function;
-  private static final Logger logger = LoggerFactory.getLogger(RemoteJVMFactory.class);
 
-  public ExecuteFilteredFunction(long keyRange, long filterRange) {
+  private final LongRange keyRange;
+  private final Function function;
+
+  private Region region;
+
+  public ExecuteFilteredFunction(final LongRange keyRange) {
     this.keyRange = keyRange;
-    this.filterRange = filterRange;
     this.function = new FunctionWithFilter();
   }
 
@@ -59,33 +52,15 @@ public class ExecuteFilteredFunction extends BenchmarkDriverAdapter implements S
   }
 
   @Override
-  public boolean test(Map<Object, Object> ctx) throws Exception {
-    long minId = ThreadLocalRandom.current().nextLong(0, this.keyRange - filterRange);
-    long maxId = minId + filterRange;
-    Set<Long> filterSet = new HashSet<>();
-    for (long i = minId; i <= maxId; i++) {
-      filterSet.add(i);
-    }
-    ResultCollector resultCollector = FunctionService
+  public boolean test(Map<Object, Object> ctx) {
+    final Set<Long> filterSet = Collections.singleton(keyRange.random());
+    final ResultCollector resultCollector = FunctionService
         .onRegion(region)
         .withFilter(filterSet)
         .execute(function);
-    List results = (List) resultCollector.getResult();
-    validateResults(results, minId, maxId);
+    resultCollector.getResult();
     return true;
 
   }
 
-  private void validateResults(List results, long minId, long maxId)
-      throws UnexpectedException {
-    for (Object result : results) {
-      ArrayList<Long> IDs = (ArrayList<Long>) result;
-      for (Long id : IDs) {
-        if (id < minId || id > maxId) {
-          throw new UnexpectedException("Invalid ID value received [minID = " + minId + " maxID = "
-              + maxId + " ] Portfolio ID received = " + id);
-        }
-      }
-    }
-  }
 }

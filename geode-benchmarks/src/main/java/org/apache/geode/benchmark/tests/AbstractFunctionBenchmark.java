@@ -12,53 +12,44 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
+
 package org.apache.geode.benchmark.tests;
 
 import static org.apache.geode.benchmark.topology.ClientServerTopology.Roles.CLIENT;
 import static org.apache.geode.benchmark.topology.ClientServerTopology.Roles.SERVER;
 
-import org.junit.jupiter.api.Test;
+import benchmark.geode.data.BenchmarkFunction;
 
 import org.apache.geode.benchmark.LongRange;
 import org.apache.geode.benchmark.tasks.CreateClientProxyRegion;
-import org.apache.geode.benchmark.tasks.CreateIndexOnID;
-import org.apache.geode.benchmark.tasks.CreateReplicatedRegion;
-import org.apache.geode.benchmark.tasks.OQLQuery;
 import org.apache.geode.benchmark.tasks.PrePopulateRegion;
+import org.apache.geode.benchmark.tasks.RegisterFunction;
 import org.apache.geode.benchmark.topology.ClientServerTopology;
 import org.apache.geode.perftest.PerformanceTest;
 import org.apache.geode.perftest.TestConfig;
-import org.apache.geode.perftest.TestRunners;
 
-public class ReplicatedIndexedQueryBenchmark implements PerformanceTest {
-  private LongRange keyRange = new LongRange(0, 500000);
-  private long queryRange = 1000;
+abstract class AbstractFunctionBenchmark implements PerformanceTest {
+  private LongRange keyRange = new LongRange(0, 1000000);
 
-  public ReplicatedIndexedQueryBenchmark() {}
-
-  public void setKeyRange(final LongRange keyRange) {
+  public final void setKeyRange(LongRange keyRange) {
     this.keyRange = keyRange;
   }
 
-  public void setQueryRange(final long queryRange) {
-    this.queryRange = queryRange;
-  }
-
-  @Test
-  public void run() throws Exception {
-    TestRunners.defaultRunner().runTest(this);
+  public final LongRange getKeyRange() {
+    return keyRange;
   }
 
   @Override
   public TestConfig configure() {
     TestConfig config = GeodeBenchmark.createConfig();
-    config.threads(Runtime.getRuntime().availableProcessors() * 2);
+    config.threads(Runtime.getRuntime().availableProcessors() * 3);
     ClientServerTopology.configure(config);
-    config.before(new CreateReplicatedRegion(), SERVER);
+    configureRegion(config);
     config.before(new CreateClientProxyRegion(), CLIENT);
-    config.before(new CreateIndexOnID(), SERVER);
-    config.before(new PrePopulateRegion(keyRange), SERVER);
-    config.workload(new OQLQuery(keyRange, queryRange), CLIENT);
+    config.before(new PrePopulateRegion(getKeyRange()), SERVER);
+    config.before(new RegisterFunction(new BenchmarkFunction(getKeyRange())), SERVER);
     return config;
   }
+
+  protected abstract void configureRegion(TestConfig config);
 }

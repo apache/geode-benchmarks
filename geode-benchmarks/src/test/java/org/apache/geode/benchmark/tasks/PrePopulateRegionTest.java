@@ -25,15 +25,18 @@ import java.util.stream.LongStream;
 import benchmark.geode.data.Portfolio;
 import org.junit.jupiter.api.Test;
 
+import org.apache.geode.benchmark.LongRange;
+
 class PrePopulateRegionTest {
 
   @Test
   public void putsEntriesForServer() throws InterruptedException {
-    PrePopulateRegion prePopulateRegion = new PrePopulateRegion(100);
+    final LongRange range = new LongRange(0, 100);
+    PrePopulateRegion prePopulateRegion = new PrePopulateRegion(range);
 
     Map<Long, Portfolio> region = new ConcurrentHashMap<>();
 
-    prePopulateRegion.run(region, 1, 2, 2);
+    prePopulateRegion.run(region, range.sliceFor(2, 1));
 
     // verify that we put the last 50 keys
     verifyKeys(region, 50, 100);
@@ -41,12 +44,13 @@ class PrePopulateRegionTest {
 
   @Test
   public void putsEntriesForServerWithSmallBatches() throws InterruptedException {
-    PrePopulateRegion prePopulateRegion = new PrePopulateRegion(100);
+    final LongRange range = new LongRange(0, 100);
+    PrePopulateRegion prePopulateRegion = new PrePopulateRegion(range);
     prePopulateRegion.setBatchSize(2);
 
     Map<Long, Portfolio> region = new ConcurrentHashMap<>();
 
-    prePopulateRegion.run(region, 1, 2, 2);
+    prePopulateRegion.run(region, range.sliceFor(2, 1));
 
     // verify that we put the last 50 keys
     verifyKeys(region, 50, 100);

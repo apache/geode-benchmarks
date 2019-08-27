@@ -34,85 +34,57 @@ import benchmark.geode.data.Portfolio;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.apache.geode.benchmark.LongRange;
 import org.apache.geode.cache.Cache;
 import org.apache.geode.cache.Region;
 import org.apache.geode.perftest.Task;
 import org.apache.geode.perftest.TestContext;
-import org.apache.geode.perftest.jvms.RemoteJVMFactory;
 
 public class PrePopulateRegion implements Task {
-  long keyRangeToPrepopulate = 10000;
+  private static final Logger logger = LoggerFactory.getLogger(PrePopulateRegion.class);
+
+  private LongRange keyRangeToPrepopulate = new LongRange(0, 10000);
   private int batchSize = 1000;
-  private static final Logger logger = LoggerFactory.getLogger(RemoteJVMFactory.class);
 
   public PrePopulateRegion() {}
 
-  public PrePopulateRegion(long keyRangeToPrepopulate) {
+  public PrePopulateRegion(LongRange keyRangeToPrepopulate) {
     this.keyRangeToPrepopulate = keyRangeToPrepopulate;
   }
 
   /**
-   * This method prepopulates the region
-   * before the actual benchmark starts.
-   *
+   * This method prepopulates the region before the actual benchmark starts.
    */
   @Override
   public void run(TestContext context) throws InterruptedException {
-    Cache serverCache = (Cache) context.getAttribute("SERVER_CACHE");
-    Region<Long, Portfolio> region = serverCache.getRegion("region");
-    int numLocators = context.getHostsIDsForRole(LOCATOR).size();
-    int numServers = context.getHostsIDsForRole(SERVER).size();
-    int jvmID = context.getJvmID();
+    final Cache serverCache = (Cache) context.getAttribute("SERVER_CACHE");
+    final Region<Long, Portfolio> region = serverCache.getRegion("region");
+    final int numLocators = context.getHostsIDsForRole(LOCATOR).size();
+    final int numServers = context.getHostsIDsForRole(SERVER).size();
+    final int jvmID = context.getJvmID();
+    final int serverIndex = jvmID - numLocators;
 
-    run(region, numLocators, numServers, jvmID);
+    run(region, keyRangeToPrepopulate.sliceFor(numServers, serverIndex));
 
   }
 
-  void run(Map<Long, Portfolio> region, int numLocators, int numServers, int jvmID)
-      throws InterruptedException {
-    int serverIndex = jvmID - numLocators;
-    long numPutsPerServer = this.keyRangeToPrepopulate / numServers;
-    int numThreads =
-        numPutsPerServer < getBatchSize() ? 1 : Runtime.getRuntime().availableProcessors();
-
-    // calculate non-overlapping key ranges for each server
-    long lowBound = numPutsPerServer * serverIndex;
-    long highBound = numPutsPerServer * (serverIndex + 1);
-    if (serverIndex == (numServers - 1)) {
-      highBound += this.keyRangeToPrepopulate % (serverIndex + 1);
-    }
-
+  void run(final Map<Long, Portfolio> region, final LongRange range) throws InterruptedException {
     logger.info("*******************************************");
     logger.info("      Prepopulating the region ");
     logger.info("*******************************************");
-    Instant start = Instant.now();
+    final Instant start = Instant.now();
 
-    ExecutorService threadPool = Executors.newFixedThreadPool(numThreads);
-    List<CompletableFuture<Void>> futures = new ArrayList<>();
+    final int numThreads = Runtime.getRuntime().availableProcessors();
+    final ExecutorService threadPool = Executors.newFixedThreadPool(numThreads);
+    final List<CompletableFuture<Void>> futures = new ArrayList<>();
 
-    long range = highBound - lowBound;
-    long putsPerThread = range / numThreads;
-
-    for (int i = 0; i < numThreads; i++) {
-      int threadNum = i;
-
-      Runnable putThread = () -> {
-        long low = lowBound + (putsPerThread * threadNum);
-        long high = low + putsPerThread;
-
-        if (threadNum == (numThreads - 1)) {
-          high += range % numThreads;
-        }
-
-        doPuts(region, low, high);
-      };
-
-      futures.add(CompletableFuture.runAsync(putThread, threadPool));
+    for (final LongRange slice : range.slice(numThreads)) {
+      futures.add(CompletableFuture.runAsync(() -> doPuts(region, slice), threadPool));
     }
 
     futures.forEach(CompletableFuture::join);
 
-    Instant finish = Instant.now();
+    final Instant finish = Instant.now();
     logger.info("*******************************************");
     logger.info("    Prepopulating the region completed");
     logger.info("    Duration = " + Duration.between(start, finish).toMillis() + "ms.");
@@ -122,20 +94,10 @@ public class PrePopulateRegion implements Task {
     threadPool.awaitTermination(5, TimeUnit.MINUTES);
   }
 
-  private void doPuts(Map<Long, Portfolio> region, long lowBound, long highBound) {
-    Map<Long, Portfolio> valueMap = new HashMap<>();
-    for (long putIndex = lowBound; putIndex < highBound; putIndex++) {
-      // build a map of to put to the server
-
-      valueMap.put(putIndex, new Portfolio(putIndex));
-
-      if (putIndex % getBatchSize() == 0) {
-        region.putAll(valueMap);
-        valueMap = new HashMap<>();
-      }
-    }
-
-    if (!valueMap.isEmpty()) {
+  private void doPuts(final Map<Long, Portfolio> region, final LongRange range) {
+    for (final LongRange slice : range.slicesOfSize(batchSize)) {
+      final Map<Long, Portfolio> valueMap = new HashMap<>();
+      slice.forEach(i -> valueMap.put(i, new Portfolio(i)));
       region.putAll(valueMap);
     }
   }

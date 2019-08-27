@@ -19,6 +19,7 @@ import static org.apache.geode.benchmark.topology.ClientServerTopology.Roles.SER
 
 import org.junit.jupiter.api.Test;
 
+import org.apache.geode.benchmark.LongRange;
 import org.apache.geode.benchmark.tasks.CreateClientProxyRegion;
 import org.apache.geode.benchmark.tasks.CreateReplicatedRegion;
 import org.apache.geode.benchmark.tasks.OQLQuery;
@@ -29,12 +30,12 @@ import org.apache.geode.perftest.TestConfig;
 import org.apache.geode.perftest.TestRunners;
 
 public class ReplicatedNonIndexedQueryBenchmark implements PerformanceTest {
-  private long keyRange = 500000;
+  private LongRange keyRange = new LongRange(0, 500000);
   private long queryRange = 1000;
 
   public ReplicatedNonIndexedQueryBenchmark() {}
 
-  public void setKeyRange(long keyRange) {
+  public void setKeyRange(LongRange keyRange) {
     this.keyRange = keyRange;
   }
 

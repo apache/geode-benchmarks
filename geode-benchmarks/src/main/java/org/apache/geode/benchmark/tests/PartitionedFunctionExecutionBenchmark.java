@@ -23,11 +23,6 @@ import org.apache.geode.perftest.TestConfig;
 import org.apache.geode.perftest.TestRunners;
 
 public class PartitionedFunctionExecutionBenchmark extends AbstractPartitionedFunctionBenchmark {
-  private long functionIDRange = 1000;
-
-  public void setFunctionIDRange(long functionIDRange) {
-    this.functionIDRange = functionIDRange;
-  }
 
   @Test
   public void run() throws Exception {
@@ -37,7 +32,7 @@ public class PartitionedFunctionExecutionBenchmark extends AbstractPartitionedFu
   @Override
   public TestConfig configure() {
     TestConfig config = super.configure();
-    config.workload(new ExecuteFunction(getKeyRange(), functionIDRange), CLIENT);
+    config.workload(new ExecuteFunction(), CLIENT);
     return config;
   }
 }
