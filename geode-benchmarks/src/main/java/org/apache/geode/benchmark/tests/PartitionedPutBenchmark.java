@@ -56,7 +56,7 @@ public class PartitionedPutBenchmark implements PerformanceTest {
     ClientServerTopology.configure(config);
     config.before(new CreatePartitionedRegion(), SERVER);
     config.before(new CreateClientProxyRegion(), CLIENT);
-    config.before(new PrePopulateRegion(keyRange), SERVER);
+    config.before(new PrePopulateRegion(keyRange), CLIENT);
     config.workload(new PutTask(keyRange), CLIENT);
     return config;
 

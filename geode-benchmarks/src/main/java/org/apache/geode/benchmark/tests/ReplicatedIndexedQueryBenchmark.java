@@ -32,7 +32,7 @@ import org.apache.geode.perftest.TestRunners;
 
 public class ReplicatedIndexedQueryBenchmark implements PerformanceTest {
   private LongRange keyRange = new LongRange(0, 500000);
-  private long queryRange = 1000;
+  private long queryRange = 100;
 
   public ReplicatedIndexedQueryBenchmark() {}
 
@@ -52,12 +52,12 @@ public class ReplicatedIndexedQueryBenchmark implements PerformanceTest {
   @Override
   public TestConfig configure() {
     TestConfig config = GeodeBenchmark.createConfig();
-    config.threads(Runtime.getRuntime().availableProcessors() * 2);
+    config.threads(Runtime.getRuntime().availableProcessors() * 8);
     ClientServerTopology.configure(config);
     config.before(new CreateReplicatedRegion(), SERVER);
     config.before(new CreateClientProxyRegion(), CLIENT);
     config.before(new CreateIndexOnID(), SERVER);
-    config.before(new PrePopulateRegion(keyRange), SERVER);
+    config.before(new PrePopulateRegion(keyRange), CLIENT);
     config.workload(new OQLQuery(keyRange, queryRange), CLIENT);
     return config;
   }
