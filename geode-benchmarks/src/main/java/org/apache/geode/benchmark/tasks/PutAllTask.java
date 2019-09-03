@@ -51,9 +51,10 @@ public class PutAllTask extends BenchmarkDriverAdapter implements Serializable {
 
   @Override
   public boolean test(Map<Object, Object> ctx) {
-    final long key = keyRange.random();
+    long key;
     final HashMap<Object, Object> batch = new HashMap<>(batchSize);
     for (int i = 0; i < batchSize; i++) {
+      key = keyRange.random();
       batch.put(key, new Portfolio(key));
     }
     region.putAll(batch);
