@@ -16,6 +16,10 @@
  */
 package org.apache.geode.benchmark.tasks;
 
+import static org.apache.geode.benchmark.topology.ClientServerTopology.Roles.CLIENT;
+import static org.apache.geode.benchmark.topology.ClientServerTopology.Roles.LOCATOR;
+import static org.apache.geode.benchmark.topology.ClientServerTopology.Roles.SERVER;
+
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -28,19 +32,16 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import benchmark.geode.data.Portfolio;
-import org.apache.geode.cache.CacheFactory;
-import org.apache.geode.cache.client.ClientCache;
-import org.apache.geode.cache.client.ClientCacheFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.apache.geode.benchmark.LongRange;
-import org.apache.geode.cache.Cache;
 import org.apache.geode.cache.Region;
+import org.apache.geode.cache.client.ClientCache;
+import org.apache.geode.cache.client.ClientCacheFactory;
 import org.apache.geode.perftest.Task;
 import org.apache.geode.perftest.TestContext;
 
-import static org.apache.geode.benchmark.topology.ClientServerTopology.Roles.*;
 
 public class PrePopulateRegion implements Task {
   private static final Logger logger = LoggerFactory.getLogger(PrePopulateRegion.class);
