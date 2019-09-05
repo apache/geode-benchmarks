@@ -59,7 +59,7 @@ public class ReplicatedPutAllBenchmark implements PerformanceTest {
     ClientServerTopology.configure(config);
     config.before(new CreateReplicatedRegion(), SERVER);
     config.before(new CreateClientProxyRegion(), CLIENT);
-    config.before(new PrePopulateRegion(keyRange), SERVER);
+    config.before(new PrePopulateRegion(keyRange), CLIENT);
     config.workload(new PutAllTask(keyRange, batchSize), CLIENT);
     return config;
   }

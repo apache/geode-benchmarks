@@ -28,12 +28,8 @@ import org.apache.geode.benchmark.LongRange;
 import org.apache.geode.cache.Region;
 import org.apache.geode.cache.client.ClientCache;
 import org.apache.geode.cache.client.ClientCacheFactory;
-import org.apache.geode.cache.query.FunctionDomainException;
-import org.apache.geode.cache.query.NameResolutionException;
-import org.apache.geode.cache.query.QueryInvocationTargetException;
-import org.apache.geode.cache.query.QueryService;
+import org.apache.geode.cache.query.Query;
 import org.apache.geode.cache.query.SelectResults;
-import org.apache.geode.cache.query.TypeMismatchException;
 import org.apache.geode.perftest.jvms.RemoteJVMFactory;
 
 public class OQLQuery extends BenchmarkDriverAdapter implements Serializable {
@@ -41,7 +37,9 @@ public class OQLQuery extends BenchmarkDriverAdapter implements Serializable {
   private Region<Object, Object> region;
   private LongRange keyRange;
   private long queryRange;
-  ClientCache cache;
+  private ClientCache cache;
+  private Query query;
+
 
   public OQLQuery(LongRange keyRange, long queryRange) {
     this.keyRange = keyRange;
@@ -53,6 +51,8 @@ public class OQLQuery extends BenchmarkDriverAdapter implements Serializable {
     super.setUp(cfg);
     cache = ClientCacheFactory.getAnyInstance();
     region = cache.getRegion("region");
+    query =
+        cache.getQueryService().newQuery("SELECT * FROM /region r WHERE r.ID >= $1 AND r.ID < $2");
   }
 
   @Override
@@ -72,17 +72,12 @@ public class OQLQuery extends BenchmarkDriverAdapter implements Serializable {
       long id = ((Portfolio) result).getID();
       if (id < minId || id > maxId) {
         throw new Exception("Invalid Portfolio object retrieved [min =" + minId + " max =" + maxId
-            + "] Portfolio retrieved =" + ((Portfolio) result));
+            + ") Portfolio retrieved =" + result);
       }
     }
   }
 
-  private SelectResults executeQuery(long minId, long maxId)
-      throws NameResolutionException, TypeMismatchException, QueryInvocationTargetException,
-      FunctionDomainException {
-    QueryService queryService = cache.getQueryService();
-    return (SelectResults) queryService
-        .newQuery("SELECT * FROM /region r WHERE r.ID >=" + minId + " AND r.ID <=" + maxId)
-        .execute();
+  private SelectResults executeQuery(long minId, long maxId) throws Exception {
+    return (SelectResults) query.execute(minId, maxId);
   }
 }

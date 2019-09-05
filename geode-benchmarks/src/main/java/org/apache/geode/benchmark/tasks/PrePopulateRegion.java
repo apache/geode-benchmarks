@@ -16,6 +16,7 @@
  */
 package org.apache.geode.benchmark.tasks;
 
+import static org.apache.geode.benchmark.topology.ClientServerTopology.Roles.CLIENT;
 import static org.apache.geode.benchmark.topology.ClientServerTopology.Roles.LOCATOR;
 import static org.apache.geode.benchmark.topology.ClientServerTopology.Roles.SERVER;
 
@@ -35,10 +36,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.apache.geode.benchmark.LongRange;
-import org.apache.geode.cache.Cache;
 import org.apache.geode.cache.Region;
+import org.apache.geode.cache.client.ClientCache;
+import org.apache.geode.cache.client.ClientCacheFactory;
 import org.apache.geode.perftest.Task;
 import org.apache.geode.perftest.TestContext;
+
 
 public class PrePopulateRegion implements Task {
   private static final Logger logger = LoggerFactory.getLogger(PrePopulateRegion.class);
@@ -57,15 +60,15 @@ public class PrePopulateRegion implements Task {
    */
   @Override
   public void run(TestContext context) throws InterruptedException {
-    final Cache serverCache = (Cache) context.getAttribute("SERVER_CACHE");
-    final Region<Long, Portfolio> region = serverCache.getRegion("region");
+    final ClientCache cache = ClientCacheFactory.getAnyInstance();
+    final Region<Long, Portfolio> region = cache.getRegion("region");
     final int numLocators = context.getHostsIDsForRole(LOCATOR).size();
     final int numServers = context.getHostsIDsForRole(SERVER).size();
+    final int numClient = context.getHostsIDsForRole(CLIENT).size();
     final int jvmID = context.getJvmID();
-    final int serverIndex = jvmID - numLocators;
+    final int clientIndex = jvmID - numLocators - numServers;
 
-    run(region, keyRangeToPrepopulate.sliceFor(numServers, serverIndex));
-
+    run(region, keyRangeToPrepopulate.sliceFor(numClient, clientIndex));
   }
 
   void run(final Map<Long, Portfolio> region, final LongRange range) throws InterruptedException {

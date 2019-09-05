@@ -57,7 +57,7 @@ public class PartitionedGetBenchmark implements PerformanceTest {
     ClientServerTopology.configure(config);
     config.before(new CreatePartitionedRegion(), SERVER);
     config.before(new CreateClientProxyRegion(), CLIENT);
-    config.before(new PrePopulateRegion(keyRange), SERVER);
+    config.before(new PrePopulateRegion(keyRange), CLIENT);
     config.workload(new GetTask(keyRange), CLIENT);
     return config;
 

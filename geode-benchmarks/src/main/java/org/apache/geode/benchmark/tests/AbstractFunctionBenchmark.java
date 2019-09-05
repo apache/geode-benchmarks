@@ -46,7 +46,7 @@ abstract class AbstractFunctionBenchmark implements PerformanceTest {
     ClientServerTopology.configure(config);
     configureRegion(config);
     config.before(new CreateClientProxyRegion(), CLIENT);
-    config.before(new PrePopulateRegion(getKeyRange()), SERVER);
+    config.before(new PrePopulateRegion(getKeyRange()), CLIENT);
     config.before(new RegisterFunction(new BenchmarkFunction(getKeyRange())), SERVER);
     return config;
   }
