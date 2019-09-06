@@ -18,6 +18,7 @@
 # limitations under the License.
 
 set -e -o pipefail
+trap "exit" INT
 
 DEFAULT_BENCHMARK_REPO='https://github.com/apache/geode-benchmarks'
 BENCHMARK_REPO=${DEFAULT_BENCHMARK_REPO}
