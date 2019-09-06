@@ -47,6 +47,9 @@ import software.amazon.awssdk.services.ec2.model.CreateTagsRequest;
 import software.amazon.awssdk.services.ec2.model.DescribeImagesRequest;
 import software.amazon.awssdk.services.ec2.model.DescribeInstancesRequest;
 import software.amazon.awssdk.services.ec2.model.DescribeInstancesResponse;
+import software.amazon.awssdk.services.ec2.model.DescribeSecurityGroupsRequest;
+import software.amazon.awssdk.services.ec2.model.DescribeSecurityGroupsResponse;
+import software.amazon.awssdk.services.ec2.model.Ec2Exception;
 import software.amazon.awssdk.services.ec2.model.Filter;
 import software.amazon.awssdk.services.ec2.model.Image;
 import software.amazon.awssdk.services.ec2.model.Instance;
@@ -65,6 +68,8 @@ import software.amazon.awssdk.services.ec2.model.VolumeType;
 import org.apache.geode.infrastructure.BenchmarkMetadata;
 
 public class LaunchCluster {
+  private static final long MAX_WAIT_INTERVAL = 2000;
+  private static final int MAX_RETRIES = 5;
   static Ec2Client ec2 = Ec2Client.create();
 
   public static void main(String[] args) throws IOException, InterruptedException {
@@ -235,13 +240,15 @@ public class LaunchCluster {
     System.out.println("Launch Template for cluster '" + benchmarkTag + "' created.");
   }
 
-  private static void createSecurityGroup(String benchmarkTag, List<Tag> tags) {
+  private static void createSecurityGroup(String benchmarkTag, List<Tag> tags)
+      throws InterruptedException {
     // Make a security group for the launch template
     CreateSecurityGroupResponse csgr = ec2.createSecurityGroup(CreateSecurityGroupRequest.builder()
         .groupName(AwsBenchmarkMetadata.securityGroup(benchmarkTag))
         .description(AwsBenchmarkMetadata.securityGroup(benchmarkTag))
         .build());
     String groupId = csgr.groupId();
+    waitForSecurityGroup(groupId);
     ec2.createTags(CreateTagsRequest.builder().resources(groupId).tags(tags).build());
     System.out.println("Security Group for cluster '" + benchmarkTag + "' created.");
 
@@ -299,5 +306,41 @@ public class LaunchCluster {
       System.exit(1);
     }
     return sortableImages.get(sortableImages.size() - 1);
+  }
+
+  /*
+   * Waits for the security group to be created and visible to subsequent commands.
+   * This avoids issues caused by Amazon EC2 API eventual consistency model.
+   */
+  private static void waitForSecurityGroup(String groupId) throws InterruptedException {
+    int retries = 0;
+    DescribeSecurityGroupsRequest describeSecurityGroupsRequest =
+        DescribeSecurityGroupsRequest.builder().groupIds(groupId).build();
+    DescribeSecurityGroupsResponse describeSecurityGroupsResponse;
+
+    while (retries++ < MAX_RETRIES) {
+      try {
+        describeSecurityGroupsResponse = ec2.describeSecurityGroups(describeSecurityGroupsRequest);
+        if (!describeSecurityGroupsResponse.securityGroups().isEmpty()) {
+          System.out.println("SecurityGroup with id '" + groupId
+              + "' is created and visible to subsequent commands.");
+          return;
+        }
+      } catch (Ec2Exception e) {
+        System.out.println(e.getMessage());
+        // will retry or return from the method
+      }
+      System.out
+          .println("SecurityGroup with id '" + groupId + "' was not found or not visible yet.");
+      Thread.sleep(Math.min(getWaitTimeExp(retries), MAX_WAIT_INTERVAL));
+    }
+  }
+
+  /*
+   * Returns the next wait interval, in milliseconds, using an exponential
+   * backoff algorithm.
+   */
+  private static long getWaitTimeExp(int retryCount) {
+    return ((long) Math.pow(2, retryCount) * 100L);
   }
 }
