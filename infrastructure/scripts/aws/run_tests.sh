@@ -106,6 +106,7 @@ while (( "$#" )); do
       echo "-r|--geode-repo : Geode repo (default: ${DEFAULT_REPO})"
       echo "-b|--geode-branch : Geode branch (default: ${DEFAULT_BRANCH})"
       echo "-m|--metadata : Test metadata to output to file, comma-delimited (optional)"
+      echo "--iterations: number of times the benchmarks should be executed (optional)."
       echo "-- : All subsequent arguments are passed to the benchmark task as arguments."
       echo "-h|--help : This help message"
       exit 1
@@ -129,12 +130,6 @@ if [ -z "${TAG}" ]; then
   exit 1
 fi
 
-if [ ! -z "${ITERATIONS}" ]; then
-  if [ -z "${OUTPUT}" ]; then
-    echo "--output argument is required when number of iterations is provided."
-    exit 1
-  fi
-fi
 OUTPUT=${OUTPUT:-output-${DATE}-${TAG}}
 PREFIX="geode-performance-${TAG}"
 
@@ -230,7 +225,6 @@ METADATA="${METADATA},'source_repo':'${GEODE_REPO}','benchmark_repo':'${BENCHMAR
 run () {
   OUTPUT_DIR=$1
   shift
-  echo "Output directory: ${OUTPUT_DIR}"
 
   ssh ${SSH_OPTIONS} geode@${FIRST_INSTANCE} \
     cd geode-benchmarks '&&' \
@@ -248,11 +242,13 @@ if [ ! -z "${ITERATIONS}" ]; then
   i=1
   while [[ ${i} -le "${ITERATIONS}" ]]
   do
-    run ${OUTPUT}_${i} $@ || true
+    run "${OUTPUT}/run_${i}" $@
     ((i = i + 1))
-    sleep 30
+    if [ ${i} -le "${ITERATIONS}" ]; then
+      sleep 15
+    fi
   done
 else
-  run ${OUTPUT} $@
+  run "${OUTPUT}" $@
 fi
 
