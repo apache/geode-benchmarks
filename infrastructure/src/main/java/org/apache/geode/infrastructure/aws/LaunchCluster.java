@@ -90,6 +90,7 @@ public class LaunchCluster {
 
     createPlacementGroup(benchmarkTag);
     createSecurityGroup(benchmarkTag, tags);
+    authorizeSecurityGroup(benchmarkTag);
     createLaunchTemplate(benchmarkTag, newestImage);
 
     List<String> instanceIds = launchInstances(benchmarkTag, tags, count);
@@ -240,23 +241,55 @@ public class LaunchCluster {
     System.out.println("Launch Template for cluster '" + benchmarkTag + "' created.");
   }
 
+  /*
+   * Create the security group and wait until it is visible to subsequent commands.
+   * This avoids issues caused by Amazon EC2 API eventual consistency model.
+   */
   private static void createSecurityGroup(String benchmarkTag, List<Tag> tags)
       throws InterruptedException {
-    // Make a security group for the launch template
     CreateSecurityGroupResponse csgr = ec2.createSecurityGroup(CreateSecurityGroupRequest.builder()
         .groupName(AwsBenchmarkMetadata.securityGroup(benchmarkTag))
         .description(AwsBenchmarkMetadata.securityGroup(benchmarkTag))
         .build());
+
     String groupId = csgr.groupId();
-    waitForSecurityGroup(groupId);
+    int retries = 0;
+    DescribeSecurityGroupsRequest describeSecurityGroupsRequest =
+        DescribeSecurityGroupsRequest.builder().groupIds(groupId).build();
+    DescribeSecurityGroupsResponse describeSecurityGroupsResponse;
+
+    while (true) {
+      try {
+        describeSecurityGroupsResponse = ec2.describeSecurityGroups(describeSecurityGroupsRequest);
+
+        if (!describeSecurityGroupsResponse.securityGroups().isEmpty()) {
+          System.out.println("SecurityGroup with id '" + groupId
+              + "' is created and visible to subsequent commands.");
+          break;
+        }
+      } catch (Ec2Exception e) {
+        System.out.println(e.getMessage());
+        // will retry or return from the method
+      }
+      if (++retries >= MAX_RETRIES) {
+        throw new RuntimeException("Security Group with id '" + groupId
+            + "' was not created or is invisible to subsequent commands.");
+      }
+      Thread.sleep(Math.min(getWaitTimeExp(retries), MAX_WAIT_INTERVAL));
+    }
     ec2.createTags(CreateTagsRequest.builder().resources(groupId).tags(tags).build());
     System.out.println("Security Group for cluster '" + benchmarkTag + "' created.");
+  }
 
-    // Allow all members of the security group to freely talk to each other
+  /*
+   * Allow all members of the security group to freely talk to each other.
+   */
+  private static void authorizeSecurityGroup(String benchmarkTag) {
     ec2.authorizeSecurityGroupIngress(AuthorizeSecurityGroupIngressRequest.builder()
         .groupName(AwsBenchmarkMetadata.securityGroup(benchmarkTag))
         .sourceSecurityGroupName(AwsBenchmarkMetadata.securityGroup(benchmarkTag))
         .build());
+
     ec2.authorizeSecurityGroupIngress(AuthorizeSecurityGroupIngressRequest.builder()
         .groupName(AwsBenchmarkMetadata.securityGroup(benchmarkTag))
         .cidrIp("0.0.0.0/0")
@@ -306,34 +339,6 @@ public class LaunchCluster {
       System.exit(1);
     }
     return sortableImages.get(sortableImages.size() - 1);
-  }
-
-  /*
-   * Waits for the security group to be created and visible to subsequent commands.
-   * This avoids issues caused by Amazon EC2 API eventual consistency model.
-   */
-  private static void waitForSecurityGroup(String groupId) throws InterruptedException {
-    int retries = 0;
-    DescribeSecurityGroupsRequest describeSecurityGroupsRequest =
-        DescribeSecurityGroupsRequest.builder().groupIds(groupId).build();
-    DescribeSecurityGroupsResponse describeSecurityGroupsResponse;
-
-    while (retries++ < MAX_RETRIES) {
-      try {
-        describeSecurityGroupsResponse = ec2.describeSecurityGroups(describeSecurityGroupsRequest);
-        if (!describeSecurityGroupsResponse.securityGroups().isEmpty()) {
-          System.out.println("SecurityGroup with id '" + groupId
-              + "' is created and visible to subsequent commands.");
-          return;
-        }
-      } catch (Ec2Exception e) {
-        System.out.println(e.getMessage());
-        // will retry or return from the method
-      }
-      System.out
-          .println("SecurityGroup with id '" + groupId + "' was not found or not visible yet.");
-      Thread.sleep(Math.min(getWaitTimeExp(retries), MAX_WAIT_INTERVAL));
-    }
   }
 
   /*
