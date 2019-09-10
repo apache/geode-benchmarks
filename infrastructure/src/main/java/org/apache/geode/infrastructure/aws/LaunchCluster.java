@@ -35,6 +35,8 @@ import java.util.stream.Collectors;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import software.amazon.awssdk.services.ec2.Ec2Client;
+import software.amazon.awssdk.services.ec2.model.AllocateHostsRequest;
+import software.amazon.awssdk.services.ec2.model.AllocateHostsResponse;
 import software.amazon.awssdk.services.ec2.model.AuthorizeSecurityGroupIngressRequest;
 import software.amazon.awssdk.services.ec2.model.CreateKeyPairRequest;
 import software.amazon.awssdk.services.ec2.model.CreateKeyPairResponse;
@@ -52,14 +54,15 @@ import software.amazon.awssdk.services.ec2.model.Image;
 import software.amazon.awssdk.services.ec2.model.Instance;
 import software.amazon.awssdk.services.ec2.model.LaunchTemplateBlockDeviceMappingRequest;
 import software.amazon.awssdk.services.ec2.model.LaunchTemplateEbsBlockDeviceRequest;
-import software.amazon.awssdk.services.ec2.model.LaunchTemplatePlacementRequest;
 import software.amazon.awssdk.services.ec2.model.LaunchTemplateSpecification;
+import software.amazon.awssdk.services.ec2.model.Placement;
 import software.amazon.awssdk.services.ec2.model.RequestLaunchTemplateData;
 import software.amazon.awssdk.services.ec2.model.ResourceType;
 import software.amazon.awssdk.services.ec2.model.RunInstancesRequest;
 import software.amazon.awssdk.services.ec2.model.RunInstancesResponse;
 import software.amazon.awssdk.services.ec2.model.Tag;
 import software.amazon.awssdk.services.ec2.model.TagSpecification;
+import software.amazon.awssdk.services.ec2.model.Tenancy;
 import software.amazon.awssdk.services.ec2.model.VolumeType;
 
 import org.apache.geode.infrastructure.BenchmarkMetadata;
@@ -87,7 +90,8 @@ public class LaunchCluster {
     createSecurityGroup(benchmarkTag, tags);
     createLaunchTemplate(benchmarkTag, newestImage);
 
-    List<String> instanceIds = launchInstances(benchmarkTag, tags, count);
+    List<String> hostIds = allocateHosts(tags, count);
+    List<String> instanceIds = launchInstances(benchmarkTag, tags, count, hostIds);
     DescribeInstancesResponse instances = waitForInstances(instanceIds);
     List<String> publicIps = getPublicIps(instances);
     createMetadata(benchmarkTag, publicIps);
@@ -107,27 +111,44 @@ public class LaunchCluster {
     throw new IllegalStateException(s);
   }
 
-  private static List<String> launchInstances(String benchmarkTag, List<Tag> tags,
-      int instanceCount)
-      throws InterruptedException {
-    // launch instances
-
-    RunInstancesResponse rir = ec2.runInstances(RunInstancesRequest.builder()
-        .launchTemplate(LaunchTemplateSpecification.builder()
-            .launchTemplateName(AwsBenchmarkMetadata.launchTemplate(benchmarkTag))
-            .build())
+  private static List<String> allocateHosts(List<Tag> tags, int count) {
+    AllocateHostsResponse hosts = ec2.allocateHosts(AllocateHostsRequest.builder()
+        .availabilityZone("us-west-2a")
+        .instanceType(AwsBenchmarkMetadata.instanceType().toString())
+        .quantity(count)
         .tagSpecifications(TagSpecification.builder()
             .tags(tags)
-            .resourceType(ResourceType.INSTANCE)
+            .resourceType(ResourceType.DEDICATED_HOST)
             .build())
-        .minCount(instanceCount)
-        .maxCount(instanceCount)
         .build());
 
-    List<String> instanceIds = rir.instances()
-        .stream()
-        .map(Instance::instanceId)
-        .collect(Collectors.toList());
+    return hosts.hostIds();
+  }
+
+  private static List<String> launchInstances(String launchTemplate, List<Tag> tags,
+      int instanceCount, List<String> hosts)
+      throws InterruptedException {
+    List<String> instanceIds = new ArrayList<>(instanceCount);
+    for (String host : hosts) {
+      // launch instances
+      RunInstancesResponse rir = ec2.runInstances(RunInstancesRequest.builder()
+          .launchTemplate(LaunchTemplateSpecification.builder()
+              .launchTemplateName(AwsBenchmarkMetadata.launchTemplate(launchTemplate))
+              .build())
+          .placement(Placement.builder()
+              .tenancy(Tenancy.HOST)
+              .hostId(host)
+              .build())
+          .tagSpecifications(TagSpecification.builder()
+              .tags(tags)
+              .resourceType(ResourceType.INSTANCE)
+              .build())
+          .minCount(1)
+          .maxCount(1)
+          .build());
+
+      instanceIds.add(rir.instances().get(0).instanceId());
+    }
 
     return instanceIds;
   }
@@ -216,10 +237,6 @@ public class LaunchCluster {
             .launchTemplateData(RequestLaunchTemplateData.builder()
                 .imageId(newestImage.imageId())
                 .instanceType(AwsBenchmarkMetadata.instanceType())
-                .placement(LaunchTemplatePlacementRequest.builder()
-                    .groupName(AwsBenchmarkMetadata.placementGroup(benchmarkTag))
-                    .tenancy(AwsBenchmarkMetadata.tenancy())
-                    .build())
                 .keyName(AwsBenchmarkMetadata.keyPair(benchmarkTag))
                 .securityGroups(securityGroupList)
                 .blockDeviceMappings(LaunchTemplateBlockDeviceMappingRequest.builder()
