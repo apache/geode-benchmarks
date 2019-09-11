@@ -22,7 +22,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 
-import benchmark.geode.data.Portfolio;
 import org.junit.jupiter.api.Test;
 
 import org.apache.geode.benchmark.LongRange;
