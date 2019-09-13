@@ -60,7 +60,7 @@ Runs benchmark tests against a single branch of `geode` on the AWS instances wit
 
 Usage:
 
-    run_tests.sh -t [tag] [-v [version] | -b [branch]] <options...>
+    ./run_tests.sh -t [tag] [-v [version] | -b [branch]] <options...>
 
 Options:
 
@@ -72,8 +72,18 @@ Options:
     -r|--gr|--geode-repo            : Geode repo (default: apache/geode)
     -b|--gb|--branch|--geode-branch : Geode Branch (default: develop)
     -m|--metadata                   : Test metadata to output to file, comma-delimited (optional)
-    --                              : All subsequent arguments are passed to the benchmark tast as arguments
+    --                              : All subsequent arguments are passed to the benchmark task as arguments
     -h|-?|--help                    : Help message
+
+If the script fails with a message similar to: 
+
+    Received disconnect from x.x.x.x port 22:2: Too many authentication failures
+    Disconnected from x.x.x.x port 22
+
+then it is possible that the ssh-agent has too many keys stored in it and needs to be cleaned up. Another way to 
+confirm that this is the case is to use `$ ssh-add -l` to list all keys currently in the ssh-agent, and see if there 
+are more than 6 listed (the default behaviour for ssh is for a maximum of 6 attempts). You can then remove all keys 
+from the ssh-agent by using `$ ssh-add -D`, which should prevent the error from occurring.
 
 # run_against_baseline.sh
 Runs benchmark tests against two branches of geode for comparison purposes on the AWS instances with
@@ -81,7 +91,7 @@ the specified tag.
 
 Usage: 
     
-    run_against_baseline.sh -t [tag] [-v [version] | -b [branch]] [-V [baseline version] | -B [baseline branch]] <options...>"
+    ./run_against_baseline.sh -t [tag] [-v [version] | -b [branch]] [-V [baseline version] | -B [baseline branch]] <options...>"
 
 Options:
            
@@ -102,6 +112,15 @@ Options:
 
     e.g. ./run_against_baseline.sh -t test_environment  -v <sha1 of target version> -V <sha1 of base version>  -R <baseline repo e.g. user/geode> -B <baseline branch name> -b <target branch name> -r <target repo e.g. user/geode>
 
+If the script fails with a message similar to: 
+
+    Received disconnect from x.x.x.x port 22:2: Too many authentication failures
+    Disconnected from x.x.x.x port 22
+
+then it is possible that the ssh-agent has too many keys stored in it and needs to be cleaned up. Another way to 
+confirm that this is the case is to use `$ ssh-add -l` to list all keys currently in the ssh-agent, and see if there 
+are more than 6 listed (the default behaviour for ssh is for a maximum of 6 attempts). You can then remove all keys 
+from the ssh-agent by using `$ ssh-add -D`, which should prevent the error from occurring.
 
 # analyze_tests.sh
 Compares the results of two benchmark runs and outputs analysis of their relative performance.
