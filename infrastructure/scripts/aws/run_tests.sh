@@ -144,7 +144,7 @@ REPO=$(fixRepoName ${REPO})
 SSH_OPTIONS="-o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i ~/.geode-benchmarks/${TAG}-privkey.pem"
 HOSTS=`aws ec2 describe-instances --query 'Reservations[*].Instances[*].PrivateIpAddress' --filter "Name=tag:geode-benchmarks,Values=${TAG}" --output text`
 HOSTS=$(echo ${HOSTS} | tr ' ' ',')
-FIRST_INSTANCE=`aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --filter "Name=tag:geode-benchmarks,Values=${TAG}" --output text | cut -f 1`
+FIRST_INSTANCE=`aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --filter "Name=tag:geode-benchmarks,Values=${TAG}" --output text | cut -f 1 | head -n 1`
 
 echo "FIRST_INSTANCE=${FIRST_INSTANCE}"
 echo "HOSTS=${HOSTS}"
