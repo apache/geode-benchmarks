@@ -29,10 +29,14 @@ import software.amazon.awssdk.services.ec2.model.DeleteKeyPairRequest;
 import software.amazon.awssdk.services.ec2.model.DeleteLaunchTemplateRequest;
 import software.amazon.awssdk.services.ec2.model.DeletePlacementGroupRequest;
 import software.amazon.awssdk.services.ec2.model.DeleteSecurityGroupRequest;
+import software.amazon.awssdk.services.ec2.model.DescribeHostsRequest;
+import software.amazon.awssdk.services.ec2.model.DescribeHostsResponse;
 import software.amazon.awssdk.services.ec2.model.DescribeInstancesRequest;
 import software.amazon.awssdk.services.ec2.model.DescribeInstancesResponse;
 import software.amazon.awssdk.services.ec2.model.Filter;
+import software.amazon.awssdk.services.ec2.model.Host;
 import software.amazon.awssdk.services.ec2.model.Instance;
+import software.amazon.awssdk.services.ec2.model.ReleaseHostsRequest;
 import software.amazon.awssdk.services.ec2.model.TerminateInstancesRequest;
 
 import org.apache.geode.infrastructure.BenchmarkMetadata;
@@ -51,11 +55,27 @@ public class DestroyCluster {
     }
 
     deleteInstances(benchmarkTag);
+    releaseHosts(benchmarkTag);
     deleteLaunchTemplate(benchmarkTag);
     deleteSecurityGroup(benchmarkTag);
     deletePlacementGroup(benchmarkTag);
     deleteKeyPair(benchmarkTag);
     deleteMetadata(benchmarkTag);
+  }
+
+  private static void releaseHosts(String benchmarkTag) {
+    DescribeHostsResponse hosts = ec2.describeHosts(DescribeHostsRequest.builder()
+        .filter(Filter.builder()
+            .name("tag:" + BenchmarkMetadata.PREFIX)
+            .values(benchmarkTag)
+            .build())
+        .build());
+
+    List<String> hostIds = hosts.hosts().stream().map(Host::hostId).collect(Collectors.toList());
+
+    ec2.releaseHosts(ReleaseHostsRequest.builder().hostIds(hostIds).build());
+
+    System.out.println("Hosts for cluster '" + benchmarkTag + "' released.");
   }
 
   private static void deleteKeyPair(String benchmarkTag) {
