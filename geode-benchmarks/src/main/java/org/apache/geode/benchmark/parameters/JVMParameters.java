@@ -16,16 +16,11 @@ package org.apache.geode.benchmark.parameters;
 
 public class JVMParameters {
   public static final String[] JVM_ARGS = new String[] {
-      "-XX:CMSInitiatingOccupancyFraction=60",
       "-XX:+UnlockDiagnosticVMOptions",
       "-XX:ParGCCardsPerStrideChunk=32768",
       "-XX:+UseNUMA",
-      "-XX:+UseConcMarkSweepGC",
-      "-XX:+UseCMSInitiatingOccupancyOnly",
-      "-XX:+CMSClassUnloadingEnabled",
       "-XX:+DisableExplicitGC",
       "-XX:+ScavengeBeforeFullGC",
-      "-XX:+CMSScavengeBeforeRemark",
       "-server",
       "-Djava.awt.headless=true",
       "-Dsun.rmi.dgc.server.gcInterval=9223372036854775806",
@@ -35,6 +30,11 @@ public class JVMParameters {
       "-Xms8g"
   };
   public static final String[] JVM8_ARGS = new String[] {
+      "-XX:+UseConcMarkSweepGC",
+      "-XX:+UseCMSInitiatingOccupancyOnly",
+      "-XX:+CMSClassUnloadingEnabled",
+      "-XX:+CMSScavengeBeforeRemark",
+      "-XX:CMSInitiatingOccupancyFraction=60",
       "-XX:+PrintGCDetails",
       "-XX:+PrintGCTimeStamps",
       "-XX:+PrintGCDateStamps",
@@ -42,7 +42,25 @@ public class JVMParameters {
       "-XX:+PrintGCApplicationConcurrentTime",
       "-XX:+UseGCLogFileRotation",
       "-XX:NumberOfGCLogFiles=20",
-      "-XX:GCLogFileSize=1M"
+      "-XX:GCLogFileSize=1M",
+      "-Xloggc:OUTPUT_DIR/gc.log"
   };
-
+  public static final String[] JVM11_ARGS = new String[] {
+      "-XX:+UseConcMarkSweepGC",
+      "-XX:+UseCMSInitiatingOccupancyOnly",
+      "-XX:+CMSClassUnloadingEnabled",
+      "-XX:+CMSScavengeBeforeRemark",
+      "-XX:CMSInitiatingOccupancyFraction=60",
+      "-Xlog:gc:OUTPUT_DIR/gc.log"
+  };
+  public static final String[] JVM12_ARGS = new String[] {
+      "-XX:+UnlockExperimentalVMOptions",
+      "-XX:+UseZGC",
+      "-Xlog:gc:OUTPUT_DIR/gc.log"
+  };
+  public static final String[] JVM13_ARGS = new String[] {
+      "-XX:+UnlockExperimentalVMOptions",
+      "-XX:+UseZGC",
+      "-Xlog:gc:OUTPUT_DIR/gc.log"
+  };
 }

@@ -14,6 +14,9 @@
  */
 package org.apache.geode.benchmark.topology;
 
+import static org.apache.geode.benchmark.parameters.JVMParameters.JVM11_ARGS;
+import static org.apache.geode.benchmark.parameters.JVMParameters.JVM12_ARGS;
+import static org.apache.geode.benchmark.parameters.JVMParameters.JVM13_ARGS;
 import static org.apache.geode.benchmark.parameters.JVMParameters.JVM8_ARGS;
 import static org.apache.geode.benchmark.parameters.JVMParameters.JVM_ARGS;
 import static org.apache.geode.benchmark.topology.ClientServerTopology.Roles.CLIENT;
@@ -24,6 +27,7 @@ import org.bouncycastle.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.apache.geode.benchmark.parameters.JVMParameters;
 import org.apache.geode.benchmark.tasks.StartClient;
 import org.apache.geode.benchmark.tasks.StartLocator;
 import org.apache.geode.benchmark.tasks.StartServer;
@@ -63,10 +67,23 @@ public class ClientServerTopology {
     testConfig.jvmArgs(LOCATOR, appendIfNotEmpty(JVM_ARGS, profilerArgument));
     testConfig.jvmArgs(SERVER, appendIfNotEmpty(JVM_ARGS, profilerArgument));
 
-    if (System.getProperty("java.runtime.version").startsWith("1.8")) {
+    final String javaVersion = System.getProperty("java.runtime.version");
+    if (javaVersion.startsWith("1.8")) {
       testConfig.jvmArgs(CLIENT, JVM8_ARGS);
       testConfig.jvmArgs(LOCATOR, JVM8_ARGS);
       testConfig.jvmArgs(SERVER, JVM8_ARGS);
+    } else if (javaVersion.startsWith("11.")) {
+      testConfig.jvmArgs(CLIENT, JVM11_ARGS);
+      testConfig.jvmArgs(LOCATOR, JVM11_ARGS);
+      testConfig.jvmArgs(SERVER, JVM11_ARGS);
+    } else if (javaVersion.startsWith("12.")) {
+      testConfig.jvmArgs(CLIENT, JVM12_ARGS);
+      testConfig.jvmArgs(LOCATOR, JVM12_ARGS);
+      testConfig.jvmArgs(SERVER, JVM12_ARGS);
+    } else if (javaVersion.startsWith("13.")) {
+      testConfig.jvmArgs(CLIENT, JVM13_ARGS);
+      testConfig.jvmArgs(LOCATOR, JVM13_ARGS);
+      testConfig.jvmArgs(SERVER, JVM13_ARGS);
     }
 
     addToTestConfig(testConfig, "withSsl", WITH_SSL_ARGUMENT);
