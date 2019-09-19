@@ -68,6 +68,7 @@ public class ClientServerTopology {
     testConfig.jvmArgs(SERVER, appendIfNotEmpty(JVM_ARGS, profilerArgument));
 
     final String javaVersion = System.getProperty("java.runtime.version");
+    logger.info("Java Version: {}", javaVersion);
     if (javaVersion.startsWith("1.8")) {
       testConfig.jvmArgs(CLIENT, JVM8_ARGS);
       testConfig.jvmArgs(LOCATOR, JVM8_ARGS);
@@ -80,7 +81,7 @@ public class ClientServerTopology {
       testConfig.jvmArgs(CLIENT, JVM12_ARGS);
       testConfig.jvmArgs(LOCATOR, JVM12_ARGS);
       testConfig.jvmArgs(SERVER, JVM12_ARGS);
-    } else if (javaVersion.startsWith("13.")) {
+    } else if (javaVersion.matches("^13\\b.*")) {
       testConfig.jvmArgs(CLIENT, JVM13_ARGS);
       testConfig.jvmArgs(LOCATOR, JVM13_ARGS);
       testConfig.jvmArgs(SERVER, JVM13_ARGS);
