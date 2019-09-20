@@ -15,7 +15,6 @@
 
 package org.apache.geode.benchmark.parameters;
 
-import static com.google.common.base.Strings.isNullOrEmpty;
 import static org.apache.geode.benchmark.parameters.Utils.configureAll;
 
 import org.slf4j.Logger;
@@ -23,15 +22,13 @@ import org.slf4j.LoggerFactory;
 
 import org.apache.geode.perftest.TestConfig;
 
-public class ProfilerParameters {
-  private static final Logger logger = LoggerFactory.getLogger(ProfilerParameters.class);
+public class HeapParameters {
+  private static final Logger logger = LoggerFactory.getLogger(HeapParameters.class);
 
   public static void configure(final TestConfig testConfig) {
-    final String profilerArgument = System.getProperty("benchmark.profiler.argument");
-    if (!isNullOrEmpty(profilerArgument)) {
-      logger.info("Configuring profiler parameter. {}", profilerArgument);
-      configureAll(testConfig, profilerArgument);
-    }
+    final String heap = System.getProperty("withHeap", "8g");
+    logger.info("Configuring heap parameters {}.", heap);
+    configureAll(testConfig, "-Xmx" + heap, "-Xms" + heap);
   }
 
 }

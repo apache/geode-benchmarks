@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
 
 import org.apache.geode.benchmark.parameters.GcLoggingParameters;
 import org.apache.geode.benchmark.parameters.GcParameters;
+import org.apache.geode.benchmark.parameters.HeapParameters;
 import org.apache.geode.benchmark.parameters.JvmParameters;
 import org.apache.geode.benchmark.parameters.ProfilerParameters;
 import org.apache.geode.benchmark.tasks.StartClient;
@@ -59,9 +60,8 @@ public class ClientServerTopology {
     testConfig.role(SERVER, NUM_SERVERS);
     testConfig.role(CLIENT, NUM_CLIENTS);
 
-    String profilerArgument = System.getProperty("benchmark.profiler.argument");
-
     JvmParameters.configure(testConfig);
+    HeapParameters.configure(testConfig);
     GcLoggingParameters.configure(testConfig);
     GcParameters.configure(testConfig);
     ProfilerParameters.configure(testConfig);

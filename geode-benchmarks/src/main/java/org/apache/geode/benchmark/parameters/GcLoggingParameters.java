@@ -26,9 +26,8 @@ import org.apache.geode.perftest.TestConfig;
 public class GcLoggingParameters {
   private static final Logger logger = LoggerFactory.getLogger(GcLoggingParameters.class);
 
-  private static final JavaVersion javaVersion = JavaVersion.current();
-
   public static void configure(final TestConfig testConfig) {
+    final JavaVersion javaVersion = JavaVersion.current();
     logger.info("Configuring GC logging parameters for Java {}.", javaVersion);
     if (javaVersion.atLeast(v11)) {
       configureAll(testConfig, "-Xlog:gc:OUTPUT_DIR/gc.log");

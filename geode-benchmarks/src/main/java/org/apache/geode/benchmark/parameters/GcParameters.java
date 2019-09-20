@@ -26,11 +26,10 @@ import org.apache.geode.perftest.TestConfig;
 public class GcParameters {
   private static final Logger logger = LoggerFactory.getLogger(GcParameters.class);
 
-  private static final JavaVersion javaVersion = JavaVersion.current();
-  private static final GcImplementation gcImplementation =
-      GcImplementation.valueOf(System.getProperty("withGc", "CMS"));
-
   public static void configure(final TestConfig testConfig) {
+    final JavaVersion javaVersion = JavaVersion.current();
+    final GcImplementation gcImplementation =
+        GcImplementation.valueOf(System.getProperty("withGc", "CMS"));
     logger.info("Configuring {} GC.", gcImplementation);
     switch (gcImplementation) {
       case CMS:
