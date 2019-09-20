@@ -14,11 +14,6 @@
  */
 package org.apache.geode.benchmark.topology;
 
-import static org.apache.geode.benchmark.parameters.JVMParameters.JVM11_ARGS;
-import static org.apache.geode.benchmark.parameters.JVMParameters.JVM12_ARGS;
-import static org.apache.geode.benchmark.parameters.JVMParameters.JVM13_ARGS;
-import static org.apache.geode.benchmark.parameters.JVMParameters.JVM8_ARGS;
-import static org.apache.geode.benchmark.parameters.JVMParameters.JVM_ARGS;
 import static org.apache.geode.benchmark.topology.ClientServerTopology.Roles.CLIENT;
 import static org.apache.geode.benchmark.topology.ClientServerTopology.Roles.LOCATOR;
 import static org.apache.geode.benchmark.topology.ClientServerTopology.Roles.SERVER;
@@ -27,7 +22,10 @@ import org.bouncycastle.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.apache.geode.benchmark.parameters.JVMParameters;
+import org.apache.geode.benchmark.parameters.GcLoggingParameters;
+import org.apache.geode.benchmark.parameters.GcParameters;
+import org.apache.geode.benchmark.parameters.JvmParameters;
+import org.apache.geode.benchmark.parameters.ProfilerParameters;
 import org.apache.geode.benchmark.tasks.StartClient;
 import org.apache.geode.benchmark.tasks.StartLocator;
 import org.apache.geode.benchmark.tasks.StartServer;
@@ -63,29 +61,10 @@ public class ClientServerTopology {
 
     String profilerArgument = System.getProperty("benchmark.profiler.argument");
 
-    testConfig.jvmArgs(CLIENT, appendIfNotEmpty(JVM_ARGS, profilerArgument));
-    testConfig.jvmArgs(LOCATOR, appendIfNotEmpty(JVM_ARGS, profilerArgument));
-    testConfig.jvmArgs(SERVER, appendIfNotEmpty(JVM_ARGS, profilerArgument));
-
-    final String javaVersion = System.getProperty("java.runtime.version");
-    logger.info("Java Version: {}", javaVersion);
-    if (javaVersion.startsWith("1.8")) {
-      testConfig.jvmArgs(CLIENT, JVM8_ARGS);
-      testConfig.jvmArgs(LOCATOR, JVM8_ARGS);
-      testConfig.jvmArgs(SERVER, JVM8_ARGS);
-    } else if (javaVersion.startsWith("11.")) {
-      testConfig.jvmArgs(CLIENT, JVM11_ARGS);
-      testConfig.jvmArgs(LOCATOR, JVM11_ARGS);
-      testConfig.jvmArgs(SERVER, JVM11_ARGS);
-    } else if (javaVersion.startsWith("12.")) {
-      testConfig.jvmArgs(CLIENT, JVM12_ARGS);
-      testConfig.jvmArgs(LOCATOR, JVM12_ARGS);
-      testConfig.jvmArgs(SERVER, JVM12_ARGS);
-    } else if (javaVersion.matches("^13\\b.*")) {
-      testConfig.jvmArgs(CLIENT, JVM13_ARGS);
-      testConfig.jvmArgs(LOCATOR, JVM13_ARGS);
-      testConfig.jvmArgs(SERVER, JVM13_ARGS);
-    }
+    JvmParameters.configure(testConfig);
+    GcLoggingParameters.configure(testConfig);
+    GcParameters.configure(testConfig);
+    ProfilerParameters.configure(testConfig);
 
     addToTestConfig(testConfig, "withSsl", WITH_SSL_ARGUMENT);
     addToTestConfig(testConfig, "withSecurityManager", WITH_SECURITY_MANAGER_ARGUMENT);
@@ -105,7 +84,7 @@ public class ClientServerTopology {
     }
   }
 
-  private static final String[] appendIfNotEmpty(String[] a, String b) {
+  private static String[] appendIfNotEmpty(String[] a, String b) {
     if (null == b || b.length() == 0) {
       return a;
     }
