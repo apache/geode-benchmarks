@@ -21,6 +21,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.yardstickframework.probes.ThroughputLatencyProbe;
 
 import org.apache.geode.perftest.analysis.ProbeResultParser;
@@ -30,6 +32,8 @@ import org.apache.geode.perftest.analysis.ProbeResultParser;
  * reports the average throughput in operations/second.
  */
 public class YardstickThroughputSensorParser implements ProbeResultParser {
+  private static final Logger logger =
+      LoggerFactory.getLogger(YardstickThroughputSensorParser.class);
   public static final String sensorOutputFile = "ThroughputLatencyProbe.csv";
   public static final String probeResultDescription = "average ops/second";
 
@@ -37,8 +41,7 @@ public class YardstickThroughputSensorParser implements ProbeResultParser {
 
   public void parseResults(File resultDir) throws IOException {
     File sensorData = new File(resultDir, sensorOutputFile);
-    try (FileReader fileReader = new FileReader(sensorData);
-        BufferedReader dataStream = new BufferedReader(new FileReader(sensorData))) {
+    try (BufferedReader dataStream = new BufferedReader(new FileReader(sensorData))) {
       String nextLine;
 
       while ((nextLine = dataStream.readLine()) != null) {
@@ -49,6 +52,8 @@ public class YardstickThroughputSensorParser implements ProbeResultParser {
         }
         datapoints.add(new SensorDatapoint(nextLine));
       }
+    } catch (java.io.FileNotFoundException e) {
+      logger.warn("Result file {} missing.", sensorData, e);
     }
   }
 
