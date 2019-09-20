@@ -53,6 +53,8 @@ Options:
     -PtestJVM             : Path to an alternative JVM for running the client, locator, and servers. If not specified JAVA_HOME will be used. Note all compilation tasks will still use JAVA_HOME.
     -PwithSsl             : Flag to run geode with SSL. A self-signed certificate will be generated at runtime.
     -PwithSecurityManager : Flag to start Geode with the example implementation of SecurityManager
+    -PwithGc              : Select which GC to use. Valid values CMS (default), G1, Z.
+    -PwithHeap            : Specify how large a heap the benchmark VMs should use, default "8g". Accepts any `-Xmx` value, like "32g".
     --tests               : Specific benchmarks to run (--tests=PartitionedPutBenchmark)
     -d                    : Debug
     -i                    : Info
