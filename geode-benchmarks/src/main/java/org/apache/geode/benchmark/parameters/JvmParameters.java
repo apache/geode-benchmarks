@@ -28,8 +28,7 @@ public class JvmParameters {
   public static void configure(final TestConfig testConfig) {
     logger.info("Configuring JVM parameters.");
 
-    configureAll(testConfig, "-Xmx8g",
-        "-Xms8g",
+    configureAll(testConfig,
         "-server",
         "-Djava.awt.headless=true",
         "-Dsun.rmi.dgc.server.gcInterval=9223372036854775806",
