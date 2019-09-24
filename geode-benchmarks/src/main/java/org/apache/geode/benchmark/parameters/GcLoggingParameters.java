@@ -30,7 +30,7 @@ public class GcLoggingParameters {
     final JavaVersion javaVersion = JavaVersion.current();
     logger.info("Configuring GC logging parameters for Java {}.", javaVersion);
     if (javaVersion.atLeast(v11)) {
-      configureAll(testConfig, "-Xlog:gc:OUTPUT_DIR/gc.log");
+      configureAll(testConfig, "-Xlog:gc*:OUTPUT_DIR/gc.log");
     } else {
       configureAll(testConfig,
           "-XX:+PrintGCDetails",

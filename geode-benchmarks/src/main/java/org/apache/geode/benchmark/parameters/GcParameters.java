@@ -62,9 +62,6 @@ public class GcParameters {
     configureAll(testConfig,
         "-XX:+UnlockExperimentalVMOptions",
         "-XX:+UseZGC");
-    // if (javaVersion.atLeast(v13)) {
-    // // TODO -XX:SoftMaxHeapSize
-    // }
   }
 
   private static void configureG1(final TestConfig testConfig) {
