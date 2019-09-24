@@ -27,41 +27,64 @@ public class GcParameters {
   private static final Logger logger = LoggerFactory.getLogger(GcParameters.class);
 
   public static void configure(final TestConfig testConfig) {
-    final JavaVersion javaVersion = JavaVersion.current();
     final GcImplementation gcImplementation =
         GcImplementation.valueOf(System.getProperty("withGc", "CMS"));
     logger.info("Configuring {} GC.", gcImplementation);
     switch (gcImplementation) {
       case CMS:
-        configureAll(testConfig,
-            "-XX:+UseConcMarkSweepGC",
-            "-XX:+UseCMSInitiatingOccupancyOnly",
-            "-XX:+CMSClassUnloadingEnabled",
-            "-XX:+CMSScavengeBeforeRemark",
-            "-XX:CMSInitiatingOccupancyFraction=60",
-            "-XX:+UseNUMA",
-            "-XX:+ScavengeBeforeFullGC",
-            "-XX:+UnlockDiagnosticVMOptions",
-            "-XX:ParGCCardsPerStrideChunk=32768");
+        configureCms(testConfig);
         break;
       case G1:
-        configureAll(testConfig,
-            "-XX:+UseG1GC",
-            "-XX:+UseNUMA",
-            "-XX:+ScavengeBeforeFullGC");
+        configureG1(testConfig);
         break;
       case Z:
-        if (javaVersion.olderThan(v11)) {
-          throw new IllegalArgumentException("ZGC requires Java 11 or newer");
-        }
-        configureAll(testConfig,
-            "-XX:+UnlockExperimentalVMOptions",
-            "-XX:+UseZGC");
-        // if (javaVersion.atLeast(v13)) {
-        // // TODO -XX:SoftMaxHeapSize
-        // }
+        configureZ(testConfig);
+        break;
+      case Shenandoah:
+        configureShenandoah(testConfig);
         break;
     }
+  }
+
+  private static void configureShenandoah(final TestConfig testConfig) {
+    configureAll(testConfig,
+        "-XX:+UnlockExperimentalVMOptions",
+        "-XX:+UseShenandoahGC",
+        "-XX:+AlwaysPreTouch",
+        "-XX:+UseNUMA");
+  }
+
+  private static void configureZ(final TestConfig testConfig) {
+    final JavaVersion javaVersion = JavaVersion.current();
+    if (javaVersion.olderThan(v11)) {
+      throw new IllegalArgumentException("ZGC requires Java 11 or newer");
+    }
+    configureAll(testConfig,
+        "-XX:+UnlockExperimentalVMOptions",
+        "-XX:+UseZGC");
+    // if (javaVersion.atLeast(v13)) {
+    // // TODO -XX:SoftMaxHeapSize
+    // }
+  }
+
+  private static void configureG1(final TestConfig testConfig) {
+    configureAll(testConfig,
+        "-XX:+UseG1GC",
+        "-XX:+UseNUMA",
+        "-XX:+ScavengeBeforeFullGC");
+  }
+
+  private static void configureCms(final TestConfig testConfig) {
+    configureAll(testConfig,
+        "-XX:+UseConcMarkSweepGC",
+        "-XX:+UseCMSInitiatingOccupancyOnly",
+        "-XX:+CMSClassUnloadingEnabled",
+        "-XX:+CMSScavengeBeforeRemark",
+        "-XX:CMSInitiatingOccupancyFraction=60",
+        "-XX:+UseNUMA",
+        "-XX:+ScavengeBeforeFullGC",
+        "-XX:+UnlockDiagnosticVMOptions",
+        "-XX:ParGCCardsPerStrideChunk=32768");
   }
 
 }
