@@ -86,9 +86,9 @@ class GcLoggingParametersTest {
   }
 
   private void assertThatJava9GcLog(TestConfig testConfig) {
-    assertThat(testConfig.getJvmArgs().get(CLIENT)).contains("-Xlog:gc:OUTPUT_DIR/gc.log");
-    assertThat(testConfig.getJvmArgs().get(SERVER)).contains("-Xlog:gc:OUTPUT_DIR/gc.log");
-    assertThat(testConfig.getJvmArgs().get(LOCATOR)).contains("-Xlog:gc:OUTPUT_DIR/gc.log");
+    assertThat(testConfig.getJvmArgs().get(CLIENT)).contains("-Xlog:gc*:OUTPUT_DIR/gc.log");
+    assertThat(testConfig.getJvmArgs().get(SERVER)).contains("-Xlog:gc*:OUTPUT_DIR/gc.log");
+    assertThat(testConfig.getJvmArgs().get(LOCATOR)).contains("-Xlog:gc*:OUTPUT_DIR/gc.log");
     assertThat(testConfig.getJvmArgs().get(CLIENT)).doesNotContain("-Xloggc:OUTPUT_DIR/gc.log");
     assertThat(testConfig.getJvmArgs().get(SERVER)).doesNotContain("-Xloggc:OUTPUT_DIR/gc.log");
     assertThat(testConfig.getJvmArgs().get(LOCATOR)).doesNotContain("-Xloggc:OUTPUT_DIR/gc.log");
