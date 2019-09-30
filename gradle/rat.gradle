@@ -70,5 +70,3 @@ rat {
     '**/*.cfg',
   ]
 }
-
-subprojects { check.dependsOn rat }

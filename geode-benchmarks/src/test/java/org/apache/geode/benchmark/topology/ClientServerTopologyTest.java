@@ -16,9 +16,9 @@
 package org.apache.geode.benchmark.topology;
 
 
-import static org.apache.geode.benchmark.parameters.JVMParameters.JVM8_ARGS;
-import static org.apache.geode.benchmark.parameters.JVMParameters.JVM_ARGS;
 import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.Properties;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -28,12 +28,16 @@ import org.apache.geode.perftest.TestConfig;
 
 public class ClientServerTopologyTest {
 
+  private Properties systemProperties;
 
   @BeforeEach
+  public void beforeEach() {
+    systemProperties = (Properties) System.getProperties().clone();
+  }
+
   @AfterEach
-  public void clearProperties() {
-    System.clearProperty("withSsl");
-    System.clearProperty("withSecurityManager");
+  public void afterEach() {
+    System.setProperties(systemProperties);
   }
 
   @Test
@@ -52,22 +56,6 @@ public class ClientServerTopologyTest {
   }
 
   @Test
-  public void configWithJava8() {
-    System.setProperty("java.runtime.version", "1.8.0_212");
-    TestConfig testConfig = new TestConfig();
-    ClientServerTopology.configure(testConfig);
-    assertThat(testConfig.getJvmArgs().get("client")).contains(JVM8_ARGS);
-  }
-
-  @Test
-  public void configWithJava9() {
-    System.setProperty("java.runtime.version", "9.0.1");
-    TestConfig testConfig = new TestConfig();
-    ClientServerTopology.configure(testConfig);
-    assertThat(testConfig.getJvmArgs().get("client")).doesNotContain(JVM8_ARGS);
-  }
-
-  @Test
   public void configWithoutSecurityManager() {
     TestConfig testConfig = new TestConfig();
     ClientServerTopology.configure(testConfig);
@@ -83,9 +71,9 @@ public class ClientServerTopologyTest {
   }
 
   @Test
-  public void configWithSecurityManagerAndSslAndJava9() {
+  public void configWithSecurityManagerAndSslAndJava11() {
     System.setProperty("withSecurityManager", "true");
-    System.setProperty("java.runtime.version", "9.0.1");
+    System.setProperty("java.runtime.version", "11.0.4+11");
     System.setProperty("withSsl", "true");
     TestConfig testConfig = new TestConfig();
 
@@ -93,7 +81,5 @@ public class ClientServerTopologyTest {
 
     assertThat(testConfig.getJvmArgs().get("client")).contains("-DwithSecurityManager=true");
     assertThat(testConfig.getJvmArgs().get("client")).contains("-DwithSsl=true");
-    assertThat(testConfig.getJvmArgs().get("client")).contains(JVM_ARGS);
-    assertThat(testConfig.getJvmArgs().get("client")).doesNotContain(JVM8_ARGS);
   }
 }

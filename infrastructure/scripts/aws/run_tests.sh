@@ -131,8 +131,8 @@ fi
 fixRepoName() {
   if [ -z "$1" ]; then
     return 1
-  elif [ ${1:0:5} = "https" ]; then
-    echo ${1}
+  elif [ "${1:0:5}" = "https" ] || [ "${1:0:4}" = "git@" ]; then
+    echo "${1}"
   else
     echo "https://github.com/${1}"
   fi
@@ -157,7 +157,7 @@ if [[ -z "${VERSION}" ]]; then
 
   ssh ${SSH_OPTIONS} geode@$FIRST_INSTANCE "\
     rm -rf geode && \
-    git clone ${REPO} && \
+    git clone ${REPO} geode && \
     cd geode && git checkout ${BRANCH}"
 
   set +e

@@ -99,7 +99,6 @@ class JVMLauncher {
           "-Dgemfire." + SSL_TRUSTSTORE + "=" + jvmConfig.getLibDir() + "/temp-self-signed.jks");
       command.add("-Dgemfire." + SSL_TRUSTSTORE_PASSWORD + "=123456");
     }
-    command.add("-Xloggc:" + jvmConfig.getOutputDir() + "/gc.log");
     command.addAll(replaceTokens(jvmConfig.getJvmArgs(), jvmConfig));
     command.add(ChildJVM.class.getName());
 

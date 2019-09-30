@@ -14,6 +14,8 @@
  */
 package org.apache.geode.perftest.analysis;
 
+import static java.lang.Double.isNaN;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -74,7 +76,10 @@ public class Analyzer {
     for (BenchmarkRunResult.BenchmarkResult benchmarkResult : benchmarkRunResult
         .getBenchmarkResults()) {
       for (BenchmarkRunResult.ProbeResult probeResult : benchmarkResult.probeResults) {
-        if (probeResult.description.equals("average latency")) {
+        if (isNaN(probeResult.baseline) || isNaN(probeResult.test)) {
+          errorMessage.append("BENCHMARK FAILED: ").append(benchmarkResult.name)
+              .append(" missing result file.\n");
+        } else if (probeResult.description.equals("average latency")) {
           if (probeResult.getDifference() > 0) {
             isHighWaterCandidate = false;
             if (probeResult.getDifference() >= 0.05) {
