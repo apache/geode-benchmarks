@@ -55,6 +55,7 @@ Options:
     -PwithSecurityManager : Flag to start Geode with the example implementation of SecurityManager
     -PwithGc              : Select which GC to use. Valid values CMS (default), G1, Z.
     -PwithHeap            : Specify how large a heap the benchmark VMs should use, default "8g". Accepts any `-Xmx` value, like "32g".
+    -PwithThreads         : Specify how many threads to use when executing the benchmark. Default varies by benchmark.
     --tests               : Specific benchmarks to run (--tests=PartitionedPutBenchmark)
     -d                    : Debug
     -i                    : Info

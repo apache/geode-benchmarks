@@ -19,8 +19,11 @@ package org.apache.geode.perftest;
 
 import java.io.Serializable;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.yardstickframework.BenchmarkDriver;
 
+import org.apache.geode.perftest.runner.DefaultTestRunner;
 import org.apache.geode.perftest.yardstick.YardstickTask;
 
 /**
@@ -30,6 +33,8 @@ import org.apache.geode.perftest.yardstick.YardstickTask;
  * {@link TestConfig#workload(BenchmarkDriver, String...)} method.
  */
 public class WorkloadConfig implements Serializable {
+  private static final Logger logger = LoggerFactory.getLogger(DefaultTestRunner.class);
+
   long durationSeconds = 1;
   long warmupSeconds = 0;
   int threads = Runtime.getRuntime().availableProcessors() * 2;
@@ -45,7 +50,13 @@ public class WorkloadConfig implements Serializable {
   }
 
   public void threads(int threads) {
-    this.threads = threads;
+    final Integer override = Integer.getInteger("withThreads");
+    if (null == override) {
+      this.threads = threads;
+    } else {
+      logger.info("Overriding number of threads {}", override);
+      this.threads = override;
+    }
   }
 
   public long getDurationSeconds() {
