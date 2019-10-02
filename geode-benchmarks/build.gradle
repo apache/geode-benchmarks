@@ -80,6 +80,12 @@ task benchmark(type: Test) {
   if (project.hasProperty('withThreads')) {
     systemProperty 'withThreads', project.findProperty('withThreads')
   }
+  if (project.hasProperty('withWarmup')) {
+    systemProperty 'withWarmup', project.findProperty('withWarmup')
+  }
+  if (project.hasProperty('withDuration')) {
+    systemProperty 'withDuration', project.findProperty('withDuration')
+  }
   systemProperty 'withSsl', project.hasProperty('withSsl')
   systemProperty 'withSecurityManager', project.hasProperty('withSecurityManager')
   systemProperty 'benchmark.profiler.argument', project.findProperty('benchmark.profiler.argument')

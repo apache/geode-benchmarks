@@ -42,21 +42,15 @@ public class WorkloadConfig implements Serializable {
   public WorkloadConfig() {}
 
   public void durationSeconds(long durationSeconds) {
-    this.durationSeconds = durationSeconds;
+    this.durationSeconds = Long.getLong("withDuration", durationSeconds);
   }
 
   public void warmupSeconds(long warmupSeconds) {
-    this.warmupSeconds = warmupSeconds;
+    this.warmupSeconds = Long.getLong("withWarmup", warmupSeconds);
   }
 
   public void threads(int threads) {
-    final Integer override = Integer.getInteger("withThreads");
-    if (null == override) {
-      this.threads = threads;
-    } else {
-      logger.info("Overriding number of threads {}", override);
-      this.threads = override;
-    }
+    this.threads = Integer.getInteger("withThreads", threads);
   }
 
   public long getDurationSeconds() {
