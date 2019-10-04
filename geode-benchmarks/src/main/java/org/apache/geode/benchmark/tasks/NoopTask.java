@@ -20,14 +20,8 @@ package org.apache.geode.benchmark.tasks;
 import java.io.Serializable;
 import java.util.Map;
 
-import benchmark.geode.data.Portfolio;
-import org.yardstickframework.BenchmarkConfiguration;
 import org.yardstickframework.BenchmarkDriverAdapter;
 
-import org.apache.geode.benchmark.LongRange;
-import org.apache.geode.cache.Region;
-import org.apache.geode.cache.client.ClientCache;
-import org.apache.geode.cache.client.ClientCacheFactory;
 
 public class NoopTask extends BenchmarkDriverAdapter implements Serializable {
 
