@@ -17,17 +17,11 @@
 
 package org.apache.geode.benchmark.tests;
 
-import static org.apache.geode.benchmark.topology.ClientServerTopology.Roles.LOCATOR;
 import static org.apache.geode.benchmark.topology.ClientServerTopology.Roles.SERVER;
-import static org.apache.geode.distributed.ConfigurationProperties.LOG_LEVEL;
-
-import java.util.Properties;
 
 import org.junit.jupiter.api.Test;
 
 import org.apache.geode.benchmark.tasks.CreatePdxFromJSONTask;
-import org.apache.geode.benchmark.topology.ClientServerTopology;
-import org.apache.geode.perftest.PerformanceTest;
 import org.apache.geode.perftest.TestConfig;
 import org.apache.geode.perftest.TestRunners;
 
