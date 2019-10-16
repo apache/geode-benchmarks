@@ -179,7 +179,7 @@ if [[ -z "${VERSION}" ]]; then
   done
   set -e
 
-  if remoteShell cd geode '&&' ./gradlew tasks --console plain '|' egrep '\publishToMavenLocal\b'; then
+  if remoteShell "cd geode && ./gradlew tasks --console plain | egrep '\publishToMavenLocal\b'"; then
     install_target="publishToMavenLocal"
    else
     # install target is legacy but required for older releases
