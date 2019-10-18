@@ -123,6 +123,10 @@ public class TestConfig implements Serializable {
     return workloadConfig.getWarmupSeconds();
   }
 
+  public int getThreads() {
+    return workloadConfig.getThreads();
+  }
+
   public Map<String, Integer> getRoles() {
     return roles;
   }

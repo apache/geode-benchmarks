@@ -51,8 +51,9 @@ public class ReplicatedIndexedQueryBenchmark implements PerformanceTest {
 
   @Override
   public TestConfig configure() {
-    TestConfig config = GeodeBenchmark.createConfig();
-    config.threads(Runtime.getRuntime().availableProcessors() * 8);
+    int threadCount = Runtime.getRuntime().availableProcessors() * 8;
+
+    TestConfig config = new TestConfigFactory().withDefaultThreadCount(threadCount).build();
     ClientServerTopology.configure(config);
     config.before(new CreateReplicatedRegion(), SERVER);
     config.before(new CreateClientProxyRegion(), CLIENT);

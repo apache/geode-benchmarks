@@ -19,7 +19,7 @@ import static java.util.concurrent.TimeUnit.MINUTES;
 
 import org.apache.geode.perftest.TestConfig;
 
-public class GeodeBenchmark {
+public class TestConfigFactory {
 
   /**
    * Warm up time for the benchmark running on the default runner
@@ -32,17 +32,26 @@ public class GeodeBenchmark {
   private static final long BENCHMARK_DURATION = MINUTES.toSeconds(5);
 
   /**
-   * Number of threads to run benchmark.
+   * Number of threads with which to run benchmark
    */
-  private static final int THREADS = Runtime.getRuntime().availableProcessors() * 10;
+  private int defaultThreadCount;
 
 
-  public static TestConfig createConfig() {
+  public TestConfig build() {
     TestConfig testConfig = new TestConfig();
     testConfig.warmupSeconds(WARM_UP_TIME);
     testConfig.durationSeconds(BENCHMARK_DURATION);
-    testConfig.threads(THREADS);
+    testConfig.threads(numThreads());
     return testConfig;
+  }
+
+  public TestConfigFactory withDefaultThreadCount(int defaultThreadCount) {
+    this.defaultThreadCount = defaultThreadCount;
+    return this;
+  }
+
+  private int numThreads() {
+    return Integer.getInteger("clientThreadCount", this.defaultThreadCount);
   }
 
 }

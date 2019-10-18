@@ -52,7 +52,9 @@ public class PartitionedPutLongBenchmark implements PerformanceTest {
 
   @Override
   public TestConfig configure() {
-    TestConfig config = GeodeBenchmark.createConfig();
+    int threadCount = Runtime.getRuntime().availableProcessors() * 16;
+
+    TestConfig config = new TestConfigFactory().withDefaultThreadCount(threadCount).build();
     ClientServerTopology.configure(config);
     config.before(new CreatePartitionedRegion(), SERVER);
     config.before(new CreateClientProxyRegion(), CLIENT);

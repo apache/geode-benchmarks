@@ -48,16 +48,17 @@ For example:
 
 Options:
 ```
-    -Phosts               : Hosts used by benchmarks on the order of client,locator,server,server (-Phosts=localhost,localhost,localhost,localhost)
-    -PoutputDir           : Results output directory (-PoutputDir=/tmp/results)
-    -PtestJVM             : Path to an alternative JVM for running the client, locator, and servers. If not specified JAVA_HOME will be used. Note all compilation tasks will still use JAVA_HOME.
-    -PwithSsl             : Flag to run geode with SSL. A self-signed certificate will be generated at runtime.
-    -PwithSecurityManager : Flag to start Geode with the example implementation of SecurityManager
-    -PwithGc              : Select which GC to use. Valid values CMS (default), G1, Z.
-    -PwithHeap            : Specify how large a heap the benchmark VMs should use, default "8g". Accepts any `-Xmx` value, like "32g".
-    --tests               : Specific benchmarks to run (--tests=PartitionedPutBenchmark)
-    -d                    : Debug
-    -i                    : Info
+    -Phosts                 : Hosts used by benchmarks on the order of client,locator,server,server (-Phosts=localhost,localhost,localhost,localhost)
+    -PoutputDir             : Results output directory (-PoutputDir=/tmp/results)
+    -PtestJVM               : Path to an alternative JVM for running the client, locator, and servers. If not specified JAVA_HOME will be used. Note all compilation tasks will still use JAVA_HOME.
+    -PwithSsl               : Flag to run geode with SSL. A self-signed certificate will be generated at runtime.
+    -PwithSecurityManager   : Flag to start Geode with the example implementation of SecurityManager
+    -PwithGc                : Select which GC to use. Valid values CMS (default), G1, Z.
+    -PwithHeap              : Specify how large a heap the benchmark VMs should use, default "8g". Accepts any `-Xmx` value, like "32g".
+    -PwithClientThreadCount : Number of client threads to start. If not specified, a default value will be used. Defaults are set on a per-test basis and can be found in the test classes.
+    --tests                 : Specific benchmarks to run (--tests=PartitionedPutBenchmark)
+    -d                      : Debug
+    -i                      : Info
 ```    
 ### Scripts for running in aws and analyzing results
 
