@@ -58,6 +58,7 @@ public class StartServer implements Task {
         .create();
     CacheServer cacheServer = cache.addCacheServer();
     cacheServer.setPort(0);
+    cacheServer.setMaxConnections(Integer.MAX_VALUE);
     cacheServer.start();
     context.setAttribute("SERVER_CACHE", cache);
 
