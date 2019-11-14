@@ -267,9 +267,8 @@ public class LaunchCluster {
       throws InterruptedException {
     String groupId;
 
-    for (int create_retries=0; ; create_retries++) {
-      CreateSecurityGroupResponse
-          csgr =
+    for (int create_retries = 0;; create_retries++) {
+      CreateSecurityGroupResponse csgr =
           ec2.createSecurityGroup(CreateSecurityGroupRequest.builder()
               .groupName(AwsBenchmarkMetadata.securityGroup(benchmarkTag))
               .description(AwsBenchmarkMetadata.securityGroup(benchmarkTag))
@@ -280,13 +279,13 @@ public class LaunchCluster {
           DescribeSecurityGroupsRequest.builder().groupIds(groupId).build();
       DescribeSecurityGroupsResponse describeSecurityGroupsResponse;
 
-      for(int describe_retries=0; describe_retries<MAX_DESCRIBE_RETRIES; describe_retries++) {
+      for (int describe_retries = 0; describe_retries < MAX_DESCRIBE_RETRIES; describe_retries++) {
         try {
           describeSecurityGroupsResponse =
               ec2.describeSecurityGroups(describeSecurityGroupsRequest);
 
           if (!describeSecurityGroupsResponse.securityGroups().isEmpty()) {
-            System.out.println("SecurityGroup with id '" + groupId
+            System.out.println("TEST SecurityGroup with id '" + groupId
                 + "' is created and visible to subsequent commands.");
             ec2.createTags(CreateTagsRequest.builder().resources(groupId).tags(tags).build());
             System.out.println("Security Group for cluster '" + benchmarkTag + "' created.");
@@ -298,7 +297,7 @@ public class LaunchCluster {
         }
         Thread.sleep(Math.min(getWaitTimeExp(describe_retries), MAX_WAIT_INTERVAL));
       }
-      if(create_retries==(MAX_CREATE_RETRIES-1)) {
+      if (create_retries == (MAX_CREATE_RETRIES - 1)) {
         throw new RuntimeException("Security Group with id '" + groupId
             + "' was not created or is invisible to subsequent commands.");
       }
