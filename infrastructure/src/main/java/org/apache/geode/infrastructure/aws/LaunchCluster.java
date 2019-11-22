@@ -46,6 +46,7 @@ import software.amazon.awssdk.services.ec2.model.CreatePlacementGroupRequest;
 import software.amazon.awssdk.services.ec2.model.CreateSecurityGroupRequest;
 import software.amazon.awssdk.services.ec2.model.CreateSecurityGroupResponse;
 import software.amazon.awssdk.services.ec2.model.CreateTagsRequest;
+import software.amazon.awssdk.services.ec2.model.CreateTagsResponse;
 import software.amazon.awssdk.services.ec2.model.DescribeImagesRequest;
 import software.amazon.awssdk.services.ec2.model.DescribeInstancesRequest;
 import software.amazon.awssdk.services.ec2.model.DescribeInstancesResponse;
@@ -73,7 +74,8 @@ import org.apache.geode.infrastructure.BenchmarkMetadata;
 public class LaunchCluster {
   private static final long MAX_WAIT_INTERVAL = 2000;
   private static final int MAX_DESCRIBE_RETRIES = 5;
-  private static final int MAX_CREATE_RETRIES = 2;
+  private static final int MAX_CREATE_RETRIES = 3;
+  private static final int MAX_TAG_RETRIES = 3;
   static Ec2Client ec2 = Ec2Client.create();
 
   public static void main(String[] args) throws IOException, InterruptedException {
@@ -265,43 +267,72 @@ public class LaunchCluster {
    */
   private static void createSecurityGroup(String benchmarkTag, List<Tag> tags)
       throws InterruptedException {
+    CreateSecurityGroupResponse csgr = null;
     String groupId;
 
-    for (int create_retries = 0;; create_retries++) {
-      CreateSecurityGroupResponse csgr =
-          ec2.createSecurityGroup(CreateSecurityGroupRequest.builder()
-              .groupName(AwsBenchmarkMetadata.securityGroup(benchmarkTag))
-              .description(AwsBenchmarkMetadata.securityGroup(benchmarkTag))
-              .build());
-
-      groupId = csgr.groupId();
-      DescribeSecurityGroupsRequest describeSecurityGroupsRequest =
-          DescribeSecurityGroupsRequest.builder().groupIds(groupId).build();
-      DescribeSecurityGroupsResponse describeSecurityGroupsResponse;
-
-      for (int describe_retries = 0; describe_retries < MAX_DESCRIBE_RETRIES; describe_retries++) {
-        try {
-          describeSecurityGroupsResponse =
-              ec2.describeSecurityGroups(describeSecurityGroupsRequest);
-
-          if (!describeSecurityGroupsResponse.securityGroups().isEmpty()) {
-            System.out.println("TEST SecurityGroup with id '" + groupId
-                + "' is created and visible to subsequent commands.");
-            ec2.createTags(CreateTagsRequest.builder().resources(groupId).tags(tags).build());
-            System.out.println("Security Group for cluster '" + benchmarkTag + "' created.");
-            return;
-          }
-        } catch (Ec2Exception e) {
-          System.out.println(e.getMessage());
-          // will retry or return from the method
-        }
-        Thread.sleep(Math.min(getWaitTimeExp(describe_retries), MAX_WAIT_INTERVAL));
-      }
-      if (create_retries == (MAX_CREATE_RETRIES - 1)) {
-        throw new RuntimeException("Security Group with id '" + groupId
-            + "' was not created or is invisible to subsequent commands.");
+    for (int create_retries = 0; create_retries < MAX_CREATE_RETRIES; create_retries++) {
+      try {
+        csgr =
+            ec2.createSecurityGroup(CreateSecurityGroupRequest.builder()
+                .groupName(AwsBenchmarkMetadata.securityGroup(benchmarkTag))
+                .description(AwsBenchmarkMetadata.securityGroup(benchmarkTag))
+                .build());
+        break;
+      } catch (Exception exception) {
+        // try again
       }
     }
+
+    if (csgr == null) {
+      throw new RuntimeException(
+          "Security Group was not created after " + MAX_CREATE_RETRIES + " attempts.");
+    }
+
+    groupId = csgr.groupId();
+    DescribeSecurityGroupsRequest describeSecurityGroupsRequest =
+        DescribeSecurityGroupsRequest.builder().groupIds(groupId).build();
+
+    DescribeSecurityGroupsResponse describeSecurityGroupsResponse = null;
+    for (int describeRetries = 0; describeRetries < MAX_DESCRIBE_RETRIES; describeRetries++) {
+      try {
+        describeSecurityGroupsResponse = ec2.describeSecurityGroups(describeSecurityGroupsRequest);
+
+        if (!describeSecurityGroupsResponse.securityGroups().isEmpty()) {
+          System.out.println("Security Group with id '" + groupId
+              + "' is created and visible to subsequent commands.");
+          break;
+        }
+      } catch (Ec2Exception exception) {
+        // try again
+      }
+      Thread.sleep(Math.min(getWaitTimeExp(describeRetries), MAX_WAIT_INTERVAL));
+    }
+
+    if (describeSecurityGroupsResponse == null) {
+      throw new RuntimeException("Security Group with id '" + groupId + "' was not visible after "
+          + MAX_DESCRIBE_RETRIES + " attempts;");
+    }
+
+    CreateTagsResponse createTagResponse = null;
+    for (int tagRetries = 0; tagRetries < MAX_TAG_RETRIES; tagRetries++) {
+      try {
+        createTagResponse =
+            ec2.createTags(CreateTagsRequest.builder().resources(groupId).tags(tags).build());
+
+        if (createTagResponse != null) {
+          System.out.println("Tags for cluster '" + benchmarkTag + "' created.");
+          break;
+        }
+      } catch (Exception exception) {
+        // try again
+      }
+    }
+
+    if (createTagResponse == null) {
+      throw new RuntimeException("Tags for cluster '" + benchmarkTag + "' were not created after "
+          + MAX_TAG_RETRIES + " attempts.");
+    }
+
   }
 
   /*
