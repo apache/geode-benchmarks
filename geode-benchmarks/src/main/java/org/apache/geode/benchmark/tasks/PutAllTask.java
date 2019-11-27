@@ -37,6 +37,9 @@ public class PutAllTask extends BenchmarkDriverAdapter implements Serializable {
 
   private Region<Object, Object> region;
 
+  private ThreadLocal<HashMap<Object, Object>> batches;
+
+
   public PutAllTask(LongRange keyRange, int batchSize) {
     this.keyRange = keyRange;
     this.batchSize = batchSize;
@@ -47,17 +50,20 @@ public class PutAllTask extends BenchmarkDriverAdapter implements Serializable {
     super.setUp(cfg);
     ClientCache cache = ClientCacheFactory.getAnyInstance();
     region = cache.getRegion("region");
+
+    batches = ThreadLocal.withInitial(() -> {
+      final HashMap<Object, Object> batch = new HashMap<>(batchSize);
+      for (int i = 0; i < batchSize; i++) {
+        long key = keyRange.random();
+        batch.put(key, new Portfolio(key));
+      }
+      return batch;
+    });
   }
 
   @Override
   public boolean test(Map<Object, Object> ctx) {
-    long key;
-    final HashMap<Object, Object> batch = new HashMap<>(batchSize);
-    for (int i = 0; i < batchSize; i++) {
-      key = keyRange.random();
-      batch.put(key, new Portfolio(key));
-    }
-    region.putAll(batch);
+    region.putAll(batches.get());
     return true;
   }
 }
