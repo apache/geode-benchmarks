@@ -39,7 +39,7 @@ public class PartitionedPutAllBenchmark implements PerformanceTest {
 
   private LongRange keyRange = new LongRange(0, 1000000);
 
-  private int batchSize = 1000;
+  private int batchSize = 100;
 
   public PartitionedPutAllBenchmark() {}
 
