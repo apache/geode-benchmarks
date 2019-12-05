@@ -127,6 +127,7 @@ public class LaunchCluster {
       throws InterruptedException {
     int gotHosts = 0;
     AllocateHostsResponse hosts;
+    List<String> hostIds = new ArrayList<>();
 
     Instant end = Instant.now().plus(Duration.ofSeconds(timeout));
     do {
@@ -139,6 +140,7 @@ public class LaunchCluster {
               .resourceType(ResourceType.DEDICATED_HOST)
               .build())
           .build());
+      hostIds.addAll(hosts.hostIds());
       gotHosts += hosts.hostIds().size();
       if (Instant.now().isAfter(end)) {
         throw new InterruptedException(
@@ -146,7 +148,7 @@ public class LaunchCluster {
       }
     } while (gotHosts < count);
 
-    return hosts.hostIds();
+    return hostIds;
   }
 
   private static List<String> launchInstances(String launchTemplate, List<Tag> tags,
