@@ -23,6 +23,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.PosixFilePermissions;
+import java.time.Duration;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -99,9 +101,10 @@ public class LaunchCluster {
     authorizeSecurityGroup(benchmarkTag);
     createLaunchTemplate(benchmarkTag, newestImage);
 
-    List<String> hostIds = allocateHosts(tags, count);
-    List<String> instanceIds = launchInstances(benchmarkTag, tags, count, hostIds);
-    DescribeInstancesResponse instances = waitForInstances(instanceIds);
+    int ec2Timeout = 300;
+    List<String> hostIds = allocateHosts(tags, count, ec2Timeout);
+    List<String> instanceIds = launchInstances(benchmarkTag, tags, hostIds);
+    DescribeInstancesResponse instances = waitForInstances(instanceIds, ec2Timeout);
     List<String> publicIps = getPublicIps(instances);
     createMetadata(benchmarkTag, publicIps);
     installPrivateKey(benchmarkTag, publicIps);
@@ -120,26 +123,36 @@ public class LaunchCluster {
     throw new IllegalStateException(s);
   }
 
-  private static List<String> allocateHosts(List<Tag> tags, int count) {
-    AllocateHostsResponse hosts = ec2.allocateHosts(AllocateHostsRequest.builder()
-        .availabilityZone("us-west-2a")
-        .instanceType(AwsBenchmarkMetadata.instanceType().toString())
-        .quantity(count)
-        .tagSpecifications(TagSpecification.builder()
-            .tags(tags)
-            .resourceType(ResourceType.DEDICATED_HOST)
-            .build())
-        .build());
+  private static List<String> allocateHosts(List<Tag> tags, int count, int timeout)
+      throws InterruptedException {
+    int gotHosts = 0;
+    AllocateHostsResponse hosts;
+
+    Instant end = Instant.now().plus(Duration.ofSeconds(timeout));
+    do {
+      hosts = ec2.allocateHosts(AllocateHostsRequest.builder()
+          .availabilityZone("us-west-2a")
+          .instanceType(AwsBenchmarkMetadata.instanceType().toString())
+          .quantity(count - gotHosts)
+          .tagSpecifications(TagSpecification.builder()
+              .tags(tags)
+              .resourceType(ResourceType.DEDICATED_HOST)
+              .build())
+          .build());
+      gotHosts += hosts.hostIds().size();
+      if (Instant.now().isAfter(end)) {
+        throw new InterruptedException(
+            count + " hosts were not allocated before timeout of " + timeout + " seconds.");
+      }
+    } while (gotHosts < count);
 
     return hosts.hostIds();
   }
 
   private static List<String> launchInstances(String launchTemplate, List<Tag> tags,
-      int instanceCount, List<String> hosts)
-      throws InterruptedException {
-    List<String> instanceIds = new ArrayList<>(instanceCount);
+      List<String> hosts) {
+    List<String> instanceIds = new ArrayList<>(hosts.size());
     for (String host : hosts) {
-      // launch instances
       RunInstancesResponse rir = ec2.runInstances(RunInstancesRequest.builder()
           .launchTemplate(LaunchTemplateSpecification.builder()
               .launchTemplateName(AwsBenchmarkMetadata.launchTemplate(launchTemplate))
@@ -162,16 +175,22 @@ public class LaunchCluster {
     return instanceIds;
   }
 
-  private static DescribeInstancesResponse waitForInstances(List<String> instanceIds)
+  private static DescribeInstancesResponse waitForInstances(List<String> instanceIds, int timeout)
       throws InterruptedException {
     System.out.println("Waiting for cluster instances to go fully online.");
 
-    DescribeInstancesResponse describeInstancesResponse = describeInstances(instanceIds, "running");
-    while (instanceCount(describeInstancesResponse) < instanceIds.size()) {
+    Instant end = Instant.now().plus(Duration.ofSeconds(timeout));
+    DescribeInstancesResponse describeInstancesResponse;
+    do {
       sleep(AwsBenchmarkMetadata.POLL_INTERVAL);
-      System.out.println("Continuing to wait.");
+      System.out.println(
+          "Continuing to wait for " + new StringBuilder().append(instanceIds + ", ").toString());
       describeInstancesResponse = describeInstances(instanceIds, "running");
-    }
+      if (Instant.now().isAfter(end)) {
+        throw new InterruptedException(instanceIds.size()
+            + " hosts were not running before timeout of " + timeout + " seconds.");
+      }
+    } while (instanceCount(describeInstancesResponse) < instanceIds.size());
 
     return describeInstancesResponse;
   }
