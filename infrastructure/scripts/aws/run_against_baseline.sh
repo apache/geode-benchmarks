@@ -129,7 +129,7 @@ while (( "$#" )); do
       echo "-R|--baseline-geode-repo : Geode baseline repo (default: ${DEFAULT_BASELINE_REPO})"
       echo "-B|--baseline-geode-branch : Geode baseline branch"
       echo "-m|--metadata : Test metadata to output to file, comma-delimited"
-      echo "--ci : Set if starting instances for Continuous Integration"
+      echo "--ci : Set if starting instances for Continuous Integration - used to retry failed tests and to name/target AWS instances"
       echo "-- : All subsequent arguments are passed to the benchmark task as arguments."
       echo "-h|--help|-? : This help message"
       exit 1
