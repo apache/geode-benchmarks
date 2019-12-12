@@ -63,6 +63,8 @@ task benchmark(type: Test) {
   useJUnitPlatform()
   testLogging { exceptionFormat = 'full' }
 
+  exclude "**/NoopBenchmark.class"
+
   forkEvery 1
 
   systemProperty 'TEST_HOSTS', project.findProperty('hosts')
