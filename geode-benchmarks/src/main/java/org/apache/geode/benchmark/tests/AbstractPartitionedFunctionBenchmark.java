@@ -15,35 +15,14 @@
 
 package org.apache.geode.benchmark.tests;
 
-import static org.apache.geode.benchmark.topology.ClientServerTopology.Roles.CLIENT;
 import static org.apache.geode.benchmark.topology.ClientServerTopology.Roles.SERVER;
 
-import org.apache.geode.benchmark.tasks.CreateClientProxyRegion;
 import org.apache.geode.benchmark.tasks.CreatePartitionedRegion;
-import org.apache.geode.benchmark.tasks.PrePopulateRegion;
-import org.apache.geode.benchmark.topology.ClientServerTopology;
-import org.apache.geode.perftest.PerformanceTest;
 import org.apache.geode.perftest.TestConfig;
 
-abstract class AbstractPartitionedFunctionBenchmark implements PerformanceTest {
-  private long keyRange = 1000000;
-
-  public final void setKeyRange(long keyRange) {
-    this.keyRange = keyRange;
-  }
-
-  public final long getKeyRange() {
-    return keyRange;
-  }
-
+abstract class AbstractPartitionedFunctionBenchmark extends AbstractFunctionBenchmark {
   @Override
-  public TestConfig configure() {
-    TestConfig config = GeodeBenchmark.createConfig();
-    config.threads(Runtime.getRuntime().availableProcessors() * 4);
-    ClientServerTopology.configure(config);
+  protected void configureRegion(TestConfig config) {
     config.before(new CreatePartitionedRegion(), SERVER);
-    config.before(new CreateClientProxyRegion(), CLIENT);
-    config.before(new PrePopulateRegion(keyRange), SERVER);
-    return config;
   }
 }

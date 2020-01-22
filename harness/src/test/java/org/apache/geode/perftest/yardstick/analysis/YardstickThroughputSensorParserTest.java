@@ -65,11 +65,12 @@ public class YardstickThroughputSensorParserTest {
   }
 
   @Test
-  public void throwsExceptionOnMissingFile() throws IOException {
+  public void doesNotThrowExceptionOnMissingFile() throws IOException {
     final File testFolder = temporaryFolder.resolve("testFolder").toFile();
     assertTrue(testFolder.mkdirs());
     YardstickThroughputSensorParser parser = new YardstickThroughputSensorParser();
-    assertThrows(IOException.class, () -> parser.parseResults(testFolder));
+    parser.parseResults(testFolder);
+    assertEquals(3, parser.getProbeResults().size());
   }
 
   @Test

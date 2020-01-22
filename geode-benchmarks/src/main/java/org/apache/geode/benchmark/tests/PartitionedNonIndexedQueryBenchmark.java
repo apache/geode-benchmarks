@@ -19,6 +19,7 @@ import static org.apache.geode.benchmark.topology.ClientServerTopology.Roles.SER
 
 import org.junit.jupiter.api.Test;
 
+import org.apache.geode.benchmark.LongRange;
 import org.apache.geode.benchmark.tasks.CreateClientProxyRegion;
 import org.apache.geode.benchmark.tasks.CreatePartitionedRegion;
 import org.apache.geode.benchmark.tasks.OQLQuery;
@@ -29,16 +30,16 @@ import org.apache.geode.perftest.TestConfig;
 import org.apache.geode.perftest.TestRunners;
 
 public class PartitionedNonIndexedQueryBenchmark implements PerformanceTest {
-  private long keyRange = 500000;
-  private long queryRange = 1000;
+  private LongRange keyRange = new LongRange(0, 500000);
+  private long queryRange = 100;
 
   public PartitionedNonIndexedQueryBenchmark() {}
 
-  public void setKeyRange(long keyRange) {
+  public void setKeyRange(final LongRange keyRange) {
     this.keyRange = keyRange;
   }
 
-  public void setQueryRange(long queryRange) {
+  public void setQueryRange(final long queryRange) {
     this.queryRange = queryRange;
   }
 
@@ -50,11 +51,11 @@ public class PartitionedNonIndexedQueryBenchmark implements PerformanceTest {
   @Override
   public TestConfig configure() {
     TestConfig config = GeodeBenchmark.createConfig();
-    config.threads(Runtime.getRuntime().availableProcessors() * 2);
+    config.threads(Runtime.getRuntime().availableProcessors());
     ClientServerTopology.configure(config);
     config.before(new CreatePartitionedRegion(), SERVER);
     config.before(new CreateClientProxyRegion(), CLIENT);
-    config.before(new PrePopulateRegion(keyRange), SERVER);
+    config.before(new PrePopulateRegion(keyRange), CLIENT);
     config.workload(new OQLQuery(keyRange, queryRange), CLIENT);
     return config;
   }

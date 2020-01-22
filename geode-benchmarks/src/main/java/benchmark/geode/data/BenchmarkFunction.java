@@ -12,44 +12,34 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
+
 package benchmark.geode.data;
 
-import java.util.ArrayList;
-import java.util.List;
 
+import org.apache.geode.benchmark.LongRange;
 import org.apache.geode.cache.Region;
 import org.apache.geode.cache.execute.Function;
 import org.apache.geode.cache.execute.FunctionContext;
 import org.apache.geode.cache.execute.RegionFunctionContext;
 
-public class BenchmarkFunction implements Function {
-  private long maxKey;
-  private long minKey;
+public class BenchmarkFunction implements Function<Void> {
+  private final LongRange range;
 
-  public BenchmarkFunction(long minKey, long maxKey) {
-    this.maxKey = maxKey;
-    this.minKey = minKey;
+  public BenchmarkFunction(final LongRange range) {
+    this.range = range;
   }
 
   @Override
-  public void execute(FunctionContext context) {
-    RegionFunctionContext regionFunctionContext = (RegionFunctionContext) context;
-    Region region = regionFunctionContext.getDataSet();
-    List<Long> results = new ArrayList<>();
-
-    for (long i = minKey; i <= maxKey; i++) {
-      Portfolio portfolio = (Portfolio) region.get(i);
-      if (portfolio != null) {
-        results.add(portfolio.getID());
-      }
-    }
-
-    context.getResultSender().lastResult(results);
+  public void execute(final FunctionContext<Void> context) {
+    final RegionFunctionContext regionFunctionContext = (RegionFunctionContext) context;
+    final Region<Long, Portfolio> region = regionFunctionContext.getDataSet();
+    final Long key = range.random();
+    context.getResultSender().lastResult(region.get(key));
   }
 
   @Override
   public String getId() {
-    return "BenchmarkFunction";
+    return BenchmarkFunction.class.getName();
   }
 
   @Override

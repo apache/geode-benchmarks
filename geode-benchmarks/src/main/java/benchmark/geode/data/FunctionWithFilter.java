@@ -14,8 +14,6 @@
  */
 package benchmark.geode.data;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 
 import org.apache.geode.cache.Region;
@@ -28,20 +26,14 @@ public class FunctionWithFilter implements Function {
   public FunctionWithFilter() {}
 
   @Override
-  public void execute(FunctionContext context) {
-    RegionFunctionContext regionFunctionContext = (RegionFunctionContext) context;
-    Region region = regionFunctionContext.getDataSet();
-    Set filterKeys = regionFunctionContext.getFilter();
-    List<Long> results = new ArrayList<>();
+  public void execute(final FunctionContext context) {
+    final RegionFunctionContext regionFunctionContext = (RegionFunctionContext) context;
+    final Region<Long, Portfolio> region = regionFunctionContext.getDataSet();
+    @SuppressWarnings("unchecked")
+    final Set<Long> filterKeys = (Set<Long>) regionFunctionContext.getFilter();
+    final Long key = filterKeys.iterator().next();
 
-    filterKeys.stream().forEach(key -> {
-      Portfolio portfolio = (Portfolio) region.get(key);
-      if (portfolio != null) {
-        results.add(portfolio.getID());
-      }
-    });
-
-    context.getResultSender().lastResult(results);
+    context.getResultSender().lastResult(region.get(key));
   }
 
   @Override

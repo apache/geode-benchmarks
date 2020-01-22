@@ -4,11 +4,23 @@ These utilities create instances and run tests in your AWS account
 
 # Prerequisites
 * You must have the aws cli installed. If `aws` is not on your path then you can try to install it with `pip3 install awscli --upgrade --user`. See [Amazon's aws cli installation instructions](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html)
-* You must also set your secret key for the CLI. You must set up a profile named `geode-benchmarks`, so use the command `aws configure --profile geode-benchmarks` to configure the CLI. You will need to specify the "AWS Access Key ID" and "AWS Secret Access Key". You can get these from an existing team member. Set the "Default region name" to "us-west-2". See [Amazon's instructions](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html)
+* You must also set your secret key for the CLI. You must set up a profile named `geode-benchmarks`, so use the command `aws configure --profile geode-benchmarks` to configure the CLI. You will need to specify the "AWS Access Key ID" and "AWS Secret Access Key," which can be obtained from a team member. Set the "Default region name" to "us-west-2". See [Amazon's instructions](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html)
+
+	Alternately, if you already have AWS credentials and just need to create the `geode-benchmarks` profile, you can first modify your existing AWS credentials file (found at `~/.aws/credentials`) and add the following lines:
+
+        [geode-benchmarks]
+        aws_access_key_id = Your access ID key
+        aws_secret_access_key = Your secret access key
+
+	Then modify the `config` file found in the same directory and add the following:
+
+        [profile geode-benchmarks]
+        region = us-west-2
+
 
 # Image
 
-If you need to build the image, you must have packer installed. But you can run the following scripts (launch, run, destroy) without building the image.
+If you need to build the image, you must have packer installed. The following scripts (launch, run, analyze, destroy) can be run without building the image.
 Build the image in the image directory using the `build_image.sh` script.
 
 
@@ -20,13 +32,13 @@ One of the ways that can be done is via environment variables.
     prompt> aws configure
     AWS Access Key ID [****************foo1]:
     AWS Secret Access Key [****************bar2]:
-    Default region name [us-west-1]:
+    Default region name [us-west-2]:
 
 Export environment variables as follows.
 
     export AWS_ACCESS_KEY_ID=myaccesskeyfoo1
     export AWS_SECRET_ACCESS_KEY=mysecretaccesskeybar2
-    export AWS_REGION="us-west-1"
+    export AWS_REGION="us-west-2"
 
 
 # launch_cluster.sh
@@ -85,10 +97,27 @@ Options:
     -B|--gbb|--baseline-branch|--baseline-geode-branch   : Geode Baseline Branch (default: develop)
     -m|--metadata                                        : Test metadata to output to file, comma-delimited (optional)
     --ci                                                 : Set when the instances are being started for use in Continuous Integration
-    --                                                   : All subsequent arguments are passed to the benchmark tast as arguments
+    --                                                   : All subsequent arguments are passed to the benchmark task as arguments
     -h|-?|--help                                         : Help message
 
     e.g. ./run_against_baseline.sh -t test_environment  -v <sha1 of target version> -V <sha1 of base version>  -R <baseline repo e.g. user/geode> -B <baseline branch name> -b <target branch name> -r <target repo e.g. user/geode>
+
+
+# analyze_tests.sh
+Compares the results of two benchmark runs and outputs analysis of their relative performance.
+
+Usage:
+
+    ./analyze_tests.sh  [-o <output directory> | [--baselineDir <baseline directory> --branchDir <branch directory>]] [options ...] [-- arguments ...]
+
+Options:
+
+    -o|--output|--outputDir  : The directory containing benchmark results
+    --baseline|--baselineDir : The directory containing baseline benchmark results
+    --branch|--branchDir     : The directory containing branch benchmark results
+    --ci                     : Set if starting instances for Continuous Integration
+    --                       : All subsequent arguments are passed to the benchmark task as arguments.
+    -h|--help                : This help message
 
 
 # destroy_cluster.sh
@@ -105,12 +134,24 @@ Options:
     -h|-?|--help : Help message
 
 
-#Example
+## Example
 
-Example 1 - run_test.sh:
+Example 1 - Generating and comparing two benchmark runs using run_tests.sh and analyze_tests.sh. 
+
+The first command creates a new cluster with 4 instances and the tag "mycluster" using launch_cluster.sh.
+
+The second command runs only the `MyCustomBenchmark` benchmark test (by using the `-- --tests=MyCustomBenchmark` argument) found on the `myBenchmarkBranch` branch of the `myGit/geode-benchmarks` repository. This benchmark runs against the develop branch of Geode, adds some metadata, and outputs the results to `~/benchmarking/baseline` using run_test.sh. 
+
+The third command runs the same benchmark against the `myGeodeBranch` branch of the `myGit/geode` repository and outputs the results to `~/benchmarking/branch` using run_tests.sh. 
+
+The fourth command compares the results found in `~/benchmarking/branch` to the results found in `~/benchmarking/baseline` and outputs analysis of the operations per second and latency of the branch benchmark relative to the baseline using analyze_tests.sh.
+
+The fifth command destroys the cluster using destroy_cluster.sh.
 ```bash
 ./launch_cluster.sh --tag mycluster --count 4
-./run_tests.sh --tag mycluster --geode-branch develop --benchmark-branch benchmarkBranch --metadata "'name':'HelenaTestingCPUs','CPU':'256','geodeBranch':'CPUTest'"
+./run_tests.sh --tag mycluster --geode-branch develop --benchmark-repo myGit/geode-benchmarks --benchmark-branch myBenchmarkBranch --metadata "'name':'HelenaTestingCPUs','CPU':'256','geodeBranch':'CPUTest'" --output ~/benchmarking/baseline -- --tests=MyCustomBenchmark
+./run_tests.sh --tag mycluster --geode-repo myGit/geode --geode-branch myGeodeBranch --benchmark-repo myGit/geode-benchmarks --benchmark-branch myBenchmarkBranch --metadata "'name':'HelenaTestingCPUs','CPU':'256','geodeBranch':'CPUTest'" --output ~/benchmarking/branch -- --tests=MyCustomBenchmark
+./analyze_tests.sh --branch ~/benchmarking/branch --baseline ~/benchmarking/baseline
 ./destroy_cluster.sh --tag mycluster
 ```
 

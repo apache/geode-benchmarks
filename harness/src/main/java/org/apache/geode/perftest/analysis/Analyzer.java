@@ -14,7 +14,11 @@
  */
 package org.apache.geode.perftest.analysis;
 
+import static java.lang.Double.isNaN;
+
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 
@@ -68,18 +72,26 @@ public class Analyzer {
     benchmarkRunResult.writeResult(new PrintWriter(System.out));
     /* throw exc if failed? */
 
+    String errorFilePath = testResultArg + "/../../../failedTests";
+    BufferedWriter writer = new BufferedWriter(new FileWriter(errorFilePath, true));
+
     boolean isSignificantlyBetter = false;
     boolean isHighWaterCandidate = true;
     StringBuilder errorMessage = new StringBuilder();
     for (BenchmarkRunResult.BenchmarkResult benchmarkResult : benchmarkRunResult
         .getBenchmarkResults()) {
       for (BenchmarkRunResult.ProbeResult probeResult : benchmarkResult.probeResults) {
-        if (probeResult.description.equals("average latency")) {
+        if (isNaN(probeResult.baseline) || isNaN(probeResult.test)) {
+          errorMessage.append("BENCHMARK FAILED: ").append(benchmarkResult.name)
+              .append(" missing result file.\n");
+          writer.append(benchmarkResult.name + "\n");
+        } else if (probeResult.description.equals("average latency")) {
           if (probeResult.getDifference() > 0) {
             isHighWaterCandidate = false;
             if (probeResult.getDifference() >= 0.05) {
               errorMessage.append("BENCHMARK FAILED: ").append(benchmarkResult.name)
                   .append(" average latency is 5% worse than baseline.\n");
+              writer.append(benchmarkResult.name + "\n");
             }
           } else if (probeResult.getDifference() <= -0.5) {
             isSignificantlyBetter = true;
@@ -87,6 +99,7 @@ public class Analyzer {
         }
       }
     }
+    writer.close();
 
     if (isCI && isHighWaterCandidate && isSignificantlyBetter) {
       System.out.println(

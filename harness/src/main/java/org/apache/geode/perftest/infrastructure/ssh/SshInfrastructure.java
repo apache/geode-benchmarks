@@ -40,6 +40,7 @@ import net.schmizz.sshj.Config;
 import net.schmizz.sshj.DefaultConfig;
 import net.schmizz.sshj.SSHClient;
 import net.schmizz.sshj.connection.channel.direct.Session;
+import net.schmizz.sshj.connection.channel.direct.Signal;
 import net.schmizz.sshj.transport.verification.PromiscuousVerifier;
 import net.schmizz.sshj.xfer.FileSystemFile;
 import org.slf4j.Logger;
@@ -82,24 +83,41 @@ public class SshInfrastructure implements Infrastructure {
   }
 
   @Override
-  public int onNode(Node node, String[] shellCommand)
-      throws IOException {
-    try (SSHClient client = getSSHClient(node.getAddress())) {
-
-      String script = "'" + String.join("' '", shellCommand) + "'";
-
-      try (Session session = client.startSession()) {
-        logger.info("Executing " + script + " on " + node.getAddress());
-        final Session.Command cmd = session.exec(script);
-        CompletableFuture<Void> copyStdout =
+  public int onNode(final Node node, final String[] shellCommand) throws IOException {
+    try (final SSHClient client = getSSHClient(node.getAddress());
+        final Session session = client.startSession()) {
+      final String script = "'" + String.join("' '", shellCommand) + "'";
+      logger.info("Executing {} on {}", script, node.getAddress());
+      try (final Session.Command cmd = session.exec(script)) {
+        final CompletableFuture<Void> copyStdout =
             copyStreamAsynchronously(cmd.getInputStream(), System.out);
-        CompletableFuture<Void> copyStdErr =
+        final CompletableFuture<Void> copyStdErr =
             copyStreamAsynchronously(cmd.getErrorStream(), System.err);
 
         cmd.join();
         copyStdout.join();
         copyStdErr.join();
-        return cmd.getExitStatus();
+
+        final Boolean coreDumped = cmd.getExitWasCoreDumped();
+        if (null != coreDumped && coreDumped) {
+          logger.error("Core dumped for {} on {}", script, node.getAddress());
+        }
+        final String errorMessage = cmd.getExitErrorMessage();
+        if (null != errorMessage) {
+          logger.error("Exit error message for {} on {} was \"{}\"", script, node.getAddress(),
+              errorMessage);
+        }
+        final Signal exitSignal = cmd.getExitSignal();
+        if (null != exitSignal) {
+          logger.error("Exit signal for {} on {} was {}", script, node.getAddress(), exitSignal);
+        }
+
+        final Integer exitStatus = cmd.getExitStatus();
+        if (null == exitStatus) {
+          logger.error("Exit status for {} on {} was null", script, node.getAddress());
+          return -1;
+        }
+        return exitStatus;
       }
     }
   }

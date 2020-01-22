@@ -24,11 +24,6 @@ import org.apache.geode.perftest.TestRunners;
 
 public class ReplicatedFunctionExecutionWithFiltersBenchmark
     extends AbstractReplicatedFunctionBenchmark {
-  private long filterKeyRange = 1000;
-
-  public void setFilterKeyRange(long filterKeyRange) {
-    this.filterKeyRange = filterKeyRange;
-  }
 
   @Test
   public void run() throws Exception {
@@ -38,7 +33,8 @@ public class ReplicatedFunctionExecutionWithFiltersBenchmark
   @Override
   public TestConfig configure() {
     TestConfig config = super.configure();
-    config.workload(new ExecuteFilteredFunction(getKeyRange(), filterKeyRange), CLIENT);
+    config.threads(Runtime.getRuntime().availableProcessors() * 10);
+    config.workload(new ExecuteFilteredFunction(getKeyRange()), CLIENT);
     return config;
   }
 }

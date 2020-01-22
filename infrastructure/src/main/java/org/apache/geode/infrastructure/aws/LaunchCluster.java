@@ -23,6 +23,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.PosixFilePermissions;
+import java.time.Duration;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -35,6 +37,8 @@ import java.util.stream.Collectors;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import software.amazon.awssdk.services.ec2.Ec2Client;
+import software.amazon.awssdk.services.ec2.model.AllocateHostsRequest;
+import software.amazon.awssdk.services.ec2.model.AllocateHostsResponse;
 import software.amazon.awssdk.services.ec2.model.AuthorizeSecurityGroupIngressRequest;
 import software.amazon.awssdk.services.ec2.model.CreateKeyPairRequest;
 import software.amazon.awssdk.services.ec2.model.CreateKeyPairResponse;
@@ -44,27 +48,36 @@ import software.amazon.awssdk.services.ec2.model.CreatePlacementGroupRequest;
 import software.amazon.awssdk.services.ec2.model.CreateSecurityGroupRequest;
 import software.amazon.awssdk.services.ec2.model.CreateSecurityGroupResponse;
 import software.amazon.awssdk.services.ec2.model.CreateTagsRequest;
+import software.amazon.awssdk.services.ec2.model.CreateTagsResponse;
 import software.amazon.awssdk.services.ec2.model.DescribeImagesRequest;
 import software.amazon.awssdk.services.ec2.model.DescribeInstancesRequest;
 import software.amazon.awssdk.services.ec2.model.DescribeInstancesResponse;
+import software.amazon.awssdk.services.ec2.model.DescribeSecurityGroupsRequest;
+import software.amazon.awssdk.services.ec2.model.DescribeSecurityGroupsResponse;
+import software.amazon.awssdk.services.ec2.model.Ec2Exception;
 import software.amazon.awssdk.services.ec2.model.Filter;
 import software.amazon.awssdk.services.ec2.model.Image;
 import software.amazon.awssdk.services.ec2.model.Instance;
 import software.amazon.awssdk.services.ec2.model.LaunchTemplateBlockDeviceMappingRequest;
 import software.amazon.awssdk.services.ec2.model.LaunchTemplateEbsBlockDeviceRequest;
-import software.amazon.awssdk.services.ec2.model.LaunchTemplatePlacementRequest;
 import software.amazon.awssdk.services.ec2.model.LaunchTemplateSpecification;
+import software.amazon.awssdk.services.ec2.model.Placement;
 import software.amazon.awssdk.services.ec2.model.RequestLaunchTemplateData;
 import software.amazon.awssdk.services.ec2.model.ResourceType;
 import software.amazon.awssdk.services.ec2.model.RunInstancesRequest;
 import software.amazon.awssdk.services.ec2.model.RunInstancesResponse;
 import software.amazon.awssdk.services.ec2.model.Tag;
 import software.amazon.awssdk.services.ec2.model.TagSpecification;
+import software.amazon.awssdk.services.ec2.model.Tenancy;
 import software.amazon.awssdk.services.ec2.model.VolumeType;
 
 import org.apache.geode.infrastructure.BenchmarkMetadata;
 
 public class LaunchCluster {
+  private static final long MAX_WAIT_INTERVAL = 2000;
+  private static final int MAX_DESCRIBE_RETRIES = 5;
+  private static final int MAX_CREATE_RETRIES = 3;
+  private static final int MAX_TAG_RETRIES = 3;
   static Ec2Client ec2 = Ec2Client.create();
 
   public static void main(String[] args) throws IOException, InterruptedException {
@@ -85,10 +98,13 @@ public class LaunchCluster {
 
     createPlacementGroup(benchmarkTag);
     createSecurityGroup(benchmarkTag, tags);
+    authorizeSecurityGroup(benchmarkTag);
     createLaunchTemplate(benchmarkTag, newestImage);
 
-    List<String> instanceIds = launchInstances(benchmarkTag, tags, count);
-    DescribeInstancesResponse instances = waitForInstances(instanceIds);
+    int ec2Timeout = 300;
+    List<String> hostIds = allocateHosts(tags, count, ec2Timeout);
+    List<String> instanceIds = launchInstances(benchmarkTag, tags, hostIds);
+    DescribeInstancesResponse instances = waitForInstances(instanceIds, ec2Timeout);
     List<String> publicIps = getPublicIps(instances);
     createMetadata(benchmarkTag, publicIps);
     installPrivateKey(benchmarkTag, publicIps);
@@ -107,41 +123,76 @@ public class LaunchCluster {
     throw new IllegalStateException(s);
   }
 
-  private static List<String> launchInstances(String benchmarkTag, List<Tag> tags,
-      int instanceCount)
+  private static List<String> allocateHosts(List<Tag> tags, int count, int timeout)
       throws InterruptedException {
-    // launch instances
+    int gotHosts = 0;
+    AllocateHostsResponse hosts;
+    List<String> hostIds = new ArrayList<>();
 
-    RunInstancesResponse rir = ec2.runInstances(RunInstancesRequest.builder()
-        .launchTemplate(LaunchTemplateSpecification.builder()
-            .launchTemplateName(AwsBenchmarkMetadata.launchTemplate(benchmarkTag))
-            .build())
-        .tagSpecifications(TagSpecification.builder()
-            .tags(tags)
-            .resourceType(ResourceType.INSTANCE)
-            .build())
-        .minCount(instanceCount)
-        .maxCount(instanceCount)
-        .build());
+    Instant end = Instant.now().plus(Duration.ofSeconds(timeout));
+    do {
+      hosts = ec2.allocateHosts(AllocateHostsRequest.builder()
+          .availabilityZone("us-west-2a")
+          .instanceType(AwsBenchmarkMetadata.instanceType().toString())
+          .quantity(count - gotHosts)
+          .tagSpecifications(TagSpecification.builder()
+              .tags(tags)
+              .resourceType(ResourceType.DEDICATED_HOST)
+              .build())
+          .build());
+      hostIds.addAll(hosts.hostIds());
+      gotHosts += hosts.hostIds().size();
+      if (Instant.now().isAfter(end)) {
+        throw new InterruptedException(
+            count + " hosts were not allocated before timeout of " + timeout + " seconds.");
+      }
+    } while (gotHosts < count);
 
-    List<String> instanceIds = rir.instances()
-        .stream()
-        .map(Instance::instanceId)
-        .collect(Collectors.toList());
+    return hostIds;
+  }
+
+  private static List<String> launchInstances(String launchTemplate, List<Tag> tags,
+      List<String> hosts) {
+    List<String> instanceIds = new ArrayList<>(hosts.size());
+    for (String host : hosts) {
+      RunInstancesResponse rir = ec2.runInstances(RunInstancesRequest.builder()
+          .launchTemplate(LaunchTemplateSpecification.builder()
+              .launchTemplateName(AwsBenchmarkMetadata.launchTemplate(launchTemplate))
+              .build())
+          .placement(Placement.builder()
+              .tenancy(Tenancy.HOST)
+              .hostId(host)
+              .build())
+          .tagSpecifications(TagSpecification.builder()
+              .tags(tags)
+              .resourceType(ResourceType.INSTANCE)
+              .build())
+          .minCount(1)
+          .maxCount(1)
+          .build());
+
+      instanceIds.add(rir.instances().get(0).instanceId());
+    }
 
     return instanceIds;
   }
 
-  private static DescribeInstancesResponse waitForInstances(List<String> instanceIds)
+  private static DescribeInstancesResponse waitForInstances(List<String> instanceIds, int timeout)
       throws InterruptedException {
     System.out.println("Waiting for cluster instances to go fully online.");
 
-    DescribeInstancesResponse describeInstancesResponse = describeInstances(instanceIds, "running");
-    while (instanceCount(describeInstancesResponse) < instanceIds.size()) {
+    Instant end = Instant.now().plus(Duration.ofSeconds(timeout));
+    DescribeInstancesResponse describeInstancesResponse;
+    do {
       sleep(AwsBenchmarkMetadata.POLL_INTERVAL);
-      System.out.println("Continuing to wait.");
+      System.out.println(
+          "Continuing to wait for " + new StringBuilder().append(instanceIds + ", ").toString());
       describeInstancesResponse = describeInstances(instanceIds, "running");
-    }
+      if (Instant.now().isAfter(end)) {
+        throw new InterruptedException(instanceIds.size()
+            + " hosts were not running before timeout of " + timeout + " seconds.");
+      }
+    } while (instanceCount(describeInstancesResponse) < instanceIds.size());
 
     return describeInstancesResponse;
   }
@@ -216,10 +267,6 @@ public class LaunchCluster {
             .launchTemplateData(RequestLaunchTemplateData.builder()
                 .imageId(newestImage.imageId())
                 .instanceType(AwsBenchmarkMetadata.instanceType())
-                .placement(LaunchTemplatePlacementRequest.builder()
-                    .groupName(AwsBenchmarkMetadata.placementGroup(benchmarkTag))
-                    .tenancy(AwsBenchmarkMetadata.tenancy())
-                    .build())
                 .keyName(AwsBenchmarkMetadata.keyPair(benchmarkTag))
                 .securityGroups(securityGroupList)
                 .blockDeviceMappings(LaunchTemplateBlockDeviceMappingRequest.builder()
@@ -235,21 +282,89 @@ public class LaunchCluster {
     System.out.println("Launch Template for cluster '" + benchmarkTag + "' created.");
   }
 
-  private static void createSecurityGroup(String benchmarkTag, List<Tag> tags) {
-    // Make a security group for the launch template
-    CreateSecurityGroupResponse csgr = ec2.createSecurityGroup(CreateSecurityGroupRequest.builder()
-        .groupName(AwsBenchmarkMetadata.securityGroup(benchmarkTag))
-        .description(AwsBenchmarkMetadata.securityGroup(benchmarkTag))
-        .build());
-    String groupId = csgr.groupId();
-    ec2.createTags(CreateTagsRequest.builder().resources(groupId).tags(tags).build());
-    System.out.println("Security Group for cluster '" + benchmarkTag + "' created.");
+  /*
+   * Create the security group and wait until it is visible to subsequent commands.
+   * This avoids issues caused by Amazon EC2 API eventual consistency model.
+   */
+  private static void createSecurityGroup(String benchmarkTag, List<Tag> tags)
+      throws InterruptedException {
+    CreateSecurityGroupResponse csgr = null;
+    String groupId;
 
-    // Allow all members of the security group to freely talk to each other
+    for (int create_retries = 0; create_retries < MAX_CREATE_RETRIES; create_retries++) {
+      try {
+        csgr =
+            ec2.createSecurityGroup(CreateSecurityGroupRequest.builder()
+                .groupName(AwsBenchmarkMetadata.securityGroup(benchmarkTag))
+                .description(AwsBenchmarkMetadata.securityGroup(benchmarkTag))
+                .build());
+        break;
+      } catch (Exception exception) {
+        // try again
+      }
+    }
+
+    if (csgr == null) {
+      throw new RuntimeException(
+          "Security Group was not created after " + MAX_CREATE_RETRIES + " attempts.");
+    }
+
+    groupId = csgr.groupId();
+    DescribeSecurityGroupsRequest describeSecurityGroupsRequest =
+        DescribeSecurityGroupsRequest.builder().groupIds(groupId).build();
+
+    DescribeSecurityGroupsResponse describeSecurityGroupsResponse = null;
+    for (int describeRetries = 0; describeRetries < MAX_DESCRIBE_RETRIES; describeRetries++) {
+      try {
+        describeSecurityGroupsResponse = ec2.describeSecurityGroups(describeSecurityGroupsRequest);
+
+        if (!describeSecurityGroupsResponse.securityGroups().isEmpty()) {
+          System.out.println("Security Group with id '" + groupId
+              + "' is created and visible to subsequent commands.");
+          break;
+        }
+      } catch (Ec2Exception exception) {
+        // try again
+      }
+      Thread.sleep(Math.min(getWaitTimeExp(describeRetries), MAX_WAIT_INTERVAL));
+    }
+
+    if (describeSecurityGroupsResponse == null) {
+      throw new RuntimeException("Security Group with id '" + groupId + "' was not visible after "
+          + MAX_DESCRIBE_RETRIES + " attempts;");
+    }
+
+    CreateTagsResponse createTagResponse = null;
+    for (int tagRetries = 0; tagRetries < MAX_TAG_RETRIES; tagRetries++) {
+      try {
+        createTagResponse =
+            ec2.createTags(CreateTagsRequest.builder().resources(groupId).tags(tags).build());
+
+        if (createTagResponse != null) {
+          System.out.println("Tags for cluster '" + benchmarkTag + "' created.");
+          break;
+        }
+      } catch (Exception exception) {
+        // try again
+      }
+    }
+
+    if (createTagResponse == null) {
+      throw new RuntimeException("Tags for cluster '" + benchmarkTag + "' were not created after "
+          + MAX_TAG_RETRIES + " attempts.");
+    }
+
+  }
+
+  /*
+   * Allow all members of the security group to freely talk to each other.
+   */
+  private static void authorizeSecurityGroup(String benchmarkTag) {
     ec2.authorizeSecurityGroupIngress(AuthorizeSecurityGroupIngressRequest.builder()
         .groupName(AwsBenchmarkMetadata.securityGroup(benchmarkTag))
         .sourceSecurityGroupName(AwsBenchmarkMetadata.securityGroup(benchmarkTag))
         .build());
+
     ec2.authorizeSecurityGroupIngress(AuthorizeSecurityGroupIngressRequest.builder()
         .groupName(AwsBenchmarkMetadata.securityGroup(benchmarkTag))
         .cidrIp("0.0.0.0/0")
@@ -299,5 +414,13 @@ public class LaunchCluster {
       System.exit(1);
     }
     return sortableImages.get(sortableImages.size() - 1);
+  }
+
+  /*
+   * Returns the next wait interval, in milliseconds, using an exponential
+   * backoff algorithm.
+   */
+  private static long getWaitTimeExp(int retryCount) {
+    return ((long) Math.pow(2, retryCount) * 100L);
   }
 }

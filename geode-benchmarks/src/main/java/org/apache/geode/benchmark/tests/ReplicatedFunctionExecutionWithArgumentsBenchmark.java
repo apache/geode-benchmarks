@@ -24,11 +24,6 @@ import org.apache.geode.perftest.TestRunners;
 
 public class ReplicatedFunctionExecutionWithArgumentsBenchmark
     extends AbstractReplicatedFunctionBenchmark {
-  private long functionIDRange = 1000;
-
-  public void setFunctionIDRange(long functionIDRange) {
-    this.functionIDRange = functionIDRange;
-  }
 
   @Test
   public void run() throws Exception {
@@ -38,7 +33,8 @@ public class ReplicatedFunctionExecutionWithArgumentsBenchmark
   @Override
   public TestConfig configure() {
     TestConfig config = super.configure();
-    config.workload(new ExecuteParameterizedFunction(getKeyRange(), functionIDRange), CLIENT);
+    config.threads(Runtime.getRuntime().availableProcessors() * 16);
+    config.workload(new ExecuteParameterizedFunction(getKeyRange()), CLIENT);
     return config;
   }
 }

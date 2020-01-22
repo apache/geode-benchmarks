@@ -140,11 +140,15 @@ fi
 fixRepoName() {
   if [ -z "$1" ]; then
     return 1
-  elif [ ${1:0:5} = "https" ]; then
-    echo ${1}
+  elif [ "${1:0:6}" = "https:" ] || [ "${1:0:4}" = "git@" ] || [ "${1:0:6}" = "rsync:" ]; then
+    echo "${1}"
   else
     echo "https://github.com/${1}"
   fi
+}
+
+remoteShell() {
+  ssh ${SSH_OPTIONS} "geode@${FIRST_INSTANCE}" "$@"
 }
 
 BENCHMARK_REPO=$(fixRepoName ${BENCHMARK_REPO})
@@ -153,7 +157,7 @@ REPO=$(fixRepoName ${REPO})
 SSH_OPTIONS="-o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i ~/.geode-benchmarks/${TAG}-privkey.pem"
 HOSTS=`aws ec2 describe-instances --query 'Reservations[*].Instances[*].PrivateIpAddress' --filter "Name=tag:geode-benchmarks,Values=${TAG}" --output text`
 HOSTS=$(echo ${HOSTS} | tr ' ' ',')
-FIRST_INSTANCE=`aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --filter "Name=tag:geode-benchmarks,Values=${TAG}" --output text | cut -f 1`
+FIRST_INSTANCE=`aws ec2 describe-instances --query '(Reservations[].Instances[].PublicIpAddress)[0]' --filter "Name=tag:geode-benchmarks,Values=${TAG}" --output text`
 
 echo "FIRST_INSTANCE=${FIRST_INSTANCE}"
 echo "HOSTS=${HOSTS}"
@@ -164,35 +168,36 @@ if [[ -z "${VERSION}" ]]; then
     exit 1
   fi
 
-  ssh ${SSH_OPTIONS} geode@$FIRST_INSTANCE "\
-    rm -rf geode && \
-    git clone ${REPO} && \
-    cd geode && git checkout ${BRANCH}"
+  if [ "${REPO:0:6}" = "rsync:" ]; then
+    pushd "${REPO:6}"
+    FILES=$(mktemp)
+    git ls-files > "${FILES}"
+    rsync -a -e "ssh ${SSH_OPTIONS}" --include='*/' --include='.git/***' --include-from="${FILES}" --exclude='*' . "geode@${FIRST_INSTANCE}:geode/"
+    rm -f "${FILES}"
+    popd
+  else
+    remoteShell rm -rf geode '&&' git clone "${REPO}" geode
+  fi
+  remoteShell cd geode '&&' git checkout "${BRANCH}"
 
   set +e
   for i in {1..5}; do
-    if ssh ${SSH_OPTIONS} geode@$FIRST_INSTANCE "\
-      cd geode && \
-      ./gradlew resolveDependencies"; then
+    if remoteShell cd geode '&&' ./gradlew resolveDependencies; then
       break
     fi
   done
   set -e
 
-  if ssh ${SSH_OPTIONS} geode@$FIRST_INSTANCE "\
-    cd geode && \
-    ./gradlew tasks --console plain | egrep '\publishToMavenLocal\b'"; then
+  if remoteShell "cd geode && ./gradlew tasks --console plain | egrep '\publishToMavenLocal\b'"; then
     install_target="publishToMavenLocal"
    else
     # install target is legacy but required for older releases
     install_target="install"
   fi
 
-  ssh ${SSH_OPTIONS} geode@$FIRST_INSTANCE "\
-    cd geode && \
-    ./gradlew ${install_target} installDist"
+  remoteShell cd geode '&&' ./gradlew ${install_target} installDist
 
-  VERSION=$(ssh ${SSH_OPTIONS} geode@$FIRST_INSTANCE geode/geode-assembly/build/install/apache-geode/bin/gfsh version)
+  VERSION=$(remoteShell geode/geode-assembly/build/install/apache-geode/bin/gfsh version)
 fi
 
 if [[ -z "${VERSION}" ]]; then
@@ -201,20 +206,18 @@ if [[ -z "${VERSION}" ]]; then
 fi
 
 set +e
-ssh ${SSH_OPTIONS} geode@$FIRST_INSTANCE "
-  [[ ! -r .geode-benchmarks-identifier ]] && \
-  uuidgen > .geode-benchmarks-identifier"
+remoteShell "[[ ! -r .geode-benchmarks-identifier ]] && uuidgen > .geode-benchmarks-identifier"
 set -e
 
-instance_id=$(ssh ${SSH_OPTIONS} geode@$FIRST_INSTANCE cat .geode-benchmarks-identifier)
+instance_id=$(remoteShell cat .geode-benchmarks-identifier)
 
 
-ssh ${SSH_OPTIONS} geode@${FIRST_INSTANCE} \
+remoteShell \
   rm -rf geode-benchmarks '&&' \
-  git clone ${BENCHMARK_REPO} '&&' \
-  cd geode-benchmarks '&&' git checkout ${BENCHMARK_BRANCH}
+  git clone "${BENCHMARK_REPO}" '&&' \
+  cd geode-benchmarks '&&' git checkout "${BENCHMARK_BRANCH}"
 
-BENCHMARK_SHA=$(ssh ${SSH_OPTIONS} geode@${FIRST_INSTANCE} \
+BENCHMARK_SHA=$(remoteShell \
   cd geode-benchmarks '&&' \
   git rev-parse --verify -q HEAD)
 
@@ -225,17 +228,16 @@ METADATA="${METADATA},'source_repo':'${GEODE_REPO}','benchmark_repo':'${BENCHMAR
 run () {
   OUTPUT_DIR=$1
   shift
-
-  ssh ${SSH_OPTIONS} geode@${FIRST_INSTANCE} \
+  remoteShell \
     cd geode-benchmarks '&&' \
-    ./gradlew -PgeodeVersion=${VERSION} benchmark "-Phosts=${HOSTS}" "-Pmetadata=${METADATA}" "$@"
+    ./gradlew -PgeodeVersion="${VERSION}" benchmark "-Phosts=${HOSTS}" "-Pmetadata=${METADATA}" "$@"
 
   mkdir -p ${OUTPUT_DIR}
 
   scp ${SSH_OPTIONS} -r geode@${FIRST_INSTANCE}:geode-benchmarks/geode-benchmarks/build/reports ${OUTPUT_DIR}/reports
-  BENCHMARK_DIRECTORY="$(ssh ${SSH_OPTIONS} geode@${FIRST_INSTANCE} ls -l geode-benchmarks/geode-benchmarks/build/ | grep benchmark | awk 'NF>1{print $NF}')"
+  BENCHMARK_DIRECTORY="$(remoteShell ls -l geode-benchmarks/geode-benchmarks/build/ | grep benchmark | awk 'NF>1{print $NF}')
   scp ${SSH_OPTIONS} -r geode@${FIRST_INSTANCE}:geode-benchmarks/geode-benchmarks/build/${BENCHMARK_DIRECTORY} ${OUTPUT_DIR}
-  ssh ${SSH_OPTIONS} geode@${FIRST_INSTANCE} rm -rf geode-benchmarks/geode-benchmarks/build/${BENCHMARK_DIRECTORY}
+  remoteShell rm -rf geode-benchmarks/geode-benchmarks/build/${BENCHMARK_DIRECTORY}
 }
 
 if [ ! -z "${ITERATIONS}" ]; then
@@ -251,4 +253,3 @@ if [ ! -z "${ITERATIONS}" ]; then
 else
   run "${OUTPUT}" $@
 fi
-

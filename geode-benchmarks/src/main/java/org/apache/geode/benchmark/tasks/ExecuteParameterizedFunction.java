@@ -15,17 +15,13 @@
 package org.apache.geode.benchmark.tasks;
 
 import java.io.Serializable;
-import java.rmi.UnexpectedException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ThreadLocalRandom;
 
 import benchmark.geode.data.FunctionWithArguments;
 import org.yardstickframework.BenchmarkConfiguration;
 import org.yardstickframework.BenchmarkDriverAdapter;
 
+import org.apache.geode.benchmark.LongRange;
 import org.apache.geode.cache.Region;
 import org.apache.geode.cache.client.ClientCache;
 import org.apache.geode.cache.client.ClientCacheFactory;
@@ -35,15 +31,14 @@ import org.apache.geode.cache.execute.ResultCollector;
 
 public class ExecuteParameterizedFunction extends BenchmarkDriverAdapter implements Serializable {
 
-  private Region region;
-  long keyRange;
-  long functionIDRange;
-  private Function function;
+  private final LongRange keyRange;
+  private final Function function;
 
-  public ExecuteParameterizedFunction(long keyRange, long functionIDRange) {
+  private Region region;
+
+  public ExecuteParameterizedFunction(final LongRange keyRange) {
     this.keyRange = keyRange;
-    this.functionIDRange = functionIDRange;
-    this.function = new FunctionWithArguments();
+    function = new FunctionWithArguments();
   }
 
   @Override
@@ -55,32 +50,13 @@ public class ExecuteParameterizedFunction extends BenchmarkDriverAdapter impleme
   }
 
   @Override
-  public boolean test(Map<Object, Object> ctx) throws Exception {
-    long minId = ThreadLocalRandom.current().nextLong(0, this.keyRange - functionIDRange);
-    long maxId = minId + functionIDRange;
-    Map<String, Long> argumentMap = new HashMap<>();
-    argumentMap.put("maxID", maxId);
-    argumentMap.put("minID", minId);
+  public boolean test(Map<Object, Object> ctx) {
     ResultCollector resultCollector = FunctionService
         .onRegion(region)
-        .setArguments(argumentMap)
+        .setArguments(keyRange.random())
         .execute(function);
-    List results = (List) resultCollector.getResult();
-    validateResults(results, minId, maxId);
+    resultCollector.getResult();
     return true;
 
-  }
-
-  private void validateResults(List results, long minId, long maxId)
-      throws UnexpectedException {
-    for (Object result : results) {
-      ArrayList<Long> IDs = (ArrayList<Long>) result;
-      for (Long id : IDs) {
-        if (id < minId || id > maxId) {
-          throw new UnexpectedException("Invalid ID value received [minID= " + minId
-              + " maxID= " + maxId + " ] Portfolio ID received = " + id);
-        }
-      }
-    }
   }
 }
