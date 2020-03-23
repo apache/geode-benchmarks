@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -26,7 +26,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.UUID;
 
 import org.apache.geode.DataSerializable;
 import org.apache.geode.DataSerializer;
@@ -34,7 +33,8 @@ import org.apache.geode.Delta;
 import org.apache.geode.InvalidDeltaException;
 
 /**
- * The {@link benchmark.geode.data.Session} class is an Abstract Data Type (ADT) modeling a user's session.
+ * The {@link benchmark.geode.data.Session} class is an Abstract Data Type (ADT) modeling a user's
+ * session.
  *
  * @author John Blum
  * @see Comparable
@@ -46,26 +46,26 @@ public class Session implements Comparable<Session>, DataSerializable, Delta {
 
   private static final boolean ALLOW_JAVA_SERIALIZATION = false;
 
-  public static benchmark.geode.data.Session create() {
-    return new benchmark.geode.data.Session();
+  public static benchmark.geode.data.Session create(String id) {
+    return new benchmark.geode.data.Session(id);
   }
 
   private transient boolean delta = false;
 
-  protected volatile transient boolean toDataCalled = false;
-  protected volatile transient boolean toDeltaCalled = false;
+  protected transient volatile boolean toDataCalled = false;
+  protected transient volatile boolean toDeltaCalled = false;
 
   private Instant creationTime;
   private Instant lastAccessedTime;
 
-  private Map<String, Object> attributes = new HashMap<>();
-  private Map<String, Object> attributeDeltas = new HashMap<>();
+  private final Map<String, Object> attributes = new HashMap<>();
+  private final Map<String, Object> attributeDeltas = new HashMap<>();
 
   private String id;
 
-  public Session() {
+  public Session(String id) {
 
-    this.id = UUID.randomUUID().toString();
+    this.id = id;
     this.creationTime = Instant.now();
     this.lastAccessedTime = this.creationTime;
     this.delta = true;
@@ -78,8 +78,8 @@ public class Session implements Comparable<Session>, DataSerializable, Delta {
   public synchronized Object setAttribute(String name, Object value) {
 
     return value != null
-      ? doSetAttribute(name, value)
-      : removeAttribute(name);
+        ? doSetAttribute(name, value)
+        : removeAttribute(name);
   }
 
   public synchronized void setAttributes(Map<String, Object> attributes) {
@@ -158,13 +158,7 @@ public class Session implements Comparable<Session>, DataSerializable, Delta {
     out.writeUTF(this.getId());
     out.writeLong(this.getCreationTime().toEpochMilli());
     out.writeLong(this.getLastAccessedTime().toEpochMilli());
-    DataSerializer.writeHashMap(getAttributes(),out);
-//    out.writeInt(getAttributes().size());
-//
-//    for (Entry<String, Object> entry : getAttributes().entrySet()) {
-//      out.writeUTF(entry.getKey());
-//      DataSerializer.writeObject(entry.getValue(), out, ALLOW_JAVA_SERIALIZATION);
-//    }
+    DataSerializer.writeHashMap(getAttributes(), out);
   }
 
   @Override
@@ -176,9 +170,6 @@ public class Session implements Comparable<Session>, DataSerializable, Delta {
     setLastAccessedTime(Instant.ofEpochMilli(in.readLong()));
 
     this.setAttributes(DataSerializer.readHashMap(in));
-//    for (int count = in.readInt(); count > 0; count--) {
-//      setAttribute(in.readUTF(), DataSerializer.readObject(in));
-//    }
   }
 
   @Override
@@ -208,9 +199,9 @@ public class Session implements Comparable<Session>, DataSerializable, Delta {
         key = in.readUTF();
         setAttribute(key, DataSerializer.readObject(in));
       }
-    }
-    catch (ClassNotFoundException cause) {
-      throw new IOException(String.format("Failed to resolve type in delta for attribute [%s]", key), cause);
+    } catch (ClassNotFoundException cause) {
+      throw new IOException(
+          String.format("Failed to resolve type in delta for attribute [%s]", key), cause);
     }
   }
 

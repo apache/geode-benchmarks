@@ -28,7 +28,7 @@ public class HeapParameters {
   public static void configure(final TestConfig testConfig) {
     final String heap = System.getProperty("withHeap", "8g");
     logger.info("Configuring heap parameters {}.", heap);
-    configureAll(testConfig, "-Xmx" + heap, "-Xms" + heap);
+    configureAll(testConfig, "-Xmx" + heap, "-Xms" + heap, "-Xss228k");
   }
 
 }
