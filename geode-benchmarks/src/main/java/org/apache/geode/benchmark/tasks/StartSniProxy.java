@@ -17,6 +17,9 @@
 
 package org.apache.geode.benchmark.tasks;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.net.InetAddress;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -25,9 +28,13 @@ import org.apache.geode.perftest.Task;
 import org.apache.geode.perftest.TestContext;
 
 /**
- * Task to create the client cache
+ * Task to start the SNI proxy
  */
 public class StartSniProxy implements Task {
+
+  public static final String START_DOCKER_DAEMON_COMMAND = "sudo service docker start";
+  public static final String START_PROXY_COMMAND = "docker-compose up -d haproxy";
+
   private int locatorPort;
 
   public StartSniProxy(int locatorPort) {
@@ -37,11 +44,22 @@ public class StartSniProxy implements Task {
   @Override
   public void run(TestContext context) throws Exception {
 
-    final String stuff = generateHaProxyConfig(
+    final String config = generateHaProxyConfig(
         hostNamesFor(context, "locator"),
         hostNamesFor(context, "server"));
 
-    System.out.println(stuff);
+    writeToFile(config, "haproxy.cfg");
+
+    final ProcessControl processControl = new ProcessControl();
+
+    processControl.runCommand(START_DOCKER_DAEMON_COMMAND);
+    processControl.runCommand(START_PROXY_COMMAND);
+  }
+
+  private void writeToFile(final String content, final String fileName) throws IOException {
+    try (final BufferedWriter writer = new BufferedWriter(new FileWriter(fileName))) {
+      writer.write(content);
+    }
   }
 
   private List<String> hostNamesFor(final TestContext context, final String role) {
@@ -50,7 +68,7 @@ public class StartSniProxy implements Task {
   }
 
   String generateHaProxyConfig(final Iterable<String> locators,
-                               final Iterable<String> servers) {
+      final Iterable<String> servers) {
 
     final StringBuilder stuff = new StringBuilder("defaults\n"
         + "  timeout client 1000\n"
@@ -65,14 +83,12 @@ public class StartSniProxy implements Task {
 
     for (final String addy : locators) {
       stuff.append("  use_backend locators-").append(addy)
-          .append(" if { req.ssl_sni -i ").append(addy
-          ).append(" }\n");
+          .append(" if { req.ssl_sni -i ").append(addy).append(" }\n");
     }
 
     for (final String addy : servers) {
       stuff.append("  use_backend servers-").append(addy)
-          .append(" if { req.ssl_sni -i ").append(addy
-          ).append(" }\n");
+          .append(" if { req.ssl_sni -i ").append(addy).append(" }\n");
     }
 
     final String firstLocator = locators.iterator().next();

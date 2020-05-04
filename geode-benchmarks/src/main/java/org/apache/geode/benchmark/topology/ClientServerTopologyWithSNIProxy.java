@@ -14,10 +14,11 @@
  */
 package org.apache.geode.benchmark.topology;
 
+import static org.apache.geode.benchmark.parameters.Utils.configureAll;
 import static org.apache.geode.benchmark.topology.ClientServerTopologyWithSNIProxy.Roles.CLIENT;
 import static org.apache.geode.benchmark.topology.ClientServerTopologyWithSNIProxy.Roles.LOCATOR;
-import static org.apache.geode.benchmark.topology.ClientServerTopologyWithSNIProxy.Roles.SERVER;
 import static org.apache.geode.benchmark.topology.ClientServerTopologyWithSNIProxy.Roles.PROXY;
+import static org.apache.geode.benchmark.topology.ClientServerTopologyWithSNIProxy.Roles.SERVER;
 
 import org.bouncycastle.util.Arrays;
 import org.slf4j.Logger;
@@ -32,10 +33,12 @@ import org.apache.geode.benchmark.tasks.StartClient;
 import org.apache.geode.benchmark.tasks.StartLocator;
 import org.apache.geode.benchmark.tasks.StartServer;
 import org.apache.geode.benchmark.tasks.StartSniProxy;
+import org.apache.geode.benchmark.tasks.StopSniProxy;
 import org.apache.geode.perftest.TestConfig;
 
 public class ClientServerTopologyWithSNIProxy {
-  private static final Logger logger = LoggerFactory.getLogger(ClientServerTopologyWithSNIProxy.class);
+  private static final Logger logger =
+      LoggerFactory.getLogger(ClientServerTopologyWithSNIProxy.class);
 
   /**
    * All roles defined for the JVMs created for the benchmark
@@ -71,13 +74,19 @@ public class ClientServerTopologyWithSNIProxy {
     GcParameters.configure(testConfig);
     ProfilerParameters.configure(testConfig);
 
-    addToTestConfig(testConfig, "withSsl", WITH_SSL_ARGUMENT);
+    configureAll(testConfig, WITH_SSL_ARGUMENT);
     addToTestConfig(testConfig, "withSecurityManager", WITH_SECURITY_MANAGER_ARGUMENT);
+
+    // pass SNI proxy config to CLIENT role only
+    // TODO: peel it off over in client
+    testConfig.jvmArgs("-DwithSniProxy=hostname:port", CLIENT);
 
     testConfig.before(new StartLocator(LOCATOR_PORT), LOCATOR);
     testConfig.before(new StartServer(LOCATOR_PORT), SERVER);
     testConfig.before(new StartClient(LOCATOR_PORT), CLIENT);
     testConfig.before(new StartSniProxy(LOCATOR_PORT), PROXY);
+
+    testConfig.after(new StopSniProxy(), PROXY);
   }
 
   private static void addToTestConfig(TestConfig testConfig, String systemPropertyKey,
