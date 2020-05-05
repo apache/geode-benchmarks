@@ -14,13 +14,14 @@
  */
 package org.apache.geode.benchmark.topology;
 
-import static org.apache.geode.benchmark.parameters.Utils.configureAll;
-import static org.apache.geode.benchmark.topology.ClientServerTopologyWithSNIProxy.Roles.CLIENT;
-import static org.apache.geode.benchmark.topology.ClientServerTopologyWithSNIProxy.Roles.LOCATOR;
-import static org.apache.geode.benchmark.topology.ClientServerTopologyWithSNIProxy.Roles.PROXY;
-import static org.apache.geode.benchmark.topology.ClientServerTopologyWithSNIProxy.Roles.SERVER;
+import static org.apache.geode.benchmark.parameters.Utils.addToTestConfig;
+import static org.apache.geode.benchmark.parameters.Utils.configureJavaRoles;
+import static org.apache.geode.benchmark.topology.Ports.LOCATOR_PORT;
+import static org.apache.geode.benchmark.topology.Roles.SERVER;
+import static org.apache.geode.benchmark.topology.Roles.LOCATOR;
+import static org.apache.geode.benchmark.topology.Roles.CLIENT;
+import static org.apache.geode.benchmark.topology.Roles.PROXY;
 
-import org.bouncycastle.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,28 +38,10 @@ import org.apache.geode.benchmark.tasks.StopSniProxy;
 import org.apache.geode.perftest.TestConfig;
 
 public class ClientServerTopologyWithSNIProxy {
-  private static final Logger logger =
-      LoggerFactory.getLogger(ClientServerTopologyWithSNIProxy.class);
-
-  /**
-   * All roles defined for the JVMs created for the benchmark
-   */
-  public static class Roles {
-    public static final String SERVER = "server";
-    public static final String CLIENT = "client";
-    public static final String LOCATOR = "locator";
-    public static final String PROXY = "proxy";
-  }
-
-  /**
-   * The port used to create the locator for the tests
-   */
-  public static final int LOCATOR_PORT = 10334;
-
-  static final int NUM_LOCATORS = 1;
-  static final int NUM_SERVERS = 2;
-  static final int NUM_CLIENTS = 1;
-  static final int NUM_PROXIES = 1;
+  private static final int NUM_LOCATORS = 1;
+  private static final int NUM_SERVERS = 2;
+  private static final int NUM_CLIENTS = 1;
+  private static final int NUM_PROXIES = 1;
   private static final String WITH_SSL_ARGUMENT = "-DwithSsl=true";
   private static final String WITH_SECURITY_MANAGER_ARGUMENT = "-DwithSecurityManager=true";
 
@@ -74,12 +57,12 @@ public class ClientServerTopologyWithSNIProxy {
     GcParameters.configure(testConfig);
     ProfilerParameters.configure(testConfig);
 
-    configureAll(testConfig, WITH_SSL_ARGUMENT);
+    configureJavaRoles(testConfig, WITH_SSL_ARGUMENT);
     addToTestConfig(testConfig, "withSecurityManager", WITH_SECURITY_MANAGER_ARGUMENT);
 
     // pass SNI proxy config to CLIENT role only
     // TODO: peel it off over in client
-    testConfig.jvmArgs("-DwithSniProxy=hostname:port", CLIENT);
+    testConfig.jvmArgs(CLIENT,"-DwithSniProxy=hostname:port");
 
     testConfig.before(new StartLocator(LOCATOR_PORT), LOCATOR);
     testConfig.before(new StartServer(LOCATOR_PORT), SERVER);
@@ -89,21 +72,4 @@ public class ClientServerTopologyWithSNIProxy {
     testConfig.after(new StopSniProxy(), PROXY);
   }
 
-  private static void addToTestConfig(TestConfig testConfig, String systemPropertyKey,
-      String jvmArgument) {
-    if (Boolean.getBoolean(systemPropertyKey)) {
-      logger.info("Configuring JVMs to run with " + jvmArgument);
-      testConfig.jvmArgs(CLIENT, jvmArgument);
-      testConfig.jvmArgs(LOCATOR, jvmArgument);
-      testConfig.jvmArgs(SERVER, jvmArgument);
-    }
-  }
-
-  private static String[] appendIfNotEmpty(String[] a, String b) {
-    if (null == b || b.length() == 0) {
-      return a;
-    }
-
-    return Arrays.append(a, b);
-  }
 }

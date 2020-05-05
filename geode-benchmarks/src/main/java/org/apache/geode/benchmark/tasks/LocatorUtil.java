@@ -17,6 +17,8 @@
 
 package org.apache.geode.benchmark.tasks;
 
+import static org.apache.geode.benchmark.topology.Roles.LOCATOR;
+
 import java.net.InetAddress;
 import java.util.Set;
 
@@ -27,7 +29,7 @@ import org.apache.geode.perftest.TestContext;
  */
 public class LocatorUtil {
   static String getLocatorString(TestContext context, int locatorPort) {
-    Set<InetAddress> locators = context.getHostsForRole("locator");
+    Set<InetAddress> locators = context.getHostsForRole(LOCATOR);
 
     return locators.iterator().next().getHostAddress() + "[" + locatorPort + "]";
   }

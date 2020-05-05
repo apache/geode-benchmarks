@@ -17,6 +17,9 @@
 
 package org.apache.geode.benchmark.tasks;
 
+import static org.apache.geode.benchmark.topology.Roles.LOCATOR;
+import static org.apache.geode.benchmark.topology.Roles.SERVER;
+
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -45,8 +48,8 @@ public class StartSniProxy implements Task {
   public void run(TestContext context) throws Exception {
 
     final String config = generateHaProxyConfig(
-        hostNamesFor(context, "locator"),
-        hostNamesFor(context, "server"));
+        hostNamesFor(context, LOCATOR),
+        hostNamesFor(context, SERVER));
 
     writeToFile(config, "haproxy.cfg");
 

@@ -14,11 +14,11 @@
  */
 package org.apache.geode.benchmark.topology;
 
-import static org.apache.geode.benchmark.topology.ClientServerTopology.Roles.CLIENT;
-import static org.apache.geode.benchmark.topology.ClientServerTopology.Roles.LOCATOR;
-import static org.apache.geode.benchmark.topology.ClientServerTopology.Roles.SERVER;
+import static org.apache.geode.benchmark.parameters.Utils.addToTestConfig;
+import static org.apache.geode.benchmark.topology.Roles.CLIENT;
+import static org.apache.geode.benchmark.topology.Roles.LOCATOR;
+import static org.apache.geode.benchmark.topology.Roles.SERVER;
 
-import org.bouncycastle.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,25 +33,9 @@ import org.apache.geode.benchmark.tasks.StartServer;
 import org.apache.geode.perftest.TestConfig;
 
 public class ClientServerTopology {
-  private static final Logger logger = LoggerFactory.getLogger(ClientServerTopology.class);
-
-  /**
-   * All roles defined for the JVMs created for the benchmark
-   */
-  public static class Roles {
-    public static final String SERVER = "server";
-    public static final String CLIENT = "client";
-    public static final String LOCATOR = "locator";
-  }
-
-  /**
-   * The port used to create the locator for the tests
-   */
-  public static final int LOCATOR_PORT = 10334;
-
-  static final int NUM_LOCATORS = 1;
-  static final int NUM_SERVERS = 2;
-  static final int NUM_CLIENTS = 1;
+  private static final int NUM_LOCATORS = 1;
+  private static final int NUM_SERVERS = 2;
+  private static final int NUM_CLIENTS = 1;
   private static final String WITH_SSL_ARGUMENT = "-DwithSsl=true";
   private static final String WITH_SECURITY_MANAGER_ARGUMENT = "-DwithSecurityManager=true";
 
@@ -69,26 +53,9 @@ public class ClientServerTopology {
     addToTestConfig(testConfig, "withSsl", WITH_SSL_ARGUMENT);
     addToTestConfig(testConfig, "withSecurityManager", WITH_SECURITY_MANAGER_ARGUMENT);
 
-    testConfig.before(new StartLocator(LOCATOR_PORT), LOCATOR);
-    testConfig.before(new StartServer(LOCATOR_PORT), SERVER);
-    testConfig.before(new StartClient(LOCATOR_PORT), CLIENT);
+    testConfig.before(new StartLocator(Ports.LOCATOR_PORT), LOCATOR);
+    testConfig.before(new StartServer(Ports.LOCATOR_PORT), SERVER);
+    testConfig.before(new StartClient(Ports.LOCATOR_PORT), CLIENT);
   }
 
-  private static void addToTestConfig(TestConfig testConfig, String systemPropertyKey,
-      String jvmArgument) {
-    if (Boolean.getBoolean(systemPropertyKey)) {
-      logger.info("Configuring JVMs to run with " + jvmArgument);
-      testConfig.jvmArgs(CLIENT, jvmArgument);
-      testConfig.jvmArgs(LOCATOR, jvmArgument);
-      testConfig.jvmArgs(SERVER, jvmArgument);
-    }
-  }
-
-  private static String[] appendIfNotEmpty(String[] a, String b) {
-    if (null == b || b.length() == 0) {
-      return a;
-    }
-
-    return Arrays.append(a, b);
-  }
 }

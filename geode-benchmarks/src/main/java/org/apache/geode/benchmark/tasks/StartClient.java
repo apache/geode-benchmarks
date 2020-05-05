@@ -18,6 +18,7 @@
 package org.apache.geode.benchmark.tasks;
 
 import static org.apache.geode.benchmark.parameters.GeodeProperties.clientProperties;
+import static org.apache.geode.benchmark.topology.Roles.LOCATOR;
 
 import java.io.File;
 import java.net.InetAddress;
@@ -43,7 +44,7 @@ public class StartClient implements Task {
   @Override
   public void run(TestContext context) throws Exception {
 
-    InetAddress locator = context.getHostsForRole("locator").iterator().next();
+    InetAddress locator = context.getHostsForRole(LOCATOR).iterator().next();
 
     String statsFile = new File(context.getOutputDir(), "stats.gfs").getAbsolutePath();
     Properties properties = clientProperties();

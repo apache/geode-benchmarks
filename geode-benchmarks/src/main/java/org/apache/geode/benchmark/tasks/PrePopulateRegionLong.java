@@ -16,9 +16,9 @@
  */
 package org.apache.geode.benchmark.tasks;
 
-import static org.apache.geode.benchmark.topology.ClientServerTopology.Roles.CLIENT;
-import static org.apache.geode.benchmark.topology.ClientServerTopology.Roles.LOCATOR;
-import static org.apache.geode.benchmark.topology.ClientServerTopology.Roles.SERVER;
+import static org.apache.geode.benchmark.topology.Roles.CLIENT;
+import static org.apache.geode.benchmark.topology.Roles.LOCATOR;
+import static org.apache.geode.benchmark.topology.Roles.SERVER;
 
 import java.time.Duration;
 import java.time.Instant;

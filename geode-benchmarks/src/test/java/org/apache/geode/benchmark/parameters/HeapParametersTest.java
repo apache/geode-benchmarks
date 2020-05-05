@@ -15,9 +15,9 @@
 
 package org.apache.geode.benchmark.parameters;
 
-import static org.apache.geode.benchmark.topology.ClientServerTopology.Roles.CLIENT;
-import static org.apache.geode.benchmark.topology.ClientServerTopology.Roles.LOCATOR;
-import static org.apache.geode.benchmark.topology.ClientServerTopology.Roles.SERVER;
+import static org.apache.geode.benchmark.topology.Roles.CLIENT;
+import static org.apache.geode.benchmark.topology.Roles.LOCATOR;
+import static org.apache.geode.benchmark.topology.Roles.SERVER;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Properties;

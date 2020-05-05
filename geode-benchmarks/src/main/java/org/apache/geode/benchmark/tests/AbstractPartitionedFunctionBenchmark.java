@@ -15,7 +15,7 @@
 
 package org.apache.geode.benchmark.tests;
 
-import static org.apache.geode.benchmark.topology.ClientServerTopology.Roles.SERVER;
+import static org.apache.geode.benchmark.topology.Roles.SERVER;
 
 import org.apache.geode.benchmark.tasks.CreatePartitionedRegion;
 import org.apache.geode.perftest.TestConfig;

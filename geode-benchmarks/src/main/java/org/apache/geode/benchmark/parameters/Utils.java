@@ -15,17 +15,33 @@
 
 package org.apache.geode.benchmark.parameters;
 
-import static org.apache.geode.benchmark.topology.ClientServerTopology.Roles.CLIENT;
-import static org.apache.geode.benchmark.topology.ClientServerTopology.Roles.LOCATOR;
-import static org.apache.geode.benchmark.topology.ClientServerTopology.Roles.SERVER;
+import static org.apache.geode.benchmark.topology.Roles.CLIENT;
+import static org.apache.geode.benchmark.topology.Roles.LOCATOR;
+import static org.apache.geode.benchmark.topology.Roles.SERVER;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.apache.geode.perftest.TestConfig;
 
-public interface Utils {
+public class Utils {
 
-  static void configureAll(TestConfig testConfig, String... args) {
+  static final Logger logger =
+      LoggerFactory.getLogger(Utils.class);
+
+  private Utils() {}
+
+  public static void configureJavaRoles(TestConfig testConfig, String... args) {
     testConfig.jvmArgs(LOCATOR, args);
     testConfig.jvmArgs(SERVER, args);
     testConfig.jvmArgs(CLIENT, args);
+  }
+
+  public static void addToTestConfig(TestConfig testConfig, String systemPropertyKey,
+                                     String jvmArgument) {
+    if (Boolean.getBoolean(systemPropertyKey)) {
+      logger.info("Configuring JVMs to run with " + jvmArgument);
+      configureJavaRoles(testConfig, jvmArgument);
+    }
   }
 }

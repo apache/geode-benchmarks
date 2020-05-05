@@ -15,7 +15,7 @@
 
 package org.apache.geode.benchmark.parameters;
 
-import static org.apache.geode.benchmark.parameters.Utils.configureAll;
+import static org.apache.geode.benchmark.parameters.Utils.configureJavaRoles;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,7 +28,7 @@ public class HeapParameters {
   public static void configure(final TestConfig testConfig) {
     final String heap = System.getProperty("withHeap", "8g");
     logger.info("Configuring heap parameters {}.", heap);
-    configureAll(testConfig, "-Xmx" + heap, "-Xms" + heap);
+    configureJavaRoles(testConfig, "-Xmx" + heap, "-Xms" + heap);
   }
 
 }

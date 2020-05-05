@@ -18,7 +18,7 @@
 package org.apache.geode.benchmark.tests;
 
 
-import static org.apache.geode.benchmark.topology.ClientServerTopology.Roles.CLIENT;
+import static org.apache.geode.benchmark.topology.Roles.CLIENT;
 
 import org.junit.jupiter.api.Test;
 
