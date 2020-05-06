@@ -44,7 +44,7 @@ public class StartClient implements Task {
   @Override
   public void run(TestContext context) throws Exception {
 
-    InetAddress locator = context.getHostsForRole(LOCATOR).iterator().next();
+    InetAddress locator = context.getHostsForRole(LOCATOR.name()).iterator().next();
 
     String statsFile = new File(context.getOutputDir(), "stats.gfs").getAbsolutePath();
     Properties properties = clientProperties();

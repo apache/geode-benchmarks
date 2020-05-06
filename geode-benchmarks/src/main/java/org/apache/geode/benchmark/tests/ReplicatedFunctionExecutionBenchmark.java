@@ -14,6 +14,7 @@
  */
 package org.apache.geode.benchmark.tests;
 
+import static org.apache.geode.benchmark.Config.workload;
 import static org.apache.geode.benchmark.topology.Roles.CLIENT;
 
 import org.junit.jupiter.api.Test;
@@ -32,7 +33,7 @@ public class ReplicatedFunctionExecutionBenchmark extends AbstractReplicatedFunc
   @Override
   public TestConfig configure() {
     TestConfig config = super.configure();
-    config.workload(new ExecuteFunction(), CLIENT);
+    workload(config, new ExecuteFunction(), CLIENT);
     return config;
   }
 }

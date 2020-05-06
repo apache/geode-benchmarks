@@ -14,6 +14,8 @@
  */
 package org.apache.geode.benchmark.topology;
 
+import static org.apache.geode.benchmark.Config.before;
+import static org.apache.geode.benchmark.Config.role;
 import static org.apache.geode.benchmark.parameters.Utils.addToTestConfig;
 import static org.apache.geode.benchmark.topology.Roles.CLIENT;
 import static org.apache.geode.benchmark.topology.Roles.LOCATOR;
@@ -39,23 +41,23 @@ public class ClientServerTopology {
   private static final String WITH_SSL_ARGUMENT = "-DwithSsl=true";
   private static final String WITH_SECURITY_MANAGER_ARGUMENT = "-DwithSecurityManager=true";
 
-  public static void configure(TestConfig testConfig) {
-    testConfig.role(LOCATOR, NUM_LOCATORS);
-    testConfig.role(SERVER, NUM_SERVERS);
-    testConfig.role(CLIENT, NUM_CLIENTS);
+  public static void configure(TestConfig config) {
+    role(config, LOCATOR, NUM_LOCATORS);
+    role(config, SERVER, NUM_SERVERS);
+    role(config, CLIENT, NUM_CLIENTS);
 
-    JvmParameters.configure(testConfig);
-    HeapParameters.configure(testConfig);
-    GcLoggingParameters.configure(testConfig);
-    GcParameters.configure(testConfig);
-    ProfilerParameters.configure(testConfig);
+    JvmParameters.configure(config);
+    HeapParameters.configure(config);
+    GcLoggingParameters.configure(config);
+    GcParameters.configure(config);
+    ProfilerParameters.configure(config);
 
-    addToTestConfig(testConfig, "withSsl", WITH_SSL_ARGUMENT);
-    addToTestConfig(testConfig, "withSecurityManager", WITH_SECURITY_MANAGER_ARGUMENT);
+    addToTestConfig(config, "withSsl", WITH_SSL_ARGUMENT);
+    addToTestConfig(config, "withSecurityManager", WITH_SECURITY_MANAGER_ARGUMENT);
 
-    testConfig.before(new StartLocator(Ports.LOCATOR_PORT), LOCATOR);
-    testConfig.before(new StartServer(Ports.LOCATOR_PORT), SERVER);
-    testConfig.before(new StartClient(Ports.LOCATOR_PORT), CLIENT);
+    before(config, new StartLocator(Ports.LOCATOR_PORT), LOCATOR);
+    before(config, new StartServer(Ports.LOCATOR_PORT), SERVER);
+    before(config, new StartClient(Ports.LOCATOR_PORT), CLIENT);
   }
 
 }

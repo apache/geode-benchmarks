@@ -15,6 +15,7 @@
 
 package org.apache.geode.benchmark.parameters;
 
+import static org.apache.geode.benchmark.Config.jvmArgs;
 import static org.apache.geode.benchmark.topology.Roles.CLIENT;
 import static org.apache.geode.benchmark.topology.Roles.LOCATOR;
 import static org.apache.geode.benchmark.topology.Roles.SERVER;
@@ -31,10 +32,10 @@ public class Utils {
 
   private Utils() {}
 
-  public static void configureJavaRoles(TestConfig testConfig, String... args) {
-    testConfig.jvmArgs(LOCATOR, args);
-    testConfig.jvmArgs(SERVER, args);
-    testConfig.jvmArgs(CLIENT, args);
+  public static void configureJavaRoles(TestConfig config, String... args) {
+    jvmArgs(config, LOCATOR, args);
+    jvmArgs(config, SERVER, args);
+    jvmArgs(config, CLIENT, args);
   }
 
   public static void addToTestConfig(TestConfig testConfig, String systemPropertyKey,

@@ -29,7 +29,7 @@ import org.apache.geode.perftest.TestContext;
  */
 public class LocatorUtil {
   static String getLocatorString(TestContext context, int locatorPort) {
-    Set<InetAddress> locators = context.getHostsForRole(LOCATOR);
+    Set<InetAddress> locators = context.getHostsForRole(LOCATOR.name());
 
     return locators.iterator().next().getHostAddress() + "[" + locatorPort + "]";
   }

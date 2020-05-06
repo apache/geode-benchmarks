@@ -17,6 +17,8 @@
 
 package org.apache.geode.benchmark.tests;
 
+import static org.apache.geode.benchmark.Config.before;
+import static org.apache.geode.benchmark.Config.workload;
 import static org.apache.geode.benchmark.topology.Roles.CLIENT;
 import static org.apache.geode.benchmark.topology.Roles.SERVER;
 
@@ -57,10 +59,10 @@ public class PartitionedPutAllLongBenchmark implements PerformanceTest {
     TestConfig config = GeodeBenchmark.createConfig();
     config.threads(Runtime.getRuntime().availableProcessors() * 2);
     ClientServerTopology.configure(config);
-    config.before(new CreatePartitionedRegion(), SERVER);
-    config.before(new CreateClientProxyRegion(), CLIENT);
-    config.before(new PrePopulateRegionLong(keyRange), CLIENT);
-    config.workload(new PutAllTask(keyRange, batchSize), CLIENT);
+    before(config, new CreatePartitionedRegion(), SERVER);
+    before(config, new CreateClientProxyRegion(), CLIENT);
+    before(config, new PrePopulateRegionLong(keyRange), CLIENT);
+    workload(config, new PutAllTask(keyRange, batchSize), CLIENT);
     return config;
   }
 }

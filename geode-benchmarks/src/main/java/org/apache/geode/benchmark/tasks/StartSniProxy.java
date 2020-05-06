@@ -27,6 +27,7 @@ import java.net.InetAddress;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.geode.benchmark.topology.Roles;
 import org.apache.geode.perftest.Task;
 import org.apache.geode.perftest.TestContext;
 
@@ -65,8 +66,8 @@ public class StartSniProxy implements Task {
     }
   }
 
-  private List<String> hostNamesFor(final TestContext context, final String role) {
-    return context.getHostsForRole(role).stream().map(InetAddress::getHostName)
+  private List<String> hostNamesFor(final TestContext context, final Roles role) {
+    return context.getHostsForRole(role.name()).stream().map(InetAddress::getHostName)
         .collect(Collectors.toList());
   }
 

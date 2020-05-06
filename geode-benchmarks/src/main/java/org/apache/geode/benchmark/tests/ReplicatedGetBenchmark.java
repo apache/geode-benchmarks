@@ -18,6 +18,8 @@
 package org.apache.geode.benchmark.tests;
 
 
+import static org.apache.geode.benchmark.Config.before;
+import static org.apache.geode.benchmark.Config.workload;
 import static org.apache.geode.benchmark.topology.Roles.CLIENT;
 import static org.apache.geode.benchmark.topology.Roles.SERVER;
 
@@ -55,10 +57,10 @@ public class ReplicatedGetBenchmark implements PerformanceTest {
   public TestConfig configure() {
     TestConfig config = GeodeBenchmark.createConfig();
     ClientServerTopology.configure(config);
-    config.before(new CreateReplicatedRegion(), SERVER);
-    config.before(new CreateClientProxyRegion(), CLIENT);
-    config.before(new PrePopulateRegion(keyRange), CLIENT);
-    config.workload(new GetTask(keyRange), CLIENT);
+    before(config, new CreateReplicatedRegion(), SERVER);
+    before(config, new CreateClientProxyRegion(), CLIENT);
+    before(config, new PrePopulateRegion(keyRange), CLIENT);
+    workload(config, new GetTask(keyRange), CLIENT);
     return config;
 
   }

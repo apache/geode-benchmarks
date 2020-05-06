@@ -61,11 +61,11 @@ class HeapParametersTest {
   }
 
   private void assertHeap(final TestConfig testConfig, final String heap) {
-    assertThat(testConfig.getJvmArgs().get(CLIENT)).contains("-Xmx" + heap);
-    assertThat(testConfig.getJvmArgs().get(SERVER)).contains("-Xmx" + heap);
-    assertThat(testConfig.getJvmArgs().get(LOCATOR)).contains("-Xmx" + heap);
-    assertThat(testConfig.getJvmArgs().get(CLIENT)).contains("-Xms" + heap);
-    assertThat(testConfig.getJvmArgs().get(SERVER)).contains("-Xms" + heap);
-    assertThat(testConfig.getJvmArgs().get(LOCATOR)).contains("-Xms" + heap);
+    assertThat(testConfig.getJvmArgs().get(CLIENT.name())).contains("-Xmx" + heap);
+    assertThat(testConfig.getJvmArgs().get(SERVER.name())).contains("-Xmx" + heap);
+    assertThat(testConfig.getJvmArgs().get(LOCATOR.name())).contains("-Xmx" + heap);
+    assertThat(testConfig.getJvmArgs().get(CLIENT.name())).contains("-Xms" + heap);
+    assertThat(testConfig.getJvmArgs().get(SERVER.name())).contains("-Xms" + heap);
+    assertThat(testConfig.getJvmArgs().get(LOCATOR.name())).contains("-Xms" + heap);
   }
 }

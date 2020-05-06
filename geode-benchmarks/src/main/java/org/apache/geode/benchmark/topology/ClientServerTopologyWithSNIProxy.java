@@ -14,6 +14,10 @@
  */
 package org.apache.geode.benchmark.topology;
 
+import static org.apache.geode.benchmark.Config.after;
+import static org.apache.geode.benchmark.Config.before;
+import static org.apache.geode.benchmark.Config.jvmArgs;
+import static org.apache.geode.benchmark.Config.role;
 import static org.apache.geode.benchmark.parameters.Utils.addToTestConfig;
 import static org.apache.geode.benchmark.parameters.Utils.configureJavaRoles;
 import static org.apache.geode.benchmark.topology.Ports.LOCATOR_PORT;
@@ -22,9 +26,7 @@ import static org.apache.geode.benchmark.topology.Roles.LOCATOR;
 import static org.apache.geode.benchmark.topology.Roles.CLIENT;
 import static org.apache.geode.benchmark.topology.Roles.PROXY;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import org.apache.geode.benchmark.Config;
 import org.apache.geode.benchmark.parameters.GcLoggingParameters;
 import org.apache.geode.benchmark.parameters.GcParameters;
 import org.apache.geode.benchmark.parameters.HeapParameters;
@@ -45,31 +47,31 @@ public class ClientServerTopologyWithSNIProxy {
   private static final String WITH_SSL_ARGUMENT = "-DwithSsl=true";
   private static final String WITH_SECURITY_MANAGER_ARGUMENT = "-DwithSecurityManager=true";
 
-  public static void configure(TestConfig testConfig) {
-    testConfig.role(LOCATOR, NUM_LOCATORS);
-    testConfig.role(SERVER, NUM_SERVERS);
-    testConfig.role(CLIENT, NUM_CLIENTS);
-    testConfig.role(PROXY, NUM_PROXIES);
+  public static void configure(TestConfig config) {
+    role(config, LOCATOR, NUM_LOCATORS);
+    role(config, SERVER, NUM_SERVERS);
+    role(config, CLIENT, NUM_CLIENTS);
+    role(config, PROXY, NUM_PROXIES);
 
-    JvmParameters.configure(testConfig);
-    HeapParameters.configure(testConfig);
-    GcLoggingParameters.configure(testConfig);
-    GcParameters.configure(testConfig);
-    ProfilerParameters.configure(testConfig);
+    JvmParameters.configure(config);
+    HeapParameters.configure(config);
+    GcLoggingParameters.configure(config);
+    GcParameters.configure(config);
+    ProfilerParameters.configure(config);
 
-    configureJavaRoles(testConfig, WITH_SSL_ARGUMENT);
-    addToTestConfig(testConfig, "withSecurityManager", WITH_SECURITY_MANAGER_ARGUMENT);
+    configureJavaRoles(config, WITH_SSL_ARGUMENT);
+    addToTestConfig(config, "withSecurityManager", WITH_SECURITY_MANAGER_ARGUMENT);
 
     // pass SNI proxy config to CLIENT role only
     // TODO: peel it off over in client
-    testConfig.jvmArgs(CLIENT,"-DwithSniProxy=hostname:port");
+    jvmArgs(config, CLIENT, "-DwithSniProxy=hostname:port");
 
-    testConfig.before(new StartLocator(LOCATOR_PORT), LOCATOR);
-    testConfig.before(new StartServer(LOCATOR_PORT), SERVER);
-    testConfig.before(new StartClient(LOCATOR_PORT), CLIENT);
-    testConfig.before(new StartSniProxy(LOCATOR_PORT), PROXY);
+    before(config, new StartLocator(LOCATOR_PORT), LOCATOR);
+    before(config, new StartServer(LOCATOR_PORT), SERVER);
+    before(config, new StartClient(LOCATOR_PORT), CLIENT);
+    before(config, new StartSniProxy(LOCATOR_PORT), PROXY);
 
-    testConfig.after(new StopSniProxy(), PROXY);
+    after(config, new StopSniProxy(), PROXY);
   }
 
 }

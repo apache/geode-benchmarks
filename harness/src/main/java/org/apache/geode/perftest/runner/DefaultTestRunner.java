@@ -69,7 +69,6 @@ public class DefaultTestRunner implements TestRunner {
 
   protected void runTest(TestConfig config, String testName)
       throws Exception {
-    int nodes = config.getTotalJVMs();
     File benchmarkOutput = new File(outputDir, testName);
     if (benchmarkOutput.exists()) {
       throw new IllegalStateException(

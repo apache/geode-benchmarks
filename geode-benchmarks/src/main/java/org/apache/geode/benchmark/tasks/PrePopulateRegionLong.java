@@ -61,9 +61,9 @@ public class PrePopulateRegionLong implements Task {
   public void run(TestContext context) throws InterruptedException {
     final ClientCache cache = ClientCacheFactory.getAnyInstance();
     final Region<Long, Long> region = cache.getRegion("region");
-    final int numLocators = context.getHostsIDsForRole(LOCATOR).size();
-    final int numServers = context.getHostsIDsForRole(SERVER).size();
-    final int numClient = context.getHostsIDsForRole(CLIENT).size();
+    final int numLocators = context.getHostsIDsForRole(LOCATOR.name()).size();
+    final int numServers = context.getHostsIDsForRole(SERVER.name()).size();
+    final int numClient = context.getHostsIDsForRole(CLIENT.name()).size();
     final int jvmID = context.getJvmID();
     final int clientIndex = jvmID - numLocators - numServers;
 

@@ -140,13 +140,6 @@ public class TestConfig implements Serializable {
   }
 
   /**
-   * Return the total number of JVMs required to run this test
-   */
-  public int getTotalJVMs() {
-    return roles.values().stream().mapToInt(Integer::intValue).sum();
-  }
-
-  /**
    * Add JVM arguments used to launch JVMs for a particular role
    *
    * If multiple calls to this method are made for the same role, the new JVM arguments

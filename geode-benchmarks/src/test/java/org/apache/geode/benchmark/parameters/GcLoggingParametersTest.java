@@ -77,21 +77,21 @@ class GcLoggingParametersTest {
   }
 
   private void assertThatJava8GcLog(TestConfig testConfig) {
-    assertThat(testConfig.getJvmArgs().get(CLIENT)).contains("-Xloggc:OUTPUT_DIR/gc.log");
-    assertThat(testConfig.getJvmArgs().get(SERVER)).contains("-Xloggc:OUTPUT_DIR/gc.log");
-    assertThat(testConfig.getJvmArgs().get(LOCATOR)).contains("-Xloggc:OUTPUT_DIR/gc.log");
-    assertThat(testConfig.getJvmArgs().get(CLIENT)).doesNotContain("-Xlog:gc:OUTPUT_DIR/gc.log");
-    assertThat(testConfig.getJvmArgs().get(SERVER)).doesNotContain("-Xlog:gc:OUTPUT_DIR/gc.log");
-    assertThat(testConfig.getJvmArgs().get(LOCATOR)).doesNotContain("-Xlog:gc:OUTPUT_DIR/gc.log");
+    assertThat(testConfig.getJvmArgs().get(CLIENT.name())).contains("-Xloggc:OUTPUT_DIR/gc.log");
+    assertThat(testConfig.getJvmArgs().get(SERVER.name())).contains("-Xloggc:OUTPUT_DIR/gc.log");
+    assertThat(testConfig.getJvmArgs().get(LOCATOR.name())).contains("-Xloggc:OUTPUT_DIR/gc.log");
+    assertThat(testConfig.getJvmArgs().get(CLIENT.name())).doesNotContain("-Xlog:gc:OUTPUT_DIR/gc.log");
+    assertThat(testConfig.getJvmArgs().get(SERVER.name())).doesNotContain("-Xlog:gc:OUTPUT_DIR/gc.log");
+    assertThat(testConfig.getJvmArgs().get(LOCATOR.name())).doesNotContain("-Xlog:gc:OUTPUT_DIR/gc.log");
   }
 
   private void assertThatJava9GcLog(TestConfig testConfig) {
-    assertThat(testConfig.getJvmArgs().get(CLIENT)).contains("-Xlog:gc*:OUTPUT_DIR/gc.log");
-    assertThat(testConfig.getJvmArgs().get(SERVER)).contains("-Xlog:gc*:OUTPUT_DIR/gc.log");
-    assertThat(testConfig.getJvmArgs().get(LOCATOR)).contains("-Xlog:gc*:OUTPUT_DIR/gc.log");
-    assertThat(testConfig.getJvmArgs().get(CLIENT)).doesNotContain("-Xloggc:OUTPUT_DIR/gc.log");
-    assertThat(testConfig.getJvmArgs().get(SERVER)).doesNotContain("-Xloggc:OUTPUT_DIR/gc.log");
-    assertThat(testConfig.getJvmArgs().get(LOCATOR)).doesNotContain("-Xloggc:OUTPUT_DIR/gc.log");
+    assertThat(testConfig.getJvmArgs().get(CLIENT.name())).contains("-Xlog:gc*:OUTPUT_DIR/gc.log");
+    assertThat(testConfig.getJvmArgs().get(SERVER.name())).contains("-Xlog:gc*:OUTPUT_DIR/gc.log");
+    assertThat(testConfig.getJvmArgs().get(LOCATOR.name())).contains("-Xlog:gc*:OUTPUT_DIR/gc.log");
+    assertThat(testConfig.getJvmArgs().get(CLIENT.name())).doesNotContain("-Xloggc:OUTPUT_DIR/gc.log");
+    assertThat(testConfig.getJvmArgs().get(SERVER.name())).doesNotContain("-Xloggc:OUTPUT_DIR/gc.log");
+    assertThat(testConfig.getJvmArgs().get(LOCATOR.name())).doesNotContain("-Xloggc:OUTPUT_DIR/gc.log");
   }
 
 }

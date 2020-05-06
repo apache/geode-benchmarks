@@ -15,6 +15,7 @@
 
 package org.apache.geode.benchmark.tests;
 
+import static org.apache.geode.benchmark.Config.before;
 import static org.apache.geode.benchmark.topology.Roles.CLIENT;
 import static org.apache.geode.benchmark.topology.Roles.SERVER;
 
@@ -45,9 +46,9 @@ abstract class AbstractFunctionBenchmark implements PerformanceTest {
     config.threads(Runtime.getRuntime().availableProcessors() * 3);
     ClientServerTopology.configure(config);
     configureRegion(config);
-    config.before(new CreateClientProxyRegion(), CLIENT);
-    config.before(new PrePopulateRegion(getKeyRange()), CLIENT);
-    config.before(new RegisterFunction(new BenchmarkFunction(getKeyRange())), SERVER);
+    before(config, new CreateClientProxyRegion(), CLIENT);
+    before(config, new PrePopulateRegion(getKeyRange()), CLIENT);
+    before(config, new RegisterFunction(new BenchmarkFunction(getKeyRange())), SERVER);
     return config;
   }
 

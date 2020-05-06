@@ -91,39 +91,39 @@ class GcParametersTest {
   }
 
   private void assertCms(TestConfig testConfig) {
-    assertThat(testConfig.getJvmArgs().get(CLIENT)).contains(XX_USE_CONC_MARK_SWEEP_GC);
-    assertThat(testConfig.getJvmArgs().get(SERVER)).contains(XX_USE_CONC_MARK_SWEEP_GC);
-    assertThat(testConfig.getJvmArgs().get(LOCATOR)).contains(XX_USE_CONC_MARK_SWEEP_GC);
-    assertThat(testConfig.getJvmArgs().get(CLIENT)).doesNotContain(XX_USE_G_1_GC);
-    assertThat(testConfig.getJvmArgs().get(SERVER)).doesNotContain(XX_USE_G_1_GC);
-    assertThat(testConfig.getJvmArgs().get(LOCATOR)).doesNotContain(XX_USE_G_1_GC);
-    assertThat(testConfig.getJvmArgs().get(CLIENT)).doesNotContain(XX_USE_ZGC);
-    assertThat(testConfig.getJvmArgs().get(SERVER)).doesNotContain(XX_USE_ZGC);
-    assertThat(testConfig.getJvmArgs().get(LOCATOR)).doesNotContain(XX_USE_ZGC);
+    assertThat(testConfig.getJvmArgs().get(CLIENT.name())).contains(XX_USE_CONC_MARK_SWEEP_GC);
+    assertThat(testConfig.getJvmArgs().get(SERVER.name())).contains(XX_USE_CONC_MARK_SWEEP_GC);
+    assertThat(testConfig.getJvmArgs().get(LOCATOR.name())).contains(XX_USE_CONC_MARK_SWEEP_GC);
+    assertThat(testConfig.getJvmArgs().get(CLIENT.name())).doesNotContain(XX_USE_G_1_GC);
+    assertThat(testConfig.getJvmArgs().get(SERVER.name())).doesNotContain(XX_USE_G_1_GC);
+    assertThat(testConfig.getJvmArgs().get(LOCATOR.name())).doesNotContain(XX_USE_G_1_GC);
+    assertThat(testConfig.getJvmArgs().get(CLIENT.name())).doesNotContain(XX_USE_ZGC);
+    assertThat(testConfig.getJvmArgs().get(SERVER.name())).doesNotContain(XX_USE_ZGC);
+    assertThat(testConfig.getJvmArgs().get(LOCATOR.name())).doesNotContain(XX_USE_ZGC);
   }
 
   private void assertG1(TestConfig testConfig) {
-    assertThat(testConfig.getJvmArgs().get(CLIENT)).contains(XX_USE_G_1_GC);
-    assertThat(testConfig.getJvmArgs().get(SERVER)).contains(XX_USE_G_1_GC);
-    assertThat(testConfig.getJvmArgs().get(LOCATOR)).contains(XX_USE_G_1_GC);
-    assertThat(testConfig.getJvmArgs().get(CLIENT)).doesNotContain(XX_USE_CONC_MARK_SWEEP_GC);
-    assertThat(testConfig.getJvmArgs().get(SERVER)).doesNotContain(XX_USE_CONC_MARK_SWEEP_GC);
-    assertThat(testConfig.getJvmArgs().get(LOCATOR)).doesNotContain(XX_USE_CONC_MARK_SWEEP_GC);
-    assertThat(testConfig.getJvmArgs().get(CLIENT)).doesNotContain(XX_USE_ZGC);
-    assertThat(testConfig.getJvmArgs().get(SERVER)).doesNotContain(XX_USE_ZGC);
-    assertThat(testConfig.getJvmArgs().get(LOCATOR)).doesNotContain(XX_USE_ZGC);
+    assertThat(testConfig.getJvmArgs().get(CLIENT.name())).contains(XX_USE_G_1_GC);
+    assertThat(testConfig.getJvmArgs().get(SERVER.name())).contains(XX_USE_G_1_GC);
+    assertThat(testConfig.getJvmArgs().get(LOCATOR.name())).contains(XX_USE_G_1_GC);
+    assertThat(testConfig.getJvmArgs().get(CLIENT.name())).doesNotContain(XX_USE_CONC_MARK_SWEEP_GC);
+    assertThat(testConfig.getJvmArgs().get(SERVER.name())).doesNotContain(XX_USE_CONC_MARK_SWEEP_GC);
+    assertThat(testConfig.getJvmArgs().get(LOCATOR.name())).doesNotContain(XX_USE_CONC_MARK_SWEEP_GC);
+    assertThat(testConfig.getJvmArgs().get(CLIENT.name())).doesNotContain(XX_USE_ZGC);
+    assertThat(testConfig.getJvmArgs().get(SERVER.name())).doesNotContain(XX_USE_ZGC);
+    assertThat(testConfig.getJvmArgs().get(LOCATOR.name())).doesNotContain(XX_USE_ZGC);
   }
 
   private void assertZ(TestConfig testConfig) {
-    assertThat(testConfig.getJvmArgs().get(CLIENT)).contains(XX_USE_ZGC);
-    assertThat(testConfig.getJvmArgs().get(SERVER)).contains(XX_USE_ZGC);
-    assertThat(testConfig.getJvmArgs().get(LOCATOR)).contains(XX_USE_ZGC);
-    assertThat(testConfig.getJvmArgs().get(CLIENT)).doesNotContain(XX_USE_CONC_MARK_SWEEP_GC);
-    assertThat(testConfig.getJvmArgs().get(SERVER)).doesNotContain(XX_USE_CONC_MARK_SWEEP_GC);
-    assertThat(testConfig.getJvmArgs().get(LOCATOR)).doesNotContain(XX_USE_CONC_MARK_SWEEP_GC);
-    assertThat(testConfig.getJvmArgs().get(CLIENT)).doesNotContain(XX_USE_G_1_GC);
-    assertThat(testConfig.getJvmArgs().get(SERVER)).doesNotContain(XX_USE_G_1_GC);
-    assertThat(testConfig.getJvmArgs().get(LOCATOR)).doesNotContain(XX_USE_G_1_GC);
+    assertThat(testConfig.getJvmArgs().get(CLIENT.name())).contains(XX_USE_ZGC);
+    assertThat(testConfig.getJvmArgs().get(SERVER.name())).contains(XX_USE_ZGC);
+    assertThat(testConfig.getJvmArgs().get(LOCATOR.name())).contains(XX_USE_ZGC);
+    assertThat(testConfig.getJvmArgs().get(CLIENT.name())).doesNotContain(XX_USE_CONC_MARK_SWEEP_GC);
+    assertThat(testConfig.getJvmArgs().get(SERVER.name())).doesNotContain(XX_USE_CONC_MARK_SWEEP_GC);
+    assertThat(testConfig.getJvmArgs().get(LOCATOR.name())).doesNotContain(XX_USE_CONC_MARK_SWEEP_GC);
+    assertThat(testConfig.getJvmArgs().get(CLIENT.name())).doesNotContain(XX_USE_G_1_GC);
+    assertThat(testConfig.getJvmArgs().get(SERVER.name())).doesNotContain(XX_USE_G_1_GC);
+    assertThat(testConfig.getJvmArgs().get(LOCATOR.name())).doesNotContain(XX_USE_G_1_GC);
   }
 
 }
