@@ -39,7 +39,7 @@ public class Utils {
   }
 
   public static void addToTestConfig(TestConfig testConfig, String systemPropertyKey,
-                                     String jvmArgument) {
+      String jvmArgument) {
     if (Boolean.getBoolean(systemPropertyKey)) {
       logger.info("Configuring JVMs to run with " + jvmArgument);
       configureJavaRoles(testConfig, jvmArgument);

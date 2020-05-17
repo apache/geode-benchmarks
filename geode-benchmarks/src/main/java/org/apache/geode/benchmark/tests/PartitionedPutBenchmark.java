@@ -61,6 +61,5 @@ public class PartitionedPutBenchmark implements PerformanceTest {
     before(config, new PrePopulateRegion(keyRange), CLIENT);
     workload(config, new PutTask(keyRange), CLIENT);
     return config;
-
   }
 }

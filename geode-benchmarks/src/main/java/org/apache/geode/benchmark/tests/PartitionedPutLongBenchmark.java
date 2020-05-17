@@ -61,6 +61,5 @@ public class PartitionedPutLongBenchmark implements PerformanceTest {
     before(config, new PrePopulateRegionLong(keyRange), CLIENT);
     workload(config, new PutTask(keyRange), CLIENT);
     return config;
-
   }
 }

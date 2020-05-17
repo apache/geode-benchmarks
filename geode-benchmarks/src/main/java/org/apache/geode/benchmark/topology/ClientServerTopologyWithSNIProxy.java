@@ -21,12 +21,11 @@ import static org.apache.geode.benchmark.Config.role;
 import static org.apache.geode.benchmark.parameters.Utils.addToTestConfig;
 import static org.apache.geode.benchmark.parameters.Utils.configureJavaRoles;
 import static org.apache.geode.benchmark.topology.Ports.LOCATOR_PORT;
-import static org.apache.geode.benchmark.topology.Roles.SERVER;
-import static org.apache.geode.benchmark.topology.Roles.LOCATOR;
 import static org.apache.geode.benchmark.topology.Roles.CLIENT;
+import static org.apache.geode.benchmark.topology.Roles.LOCATOR;
 import static org.apache.geode.benchmark.topology.Roles.PROXY;
+import static org.apache.geode.benchmark.topology.Roles.SERVER;
 
-import org.apache.geode.benchmark.Config;
 import org.apache.geode.benchmark.parameters.GcLoggingParameters;
 import org.apache.geode.benchmark.parameters.GcParameters;
 import org.apache.geode.benchmark.parameters.HeapParameters;

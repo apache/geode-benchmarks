@@ -14,14 +14,13 @@
  */
 package org.apache.geode.benchmark.tests;
 
-import static org.apache.geode.benchmark.Config.*;
 import static org.apache.geode.benchmark.Config.before;
+import static org.apache.geode.benchmark.Config.workload;
 import static org.apache.geode.benchmark.topology.Roles.CLIENT;
 import static org.apache.geode.benchmark.topology.Roles.SERVER;
 
 import org.junit.jupiter.api.Test;
 
-import org.apache.geode.benchmark.Config;
 import org.apache.geode.benchmark.LongRange;
 import org.apache.geode.benchmark.tasks.CreateClientProxyRegion;
 import org.apache.geode.benchmark.tasks.CreateReplicatedRegion;

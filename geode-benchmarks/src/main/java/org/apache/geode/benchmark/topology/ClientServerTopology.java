@@ -17,12 +17,10 @@ package org.apache.geode.benchmark.topology;
 import static org.apache.geode.benchmark.Config.before;
 import static org.apache.geode.benchmark.Config.role;
 import static org.apache.geode.benchmark.parameters.Utils.addToTestConfig;
+import static org.apache.geode.benchmark.topology.Ports.LOCATOR_PORT;
 import static org.apache.geode.benchmark.topology.Roles.CLIENT;
 import static org.apache.geode.benchmark.topology.Roles.LOCATOR;
 import static org.apache.geode.benchmark.topology.Roles.SERVER;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import org.apache.geode.benchmark.parameters.GcLoggingParameters;
 import org.apache.geode.benchmark.parameters.GcParameters;
@@ -55,9 +53,9 @@ public class ClientServerTopology {
     addToTestConfig(config, "withSsl", WITH_SSL_ARGUMENT);
     addToTestConfig(config, "withSecurityManager", WITH_SECURITY_MANAGER_ARGUMENT);
 
-    before(config, new StartLocator(Ports.LOCATOR_PORT), LOCATOR);
-    before(config, new StartServer(Ports.LOCATOR_PORT), SERVER);
-    before(config, new StartClient(Ports.LOCATOR_PORT), CLIENT);
+    before(config, new StartLocator(LOCATOR_PORT), LOCATOR);
+    before(config, new StartServer(LOCATOR_PORT), SERVER);
+    before(config, new StartClient(LOCATOR_PORT), CLIENT);
   }
 
 }

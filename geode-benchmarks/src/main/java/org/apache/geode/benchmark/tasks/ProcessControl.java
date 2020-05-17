@@ -27,7 +27,8 @@ public class ProcessControl {
     final Process startDaemon = Runtime.getRuntime().exec(command);
     final int exitStatus = startDaemon.waitFor();
     if (exitStatus != 0) {
-      final String msg = String.format("'%s' command exited with status %d", command, exitStatus);
+      final String msg = String.format("'%s' command exited with status %d\npwd is: %s", command,
+          exitStatus, System.getProperty("user.dir"));
       logger.error(msg);
       throw new IllegalStateException(msg);
     }

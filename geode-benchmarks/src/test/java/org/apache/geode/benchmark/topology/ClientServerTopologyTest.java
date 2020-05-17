@@ -60,7 +60,8 @@ public class ClientServerTopologyTest {
   public void configWithoutSecurityManager() {
     TestConfig testConfig = new TestConfig();
     ClientServerTopology.configure(testConfig);
-    assertThat(testConfig.getJvmArgs().get(CLIENT.name())).doesNotContain("-DwithSecurityManager=true");
+    assertThat(testConfig.getJvmArgs().get(CLIENT.name()))
+        .doesNotContain("-DwithSecurityManager=true");
   }
 
   @Test

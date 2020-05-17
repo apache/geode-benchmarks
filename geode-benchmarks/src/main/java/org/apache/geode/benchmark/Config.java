@@ -22,7 +22,8 @@ public class Config {
     config.before(task, role.name());
   }
 
-  public static void workload(final TestConfig config, final BenchmarkDriver task, final Roles role) {
+  public static void workload(final TestConfig config, final BenchmarkDriver task,
+      final Roles role) {
     config.workload(task, role.name());
   }
 
