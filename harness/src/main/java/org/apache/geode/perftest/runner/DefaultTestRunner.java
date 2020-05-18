@@ -115,7 +115,7 @@ public class DefaultTestRunner implements TestRunner {
     Map<String, Integer> roles = config.getRoles();
     Map<String, List<String>> jvmArgs = config.getJvmArgs();
 
-    logger.info("Lauching JVMs...");
+    logger.info("Launching JVMs...");
     // launch JVMs in parallel, hook them up
     RemoteJVMs remoteJVMs = remoteJvmFactory.launch(roles, jvmArgs);
     try {

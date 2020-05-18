@@ -18,6 +18,7 @@ package org.apache.geode.benchmark.parameters;
 import static org.apache.geode.benchmark.Config.jvmArgs;
 import static org.apache.geode.benchmark.topology.Roles.CLIENT;
 import static org.apache.geode.benchmark.topology.Roles.LOCATOR;
+import static org.apache.geode.benchmark.topology.Roles.PROXY;
 import static org.apache.geode.benchmark.topology.Roles.SERVER;
 
 import org.slf4j.Logger;
@@ -36,6 +37,7 @@ public class Utils {
     jvmArgs(config, LOCATOR, args);
     jvmArgs(config, SERVER, args);
     jvmArgs(config, CLIENT, args);
+    jvmArgs(config, PROXY, args);
   }
 
   public static void addToTestConfig(TestConfig testConfig, String systemPropertyKey,
