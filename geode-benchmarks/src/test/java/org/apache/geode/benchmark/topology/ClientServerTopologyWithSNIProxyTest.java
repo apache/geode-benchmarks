@@ -13,22 +13,40 @@
  * the License.
  */
 
-package org.apache.geode.benchmark.parameters;
+package org.apache.geode.benchmark.topology;
 
-import static org.apache.geode.benchmark.parameters.Utils.configureGeodeProductJvms;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.apache.geode.benchmark.topology.Roles.CLIENT;
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.Properties;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import org.apache.geode.perftest.TestConfig;
 
-public class HeapParameters {
-  private static final Logger logger = LoggerFactory.getLogger(HeapParameters.class);
+public class ClientServerTopologyWithSNIProxyTest {
 
-  public static void configure(final TestConfig testConfig) {
-    final String heap = System.getProperty("withHeap", "8g");
-    logger.info("Configuring heap parameters {}.", heap);
-    configureGeodeProductJvms(testConfig, "-Xmx" + heap, "-Xms" + heap);
+  private Properties systemProperties;
+
+  @BeforeEach
+  public void beforeEach() {
+    systemProperties = (Properties) System.getProperties().clone();
+  }
+
+  @AfterEach
+  public void afterEach() {
+    System.setProperties(systemProperties);
+  }
+
+
+  @Test
+  public void configWithNoSsl() {
+    TestConfig testConfig = new TestConfig();
+    ClientServerTopologyWithSNIProxy.configure(testConfig);
+    assertThat(testConfig.getJvmArgs().get(CLIENT.name())).contains("-DwithSsl=true");
   }
 
 }

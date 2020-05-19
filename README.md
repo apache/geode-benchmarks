@@ -159,9 +159,12 @@ We're limited to just that test because topology is not orthogonal to test&mdash
 Also we have to provide `-DwithSsl=true` for an SNI test even though no SNI test could work without TLS.
 
 ### TODO for SNI
-* verify `StartSniProxy` runs on proxy node
-* set up SNI in `StartClient` task via `setPoolSocketFactory`
-* don't require operator to supply `-DwithSSL=true` when running SNI tests&mdash;have a `-Dsni` instead 
-* make topology orthogonal to tests so all tests can run with SNI
+* ~~verify `StartSniProxy` runs on proxy node~~
+* don't require operator to supply `-PwithSSL`/`-DwithSSL=true` when running SNI tests
+* set `hostname-for-clients` in locator and server startup
+* create three keystores: one each server and locator, and one truststore with all three certs
+* set up SNI in `StartClient` task via `setPoolSocketFactory` 
+* make topology orthogonal to tests so all tests can run with SNI; have a `-Psni`/`-Dsni` flag
 * `./run_tests.sh` often seems to hang after benchmarks have completed, requiring operator to enter ^C to un-stick it
+* make `rsync:` Git "scheme" work in `run_tests.sh` script for benchmark repo (not just for geode repo)
 

@@ -19,7 +19,7 @@ import static org.apache.geode.benchmark.Config.before;
 import static org.apache.geode.benchmark.Config.jvmArgs;
 import static org.apache.geode.benchmark.Config.role;
 import static org.apache.geode.benchmark.parameters.Utils.addToTestConfig;
-import static org.apache.geode.benchmark.parameters.Utils.configureJavaRoles;
+import static org.apache.geode.benchmark.parameters.Utils.configureGeodeProductJvms;
 import static org.apache.geode.benchmark.topology.Ports.LOCATOR_PORT;
 import static org.apache.geode.benchmark.topology.Roles.CLIENT;
 import static org.apache.geode.benchmark.topology.Roles.LOCATOR;
@@ -58,7 +58,7 @@ public class ClientServerTopologyWithSNIProxy {
     GcParameters.configure(config);
     ProfilerParameters.configure(config);
 
-    configureJavaRoles(config, WITH_SSL_ARGUMENT);
+    configureGeodeProductJvms(config, WITH_SSL_ARGUMENT);
     addToTestConfig(config, "withSecurityManager", WITH_SECURITY_MANAGER_ARGUMENT);
 
     // pass SNI proxy config to CLIENT role only

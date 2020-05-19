@@ -16,7 +16,7 @@
 package org.apache.geode.benchmark.parameters;
 
 import static org.apache.geode.benchmark.parameters.JavaVersion.v11;
-import static org.apache.geode.benchmark.parameters.Utils.configureJavaRoles;
+import static org.apache.geode.benchmark.parameters.Utils.configureGeodeProductJvms;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,9 +30,9 @@ public class GcLoggingParameters {
     final JavaVersion javaVersion = JavaVersion.current();
     logger.info("Configuring GC logging parameters for Java {}.", javaVersion);
     if (javaVersion.atLeast(v11)) {
-      configureJavaRoles(testConfig, "-Xlog:gc*:OUTPUT_DIR/gc.log");
+      configureGeodeProductJvms(testConfig, "-Xlog:gc*:OUTPUT_DIR/gc.log");
     } else {
-      configureJavaRoles(testConfig,
+      configureGeodeProductJvms(testConfig,
           "-XX:+PrintGCDetails",
           "-XX:+PrintGCTimeStamps",
           "-XX:+PrintGCDateStamps",
