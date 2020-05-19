@@ -27,6 +27,9 @@ import java.net.InetAddress;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.apache.geode.benchmark.topology.Roles;
 import org.apache.geode.perftest.Task;
 import org.apache.geode.perftest.TestContext;
@@ -36,28 +39,44 @@ import org.apache.geode.perftest.TestContext;
  */
 public class StartSniProxy implements Task {
 
+  private static final Logger logger = LoggerFactory.getLogger(StartSniProxy.class);
+
   public static final String START_DOCKER_DAEMON_COMMAND = "sudo service docker start";
   public static final String START_PROXY_COMMAND = "docker-compose up -d haproxy";
 
   private int locatorPort;
 
   public StartSniProxy(int locatorPort) {
+    logger.info("BGB StartSniProxy constructed");
     this.locatorPort = locatorPort;
   }
 
   @Override
   public void run(TestContext context) throws Exception {
+    logger.info("BGB StartSniProxy.run() entered");
 
-    final String config = generateHaProxyConfig(
-        hostNamesFor(context, LOCATOR),
-        hostNamesFor(context, SERVER));
+    try {
+      final String config = generateHaProxyConfig(
+          hostNamesFor(context, LOCATOR),
+          hostNamesFor(context, SERVER));
 
-    writeToFile(config, "haproxy.cfg");
+      logger.info("BGB StartSniProxy.run() generated config");
 
-    final ProcessControl processControl = new ProcessControl();
+      writeToFile(config, "haproxy.cfg");
 
-    processControl.runCommand(START_DOCKER_DAEMON_COMMAND);
-    processControl.runCommand(START_PROXY_COMMAND);
+      logger.info("BGB StartSniProxy.run() wrote haproxy.cfg");
+
+      final ProcessControl processControl = new ProcessControl();
+
+      processControl.runCommand(START_DOCKER_DAEMON_COMMAND);
+      logger.info("BGB StartSniProxy.run() started Docker daemon");
+      processControl.runCommand(START_PROXY_COMMAND);
+      logger.info("BGB StartSniProxy.run() started HAproxy");
+    } catch(final Throwable t) {
+      logger.error("BGB caught exception in StartSniProxy.run()", t);
+      throw t;
+    }
+    logger.info("BGB StartSniProxy.run() completed without error");
   }
 
   private void writeToFile(final String content, final String fileName) throws IOException {
