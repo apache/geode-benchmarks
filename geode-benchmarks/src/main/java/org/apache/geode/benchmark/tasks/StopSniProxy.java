@@ -25,7 +25,7 @@ import org.apache.geode.perftest.TestContext;
  */
 public class StopSniProxy implements Task {
 
-  public static final String STOP_PROXY_COMMAND = "docker-compose down haproxy";
+  public static final String STOP_PROXY_COMMAND = "docker-compose down";
 
   public StopSniProxy() {}
 

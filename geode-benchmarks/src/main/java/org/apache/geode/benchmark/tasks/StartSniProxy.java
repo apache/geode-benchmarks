@@ -38,45 +38,26 @@ import org.apache.geode.perftest.TestContext;
  * Task to start the SNI proxy
  */
 public class StartSniProxy implements Task {
-
-  private static final Logger logger = LoggerFactory.getLogger(StartSniProxy.class);
-
   public static final String START_DOCKER_DAEMON_COMMAND = "sudo service docker start";
   public static final String START_PROXY_COMMAND = "docker-compose up -d haproxy";
 
   private int locatorPort;
 
   public StartSniProxy(int locatorPort) {
-    logger.info("BGB StartSniProxy constructed");
     this.locatorPort = locatorPort;
   }
 
   @Override
   public void run(TestContext context) throws Exception {
-    logger.info("BGB StartSniProxy.run() entered");
+    final String config = generateHaProxyConfig(
+        hostNamesFor(context, LOCATOR),
+        hostNamesFor(context, SERVER));
 
-    try {
-      final String config = generateHaProxyConfig(
-          hostNamesFor(context, LOCATOR),
-          hostNamesFor(context, SERVER));
+    writeToFile(config, "haproxy.cfg");
 
-      logger.info("BGB StartSniProxy.run() generated config");
-
-      writeToFile(config, "haproxy.cfg");
-
-      logger.info("BGB StartSniProxy.run() wrote haproxy.cfg");
-
-      final ProcessControl processControl = new ProcessControl();
-
-      processControl.runCommand(START_DOCKER_DAEMON_COMMAND);
-      logger.info("BGB StartSniProxy.run() started Docker daemon");
-      processControl.runCommand(START_PROXY_COMMAND);
-      logger.info("BGB StartSniProxy.run() started HAproxy");
-    } catch(final Throwable t) {
-      logger.error("BGB caught exception in StartSniProxy.run()", t);
-      throw t;
-    }
-    logger.info("BGB StartSniProxy.run() completed without error");
+    final ProcessControl processControl = new ProcessControl();
+    processControl.runCommand(START_DOCKER_DAEMON_COMMAND);
+    processControl.runCommand(START_PROXY_COMMAND);
   }
 
   private void writeToFile(final String content, final String fileName) throws IOException {
