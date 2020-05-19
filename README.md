@@ -147,3 +147,21 @@ public class PutTask extends BenchmarkDriverAdapter implements Serializable {
   }
 }
 ```
+
+## SNI
+
+To run a test with SNI we currently have to:
+
+`./run_tests.sh -t burcham --bb sni  -- -DwithSsl=true --tests *PartitionedPutBenchmark`
+
+We're limited to just that test because topology is not orthogonal to test&mdash;each test explicitly specifies its topology.
+
+Also we have to provide `-DwithSsl=true` for an SNI test even though no SNI test could work without TLS.
+
+### TODO for SNI
+* verify `StartSniProxy` runs on proxy node
+* set up SNI in `StartClient` task via `setPoolSocketFactory`
+* don't require operator to supply `-DwithSSL=true` when running SNI tests&mdash;have a `-Dsni` instead 
+* make topology orthogonal to tests so all tests can run with SNI
+* `./run_tests.sh` often seems to hang after benchmarks have completed, requiring operator to enter ^C to un-stick it
+
