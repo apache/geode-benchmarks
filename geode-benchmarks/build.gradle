@@ -23,7 +23,7 @@ version '1.0-SNAPSHOT'
 sourceCompatibility = 1.8
 
 def outputDir = project.hasProperty('outputDir') ? project.findProperty('outputDir') : new File(project.buildDir, "benchmarks_" + getDate()).getAbsolutePath()
-def geodeVersion = project.hasProperty('geodeVersion') ? project.findProperty('geodeVersion') : '1.+'
+def geodeVersion = project.hasProperty('geodeVersion') ? project.findProperty('geodeVersion') : '1.13.+'
 
 def getDate() {
   new Date().format('yyyyMMddHHmmss')
@@ -31,8 +31,21 @@ def getDate() {
 
 
 repositories {
+  // in CI we want to search mavenLocal for geode
   mavenLocal()
-  mavenCentral()
+  // non-geode stuff can come from mavenCentral
+  mavenCentral() {
+    content {
+      excludeGroup 'org.apache.geode'
+    }
+  }
+  // when developing this project, use Geode develop branch snapshot
+  maven {
+    url "https://maven.apachegeode-ci.info/snapshots"
+    content {
+      includeGroup 'org.apache.geode'
+    }
+  }
 }
 
 dependencies {

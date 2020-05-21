@@ -162,14 +162,12 @@ Also we have to provide `-DwithSsl=true` for an SNI test even though no SNI test
 * ~~verify `StartSniProxy` runs on proxy node~~
 * ~~don't require operator to supply `-PwithSSL`/`-DwithSSL=true` when running SNI tests~~
 * ~~generate `haproxy.cfg` with client-visible SNI hostnames~~
-* make Geode clients use SNI proxy
-    * add `--hostname-for-clients` option in locator and server startup
-    * turn on SNI in `StartClient` task via `setPoolSocketFactory` 
+* ~~turn on SNI via `setPoolSocketFactory` in a new `StartClientSNI` task~~ 
 * make topology orthogonal to tests so all tests can run with SNI; have a `-Psni`/`-Dsni` flag
 * fix borken `PartitionedPutBenchmarkSNITest`: `DefineHostNamingsOffPlatformTask` breaks when running multiple roles on a single host
 
 ## TODO (General)
+* move Geode keystore/truststore setting out of `harness` module and up into `geode-benchmarks` i.e. set 'em in properties sent to `Locator.startLocatorAndDS` in `StartLocator`, `StartServer` and eliminate `harness` module dependency on Geode entirely
 * generate 2048-bit keys (instead of 1024-bit ones) for TLS; will slow TLS handshakes which may necessitate a new baseline
-* move Geode keystore/truststore setting out of `harness` module and up into `geode-benchmarks` i.e. set 'em in properties sent to `Locator.startLocatorAndDS` in `StartLocator`, `StartServer`
 * `./run_tests.sh` often seems to hang after benchmarks have completed, requiring operator to enter ^C to un-stick it
 * make `rsync:` Git "scheme" work in `run_tests.sh` script for benchmark repo (not just for geode repo)

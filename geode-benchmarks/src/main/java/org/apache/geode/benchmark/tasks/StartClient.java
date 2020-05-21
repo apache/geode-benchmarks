@@ -49,13 +49,32 @@ public class StartClient implements Task {
     String statsFile = new File(context.getOutputDir(), "stats.gfs").getAbsolutePath();
     Properties properties = clientProperties();
 
-    ClientCache clientCache = new ClientCacheFactory(properties)
-        .setPdxSerializer(new ReflectionBasedAutoSerializer("benchmark.geode.data.*"))
-        .addPoolLocator(locator.getHostAddress(), locatorPort)
-        .setPoolIdleTimeout(-1)
-        .set(ConfigurationProperties.STATISTIC_ARCHIVE_FILE, statsFile)
+    ClientCache clientCache = createClientCacheFactory(locator, statsFile, properties, context)
         .create();
 
     context.setAttribute("CLIENT_CACHE", clientCache);
+  }
+
+  /**
+   * Create and configure the ClientCacheFactory.
+   *
+   * Subclasses can override this. They return the result from calling super (or calling
+   * builder methods on the result from calling super)
+   *
+   * @param locator
+   * @param statsFile
+   * @param properties
+   * @param context
+   * @return
+   */
+  protected ClientCacheFactory createClientCacheFactory(final InetAddress locator,
+                                                        final String statsFile,
+                                                        final Properties properties,
+                                                        final TestContext context) {
+    return new ClientCacheFactory(properties)
+        .setPdxSerializer(new ReflectionBasedAutoSerializer("benchmark.geode.data.*"))
+        .addPoolLocator(locator.getHostAddress(), locatorPort)
+        .setPoolIdleTimeout(-1)
+        .set(ConfigurationProperties.STATISTIC_ARCHIVE_FILE, statsFile);
   }
 }
