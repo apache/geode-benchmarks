@@ -31,6 +31,7 @@ import org.apache.geode.benchmark.parameters.GcParameters;
 import org.apache.geode.benchmark.parameters.HeapParameters;
 import org.apache.geode.benchmark.parameters.JvmParameters;
 import org.apache.geode.benchmark.parameters.ProfilerParameters;
+import org.apache.geode.benchmark.tasks.DefineHostNamingsOffPlatformTask;
 import org.apache.geode.benchmark.tasks.StartClient;
 import org.apache.geode.benchmark.tasks.StartLocator;
 import org.apache.geode.benchmark.tasks.StartServer;
@@ -66,8 +67,13 @@ public class ClientServerTopologyWithSNIProxy {
     jvmArgs(config, CLIENT, "-DwithSniProxy=hostname:port");
 
     before(config, new StartLocator(LOCATOR_PORT), LOCATOR);
+
     before(config, new StartServer(LOCATOR_PORT), SERVER);
+
+    before(config, new DefineHostNamingsOffPlatformTask(), CLIENT);
     before(config, new StartClient(LOCATOR_PORT), CLIENT);
+
+    before(config, new DefineHostNamingsOffPlatformTask(), PROXY);
     before(config, new StartSniProxy(LOCATOR_PORT), PROXY);
 
     after(config, new StopSniProxy(), PROXY);
