@@ -18,7 +18,8 @@ public class StartServerSNI extends StartServer {
   protected void configureCacheServer(final CacheServer cacheServer, final TestContext context)
       throws UnknownHostException {
     super.configureCacheServer(cacheServer, context);
-    cacheServer.setHostnameForClients(getOffPlatformHostName(context, InetAddress.getLocalHost()));
+    cacheServer.setHostnameForClients(
+        getOffPlatformHostName(context, InetAddress.getLocalHost()));
   }
 
 }

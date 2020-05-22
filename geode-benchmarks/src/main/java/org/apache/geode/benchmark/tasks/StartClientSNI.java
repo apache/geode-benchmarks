@@ -1,6 +1,7 @@
 package org.apache.geode.benchmark.tasks;
 
 import static org.apache.geode.benchmark.tasks.DefineHostNamingsOffPlatformTask.getOffPlatformHostName;
+import static org.apache.geode.benchmark.topology.Roles.LOCATOR;
 import static org.apache.geode.benchmark.topology.Roles.PROXY;
 
 import java.net.InetAddress;
@@ -9,6 +10,8 @@ import java.util.Properties;
 
 import org.apache.geode.cache.client.ClientCacheFactory;
 import org.apache.geode.cache.client.proxy.ProxySocketFactories;
+import org.apache.geode.distributed.ConfigurationProperties;
+import org.apache.geode.pdx.ReflectionBasedAutoSerializer;
 import org.apache.geode.perftest.TestContext;
 
 public class StartClientSNI extends StartClient {
@@ -25,14 +28,20 @@ public class StartClientSNI extends StartClient {
                                                         final TestContext context)
       throws UnknownHostException {
 
-    final InetAddress firstProxyAddy =
+    final InetAddress firstLocatorAddy =
+        context.getHostsForRole(LOCATOR.name()).iterator().next();
+    final String offPlatformLocatorName =
+        getOffPlatformHostName(context, firstLocatorAddy);
+    final InetAddress proxyAddy =
         context.getHostsForRole(PROXY.name()).iterator().next();
-    final String
-        offPlatformHostName = getOffPlatformHostName(context, firstProxyAddy);
 
-    return super.createClientCacheFactory(locator, statsFile, properties, context)
+    return new ClientCacheFactory(properties)
+        .setPdxSerializer(new ReflectionBasedAutoSerializer("benchmark.geode.data.*"))
+        .setPoolIdleTimeout(-1)
+        .set(ConfigurationProperties.STATISTIC_ARCHIVE_FILE, statsFile)
+        .addPoolLocator(offPlatformLocatorName, locatorPort)
         .setPoolSocketFactory(ProxySocketFactories.sni(
-            offPlatformHostName,
+            proxyAddy.getHostAddress(),
             SNI_PROXY_PORT));
   }
 

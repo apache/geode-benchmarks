@@ -36,7 +36,7 @@ import org.apache.geode.perftest.TestContext;
  * Task to create the client cache
  */
 public class StartClient implements Task {
-  private int locatorPort;
+  protected int locatorPort;
 
   public StartClient(int locatorPort) {
     this.locatorPort = locatorPort;
@@ -59,8 +59,7 @@ public class StartClient implements Task {
   /**
    * Create and configure the ClientCacheFactory.
    *
-   * Subclasses can override this. They return the result from calling super (or calling
-   * builder methods on the result from calling super)
+   * Subclasses can override this.
    *
    * @param locator
    * @param statsFile
@@ -75,8 +74,8 @@ public class StartClient implements Task {
       throws UnknownHostException {
     return new ClientCacheFactory(properties)
         .setPdxSerializer(new ReflectionBasedAutoSerializer("benchmark.geode.data.*"))
-        .addPoolLocator(locator.getHostAddress(), locatorPort)
         .setPoolIdleTimeout(-1)
-        .set(ConfigurationProperties.STATISTIC_ARCHIVE_FILE, statsFile);
+        .set(ConfigurationProperties.STATISTIC_ARCHIVE_FILE, statsFile)
+        .addPoolLocator(locator.getHostAddress(), locatorPort);
   }
 }
