@@ -3,6 +3,7 @@ package org.apache.geode.benchmark.tasks;
 import static org.apache.geode.benchmark.tasks.DefineHostNamingsOffPlatformTask.getOffPlatformHostName;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.util.Properties;
 
 import org.apache.geode.distributed.LocatorLauncher;
@@ -20,7 +21,7 @@ public class StartLocatorSNI extends StartLocator {
     new LocatorLauncher.Builder()
         .set(properties)
         .setPort(locatorPort)
-        .setHostnameForClients(getOffPlatformHostName(context))
+        .setHostnameForClients(getOffPlatformHostName(context, InetAddress.getLocalHost()))
         .build()
         .start();
   }

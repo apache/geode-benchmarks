@@ -22,6 +22,7 @@ import static org.apache.geode.benchmark.topology.Roles.LOCATOR;
 
 import java.io.File;
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Properties;
 
 import org.apache.geode.cache.client.ClientCache;
@@ -70,7 +71,8 @@ public class StartClient implements Task {
   protected ClientCacheFactory createClientCacheFactory(final InetAddress locator,
                                                         final String statsFile,
                                                         final Properties properties,
-                                                        final TestContext context) {
+                                                        final TestContext context)
+      throws UnknownHostException {
     return new ClientCacheFactory(properties)
         .setPdxSerializer(new ReflectionBasedAutoSerializer("benchmark.geode.data.*"))
         .addPoolLocator(locator.getHostAddress(), locatorPort)
