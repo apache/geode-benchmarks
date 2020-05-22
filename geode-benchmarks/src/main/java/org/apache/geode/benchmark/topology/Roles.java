@@ -17,6 +17,9 @@ package org.apache.geode.benchmark.topology;
 import static org.apache.geode.benchmark.topology.RoleKinds.GEODE_PRODUCT;
 import static org.apache.geode.benchmark.topology.RoleKinds.SUPPORTING;
 
+import java.util.Arrays;
+import java.util.stream.Stream;
+
 /**
  * All roles defined for the JVMs created for the benchmark
  */
@@ -27,6 +30,11 @@ public enum Roles {
   PROXY(SUPPORTING);
 
   public final RoleKinds roleKind;
+
+  public static Stream<Roles> rolesFor(final RoleKinds roleKind) {
+    return Arrays.stream(Roles.values())
+        .filter(role -> role.roleKind == roleKind);
+  }
 
   Roles(final RoleKinds roleKind) {
     this.roleKind = roleKind;

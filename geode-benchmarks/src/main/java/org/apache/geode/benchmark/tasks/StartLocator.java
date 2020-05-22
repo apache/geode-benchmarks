@@ -20,6 +20,7 @@ package org.apache.geode.benchmark.tasks;
 import static org.apache.geode.benchmark.parameters.GeodeProperties.locatorProperties;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.InetAddress;
 import java.util.Properties;
 
@@ -46,6 +47,19 @@ public class StartLocator implements Task {
     properties.setProperty(ConfigurationProperties.STATISTIC_ARCHIVE_FILE, statsFile);
 
     properties.setProperty(ConfigurationProperties.NAME, "locator-" + InetAddress.getLocalHost());
+    startLocator(properties, locatorPort, context);
+  }
+
+  /**
+   * Starts locator as a side-effect.
+   *
+   * @param properties
+   * @param locatorPort
+   * @param context
+   * @throws IOException
+   */
+  protected void startLocator(final Properties properties, final int locatorPort,
+                               final TestContext context) throws IOException {
     Locator.startLocatorAndDS(locatorPort, null, properties);
   }
 }

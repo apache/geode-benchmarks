@@ -44,9 +44,7 @@ public class Utils {
    * @param args
    */
   public static void configureGeodeProductJvms(final TestConfig config, final String... args) {
-    Arrays.stream(Roles.values())
-        .filter(role -> role.roleKind == GEODE_PRODUCT)
-        .forEach(role -> jvmArgs(config,role,args));
+    Roles.rolesFor(GEODE_PRODUCT).forEach(role -> jvmArgs(config,role,args));
   }
 
   public static void addToTestConfig(TestConfig testConfig, String systemPropertyKey,

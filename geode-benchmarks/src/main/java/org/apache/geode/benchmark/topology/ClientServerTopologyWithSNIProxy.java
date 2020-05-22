@@ -21,10 +21,13 @@ import static org.apache.geode.benchmark.Config.role;
 import static org.apache.geode.benchmark.parameters.Utils.addToTestConfig;
 import static org.apache.geode.benchmark.parameters.Utils.configureGeodeProductJvms;
 import static org.apache.geode.benchmark.topology.Ports.LOCATOR_PORT;
+import static org.apache.geode.benchmark.topology.RoleKinds.GEODE_PRODUCT;
 import static org.apache.geode.benchmark.topology.Roles.CLIENT;
 import static org.apache.geode.benchmark.topology.Roles.LOCATOR;
 import static org.apache.geode.benchmark.topology.Roles.PROXY;
 import static org.apache.geode.benchmark.topology.Roles.SERVER;
+
+import java.util.stream.Stream;
 
 import org.apache.geode.benchmark.parameters.GcLoggingParameters;
 import org.apache.geode.benchmark.parameters.GcParameters;
@@ -67,14 +70,12 @@ public class ClientServerTopologyWithSNIProxy {
     // TODO: peel it off over in client
     jvmArgs(config, CLIENT, "-DwithSniProxy=hostname:port");
 
+    Stream.concat(Roles.rolesFor(GEODE_PRODUCT), Stream.of(PROXY))
+        .forEach(role -> before(config, new DefineHostNamingsOffPlatformTask(), role));
+
     before(config, new StartLocator(LOCATOR_PORT), LOCATOR);
-
     before(config, new StartServer(LOCATOR_PORT), SERVER);
-
-    before(config, new DefineHostNamingsOffPlatformTask(), PROXY);
     before(config, new StartSniProxy(LOCATOR_PORT), PROXY);
-
-    before(config, new DefineHostNamingsOffPlatformTask(), CLIENT);
     before(config, new StartClientSNI(LOCATOR_PORT), CLIENT);
 
     after(config, new StopSniProxy(), PROXY);

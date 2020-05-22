@@ -21,6 +21,7 @@ import static org.apache.geode.benchmark.parameters.GeodeProperties.serverProper
 
 import java.io.File;
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Properties;
 
 import org.apache.geode.cache.Cache;
@@ -57,11 +58,36 @@ public class StartServer implements Task {
         .set(ConfigurationProperties.STATISTIC_ARCHIVE_FILE, statsFile)
         .create();
     CacheServer cacheServer = cache.addCacheServer();
-    cacheServer.setPort(0);
-    cacheServer.setMaxConnections(Integer.MAX_VALUE);
+    configureCacheServer(cacheServer, context);
     cacheServer.start();
     context.setAttribute("SERVER_CACHE", cache);
 
   }
+
+  /**
+   *
+   * @param properties
+   * @param locatorString
+   * @param statsFile
+   * @param context
+   * @return
+   * @throws UnknownHostException
+   */
+
+  /**
+   * Configure the cache server
+   *
+   * Subclasses can override this. Call super first to inherit settings.
+   *
+   * @param cacheServer is modified by this method!
+   * @param context
+   */
+  protected void configureCacheServer(final CacheServer cacheServer,
+                                      final TestContext context) throws UnknownHostException {
+    cacheServer.setPort(0);
+    cacheServer.setMaxConnections(Integer.MAX_VALUE);
+  }
+
+
 
 }
