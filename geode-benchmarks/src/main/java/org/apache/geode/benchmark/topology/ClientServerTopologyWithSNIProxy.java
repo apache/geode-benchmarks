@@ -35,10 +35,9 @@ import org.apache.geode.benchmark.parameters.HeapParameters;
 import org.apache.geode.benchmark.parameters.JvmParameters;
 import org.apache.geode.benchmark.parameters.ProfilerParameters;
 import org.apache.geode.benchmark.tasks.DefineHostNamingsOffPlatformTask;
-import org.apache.geode.benchmark.tasks.StartClient;
 import org.apache.geode.benchmark.tasks.StartClientSNI;
-import org.apache.geode.benchmark.tasks.StartLocator;
-import org.apache.geode.benchmark.tasks.StartServer;
+import org.apache.geode.benchmark.tasks.StartLocatorSNI;
+import org.apache.geode.benchmark.tasks.StartServerSNI;
 import org.apache.geode.benchmark.tasks.StartSniProxy;
 import org.apache.geode.benchmark.tasks.StopSniProxy;
 import org.apache.geode.perftest.TestConfig;
@@ -73,8 +72,8 @@ public class ClientServerTopologyWithSNIProxy {
     Stream.concat(Roles.rolesFor(GEODE_PRODUCT), Stream.of(PROXY))
         .forEach(role -> before(config, new DefineHostNamingsOffPlatformTask(), role));
 
-    before(config, new StartLocator(LOCATOR_PORT), LOCATOR);
-    before(config, new StartServer(LOCATOR_PORT), SERVER);
+    before(config, new StartLocatorSNI(LOCATOR_PORT), LOCATOR);
+    before(config, new StartServerSNI(LOCATOR_PORT), SERVER);
     before(config, new StartSniProxy(LOCATOR_PORT), PROXY);
     before(config, new StartClientSNI(LOCATOR_PORT), CLIENT);
 
