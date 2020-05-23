@@ -19,4 +19,12 @@ public class Ports {
    * The port used to create the locator for the tests
    */
   public static final int LOCATOR_PORT = 10334;
+
+  /**
+   * With an SNI proxy, both the locator ports and the server ports
+   * have to be well-known (static) since the proxy has to know them
+   * and, in general, SNI proxies don't have visibility into locator
+   * responses carrying server port numbers.
+   */
+  public static final int SERVER_PORT_FOR_SNI = 40404;
 }

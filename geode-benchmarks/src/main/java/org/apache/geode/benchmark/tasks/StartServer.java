@@ -84,8 +84,8 @@ public class StartServer implements Task {
    */
   protected void configureCacheServer(final CacheServer cacheServer,
                                       final TestContext context) throws UnknownHostException {
-    cacheServer.setPort(0);
     cacheServer.setMaxConnections(Integer.MAX_VALUE);
+    cacheServer.setPort(0);
   }
 
 

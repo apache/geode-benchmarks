@@ -21,6 +21,7 @@ import static org.apache.geode.benchmark.Config.role;
 import static org.apache.geode.benchmark.parameters.Utils.addToTestConfig;
 import static org.apache.geode.benchmark.parameters.Utils.configureGeodeProductJvms;
 import static org.apache.geode.benchmark.topology.Ports.LOCATOR_PORT;
+import static org.apache.geode.benchmark.topology.Ports.SERVER_PORT_FOR_SNI;
 import static org.apache.geode.benchmark.topology.RoleKinds.GEODE_PRODUCT;
 import static org.apache.geode.benchmark.topology.Roles.CLIENT;
 import static org.apache.geode.benchmark.topology.Roles.LOCATOR;
@@ -73,7 +74,7 @@ public class ClientServerTopologyWithSNIProxy {
         .forEach(role -> before(config, new DefineHostNamingsOffPlatformTask(), role));
 
     before(config, new StartLocatorSNI(LOCATOR_PORT), LOCATOR);
-    before(config, new StartServerSNI(LOCATOR_PORT), SERVER);
+    before(config, new StartServerSNI(LOCATOR_PORT, SERVER_PORT_FOR_SNI), SERVER);
     before(config, new StartSniProxy(LOCATOR_PORT), PROXY);
     before(config, new StartClientSNI(LOCATOR_PORT), CLIENT);
 

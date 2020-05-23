@@ -10,14 +10,18 @@ import org.apache.geode.perftest.TestContext;
 
 public class StartServerSNI extends StartServer {
 
-  public StartServerSNI(final int locatorPort) {
+  private final int serverPortForSni;
+
+  public StartServerSNI(final int locatorPort, final int serverPortForSni) {
     super(locatorPort);
+    this.serverPortForSni = serverPortForSni;
   }
 
   @Override
   protected void configureCacheServer(final CacheServer cacheServer, final TestContext context)
       throws UnknownHostException {
-    super.configureCacheServer(cacheServer, context);
+    cacheServer.setMaxConnections(Integer.MAX_VALUE);
+    cacheServer.setPort(serverPortForSni);
     cacheServer.setHostnameForClients(
         getOffPlatformHostName(context, InetAddress.getLocalHost()));
   }
