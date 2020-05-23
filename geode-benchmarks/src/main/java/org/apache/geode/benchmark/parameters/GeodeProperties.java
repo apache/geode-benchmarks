@@ -47,7 +47,7 @@ public class GeodeProperties {
     properties.setProperty(LOCATOR_WAIT_TIME, "120");
     properties.setProperty(LOG_DISK_SPACE_LIMIT, "100");
     properties.setProperty(LOG_FILE_SIZE_LIMIT, "10");
-    properties.setProperty(LOG_LEVEL, "config");
+    properties.setProperty(LOG_LEVEL, "fine");
     properties.setProperty(REMOVE_UNRESPONSIVE_CLIENT, "true");
     properties.setProperty(STATISTIC_SAMPLING_ENABLED, "true");
     properties.setProperty(ARCHIVE_DISK_SPACE_LIMIT, "150");
@@ -69,7 +69,7 @@ public class GeodeProperties {
     Properties properties = new Properties();
 
     properties.setProperty(ENABLE_TIME_STATISTICS, "true");
-    properties.setProperty(LOG_LEVEL, "config");
+    properties.setProperty(LOG_LEVEL, "fine");
     properties.setProperty(STATISTIC_SAMPLING_ENABLED, "true");
     properties.setProperty(MEMBER_TIMEOUT, "8000");
 
