@@ -164,7 +164,8 @@ Also we have to provide `-DwithSsl=true` for an SNI test even though no SNI test
 * ~~generate `haproxy.cfg` with client-visible SNI hostnames~~
 * ~~turn on SNI via `setPoolSocketFactory` in a new `StartClientSNI` task~~
 * ~~set `--hostname-for-clients` on locator and servers for SNI~~
-* remove `-Djavax.net.debug=all` once connections are working
+* set `numThreads` back to number of cores in `PrePopulateRegion` task after client-server connections are working
+* remove `-Djavax.net.debug=all` once client-server connections are working
 * turn log-level back to "config" for server and locator 
 * make topology orthogonal to tests so all tests can run with SNI; have a `-Psni`/`-Dsni` flag
 * fix borken `PartitionedPutBenchmarkSNITest`: `DefineHostNamingsOffPlatformTask` breaks when running multiple roles on a single host

@@ -77,7 +77,7 @@ public class PrePopulateRegion implements Task {
     logger.info("*******************************************");
     final Instant start = Instant.now();
 
-    final int numThreads = Runtime.getRuntime().availableProcessors();
+    final int numThreads = 1; //Runtime.getRuntime().availableProcessors();
     final ExecutorService threadPool = Executors.newFixedThreadPool(numThreads);
     final List<CompletableFuture<Void>> futures = new ArrayList<>();
 
