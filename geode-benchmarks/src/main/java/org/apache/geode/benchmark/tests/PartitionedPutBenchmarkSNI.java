@@ -41,7 +41,9 @@ import org.apache.geode.perftest.TestRunners;
  */
 public class PartitionedPutBenchmarkSNI implements PerformanceTest {
 
-  private LongRange keyRange = new LongRange(0, 1000000);
+  // TODO; reinstate
+  //  private LongRange keyRange = new LongRange(0, 1000000);
+  private LongRange keyRange = new LongRange(0, 1);
 
   public PartitionedPutBenchmarkSNI() {}
 
