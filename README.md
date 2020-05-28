@@ -19,7 +19,7 @@ versions default to a new format. PEM format can be forced by using `-m PEM`:
 ```
 ssh-keygen -m PEM -t rsa
 ```
-While runinng a test on a single machine (i.e. localhost) add the generated key to `authorized_keys` to authorize the user:
+While running a test on a single machine (i.e. localhost) add the generated key to `authorized_keys` to authorize the user:
 ```
 cat <your_public_key_file> >> ~/.ssh/authorized_keys
 ```
@@ -164,6 +164,7 @@ Also we have to provide `-DwithSsl=true` for an SNI test even though no SNI test
 * ~~generate `haproxy.cfg` with client-visible SNI hostnames~~
 * ~~turn on SNI via `setPoolSocketFactory` in a new `StartClientSNI` task~~
 * ~~set `--hostname-for-clients` on locator and servers for SNI~~
+* remove `-Djavax.net.debug=all` once connections are working
 * turn log-level back to "config" for server and locator 
 * make topology orthogonal to tests so all tests can run with SNI; have a `-Psni`/`-Dsni` flag
 * fix borken `PartitionedPutBenchmarkSNITest`: `DefineHostNamingsOffPlatformTask` breaks when running multiple roles on a single host
