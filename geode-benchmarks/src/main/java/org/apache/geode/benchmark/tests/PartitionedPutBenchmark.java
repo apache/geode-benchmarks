@@ -41,7 +41,7 @@ public class PartitionedPutBenchmark implements PerformanceTest {
 
   // TODO: reinstate
   //  private LongRange keyRange = new LongRange(0, 1000000);
-  private LongRange keyRange = new LongRange(0, 1);
+  private LongRange keyRange = new LongRange(0, 5000);
 
   public PartitionedPutBenchmark() {}
 

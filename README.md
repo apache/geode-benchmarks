@@ -166,7 +166,6 @@ Also we have to provide `-DwithSsl=true` for an SNI test even though no SNI test
 * ~~set `--hostname-for-clients` on locator and servers for SNI~~
 * reinstate thread-per-core in `PrePopulateRegion.run()`
 * set `keyRange` back to 1e6 in `PartitionedPutBenchmark[SNI]` after client-server connections are healthy
-* remove `-Djavax.net.debug=all` once client-server connections are working
 * turn log-level back to "config" for server and locator 
 * make topology orthogonal to tests so all tests can run with SNI; have a `-Psni`/`-Dsni` flag
 * fix borken `PartitionedPutBenchmarkSNITest`: `DefineHostNamingsOffPlatformTask` breaks when running multiple roles on a single host
