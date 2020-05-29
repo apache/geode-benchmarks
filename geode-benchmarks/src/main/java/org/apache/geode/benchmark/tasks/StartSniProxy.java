@@ -95,7 +95,15 @@ public class StartSniProxy implements Task {
     final Iterable<String> serversInternal = serversInternalStream.collect(Collectors.toList());
     final Iterable<String> serversExternal = serversExternalStream.collect(Collectors.toList());
 
-    final StringBuilder stuff = new StringBuilder("defaults\n"
+    final StringBuilder stuff = new StringBuilder(
+        /*
+         log to stdout per:
+          https://www.haproxy.com/documentation/hapee/latest/administration/docker-logging/
+         */
+          "global\n"
+        + "  log stdout format raw local0 debug\n"
+        + "defaults\n"
+        + "  log global\n"
         + "  timeout client 1000\n"
         + "  timeout connect 1000\n"
         + "  timeout server 1000\n"

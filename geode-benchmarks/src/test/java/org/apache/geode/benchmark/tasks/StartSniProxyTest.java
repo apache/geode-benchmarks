@@ -31,7 +31,10 @@ class StartSniProxyTest {
             Stream.of("locator-one-external"),
             Stream.of("server-one-internal", "server-two-internal"),
             Stream.of("server-one-external", "server-two-external"));
-    assertThat(config).isEqualTo("defaults\n"
+    assertThat(config).isEqualTo("global\n"
+        + "  log stdout format raw local0 debug\n"
+        + "defaults\n"
+        + "  log global\n"
         + "  timeout client 1000\n"
         + "  timeout connect 1000\n"
         + "  timeout server 1000\n"
