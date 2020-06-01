@@ -2,7 +2,6 @@ package org.apache.geode.benchmark;
 
 import org.yardstickframework.BenchmarkDriver;
 
-import org.apache.geode.benchmark.tasks.StopSniProxy;
 import org.apache.geode.benchmark.topology.Roles;
 import org.apache.geode.perftest.Task;
 import org.apache.geode.perftest.TestConfig;
@@ -27,7 +26,7 @@ public class Config {
     config.workload(task, role.name());
   }
 
-  public static void after(final TestConfig config, final StopSniProxy task, final Roles role) {
+  public static void after(final TestConfig config, final Task task, final Roles role) {
     config.after(task, role.name());
   }
 

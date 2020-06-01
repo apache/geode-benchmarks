@@ -40,6 +40,7 @@ import org.apache.geode.benchmark.tasks.StartClientSNI;
 import org.apache.geode.benchmark.tasks.StartLocatorSNI;
 import org.apache.geode.benchmark.tasks.StartServerSNI;
 import org.apache.geode.benchmark.tasks.StartSniProxy;
+import org.apache.geode.benchmark.tasks.StopClient;
 import org.apache.geode.benchmark.tasks.StopSniProxy;
 import org.apache.geode.perftest.TestConfig;
 
@@ -78,6 +79,7 @@ public class ClientServerTopologyWithSNIProxy {
     before(config, new StartSniProxy(LOCATOR_PORT), PROXY);
     before(config, new StartClientSNI(LOCATOR_PORT), CLIENT);
 
+    after(config, new StopClient(), CLIENT);
     after(config, new StopSniProxy(), PROXY);
   }
 
