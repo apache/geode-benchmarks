@@ -41,7 +41,7 @@ public class PartitionedPutBenchmark implements PerformanceTest {
 
   // TODO: reinstate
   //  private LongRange keyRange = new LongRange(0, 1000000);
-  private LongRange keyRange = new LongRange(0, 100);
+  private LongRange keyRange = new LongRange(0, 1000);
 
   public PartitionedPutBenchmark() {}
 
@@ -58,7 +58,7 @@ public class PartitionedPutBenchmark implements PerformanceTest {
   public TestConfig configure() {
     TestConfig config = GeodeBenchmark.createConfig();
     // TODO: delete this once test is working!
-    config.threads(1);
+    config.threads(10);
     ClientServerTopology.configure(config);
     before(config, new CreatePartitionedRegion(), SERVER);
     before(config, new CreateClientProxyRegion(), CLIENT);

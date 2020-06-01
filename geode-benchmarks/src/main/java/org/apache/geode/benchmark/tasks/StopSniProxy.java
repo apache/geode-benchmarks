@@ -26,6 +26,7 @@ import org.apache.geode.perftest.TestContext;
 public class StopSniProxy implements Task {
 
   public static final String STOP_PROXY_COMMAND = "docker-compose down";
+  // TODO: fix: this exits w/ status 1
   public static final String CAPTURE_PROXY_LOG = "bash -c 'docker-compose logs haproxy > haproxy.log'";
 
   public StopSniProxy() {}
@@ -33,7 +34,7 @@ public class StopSniProxy implements Task {
   @Override
   public void run(TestContext context) throws Exception {
     final ProcessControl processControl = new ProcessControl();
-    processControl.runCommand(CAPTURE_PROXY_LOG);
+//    processControl.runCommand(CAPTURE_PROXY_LOG);
     processControl.runCommand(STOP_PROXY_COMMAND);
   }
 
