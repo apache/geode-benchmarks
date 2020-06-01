@@ -43,7 +43,7 @@ public class PartitionedPutBenchmarkSNI implements PerformanceTest {
 
   // TODO; reinstate
   //  private LongRange keyRange = new LongRange(0, 1000000);
-  private LongRange keyRange = new LongRange(0, 5000);
+  private LongRange keyRange = new LongRange(0, 100);
 
   public PartitionedPutBenchmarkSNI() {}
 

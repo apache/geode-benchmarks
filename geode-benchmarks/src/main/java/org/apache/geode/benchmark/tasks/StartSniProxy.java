@@ -111,8 +111,7 @@ public class StartSniProxy implements Task {
         + "  bind *:15443\n"
         + "  mode tcp\n"
         + "  tcp-request inspect-delay 5s\n"
-        + "  tcp-request content accept if { req_ssl_hello_type 1 }\n"
-        + "  log stdout format raw  local0  debug\n");
+        + "  tcp-request content accept if { req_ssl_hello_type 1 }\n");
 
     generateUseBackendRule(locatorsInternal, locatorsExternal, stuff, "locators-");
     generateUseBackendRule(serversInternal, serversExternal, stuff, "servers-");

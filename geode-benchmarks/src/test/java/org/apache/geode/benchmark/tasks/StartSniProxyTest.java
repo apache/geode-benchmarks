@@ -43,7 +43,6 @@ class StartSniProxyTest {
         + "  mode tcp\n"
         + "  tcp-request inspect-delay 5s\n"
         + "  tcp-request content accept if { req_ssl_hello_type 1 }\n"
-        + "  log stdout format raw  local0  debug\n"
         + "  use_backend locators-locator-one-internal if { req.ssl_sni -i locator-one-external }\n"
         + "  use_backend servers-server-one-internal if { req.ssl_sni -i server-one-external }\n"
         + "  use_backend servers-server-two-internal if { req.ssl_sni -i server-two-external }\n"
