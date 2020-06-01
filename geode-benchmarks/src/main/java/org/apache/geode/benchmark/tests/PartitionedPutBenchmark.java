@@ -39,9 +39,7 @@ import org.apache.geode.perftest.TestRunners;
  */
 public class PartitionedPutBenchmark implements PerformanceTest {
 
-  // TODO: reinstate
-  //  private LongRange keyRange = new LongRange(0, 1000000);
-  private LongRange keyRange = new LongRange(0, 10_000);
+  private LongRange keyRange = new LongRange(0, 1_000_000);
 
   public PartitionedPutBenchmark() {}
 
@@ -57,8 +55,6 @@ public class PartitionedPutBenchmark implements PerformanceTest {
   @Override
   public TestConfig configure() {
     TestConfig config = GeodeBenchmark.createConfig();
-    // TODO: delete this once test is working!
-    config.threads(100);
     ClientServerTopology.configure(config);
     before(config, new CreatePartitionedRegion(), SERVER);
     before(config, new CreateClientProxyRegion(), CLIENT);

@@ -164,7 +164,7 @@ Also we have to provide `-DwithSsl=true` for an SNI test even though no SNI test
 * ~~generate `haproxy.cfg` with client-visible SNI hostnames~~
 * ~~turn on SNI via `setPoolSocketFactory` in a new `StartClientSNI` task~~
 * ~~set `--hostname-for-clients` on locator and servers for SNI~~
-* reinstate thread-per-core in `PrePopulateRegion.run()` and in `PartitionedPutBenchmark[SNI]`
+* ~~reinstate thread-per-core in `PrePopulateRegion.run()` and in `PartitionedPutBenchmark[SNI]` ya~~
 * set `keyRange` back to 1e6 in `PartitionedPutBenchmark[SNI]` after client-server connections are healthy
 * make topology orthogonal to tests so all tests can run with SNI; have a `-Psni`/`-Dsni` flag
 * fix borken `PartitionedPutBenchmarkSNITest`: `DefineHostNamingsOffPlatformTask` breaks when running multiple roles on a single host
