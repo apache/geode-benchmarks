@@ -41,6 +41,7 @@ public class StopClient implements Task {
   public void run(TestContext context) throws Exception {
     ClientCache cache = ClientCacheFactory.getAnyInstance();
     cache.close();
+    Thread.sleep(20_000);
   }
 
 }
