@@ -59,15 +59,15 @@ public class StartSniProxy implements Task {
         internalHostNamesFor(context, SERVER),
         externalHostNamesFor(context, SERVER, namings));
 
-    writeToFile(config, "haproxy.cfg");
+    rewriteFile(config, "haproxy.cfg");
 
     final ProcessControl processControl = new ProcessControl();
     processControl.runCommand(START_DOCKER_DAEMON_COMMAND);
     processControl.runCommand(START_PROXY_COMMAND);
   }
 
-  private void writeToFile(final String content, final String fileName) throws IOException {
-    try (final BufferedWriter writer = new BufferedWriter(new FileWriter(fileName))) {
+  private void rewriteFile(final String content, final String fileName) throws IOException {
+    try (final BufferedWriter writer = new BufferedWriter(new FileWriter(fileName, false))) {
       writer.write(content);
     }
   }
