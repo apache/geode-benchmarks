@@ -18,6 +18,7 @@
 package org.apache.geode.benchmark.tasks;
 
 import static org.apache.geode.benchmark.tasks.DefineHostNamingsOffPlatformTask.HOST_NAMINGS_OFF_PLATFORM;
+import static org.apache.geode.benchmark.topology.Ports.SERVER_PORT_FOR_SNI;
 import static org.apache.geode.benchmark.topology.Roles.LOCATOR;
 import static org.apache.geode.benchmark.topology.Roles.SERVER;
 
@@ -127,7 +128,7 @@ public class StartSniProxy implements Task {
         "locator1", locatorPort);
 
     generateBackendSection(serversInternal, stuff, "servers-",
-        "server1", 40404);
+        "server1", SERVER_PORT_FOR_SNI);
 
     return stuff.toString();
   }

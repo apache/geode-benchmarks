@@ -67,10 +67,6 @@ public class ClientServerTopologyWithSNIProxy {
     configureGeodeProductJvms(config, WITH_SSL_ARGUMENT);
     addToTestConfig(config, "withSecurityManager", WITH_SECURITY_MANAGER_ARGUMENT);
 
-    // pass SNI proxy config to CLIENT role only
-    // TODO: peel it off over in client
-    jvmArgs(config, CLIENT, "-DwithSniProxy=hostname:port");
-
     Stream.concat(Roles.rolesFor(GEODE_PRODUCT), Stream.of(PROXY))
         .forEach(role -> before(config, new DefineHostNamingsOffPlatformTask(), role));
 

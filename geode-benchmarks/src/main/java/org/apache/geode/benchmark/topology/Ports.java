@@ -27,4 +27,6 @@ public class Ports {
    * responses carrying server port numbers.
    */
   public static final int SERVER_PORT_FOR_SNI = 40404;
+
+  public static final int SNI_PROXY_PORT = 15443;
 }

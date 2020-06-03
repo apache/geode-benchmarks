@@ -1,6 +1,7 @@
 package org.apache.geode.benchmark.tasks;
 
 import static org.apache.geode.benchmark.tasks.DefineHostNamingsOffPlatformTask.getOffPlatformHostName;
+import static org.apache.geode.benchmark.topology.Ports.SNI_PROXY_PORT;
 import static org.apache.geode.benchmark.topology.Roles.LOCATOR;
 import static org.apache.geode.benchmark.topology.Roles.PROXY;
 
@@ -15,7 +16,6 @@ import org.apache.geode.pdx.ReflectionBasedAutoSerializer;
 import org.apache.geode.perftest.TestContext;
 
 public class StartClientSNI extends StartClient {
-  public static final int SNI_PROXY_PORT = 15443;
 
   public StartClientSNI(final int locatorPort) {
     super(locatorPort);
