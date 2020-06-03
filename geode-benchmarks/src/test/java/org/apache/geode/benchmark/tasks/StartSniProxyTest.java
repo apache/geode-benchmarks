@@ -35,9 +35,13 @@ class StartSniProxyTest {
         + "  log stdout format raw local0 debug\n"
         + "defaults\n"
         + "  log global\n"
-        + "  timeout client 100s\n"
-        + "  timeout connect 100s\n"
-        + "  timeout server 100s\n"
+        /*
+         We're leaving timeouts unspecified so they are infinite. Benchmarks do bad things
+         when the proxy breaks connections.
+        */
+//        + "  timeout client 100s\n"
+//        + "  timeout connect 100s\n"
+//        + "  timeout server 100s\n"
         + "frontend sniproxy\n"
         + "  bind *:15443\n"
         + "  mode tcp\n"
