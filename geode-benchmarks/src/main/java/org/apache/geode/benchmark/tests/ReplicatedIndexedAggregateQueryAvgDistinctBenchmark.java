@@ -14,19 +14,21 @@
  */
 package org.apache.geode.benchmark.tests;
 
+import static org.apache.geode.benchmark.tasks.AggregateOQLQuery.QueryTypes.AVG_DISTINCT;
 import static org.apache.geode.benchmark.topology.ClientServerTopology.Roles.CLIENT;
 import static org.apache.geode.benchmark.topology.ClientServerTopology.Roles.SERVER;
 
 import org.junit.jupiter.api.Test;
 
+import org.apache.geode.benchmark.tasks.AggregateOQLQuery;
 import org.apache.geode.benchmark.tasks.CreateIndexOnID;
-import org.apache.geode.benchmark.tasks.OQLQuery;
 import org.apache.geode.perftest.TestConfig;
 import org.apache.geode.perftest.TestRunners;
 
-public class PartitionedIndexedQueryBenchmark extends AbstractPartitionedQueryBenchmark {
+public class ReplicatedIndexedAggregateQueryAvgDistinctBenchmark
+    extends AbstractReplicatedQueryBenchmark {
 
-  public PartitionedIndexedQueryBenchmark() {}
+  public ReplicatedIndexedAggregateQueryAvgDistinctBenchmark() {}
 
   @Test
   public void run() throws Exception {
@@ -36,8 +38,9 @@ public class PartitionedIndexedQueryBenchmark extends AbstractPartitionedQueryBe
   @Override
   public TestConfig configure() {
     TestConfig config = super.configure();
+    config.threads(Runtime.getRuntime().availableProcessors() * 1);
     config.before(new CreateIndexOnID(), SERVER);
-    config.workload(new OQLQuery(getKeyRange(), getQueryRange()), CLIENT);
+    config.workload(new AggregateOQLQuery(getKeyRange(), getQueryRange(), AVG_DISTINCT), CLIENT);
     return config;
   }
 }
