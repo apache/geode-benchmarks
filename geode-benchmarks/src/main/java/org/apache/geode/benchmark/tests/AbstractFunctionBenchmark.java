@@ -44,7 +44,6 @@ abstract class AbstractFunctionBenchmark implements PerformanceTest {
   public TestConfig configure() {
     TestConfig config = GeodeBenchmark.createConfig();
     config.threads(Runtime.getRuntime().availableProcessors() * 3);
-    ClientServerTopology.configure(config);
     configureRegion(config);
     before(config, new CreateClientProxyRegion(), CLIENT);
     before(config, new PrePopulateRegion(getKeyRange()), CLIENT);

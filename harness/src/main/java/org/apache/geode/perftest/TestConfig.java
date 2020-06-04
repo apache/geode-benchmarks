@@ -154,24 +154,4 @@ public class TestConfig implements Serializable {
     return Collections.unmodifiableMap(jvmArgs);
   }
 
-  public static class TestStep {
-    private final Task task;
-    private final String[] roles;
-
-    public TestStep(Task task, String[] roles) {
-      if (roles == null || roles.length == 0) {
-        throw new IllegalStateException("Task " + task + " must be assigned to at least one role");
-      }
-      this.task = task;
-      this.roles = roles;
-    }
-
-    public Task getTask() {
-      return task;
-    }
-
-    public String[] getRoles() {
-      return roles;
-    }
-  }
 }

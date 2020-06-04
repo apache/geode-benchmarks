@@ -54,7 +54,6 @@ public class ReplicatedNonIndexedQueryBenchmark implements PerformanceTest {
   public TestConfig configure() {
     TestConfig config = GeodeBenchmark.createConfig();
     config.threads(Runtime.getRuntime().availableProcessors());
-    ClientServerTopology.configure(config);
     before(config, new CreateReplicatedRegion(), SERVER);
     before(config, new CreateClientProxyRegion(), CLIENT);
     before(config, new PrePopulateRegion(keyRange), CLIENT);

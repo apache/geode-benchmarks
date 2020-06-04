@@ -36,6 +36,7 @@ import org.slf4j.LoggerFactory;
 import org.apache.geode.perftest.PerformanceTest;
 import org.apache.geode.perftest.TestConfig;
 import org.apache.geode.perftest.TestRunner;
+import org.apache.geode.perftest.TestStep;
 import org.apache.geode.perftest.infrastructure.InfrastructureFactory;
 import org.apache.geode.perftest.jvms.RemoteJVMFactory;
 import org.apache.geode.perftest.jvms.RemoteJVMs;
@@ -153,7 +154,7 @@ public class DefaultTestRunner implements TestRunner {
     return versionProperties;
   }
 
-  private void runTasks(List<TestConfig.TestStep> steps,
+  private void runTasks(List<TestStep> steps,
       RemoteJVMs remoteJVMs) {
     steps.forEach(testStep -> {
       remoteJVMs.execute(testStep.getTask(), testStep.getRoles());

@@ -56,7 +56,6 @@ public class ReplicatedGetLongBenchmark implements PerformanceTest {
   @Override
   public TestConfig configure() {
     TestConfig config = GeodeBenchmark.createConfig();
-    ClientServerTopology.configure(config);
     before(config, new CreateReplicatedRegion(), SERVER);
     before(config, new CreateClientProxyRegion(), CLIENT);
     before(config, new PrePopulateRegionLong(keyRange), CLIENT);

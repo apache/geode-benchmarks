@@ -19,10 +19,13 @@ package org.apache.geode.perftest;
 
 import java.io.Serializable;
 
+import jdk.nashorn.internal.objects.annotations.Function;
+
 /**
  * A single task in a test, such as initializing a member
  * or doing a single operation during the workload phase.
  */
+@FunctionalInterface
 public interface Task extends Serializable {
 
   /**

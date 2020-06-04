@@ -44,7 +44,6 @@ public class NoopBenchmark implements PerformanceTest {
   @Override
   public TestConfig configure() {
     TestConfig config = GeodeBenchmark.createConfig();
-    ClientServerTopology.configure(config);
     workload(config, new NoopTask(), CLIENT);
     return config;
 

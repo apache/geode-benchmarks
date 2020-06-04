@@ -57,15 +57,6 @@ public class PartitionedPutBenchmark implements PerformanceTest {
   public TestConfig configure() {
     TestConfig config = GeodeBenchmark.createConfig();
 
-    final String sniProp = System.getProperty("withSniProxy");
-    final boolean doSni = sniProp != null && !sniProp.equals("false");
-
-    if (doSni) {
-      ClientServerTopologyWithSNIProxy.configure(config);
-    } else {
-      ClientServerTopology.configure(config);
-    }
-
     before(config, new CreatePartitionedRegion(), SERVER);
     before(config, new CreateClientProxyRegion(), CLIENT);
     before(config, new PrePopulateRegion(keyRange), CLIENT);
