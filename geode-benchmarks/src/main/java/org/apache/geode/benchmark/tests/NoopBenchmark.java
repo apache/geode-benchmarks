@@ -24,7 +24,6 @@ import static org.apache.geode.benchmark.topology.Roles.CLIENT;
 import org.junit.jupiter.api.Test;
 
 import org.apache.geode.benchmark.tasks.NoopTask;
-import org.apache.geode.benchmark.topology.ClientServerTopology;
 import org.apache.geode.perftest.PerformanceTest;
 import org.apache.geode.perftest.TestConfig;
 import org.apache.geode.perftest.TestRunners;

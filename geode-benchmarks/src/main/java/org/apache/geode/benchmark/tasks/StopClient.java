@@ -17,18 +17,10 @@
 
 package org.apache.geode.benchmark.tasks;
 
-import static org.apache.geode.benchmark.parameters.GeodeProperties.clientProperties;
-import static org.apache.geode.benchmark.topology.Roles.LOCATOR;
 
-import java.io.File;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.Properties;
 
 import org.apache.geode.cache.client.ClientCache;
 import org.apache.geode.cache.client.ClientCacheFactory;
-import org.apache.geode.distributed.ConfigurationProperties;
-import org.apache.geode.pdx.ReflectionBasedAutoSerializer;
 import org.apache.geode.perftest.Task;
 import org.apache.geode.perftest.TestContext;
 

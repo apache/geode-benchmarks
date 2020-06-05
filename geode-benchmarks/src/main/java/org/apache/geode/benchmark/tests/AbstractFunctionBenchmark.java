@@ -25,7 +25,6 @@ import org.apache.geode.benchmark.LongRange;
 import org.apache.geode.benchmark.tasks.CreateClientProxyRegion;
 import org.apache.geode.benchmark.tasks.PrePopulateRegion;
 import org.apache.geode.benchmark.tasks.RegisterFunction;
-import org.apache.geode.benchmark.topology.ClientServerTopology;
 import org.apache.geode.perftest.PerformanceTest;
 import org.apache.geode.perftest.TestConfig;
 

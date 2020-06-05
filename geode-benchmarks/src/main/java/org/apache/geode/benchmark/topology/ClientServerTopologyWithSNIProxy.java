@@ -16,7 +16,6 @@ package org.apache.geode.benchmark.topology;
 
 import static org.apache.geode.benchmark.Config.after;
 import static org.apache.geode.benchmark.Config.before;
-import static org.apache.geode.benchmark.Config.jvmArgs;
 import static org.apache.geode.benchmark.Config.role;
 import static org.apache.geode.benchmark.parameters.Utils.addToTestConfig;
 import static org.apache.geode.benchmark.parameters.Utils.configureGeodeProductJvms;

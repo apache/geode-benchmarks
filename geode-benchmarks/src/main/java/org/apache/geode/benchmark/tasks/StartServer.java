@@ -65,29 +65,16 @@ public class StartServer implements Task {
   }
 
   /**
-   *
-   * @param properties
-   * @param locatorString
-   * @param statsFile
-   * @param context
-   * @return
-   * @throws UnknownHostException
-   */
-
-  /**
    * Configure the cache server
    *
    * Subclasses can override this. Call super first to inherit settings.
    *
    * @param cacheServer is modified by this method!
-   * @param context
    */
   protected void configureCacheServer(final CacheServer cacheServer,
-                                      final TestContext context) throws UnknownHostException {
+      final TestContext context) throws UnknownHostException {
     cacheServer.setMaxConnections(Integer.MAX_VALUE);
     cacheServer.setPort(0);
   }
-
-
 
 }

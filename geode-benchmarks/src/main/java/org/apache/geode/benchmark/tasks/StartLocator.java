@@ -53,13 +53,9 @@ public class StartLocator implements Task {
   /**
    * Starts locator as a side-effect.
    *
-   * @param properties
-   * @param locatorPort
-   * @param context
-   * @throws IOException
    */
   protected void startLocator(final Properties properties, final int locatorPort,
-                               final TestContext context) throws IOException {
+      final TestContext context) throws IOException {
     Locator.startLocatorAndDS(locatorPort, null, properties);
   }
 }

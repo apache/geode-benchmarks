@@ -61,16 +61,11 @@ public class StartClient implements Task {
    *
    * Subclasses can override this.
    *
-   * @param locator
-   * @param statsFile
-   * @param properties
-   * @param context
-   * @return
    */
   protected ClientCacheFactory createClientCacheFactory(final InetAddress locator,
-                                                        final String statsFile,
-                                                        final Properties properties,
-                                                        final TestContext context)
+      final String statsFile,
+      final Properties properties,
+      final TestContext context)
       throws UnknownHostException {
     return new ClientCacheFactory(properties)
         .setPdxSerializer(new ReflectionBasedAutoSerializer("benchmark.geode.data.*"))

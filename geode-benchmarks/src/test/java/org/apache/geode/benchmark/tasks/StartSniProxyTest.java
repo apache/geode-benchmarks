@@ -16,7 +16,6 @@ package org.apache.geode.benchmark.tasks;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.Collections;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
@@ -36,12 +35,12 @@ class StartSniProxyTest {
         + "defaults\n"
         + "  log global\n"
         /*
-         We're leaving timeouts unspecified so they are infinite. Benchmarks do bad things
-         when the proxy breaks connections.
-        */
-//        + "  timeout client 100s\n"
-//        + "  timeout connect 100s\n"
-//        + "  timeout server 100s\n"
+         * We're leaving timeouts unspecified so they are infinite. Benchmarks do bad things
+         * when the proxy breaks connections.
+         */
+        // + " timeout client 100s\n"
+        // + " timeout connect 100s\n"
+        // + " timeout server 100s\n"
         + "frontend sniproxy\n"
         + "  bind *:15443\n"
         + "  mode tcp\n"

@@ -23,9 +23,9 @@ public class StartClientSNI extends StartClient {
 
   @Override
   protected ClientCacheFactory createClientCacheFactory(final InetAddress locator,
-                                                        final String statsFile,
-                                                        final Properties properties,
-                                                        final TestContext context)
+      final String statsFile,
+      final Properties properties,
+      final TestContext context)
       throws UnknownHostException {
 
     final InetAddress firstLocatorAddy =

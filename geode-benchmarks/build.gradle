@@ -34,17 +34,11 @@ repositories {
   // in CI we want to search mavenLocal for geode
   mavenLocal()
   // non-geode stuff can come from mavenCentral
-  mavenCentral() {
-    content {
-      excludeGroup 'org.apache.geode'
-    }
-  }
+  mavenCentral() { content { excludeGroup 'org.apache.geode' } }
   // when developing this project, use Geode develop branch snapshot
   maven {
     url "https://maven.apachegeode-ci.info/snapshots"
-    content {
-      includeGroup 'org.apache.geode'
-    }
+    content { includeGroup 'org.apache.geode' }
   }
 }
 

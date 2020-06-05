@@ -53,7 +53,7 @@ public class StartSniProxy implements Task {
   public void run(TestContext context) throws Exception {
 
     final Map<InetAddress, String> namings =
-        (Map<InetAddress, String>)context.getAttribute(HOST_NAMINGS_OFF_PLATFORM);
+        (Map<InetAddress, String>) context.getAttribute(HOST_NAMINGS_OFF_PLATFORM);
 
     final String config = generateHaProxyConfig(
         internalHostNamesFor(context, LOCATOR),
@@ -79,7 +79,7 @@ public class StartSniProxy implements Task {
   }
 
   private Stream<String> externalHostNamesFor(final TestContext context, final Roles role,
-                                            final Map<InetAddress, String> namings) {
+      final Map<InetAddress, String> namings) {
     return addysFor(context, role).map(addy -> namings.get(addy));
   }
 
@@ -88,9 +88,9 @@ public class StartSniProxy implements Task {
   }
 
   String generateHaProxyConfig(final Stream<String> locatorsInternalStream,
-                               final Stream<String> locatorsExternalStream,
-                               final Stream<String> serversInternalStream,
-                               final Stream<String> serversExternalStream) {
+      final Stream<String> locatorsExternalStream,
+      final Stream<String> serversInternalStream,
+      final Stream<String> serversExternalStream) {
 
     final Iterable<String> locatorsInternal = locatorsInternalStream.collect(Collectors.toList());
     final Iterable<String> locatorsExternal = locatorsExternalStream.collect(Collectors.toList());
@@ -99,31 +99,32 @@ public class StartSniProxy implements Task {
 
     final StringBuilder stuff = new StringBuilder(
         /*
-         log to stdout per:
-          https://www.haproxy.com/documentation/hapee/latest/administration/docker-logging/
+         * log to stdout per:
+         * https://www.haproxy.com/documentation/hapee/latest/administration/docker-logging/
          */
-          "global\n"
-        + "  log stdout format raw local0 debug\n"
-        + "defaults\n"
-        + "  log global\n"
-        /*
-         We're leaving timeouts unspecified so they are infinite. Benchmarks do bad things
-         when the proxy breaks connections.
-        */
-//        + "  timeout client 100s\n"
-//        + "  timeout connect 100s\n"
-//        + "  timeout server 100s\n"
-        + "frontend sniproxy\n"
-        + "  bind *:15443\n"
-        + "  mode tcp\n"
-        + "  tcp-request inspect-delay 5s\n"
-        + "  tcp-request content accept if { req_ssl_hello_type 1 }\n");
+        "global\n"
+            + "  log stdout format raw local0 debug\n"
+            + "defaults\n"
+            + "  log global\n"
+            /*
+             * We're leaving timeouts unspecified so they are infinite. Benchmarks do bad things
+             * when the proxy breaks connections.
+             */
+            // + " timeout client 100s\n"
+            // + " timeout connect 100s\n"
+            // + " timeout server 100s\n"
+            + "frontend sniproxy\n"
+            + "  bind *:15443\n"
+            + "  mode tcp\n"
+            + "  tcp-request inspect-delay 5s\n"
+            + "  tcp-request content accept if { req_ssl_hello_type 1 }\n");
 
     generateUseBackendRule(locatorsInternal, locatorsExternal, stuff, "locators-");
     generateUseBackendRule(serversInternal, serversExternal, stuff, "servers-");
 
     final String firstLocatorInternal = locatorsInternal.iterator().next();
-    stuff.append("  default_backend ").append("locators-").append(firstLocatorInternal).append("\n");
+    stuff.append("  default_backend ").append("locators-").append(firstLocatorInternal)
+        .append("\n");
 
     generateBackendSection(locatorsInternal, stuff, "locators-",
         "locator1", locatorPort);
@@ -135,9 +136,9 @@ public class StartSniProxy implements Task {
   }
 
   private void generateUseBackendRule(final Iterable<String> internalsIterable,
-                                      final Iterable<String> externalsIterable,
-                                      final StringBuilder stuff,
-                                      final String backendNamePrefix) {
+      final Iterable<String> externalsIterable,
+      final StringBuilder stuff,
+      final String backendNamePrefix) {
     final Iterator<String> internals = internalsIterable.iterator();
     final Iterator<String> externals = externalsIterable.iterator();
     while (internals.hasNext() && externals.hasNext()) {
@@ -149,13 +150,14 @@ public class StartSniProxy implements Task {
   }
 
   private void generateBackendSection(final Iterable<String> internalsIterator,
-                                      final StringBuilder stuff,
-                                      final String backendNamePrefix,
-                                      final String singleHostRoleName,
-                                      final int port) {
+      final StringBuilder stuff,
+      final String backendNamePrefix,
+      final String singleHostRoleName,
+      final int port) {
     for (final String addy : internalsIterator) {
       stuff.append("backend ").append(backendNamePrefix).append(addy).append("\n")
-          .append("  mode tcp\n").append("  server ").append(singleHostRoleName).append(" ").append(addy)
+          .append("  mode tcp\n").append("  server ").append(singleHostRoleName).append(" ")
+          .append(addy)
           .append(":").append(port).append("\n");
     }
   }

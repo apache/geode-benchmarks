@@ -25,7 +25,7 @@ class GeodeBenchmarkTest {
   @BeforeEach
   public void beforeEach() {
     startProxyStep =
-        new TestStep(new StartSniProxy(LOCATOR_PORT), new String[]{PROXY.name()});
+        new TestStep(new StartSniProxy(LOCATOR_PORT), new String[] {PROXY.name()});
   }
 
   @AfterAll

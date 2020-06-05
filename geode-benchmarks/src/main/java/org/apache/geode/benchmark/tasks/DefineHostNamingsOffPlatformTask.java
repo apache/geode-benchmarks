@@ -20,7 +20,7 @@ public class DefineHostNamingsOffPlatformTask implements Task {
   public static final String HOST_NAMINGS_OFF_PLATFORM = "HOST_NAMINGS_OFF_PLATFORM";
 
   public static String getOffPlatformHostName(final TestContext context,
-                                       final InetAddress addy) throws UnknownHostException {
+      final InetAddress addy) throws UnknownHostException {
     final Map<InetAddress, String> namings =
         (Map<InetAddress, String>) context.getAttribute(HOST_NAMINGS_OFF_PLATFORM);
     return namings.get(addy);
@@ -28,8 +28,7 @@ public class DefineHostNamingsOffPlatformTask implements Task {
 
   @Override
   public void run(final TestContext context) throws Exception {
-    final Map<InetAddress, String>
-        namings =
+    final Map<InetAddress, String> namings =
         Stream.concat(
             generateHostNamingsFor(context, LOCATOR), generateHostNamingsFor(context, SERVER))
             .collect(
@@ -38,13 +37,12 @@ public class DefineHostNamingsOffPlatformTask implements Task {
   }
 
   private Stream<HostNamingOffPlatform> generateHostNamingsFor(final TestContext context,
-                                                               final Roles role) {
+      final Roles role) {
     final AtomicInteger i = new AtomicInteger(0);
     final String roleName = role.name();
-    return context.getHostsForRole(roleName).stream().map(host ->
-        new HostNamingOffPlatform(
-            formOffPlatformHostName(roleName, i.getAndIncrement()),
-            host));
+    return context.getHostsForRole(roleName).stream().map(host -> new HostNamingOffPlatform(
+        formOffPlatformHostName(roleName, i.getAndIncrement()),
+        host));
   }
 
   private String formOffPlatformHostName(final String roleName, final int i) {
