@@ -34,7 +34,6 @@ class StartSniProxyTest {
         + "  log stdout format raw local0 debug\n"
         + "  maxconn 5000\n"
         + "  nbproc 2\n"
-        + "  nbthread 64\n"
         + "defaults\n"
         + "  log global\n"
         /*
