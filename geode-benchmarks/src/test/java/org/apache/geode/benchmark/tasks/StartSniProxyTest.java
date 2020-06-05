@@ -32,6 +32,9 @@ class StartSniProxyTest {
             Stream.of("server-one-external", "server-two-external"));
     assertThat(config).isEqualTo("global\n"
         + "  log stdout format raw local0 debug\n"
+        + "  maxconn 5000\n"
+        + "  nbproc 1\n"
+        + "  nbthread 100\n"
         + "defaults\n"
         + "  log global\n"
         /*
