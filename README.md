@@ -167,6 +167,9 @@ Also we have to provide `-DwithSsl=true` for an SNI test even though no SNI test
 * ~~reinstate thread-per-core in `PrePopulateRegion.run()` and in `PartitionedPutBenchmark[SNI]` ya~~
 * ~~set `keyRange` back to 1e6 in `PartitionedPutBenchmark[SNI]` after client-server connections are healthy~~
 * ~~make topology orthogonal to tests so all tests can run with SNI; have a `-PwithSniProxy`/`-DwithSniProxy=true` flag~~
+* update `generateHaProxyConfig()` with results of tuning experiment
+* re-enable HAproxy tasks after manual experimentation is complete
+
 
 ## TODO (General)
 * need to clean up locator.dat files before running a locator on a node

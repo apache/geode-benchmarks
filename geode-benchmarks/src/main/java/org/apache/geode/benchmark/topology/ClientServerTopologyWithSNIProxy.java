@@ -71,11 +71,11 @@ public class ClientServerTopologyWithSNIProxy {
 
     before(config, new StartLocatorSNI(LOCATOR_PORT), LOCATOR);
     before(config, new StartServerSNI(LOCATOR_PORT, SERVER_PORT_FOR_SNI), SERVER);
-    before(config, new StartSniProxy(LOCATOR_PORT), PROXY);
+//    before(config, new StartSniProxy(LOCATOR_PORT), PROXY);
     before(config, new StartClientSNI(LOCATOR_PORT), CLIENT);
 
     after(config, new StopClient(), CLIENT);
-    after(config, new StopSniProxy(), PROXY);
+//    after(config, new StopSniProxy(), PROXY);
   }
 
 }
