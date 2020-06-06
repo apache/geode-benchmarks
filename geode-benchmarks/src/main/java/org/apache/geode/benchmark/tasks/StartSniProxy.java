@@ -105,7 +105,6 @@ public class StartSniProxy implements Task {
         "global\n"
             + "  log stdout format raw local0 debug\n"
             + "  maxconn 5000\n"
-            + "  nbproc 2\n"
             + "defaults\n"
             + "  log global\n"
             /*

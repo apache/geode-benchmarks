@@ -150,13 +150,13 @@ public class PutTask extends BenchmarkDriverAdapter implements Serializable {
 
 ## SNI
 
-To run a test with SNI we currently have to:
+On AWS, you can run any benchmark on a topology that routes all client-server communication through an SNI proxy (HAproxy).
+ 
+To run a test, e.g. `PartitionedGetBenchmark`, with SNI:
 
-`./run_tests.sh -t anytagname --bb sni  -- -DwithSsl=true --tests *PartitionedPutBenchmark`
+`./run_tests.sh -t anytagname -- -PwithSniProxy '--tests=PartitionedGetBenchmark'`
 
-We're limited to just that test because topology is not orthogonal to test&mdash;each test explicitly specifies its topology.
-
-Also we have to provide `-DwithSsl=true` for an SNI test even though no SNI test could work without TLS.
+Since SNI is a feature of TLS, running with the SNI topology incurs TLS overheads.
 
 ### TODO for SNI
 * ~~verify `StartSniProxy` runs on proxy node~~
@@ -167,13 +167,11 @@ Also we have to provide `-DwithSsl=true` for an SNI test even though no SNI test
 * ~~reinstate thread-per-core in `PrePopulateRegion.run()` and in `PartitionedPutBenchmark[SNI]` ya~~
 * ~~set `keyRange` back to 1e6 in `PartitionedPutBenchmark[SNI]` after client-server connections are healthy~~
 * ~~make topology orthogonal to tests so all tests can run with SNI; have a `-PwithSniProxy`/`-DwithSniProxy=true` flag~~
-* update `generateHaProxyConfig()` with results of tuning experiment
-* re-enable HAproxy tasks after manual experimentation is complete
-
+* Potential performance improvement: HAproxy as configured runs one process with the max threads-per-process of 64 threads, ostensibly using 64/72 cores (89%.) We might be able to improve performance by configuring HAproxy to run in daemon mode where we can run two processes, each multithreaded, to run more than 64 threads, thereby utilizing 100% of our cores.  
 
 ## TODO (General)
-* need to clean up locator.dat files before running a locator on a node
-* move Geode keystore/truststore setting out of `harness` module and up into `geode-benchmarks` i.e. set 'em in properties sent to `Locator.startLocatorAndDS` in `StartLocator`, `StartServer` and eliminate `harness` module dependency on Geode entirely
+* add logic to clean up existing locator.dat files before running a locator on a node
+* eliminate `harness` module dependency on Geode by moving Geode keystore/truststore setting out of `harness` module and up into `geode-benchmarks` i.e. set 'em in properties sent to `Locator.startLocatorAndDS` in `StartLocator`, `StartServer`
 * move `docker-compose.yml` distribution out of `harness` module up into `geode-benchmarks` so it gets distributed whenever it changes (without requiring rebuilding AWS AMI and cluster on AWS) 
 * generate 2048-bit keys (instead of 1024-bit ones) for TLS; will slow TLS handshakes which may necessitate a new baseline
 * make `StartServer` task use `ServerLauncher` (instead of `CacheFactory`) for symmetry with `LocatorLauncher`&mdash;also too: encapsulation!
