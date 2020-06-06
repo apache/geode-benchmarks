@@ -26,10 +26,15 @@ def geodeVersion = project.hasProperty('geodeVersion') ? project.findProperty('g
 def isCI = project.hasProperty('ci') ? project.findProperty('ci') : 0
 
 repositories {
-  // search mavenLocal for geode. in dev, be sure to clone geode and publishToMavenLocal
+  // search mavenLocal for geode. in dev, you can clone geode and publishToMavenLocal
   mavenLocal()
   // non-geode stuff can come from mavenCentral
   mavenCentral() { content { excludeGroup 'org.apache.geode' } }
+  // For CI, we may need a (unreleased) Geode version that is not yet on mavenCentral
+  maven {
+    url "https://maven.apachegeode-ci.info/snapshots"
+    content { includeGroup 'org.apache.geode' }
+  }
 }
 
 task(analyzeRun, dependsOn: 'classes', type: JavaExec) {
