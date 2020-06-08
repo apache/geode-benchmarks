@@ -79,17 +79,17 @@ public class StartClientSNI extends StartClient {
      */
     final Class<?> proxySocketFactoriesClass =
         Class.forName("org.apache.geode.cache.client.proxy.ProxySocketFactories");
-    final Method sniMethod =
+    final Method sniStaticMethod =
         proxySocketFactoriesClass.getMethod("sni", String.class, int.class);
 
-    final Object sniSocketFactory = sniMethod.invoke(proxyHostAddress, SNI_PROXY_PORT);
+    final Object sniSocketFactory = sniStaticMethod.invoke(null, proxyHostAddress, SNI_PROXY_PORT);
 
     final Class<?> socketFactoryClass =
         Class.forName("org.apache.geode.cache.client.SocketFactory");
     final Method setPoolSocketFactoryMethod =
         cacheFactory.getClass().getMethod("setPoolSocketFactory", socketFactoryClass);
 
-    return (ClientCacheFactory)setPoolSocketFactoryMethod.invoke(sniSocketFactory);
+    return (ClientCacheFactory)setPoolSocketFactoryMethod.invoke(cacheFactory, sniSocketFactory);
   }
 
 }
