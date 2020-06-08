@@ -69,14 +69,14 @@ public class StartClientSNI extends StartClient {
       throws NoSuchMethodException, InvocationTargetException, IllegalAccessException,
       ClassNotFoundException {
     /*
-     We'd like to simply do the following, but that would introduce a compile-time dependency on
-     Geode [1.13,). But we want this benchmark code to work with older Geode version. So we'll
-     use reflection to do it.
-
-    return clientCacheFactory
-        .setPoolSocketFactory(ProxySocketFactories.sni(
-            proxyHostAddress,
-            SNI_PROXY_PORT));
+     * We'd like to simply do the following, but that would introduce a compile-time dependency on
+     * Geode [1.13,). But we want this benchmark code to work with older Geode version. So we'll
+     * use reflection to do it.
+     *
+     * return clientCacheFactory
+     * .setPoolSocketFactory(ProxySocketFactories.sni(
+     * proxyHostAddress,
+     * SNI_PROXY_PORT));
      */
     final Class<?> proxySocketFactoriesClass =
         Class.forName("org.apache.geode.cache.client.proxy.ProxySocketFactories");
@@ -90,7 +90,8 @@ public class StartClientSNI extends StartClient {
     final Method setPoolSocketFactoryMethod =
         clientCacheFactory.getClass().getMethod("setPoolSocketFactory", socketFactoryClass);
 
-    return (ClientCacheFactory)setPoolSocketFactoryMethod.invoke(clientCacheFactory, sniSocketFactory);
+    return (ClientCacheFactory) setPoolSocketFactoryMethod.invoke(clientCacheFactory,
+        sniSocketFactory);
   }
 
 }
