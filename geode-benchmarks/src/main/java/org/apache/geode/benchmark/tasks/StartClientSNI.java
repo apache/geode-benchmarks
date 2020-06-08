@@ -23,6 +23,7 @@ import static org.apache.geode.benchmark.topology.Roles.LOCATOR;
 import static org.apache.geode.benchmark.topology.Roles.PROXY;
 
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Properties;
@@ -72,24 +73,29 @@ public class StartClientSNI extends StartClient {
      We'd like to simply do the following, but that would introduce a compile-time dependency on
      Geode [1.13,). But we want this benchmark code to work with older Geode version. So we'll
      use reflection to do it.
-    */
+
     return clientCacheFactory
         .setPoolSocketFactory(ProxySocketFactories.sni(
             proxyHostAddress,
             SNI_PROXY_PORT));
-//    final Class<?> proxySocketFactoriesClass =
-//        Class.forName("org.apache.geode.cache.client.proxy.ProxySocketFactories");
-//    final Method sniStaticMethod =
-//        proxySocketFactoriesClass.getMethod("sni", String.class, int.class);
-//
-//    final Object sniSocketFactory = sniStaticMethod.invoke(null, proxyHostAddress, SNI_PROXY_PORT);
-//
-//    final Class<?> socketFactoryClass =
-//        Class.forName("org.apache.geode.cache.client.SocketFactory");
-//    final Method setPoolSocketFactoryMethod =
-//        clientCacheFactory.getClass().getMethod("setPoolSocketFactory", socketFactoryClass);
-//
-//    return (ClientCacheFactory)setPoolSocketFactoryMethod.invoke(clientCacheFactory, sniSocketFactory);
+     */
+    clientCacheFactory
+        .setPoolSocketFactory(ProxySocketFactories.sni(
+            proxyHostAddress,
+            SNI_PROXY_PORT));
+    final Class<?> proxySocketFactoriesClass =
+        Class.forName("org.apache.geode.cache.client.proxy.ProxySocketFactories");
+    final Method sniStaticMethod =
+        proxySocketFactoriesClass.getMethod("sni", String.class, int.class);
+
+    final Object sniSocketFactory = sniStaticMethod.invoke(null, proxyHostAddress, SNI_PROXY_PORT);
+
+    final Class<?> socketFactoryClass =
+        Class.forName("org.apache.geode.cache.client.SocketFactory");
+    final Method setPoolSocketFactoryMethod =
+        clientCacheFactory.getClass().getMethod("setPoolSocketFactory", socketFactoryClass);
+
+    return (ClientCacheFactory)setPoolSocketFactoryMethod.invoke(clientCacheFactory, sniSocketFactory);
   }
 
 }
