@@ -29,7 +29,6 @@ import java.net.UnknownHostException;
 import java.util.Properties;
 
 import org.apache.geode.cache.client.ClientCacheFactory;
-import org.apache.geode.cache.client.proxy.ProxySocketFactories;
 import org.apache.geode.distributed.ConfigurationProperties;
 import org.apache.geode.pdx.ReflectionBasedAutoSerializer;
 import org.apache.geode.perftest.TestContext;
@@ -79,10 +78,6 @@ public class StartClientSNI extends StartClient {
             proxyHostAddress,
             SNI_PROXY_PORT));
      */
-    clientCacheFactory
-        .setPoolSocketFactory(ProxySocketFactories.sni(
-            proxyHostAddress,
-            SNI_PROXY_PORT));
     final Class<?> proxySocketFactoriesClass =
         Class.forName("org.apache.geode.cache.client.proxy.ProxySocketFactories");
     final Method sniStaticMethod =
