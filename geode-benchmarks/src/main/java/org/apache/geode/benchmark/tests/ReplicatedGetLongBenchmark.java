@@ -18,8 +18,10 @@
 package org.apache.geode.benchmark.tests;
 
 
-import static org.apache.geode.benchmark.topology.ClientServerTopology.Roles.CLIENT;
-import static org.apache.geode.benchmark.topology.ClientServerTopology.Roles.SERVER;
+import static org.apache.geode.benchmark.Config.before;
+import static org.apache.geode.benchmark.Config.workload;
+import static org.apache.geode.benchmark.topology.Roles.CLIENT;
+import static org.apache.geode.benchmark.topology.Roles.SERVER;
 
 import org.junit.jupiter.api.Test;
 
@@ -28,7 +30,6 @@ import org.apache.geode.benchmark.tasks.CreateClientProxyRegion;
 import org.apache.geode.benchmark.tasks.CreateReplicatedRegion;
 import org.apache.geode.benchmark.tasks.GetTask;
 import org.apache.geode.benchmark.tasks.PrePopulateRegionLong;
-import org.apache.geode.benchmark.topology.ClientServerTopology;
 import org.apache.geode.perftest.PerformanceTest;
 import org.apache.geode.perftest.TestConfig;
 import org.apache.geode.perftest.TestRunners;
@@ -54,11 +55,10 @@ public class ReplicatedGetLongBenchmark implements PerformanceTest {
   @Override
   public TestConfig configure() {
     TestConfig config = GeodeBenchmark.createConfig();
-    ClientServerTopology.configure(config);
-    config.before(new CreateReplicatedRegion(), SERVER);
-    config.before(new CreateClientProxyRegion(), CLIENT);
-    config.before(new PrePopulateRegionLong(keyRange), CLIENT);
-    config.workload(new GetTask(keyRange), CLIENT);
+    before(config, new CreateReplicatedRegion(), SERVER);
+    before(config, new CreateClientProxyRegion(), CLIENT);
+    before(config, new PrePopulateRegionLong(keyRange), CLIENT);
+    workload(config, new GetTask(keyRange), CLIENT);
     return config;
 
   }

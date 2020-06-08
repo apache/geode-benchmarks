@@ -16,7 +16,7 @@
 package org.apache.geode.benchmark.parameters;
 
 import static org.apache.geode.benchmark.parameters.JavaVersion.v11;
-import static org.apache.geode.benchmark.parameters.Utils.configureAll;
+import static org.apache.geode.benchmark.parameters.Utils.configureGeodeProductJvms;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,7 +47,7 @@ public class GcParameters {
   }
 
   private static void configureShenandoah(final TestConfig testConfig) {
-    configureAll(testConfig,
+    configureGeodeProductJvms(testConfig,
         "-XX:+UnlockExperimentalVMOptions",
         "-XX:+UseShenandoahGC",
         "-XX:+AlwaysPreTouch",
@@ -59,20 +59,20 @@ public class GcParameters {
     if (javaVersion.olderThan(v11)) {
       throw new IllegalArgumentException("ZGC requires Java 11 or newer");
     }
-    configureAll(testConfig,
+    configureGeodeProductJvms(testConfig,
         "-XX:+UnlockExperimentalVMOptions",
         "-XX:+UseZGC");
   }
 
   private static void configureG1(final TestConfig testConfig) {
-    configureAll(testConfig,
+    configureGeodeProductJvms(testConfig,
         "-XX:+UseG1GC",
         "-XX:+UseNUMA",
         "-XX:+ScavengeBeforeFullGC");
   }
 
   private static void configureCms(final TestConfig testConfig) {
-    configureAll(testConfig,
+    configureGeodeProductJvms(testConfig,
         "-XX:+UseConcMarkSweepGC",
         "-XX:+UseCMSInitiatingOccupancyOnly",
         "-XX:+CMSClassUnloadingEnabled",

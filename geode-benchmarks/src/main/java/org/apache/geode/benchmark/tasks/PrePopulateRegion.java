@@ -16,9 +16,9 @@
  */
 package org.apache.geode.benchmark.tasks;
 
-import static org.apache.geode.benchmark.topology.ClientServerTopology.Roles.CLIENT;
-import static org.apache.geode.benchmark.topology.ClientServerTopology.Roles.LOCATOR;
-import static org.apache.geode.benchmark.topology.ClientServerTopology.Roles.SERVER;
+import static org.apache.geode.benchmark.topology.Roles.CLIENT;
+import static org.apache.geode.benchmark.topology.Roles.LOCATOR;
+import static org.apache.geode.benchmark.topology.Roles.SERVER;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -62,9 +62,9 @@ public class PrePopulateRegion implements Task {
   public void run(TestContext context) throws InterruptedException {
     final ClientCache cache = ClientCacheFactory.getAnyInstance();
     final Region<Long, Portfolio> region = cache.getRegion("region");
-    final int numLocators = context.getHostsIDsForRole(LOCATOR).size();
-    final int numServers = context.getHostsIDsForRole(SERVER).size();
-    final int numClient = context.getHostsIDsForRole(CLIENT).size();
+    final int numLocators = context.getHostsIDsForRole(LOCATOR.name()).size();
+    final int numServers = context.getHostsIDsForRole(SERVER.name()).size();
+    final int numClient = context.getHostsIDsForRole(CLIENT.name()).size();
     final int jvmID = context.getJvmID();
     final int clientIndex = jvmID - numLocators - numServers;
 

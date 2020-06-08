@@ -19,7 +19,7 @@ versions default to a new format. PEM format can be forced by using `-m PEM`:
 ```
 ssh-keygen -m PEM -t rsa
 ```
-While runinng a test on a single machine (i.e. localhost) add the generated key to `authorized_keys` to authorize the user:
+While running a test on a single machine (i.e. localhost) add the generated key to `authorized_keys` to authorize the user:
 ```
 cat <your_public_key_file> >> ~/.ssh/authorized_keys
 ```
@@ -147,3 +147,33 @@ public class PutTask extends BenchmarkDriverAdapter implements Serializable {
   }
 }
 ```
+
+## SNI
+
+On AWS, you can run any benchmark on a topology that routes all client-server communication through an SNI proxy (HAproxy).
+ 
+To run a test, e.g. `PartitionedGetBenchmark`, with SNI:
+
+`./run_tests.sh -t anytagname -- -PwithSniProxy '--tests=PartitionedGetBenchmark'`
+
+Since SNI is a feature of TLS, running with the SNI topology incurs TLS overheads.
+
+### TODO for SNI
+* ~~verify `StartSniProxy` runs on proxy node~~
+* ~~don't require operator to supply `-PwithSSL`/`-DwithSSL=true` when running SNI tests~~
+* ~~generate `haproxy.cfg` with client-visible SNI hostnames~~
+* ~~turn on SNI via `setPoolSocketFactory` in a new `StartClientSNI` task~~
+* ~~set `--hostname-for-clients` on locator and servers for SNI~~
+* ~~reinstate thread-per-core in `PrePopulateRegion.run()` and in `PartitionedPutBenchmark[SNI]` ya~~
+* ~~set `keyRange` back to 1e6 in `PartitionedPutBenchmark[SNI]` after client-server connections are healthy~~
+* ~~make topology orthogonal to tests so all tests can run with SNI; have a `-PwithSniProxy`/`-DwithSniProxy=true` flag~~
+* Potential performance improvement: HAproxy as configured runs one process with the max threads-per-process of 64 threads, ostensibly using 64/72 cores (89%.) We might be able to improve performance by configuring HAproxy to run in daemon mode where we can run two processes, each multithreaded, to run more than 64 threads, thereby utilizing 100% of our cores.  
+
+## TODO (General)
+* add logic to clean up existing locator.dat files before running a locator on a node
+* eliminate `harness` module dependency on Geode by moving Geode keystore/truststore setting out of `harness` module and up into `geode-benchmarks` i.e. set 'em in properties sent to `Locator.startLocatorAndDS` in `StartLocator`, `StartServer`
+* move `docker-compose.yml` distribution out of `harness` module up into `geode-benchmarks` so it gets distributed whenever it changes (without requiring rebuilding AWS AMI and cluster on AWS) 
+* generate 2048-bit keys (instead of 1024-bit ones) for TLS; will slow TLS handshakes which may necessitate a new baseline
+* make `StartServer` task use `ServerLauncher` (instead of `CacheFactory`) for symmetry with `LocatorLauncher`&mdash;also too: encapsulation!
+* `./run_tests.sh` sometimes seems to hang after benchmarks have completed, requiring operator to enter ^C to un-stick it
+* make `rsync:` Git "scheme" work in `run_tests.sh` script for benchmark repo (not just for geode repo)

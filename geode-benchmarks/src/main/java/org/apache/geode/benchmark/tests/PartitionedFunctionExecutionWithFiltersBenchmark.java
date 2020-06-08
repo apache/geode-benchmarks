@@ -14,7 +14,8 @@
  */
 package org.apache.geode.benchmark.tests;
 
-import static org.apache.geode.benchmark.topology.ClientServerTopology.Roles.CLIENT;
+import static org.apache.geode.benchmark.Config.workload;
+import static org.apache.geode.benchmark.topology.Roles.CLIENT;
 
 import org.junit.jupiter.api.Test;
 
@@ -34,7 +35,7 @@ public class PartitionedFunctionExecutionWithFiltersBenchmark
   public TestConfig configure() {
     TestConfig config = super.configure();
     config.threads(Runtime.getRuntime().availableProcessors() * 8);
-    config.workload(new ExecuteFilteredFunction(getKeyRange()), CLIENT);
+    workload(config, new ExecuteFilteredFunction(getKeyRange()), CLIENT);
     return config;
   }
 }

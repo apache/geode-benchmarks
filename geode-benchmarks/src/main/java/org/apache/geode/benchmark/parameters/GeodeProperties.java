@@ -101,9 +101,9 @@ public class GeodeProperties {
     return isPropertySet("withSsl");
   }
 
-  private static boolean isPropertySet(String withSecurityManager) {
-    String withSecurityManagerArg = System.getProperty(withSecurityManager);
-    return withSecurityManagerArg != null && withSecurityManagerArg.equals("true");
+  private static boolean isPropertySet(final String propertyName) {
+    final String propertyValue = System.getProperty(propertyName);
+    return propertyValue != null && propertyValue.equals("true");
   }
 
   private static Properties withOptions(Properties properties) {

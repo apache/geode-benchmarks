@@ -14,13 +14,13 @@
  */
 package org.apache.geode.benchmark.topology;
 
-import static org.apache.geode.benchmark.topology.ClientServerTopology.Roles.CLIENT;
-import static org.apache.geode.benchmark.topology.ClientServerTopology.Roles.LOCATOR;
-import static org.apache.geode.benchmark.topology.ClientServerTopology.Roles.SERVER;
-
-import org.bouncycastle.util.Arrays;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.apache.geode.benchmark.Config.before;
+import static org.apache.geode.benchmark.Config.role;
+import static org.apache.geode.benchmark.parameters.Utils.addToTestConfig;
+import static org.apache.geode.benchmark.topology.Ports.LOCATOR_PORT;
+import static org.apache.geode.benchmark.topology.Roles.CLIENT;
+import static org.apache.geode.benchmark.topology.Roles.LOCATOR;
+import static org.apache.geode.benchmark.topology.Roles.SERVER;
 
 import org.apache.geode.benchmark.parameters.GcLoggingParameters;
 import org.apache.geode.benchmark.parameters.GcParameters;
@@ -33,62 +33,29 @@ import org.apache.geode.benchmark.tasks.StartServer;
 import org.apache.geode.perftest.TestConfig;
 
 public class ClientServerTopology {
-  private static final Logger logger = LoggerFactory.getLogger(ClientServerTopology.class);
-
-  /**
-   * All roles defined for the JVMs created for the benchmark
-   */
-  public static class Roles {
-    public static final String SERVER = "server";
-    public static final String CLIENT = "client";
-    public static final String LOCATOR = "locator";
-  }
-
-  /**
-   * The port used to create the locator for the tests
-   */
-  public static final int LOCATOR_PORT = 10334;
-
-  static final int NUM_LOCATORS = 1;
-  static final int NUM_SERVERS = 2;
-  static final int NUM_CLIENTS = 1;
+  private static final int NUM_LOCATORS = 1;
+  private static final int NUM_SERVERS = 2;
+  private static final int NUM_CLIENTS = 1;
   private static final String WITH_SSL_ARGUMENT = "-DwithSsl=true";
   private static final String WITH_SECURITY_MANAGER_ARGUMENT = "-DwithSecurityManager=true";
 
-  public static void configure(TestConfig testConfig) {
-    testConfig.role(LOCATOR, NUM_LOCATORS);
-    testConfig.role(SERVER, NUM_SERVERS);
-    testConfig.role(CLIENT, NUM_CLIENTS);
+  public static void configure(TestConfig config) {
+    role(config, LOCATOR, NUM_LOCATORS);
+    role(config, SERVER, NUM_SERVERS);
+    role(config, CLIENT, NUM_CLIENTS);
 
-    JvmParameters.configure(testConfig);
-    HeapParameters.configure(testConfig);
-    GcLoggingParameters.configure(testConfig);
-    GcParameters.configure(testConfig);
-    ProfilerParameters.configure(testConfig);
+    JvmParameters.configure(config);
+    HeapParameters.configure(config);
+    GcLoggingParameters.configure(config);
+    GcParameters.configure(config);
+    ProfilerParameters.configure(config);
 
-    addToTestConfig(testConfig, "withSsl", WITH_SSL_ARGUMENT);
-    addToTestConfig(testConfig, "withSecurityManager", WITH_SECURITY_MANAGER_ARGUMENT);
+    addToTestConfig(config, "withSsl", WITH_SSL_ARGUMENT);
+    addToTestConfig(config, "withSecurityManager", WITH_SECURITY_MANAGER_ARGUMENT);
 
-    testConfig.before(new StartLocator(LOCATOR_PORT), LOCATOR);
-    testConfig.before(new StartServer(LOCATOR_PORT), SERVER);
-    testConfig.before(new StartClient(LOCATOR_PORT), CLIENT);
+    before(config, new StartLocator(LOCATOR_PORT), LOCATOR);
+    before(config, new StartServer(LOCATOR_PORT), SERVER);
+    before(config, new StartClient(LOCATOR_PORT), CLIENT);
   }
 
-  private static void addToTestConfig(TestConfig testConfig, String systemPropertyKey,
-      String jvmArgument) {
-    if (Boolean.getBoolean(systemPropertyKey)) {
-      logger.info("Configuring JVMs to run with " + jvmArgument);
-      testConfig.jvmArgs(CLIENT, jvmArgument);
-      testConfig.jvmArgs(LOCATOR, jvmArgument);
-      testConfig.jvmArgs(SERVER, jvmArgument);
-    }
-  }
-
-  private static String[] appendIfNotEmpty(String[] a, String b) {
-    if (null == b || b.length() == 0) {
-      return a;
-    }
-
-    return Arrays.append(a, b);
-  }
 }

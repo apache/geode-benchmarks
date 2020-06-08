@@ -140,13 +140,6 @@ public class TestConfig implements Serializable {
   }
 
   /**
-   * Return the total number of JVMs required to run this test
-   */
-  public int getTotalJVMs() {
-    return roles.values().stream().mapToInt(Integer::intValue).sum();
-  }
-
-  /**
    * Add JVM arguments used to launch JVMs for a particular role
    *
    * If multiple calls to this method are made for the same role, the new JVM arguments
@@ -161,24 +154,4 @@ public class TestConfig implements Serializable {
     return Collections.unmodifiableMap(jvmArgs);
   }
 
-  public static class TestStep {
-    private final Task task;
-    private final String[] roles;
-
-    public TestStep(Task task, String[] roles) {
-      if (roles == null || roles.length == 0) {
-        throw new IllegalStateException("Task " + task + " must be assigned to at least one role");
-      }
-      this.task = task;
-      this.roles = roles;
-    }
-
-    public Task getTask() {
-      return task;
-    }
-
-    public String[] getRoles() {
-      return roles;
-    }
-  }
 }

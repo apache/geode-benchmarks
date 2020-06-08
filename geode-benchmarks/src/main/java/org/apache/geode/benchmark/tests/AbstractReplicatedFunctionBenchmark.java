@@ -15,7 +15,8 @@
 
 package org.apache.geode.benchmark.tests;
 
-import static org.apache.geode.benchmark.topology.ClientServerTopology.Roles.SERVER;
+import static org.apache.geode.benchmark.Config.before;
+import static org.apache.geode.benchmark.topology.Roles.SERVER;
 
 import org.apache.geode.benchmark.tasks.CreateReplicatedRegion;
 import org.apache.geode.perftest.TestConfig;
@@ -23,6 +24,6 @@ import org.apache.geode.perftest.TestConfig;
 abstract class AbstractReplicatedFunctionBenchmark extends AbstractFunctionBenchmark {
   @Override
   protected void configureRegion(TestConfig config) {
-    config.before(new CreateReplicatedRegion(), SERVER);
+    before(config, new CreateReplicatedRegion(), SERVER);
   }
 }

@@ -18,9 +18,12 @@
 package org.apache.geode.benchmark.tasks;
 
 import static org.apache.geode.benchmark.parameters.GeodeProperties.clientProperties;
+import static org.apache.geode.benchmark.topology.Roles.LOCATOR;
 
 import java.io.File;
+import java.lang.reflect.InvocationTargetException;
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Properties;
 
 import org.apache.geode.cache.client.ClientCache;
@@ -34,7 +37,7 @@ import org.apache.geode.perftest.TestContext;
  * Task to create the client cache
  */
 public class StartClient implements Task {
-  private int locatorPort;
+  protected int locatorPort;
 
   public StartClient(int locatorPort) {
     this.locatorPort = locatorPort;
@@ -43,18 +46,33 @@ public class StartClient implements Task {
   @Override
   public void run(TestContext context) throws Exception {
 
-    InetAddress locator = context.getHostsForRole("locator").iterator().next();
+    InetAddress locator = context.getHostsForRole(LOCATOR.name()).iterator().next();
 
     String statsFile = new File(context.getOutputDir(), "stats.gfs").getAbsolutePath();
     Properties properties = clientProperties();
 
-    ClientCache clientCache = new ClientCacheFactory(properties)
-        .setPdxSerializer(new ReflectionBasedAutoSerializer("benchmark.geode.data.*"))
-        .addPoolLocator(locator.getHostAddress(), locatorPort)
-        .setPoolIdleTimeout(-1)
-        .set(ConfigurationProperties.STATISTIC_ARCHIVE_FILE, statsFile)
+    ClientCache clientCache = createClientCacheFactory(locator, statsFile, properties, context)
         .create();
 
     context.setAttribute("CLIENT_CACHE", clientCache);
+  }
+
+  /**
+   * Create and configure the ClientCacheFactory.
+   *
+   * Subclasses can override this.
+   *
+   */
+  protected ClientCacheFactory createClientCacheFactory(final InetAddress locator,
+      final String statsFile,
+      final Properties properties,
+      final TestContext context)
+      throws UnknownHostException, NoSuchMethodException, InvocationTargetException,
+      IllegalAccessException, ClassNotFoundException {
+    return new ClientCacheFactory(properties)
+        .setPdxSerializer(new ReflectionBasedAutoSerializer("benchmark.geode.data.*"))
+        .setPoolIdleTimeout(-1)
+        .set(ConfigurationProperties.STATISTIC_ARCHIVE_FILE, statsFile)
+        .addPoolLocator(locator.getHostAddress(), locatorPort);
   }
 }

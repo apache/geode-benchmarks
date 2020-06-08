@@ -15,9 +15,9 @@
 
 package org.apache.geode.benchmark.parameters;
 
-import static org.apache.geode.benchmark.topology.ClientServerTopology.Roles.CLIENT;
-import static org.apache.geode.benchmark.topology.ClientServerTopology.Roles.LOCATOR;
-import static org.apache.geode.benchmark.topology.ClientServerTopology.Roles.SERVER;
+import static org.apache.geode.benchmark.topology.Roles.CLIENT;
+import static org.apache.geode.benchmark.topology.Roles.LOCATOR;
+import static org.apache.geode.benchmark.topology.Roles.SERVER;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Properties;
@@ -61,11 +61,11 @@ class HeapParametersTest {
   }
 
   private void assertHeap(final TestConfig testConfig, final String heap) {
-    assertThat(testConfig.getJvmArgs().get(CLIENT)).contains("-Xmx" + heap);
-    assertThat(testConfig.getJvmArgs().get(SERVER)).contains("-Xmx" + heap);
-    assertThat(testConfig.getJvmArgs().get(LOCATOR)).contains("-Xmx" + heap);
-    assertThat(testConfig.getJvmArgs().get(CLIENT)).contains("-Xms" + heap);
-    assertThat(testConfig.getJvmArgs().get(SERVER)).contains("-Xms" + heap);
-    assertThat(testConfig.getJvmArgs().get(LOCATOR)).contains("-Xms" + heap);
+    assertThat(testConfig.getJvmArgs().get(CLIENT.name())).contains("-Xmx" + heap);
+    assertThat(testConfig.getJvmArgs().get(SERVER.name())).contains("-Xmx" + heap);
+    assertThat(testConfig.getJvmArgs().get(LOCATOR.name())).contains("-Xmx" + heap);
+    assertThat(testConfig.getJvmArgs().get(CLIENT.name())).contains("-Xms" + heap);
+    assertThat(testConfig.getJvmArgs().get(SERVER.name())).contains("-Xms" + heap);
+    assertThat(testConfig.getJvmArgs().get(LOCATOR.name())).contains("-Xms" + heap);
   }
 }

@@ -15,7 +15,7 @@
 
 package org.apache.geode.benchmark.parameters;
 
-import static org.apache.geode.benchmark.parameters.Utils.configureAll;
+import static org.apache.geode.benchmark.parameters.Utils.configureGeodeProductJvms;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,7 +28,7 @@ public class JvmParameters {
   public static void configure(final TestConfig testConfig) {
     logger.info("Configuring JVM parameters.");
 
-    configureAll(testConfig,
+    configureGeodeProductJvms(testConfig,
         "-server",
         "-Djava.awt.headless=true",
         "-Dsun.rmi.dgc.server.gcInterval=9223372036854775806",

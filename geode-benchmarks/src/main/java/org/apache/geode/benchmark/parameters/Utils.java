@@ -15,17 +15,35 @@
 
 package org.apache.geode.benchmark.parameters;
 
-import static org.apache.geode.benchmark.topology.ClientServerTopology.Roles.CLIENT;
-import static org.apache.geode.benchmark.topology.ClientServerTopology.Roles.LOCATOR;
-import static org.apache.geode.benchmark.topology.ClientServerTopology.Roles.SERVER;
+import static org.apache.geode.benchmark.Config.jvmArgs;
+import static org.apache.geode.benchmark.topology.RoleKinds.GEODE_PRODUCT;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import org.apache.geode.benchmark.topology.Roles;
 import org.apache.geode.perftest.TestConfig;
 
-public interface Utils {
+public class Utils {
 
-  static void configureAll(TestConfig testConfig, String... args) {
-    testConfig.jvmArgs(LOCATOR, args);
-    testConfig.jvmArgs(SERVER, args);
-    testConfig.jvmArgs(CLIENT, args);
+  static final Logger logger =
+      LoggerFactory.getLogger(Utils.class);
+
+  private Utils() {}
+
+  /**
+   * We have many settings we want to apply to JVMs that are hosting Geode. Not all JVMs
+   * host Geode. This method applies the setting to only the Geode product JVMs.
+   */
+  public static void configureGeodeProductJvms(final TestConfig config, final String... args) {
+    Roles.rolesFor(GEODE_PRODUCT).forEach(role -> jvmArgs(config, role, args));
+  }
+
+  public static void addToTestConfig(TestConfig testConfig, String systemPropertyKey,
+      String jvmArgument) {
+    if (Boolean.getBoolean(systemPropertyKey)) {
+      logger.info("Configuring JVMs to run with " + jvmArgument);
+      configureGeodeProductJvms(testConfig, jvmArgument);
+    }
   }
 }

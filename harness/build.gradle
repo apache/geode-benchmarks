@@ -26,7 +26,12 @@ def geodeVersion = project.hasProperty('geodeVersion') ? project.findProperty('g
 def isCI = project.hasProperty('ci') ? project.findProperty('ci') : 0
 
 repositories {
+  /*
+   This is used in CI to benchmark various new/old versions of Geode.
+   Also useful in dev where you can clone geode and publishToMavenLocal
+   */
   mavenLocal()
+  // fall back to mavenCentral, which has lots of released versions of Geode
   mavenCentral()
 }
 

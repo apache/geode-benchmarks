@@ -16,7 +16,7 @@
 package org.apache.geode.benchmark.parameters;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
-import static org.apache.geode.benchmark.parameters.Utils.configureAll;
+import static org.apache.geode.benchmark.parameters.Utils.configureGeodeProductJvms;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +30,7 @@ public class ProfilerParameters {
     final String profilerArgument = System.getProperty("benchmark.profiler.argument");
     if (!isNullOrEmpty(profilerArgument)) {
       logger.info("Configuring profiler parameter. {}", profilerArgument);
-      configureAll(testConfig, profilerArgument);
+      configureGeodeProductJvms(testConfig, profilerArgument);
     }
   }
 

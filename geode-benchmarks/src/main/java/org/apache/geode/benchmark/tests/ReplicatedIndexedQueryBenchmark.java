@@ -14,8 +14,10 @@
  */
 package org.apache.geode.benchmark.tests;
 
-import static org.apache.geode.benchmark.topology.ClientServerTopology.Roles.CLIENT;
-import static org.apache.geode.benchmark.topology.ClientServerTopology.Roles.SERVER;
+import static org.apache.geode.benchmark.Config.before;
+import static org.apache.geode.benchmark.Config.workload;
+import static org.apache.geode.benchmark.topology.Roles.CLIENT;
+import static org.apache.geode.benchmark.topology.Roles.SERVER;
 
 import org.junit.jupiter.api.Test;
 
@@ -25,7 +27,6 @@ import org.apache.geode.benchmark.tasks.CreateIndexOnID;
 import org.apache.geode.benchmark.tasks.CreateReplicatedRegion;
 import org.apache.geode.benchmark.tasks.OQLQuery;
 import org.apache.geode.benchmark.tasks.PrePopulateRegion;
-import org.apache.geode.benchmark.topology.ClientServerTopology;
 import org.apache.geode.perftest.PerformanceTest;
 import org.apache.geode.perftest.TestConfig;
 import org.apache.geode.perftest.TestRunners;
@@ -53,12 +54,11 @@ public class ReplicatedIndexedQueryBenchmark implements PerformanceTest {
   public TestConfig configure() {
     TestConfig config = GeodeBenchmark.createConfig();
     config.threads(Runtime.getRuntime().availableProcessors() * 8);
-    ClientServerTopology.configure(config);
-    config.before(new CreateReplicatedRegion(), SERVER);
-    config.before(new CreateClientProxyRegion(), CLIENT);
-    config.before(new CreateIndexOnID(), SERVER);
-    config.before(new PrePopulateRegion(keyRange), CLIENT);
-    config.workload(new OQLQuery(keyRange, queryRange), CLIENT);
+    before(config, new CreateReplicatedRegion(), SERVER);
+    before(config, new CreateClientProxyRegion(), CLIENT);
+    before(config, new CreateIndexOnID(), SERVER);
+    before(config, new PrePopulateRegion(keyRange), CLIENT);
+    workload(config, new OQLQuery(keyRange, queryRange), CLIENT);
     return config;
   }
 }

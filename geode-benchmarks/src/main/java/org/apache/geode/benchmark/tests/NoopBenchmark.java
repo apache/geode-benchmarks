@@ -18,12 +18,12 @@
 package org.apache.geode.benchmark.tests;
 
 
-import static org.apache.geode.benchmark.topology.ClientServerTopology.Roles.CLIENT;
+import static org.apache.geode.benchmark.Config.workload;
+import static org.apache.geode.benchmark.topology.Roles.CLIENT;
 
 import org.junit.jupiter.api.Test;
 
 import org.apache.geode.benchmark.tasks.NoopTask;
-import org.apache.geode.benchmark.topology.ClientServerTopology;
 import org.apache.geode.perftest.PerformanceTest;
 import org.apache.geode.perftest.TestConfig;
 import org.apache.geode.perftest.TestRunners;
@@ -43,8 +43,7 @@ public class NoopBenchmark implements PerformanceTest {
   @Override
   public TestConfig configure() {
     TestConfig config = GeodeBenchmark.createConfig();
-    ClientServerTopology.configure(config);
-    config.workload(new NoopTask(), CLIENT);
+    workload(config, new NoopTask(), CLIENT);
     return config;
 
   }
