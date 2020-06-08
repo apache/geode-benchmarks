@@ -22,12 +22,13 @@ import static org.apache.geode.benchmark.topology.Ports.SNI_PROXY_PORT;
 import static org.apache.geode.benchmark.topology.Roles.LOCATOR;
 import static org.apache.geode.benchmark.topology.Roles.PROXY;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Properties;
 
 import org.apache.geode.cache.client.ClientCacheFactory;
-import org.apache.geode.cache.client.proxy.ProxySocketFactories;
 import org.apache.geode.distributed.ConfigurationProperties;
 import org.apache.geode.pdx.ReflectionBasedAutoSerializer;
 import org.apache.geode.perftest.TestContext;
@@ -43,7 +44,8 @@ public class StartClientSNI extends StartClient {
       final String statsFile,
       final Properties properties,
       final TestContext context)
-      throws UnknownHostException {
+      throws UnknownHostException, NoSuchMethodException, InvocationTargetException,
+      IllegalAccessException, ClassNotFoundException {
 
     final InetAddress firstLocatorAddy =
         context.getHostsForRole(LOCATOR.name()).iterator().next();
@@ -52,14 +54,40 @@ public class StartClientSNI extends StartClient {
     final InetAddress proxyAddy =
         context.getHostsForRole(PROXY.name()).iterator().next();
 
-    return new ClientCacheFactory(properties)
+    final ClientCacheFactory cacheFactory = new ClientCacheFactory(properties)
         .setPdxSerializer(new ReflectionBasedAutoSerializer("benchmark.geode.data.*"))
         .setPoolIdleTimeout(-1)
         .set(ConfigurationProperties.STATISTIC_ARCHIVE_FILE, statsFile)
-        .addPoolLocator(offPlatformLocatorName, locatorPort)
+        .addPoolLocator(offPlatformLocatorName, locatorPort);
+    final String proxyHostAddress = proxyAddy.getHostAddress();
+    return reflectivelySetSniSocketFactory(cacheFactory, proxyHostAddress);
+  }
+
+  private ClientCacheFactory reflectivelySetSniSocketFactory(final ClientCacheFactory cacheFactory,
+                                                             final String proxyHostAddress)
+      throws NoSuchMethodException, InvocationTargetException, IllegalAccessException,
+      ClassNotFoundException {
+    /*
+     We'd like to simply do the following, but that would introduce a compile-time dependency on
+     Geode [1.13,). But we want this benchmark code to work with older Geode version. So we'll
+     use reflection to do it.
+
+    return cacheFactory
         .setPoolSocketFactory(ProxySocketFactories.sni(
-            proxyAddy.getHostAddress(),
+            proxyHostAddress,
             SNI_PROXY_PORT));
+     */
+    final Class<?> proxySocketFactoriesClass = Class.forName("ProxySocketFactories");
+    final Method sniMethod =
+        proxySocketFactoriesClass.getMethod("sni", String.class, int.class);
+
+    final Object sniSocketFactory = sniMethod.invoke(proxyHostAddress, SNI_PROXY_PORT);
+
+    final Class<?> socketFactoryClass = Class.forName("SocketFactory");
+    final Method setPoolSocketFactoryMethod =
+        cacheFactory.getClass().getMethod("setPoolSocketFactory", socketFactoryClass);
+
+    return (ClientCacheFactory)setPoolSocketFactoryMethod.invoke(sniSocketFactory);
   }
 
 }

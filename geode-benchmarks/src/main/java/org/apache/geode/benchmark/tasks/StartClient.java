@@ -21,6 +21,7 @@ import static org.apache.geode.benchmark.parameters.GeodeProperties.clientProper
 import static org.apache.geode.benchmark.topology.Roles.LOCATOR;
 
 import java.io.File;
+import java.lang.reflect.InvocationTargetException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Properties;
@@ -66,7 +67,8 @@ public class StartClient implements Task {
       final String statsFile,
       final Properties properties,
       final TestContext context)
-      throws UnknownHostException {
+      throws UnknownHostException, NoSuchMethodException, InvocationTargetException,
+      IllegalAccessException, ClassNotFoundException {
     return new ClientCacheFactory(properties)
         .setPdxSerializer(new ReflectionBasedAutoSerializer("benchmark.geode.data.*"))
         .setPoolIdleTimeout(-1)

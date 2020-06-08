@@ -23,7 +23,7 @@ version '1.0-SNAPSHOT'
 sourceCompatibility = 1.8
 
 def outputDir = project.hasProperty('outputDir') ? project.findProperty('outputDir') : new File(project.buildDir, "benchmarks_" + getDate()).getAbsolutePath()
-def geodeVersion = project.hasProperty('geodeVersion') ? project.findProperty('geodeVersion') : '[1.13,)'
+def geodeVersion = project.hasProperty('geodeVersion') ? project.findProperty('geodeVersion') : '1.+'
 
 def getDate() {
   new Date().format('yyyyMMddHHmmss')
@@ -31,15 +31,13 @@ def getDate() {
 
 
 repositories {
-  // search mavenLocal for geode. in dev, you can clone geode and publishToMavenLocal
+  /*
+   This is used in CI to benchmark various new/old versions of Geode.
+   Also useful in dev where you can clone geode and publishToMavenLocal
+   */
   mavenLocal()
-  // non-geode stuff can come from mavenCentral
-  mavenCentral() { content { excludeGroup 'org.apache.geode' } }
-  // For CI, we may need a (unreleased) Geode version that is not yet on mavenCentral
-  maven {
-    url "https://maven.apachegeode-ci.info/snapshots"
-    content { includeGroup 'org.apache.geode' }
-  }
+  // fall back to mavenCentral, which has lots of released versions of Geode
+  mavenCentral()
 }
 
 dependencies {
