@@ -42,6 +42,8 @@ task(launchCluster, dependsOn: 'classes', type: JavaExec) {
   classpath = sourceSets.main.runtimeClasspath
 
   systemProperty 'TEST_CI', project.findProperty('ci')
+  systemProperty 'PURPOSE', project.findProperty('purpose')
+
 }
 
 task(destroyCluster, dependsOn: 'classes', type: JavaExec) {

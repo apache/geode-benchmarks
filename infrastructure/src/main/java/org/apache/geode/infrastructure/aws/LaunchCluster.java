@@ -397,11 +397,17 @@ public class LaunchCluster {
     DateTimeFormatter inputFormatter =
         DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.ENGLISH);
 
+    String purpose = System.getProperty("PURPOSE");
+
+    if (purpose.isEmpty()) {
+      purpose = "geode-benchmarks";
+    }
+
     // Find an appropriate AMI to launch our cluster with
     List<Image> benchmarkImages = ec2.describeImages(
         DescribeImagesRequest
             .builder()
-            .filters(Filter.builder().name("tag:purpose").values("geode-benchmarks").build())
+            .filters(Filter.builder().name("tag:purpose").values(purpose).build())
             .build())
         .images();
 
