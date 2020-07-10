@@ -18,10 +18,10 @@
 package org.apache.geode.benchmark.tests;
 
 import static org.apache.geode.benchmark.topology.Ports.LOCATOR_PORT;
+import static org.apache.geode.benchmark.topology.Roles.CLIENT;
 import static org.apache.geode.benchmark.topology.Roles.PROXY;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -36,46 +36,66 @@ import org.apache.geode.perftest.TestStep;
  */
 class GeodeBenchmarkTest {
 
+  public static final String WITH_CLUSTER_TOPOLOGY = "withClusterTopology";
+  public static final String WITH_SNI_PROXY = "withSniProxy";
   private TestConfig config;
   private TestStep startProxyStep;
 
   @BeforeEach
   public void beforeEach() {
+    System.clearProperty(WITH_SNI_PROXY);
+    System.clearProperty(WITH_CLUSTER_TOPOLOGY);
     startProxyStep =
         new TestStep(new StartSniProxy(LOCATOR_PORT), new String[] {PROXY.name()});
   }
 
-  @AfterAll
-  public static void afterAll() {
-    System.clearProperty("withSniProxy");
-  }
-
   @Test
   public void withoutSniProxy() {
-    System.clearProperty("withSniProxy");
+    System.clearProperty(WITH_SNI_PROXY);
     config = GeodeBenchmark.createConfig();
     assertThat(config.getBefore()).doesNotContain(startProxyStep);
   }
 
   @Test
   public void withSniProxyFalse() {
-    System.setProperty("withSniProxy", "false");
+    System.setProperty(WITH_SNI_PROXY, "false");
     config = GeodeBenchmark.createConfig();
     assertThat(config.getBefore()).doesNotContain(startProxyStep);
   }
 
   @Test
   public void withSniProxyTrue() {
-    System.setProperty("withSniProxy", "true");
+    System.setProperty(WITH_SNI_PROXY, "true");
     config = GeodeBenchmark.createConfig();
     assertThat(config.getBefore()).contains(startProxyStep);
   }
 
   @Test
   public void withSniProxyNotLowercaseFalse() {
-    System.setProperty("withSniProxy", "AnythING");
+    System.setProperty(WITH_SNI_PROXY, "AnythING");
     config = GeodeBenchmark.createConfig();
     assertThat(config.getBefore()).contains(startProxyStep);
+  }
+
+  @Test
+  public void withClusterTopologyFalse() {
+    System.setProperty(WITH_CLUSTER_TOPOLOGY, "false");
+    config = GeodeBenchmark.createConfig();
+    assertThat(config.getRoles().get(CLIENT.name())).isNotNull();
+  }
+
+  @Test
+  public void withClusterTopologyTrue() {
+    System.setProperty(WITH_CLUSTER_TOPOLOGY, "true");
+    config = GeodeBenchmark.createConfig();
+    assertThat(config.getRoles().get(CLIENT.name())).isNull();
+  }
+
+  @Test
+  public void withClusterTopologyNotLowercaseFalse() {
+    System.setProperty(WITH_CLUSTER_TOPOLOGY, "AnythING");
+    config = GeodeBenchmark.createConfig();
+    assertThat(config.getRoles().get(CLIENT.name())).isNull();
   }
 
 }

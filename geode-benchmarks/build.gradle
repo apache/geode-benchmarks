@@ -93,6 +93,7 @@ task benchmark(type: Test) {
   }
   systemProperty 'withSsl', project.hasProperty('withSsl')
   systemProperty 'withSniProxy', project.hasProperty('withSniProxy')
+  systemProperty 'withClusterTopology', project.hasProperty('withSniProxy')
   systemProperty 'withSecurityManager', project.hasProperty('withSecurityManager')
   systemProperty 'benchmark.profiler.argument', project.findProperty('benchmark.profiler.argument')
 

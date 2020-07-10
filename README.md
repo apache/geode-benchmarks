@@ -148,6 +148,20 @@ public class PutTask extends BenchmarkDriverAdapter implements Serializable {
 }
 ```
 
+## cluster topology
+
+The default topology is client/server.  Several tests support being run in a cluster topology
+where work is done directly in the servers and no client caches exist.  To enable this,
+specify `-PwithClusterTopology`.
+
+Tests that support this topology are
+
+ReplicatedPutBenchmark
+ReplicatedGetBenchmark
+PartitionedPutBenchmark
+PartitionedGetBenchmark
+
+
 ## SNI
 
 On AWS, you can run any benchmark on a topology that routes all client-server communication through an SNI proxy (HAproxy).

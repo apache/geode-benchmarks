@@ -19,6 +19,7 @@ import static java.util.concurrent.TimeUnit.MINUTES;
 
 import org.apache.geode.benchmark.topology.ClientServerTopology;
 import org.apache.geode.benchmark.topology.ClientServerTopologyWithSNIProxy;
+import org.apache.geode.benchmark.topology.ClusterTopology;
 import org.apache.geode.perftest.TestConfig;
 
 public class GeodeBenchmark {
@@ -45,11 +46,20 @@ public class GeodeBenchmark {
     config.durationSeconds(BENCHMARK_DURATION);
     config.threads(THREADS);
 
-    final String sniProp = System.getProperty("withSniProxy");
-    final boolean doSni = sniProp != null && !sniProp.equals("false");
+    String prop = System.getProperty("withSniProxy");
+    final boolean withSniProxy = prop != null && !prop.equals("false");
 
-    if (doSni) {
+    prop = System.getProperty("withClusterTopology");
+    final boolean withClusterTopology = prop != null && !prop.equals("false");
+
+    if (withSniProxy && withClusterTopology) {
+      throw new UnsupportedOperationException(
+          "The configuration withSniProxy plus withClusterTopology is not currently supported");
+    }
+    if (withSniProxy) {
       ClientServerTopologyWithSNIProxy.configure(config);
+    } else if (withClusterTopology) {
+      ClusterTopology.configure(config);
     } else {
       ClientServerTopology.configure(config);
     }

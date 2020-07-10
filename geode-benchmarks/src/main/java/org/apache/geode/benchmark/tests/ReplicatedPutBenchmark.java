@@ -55,9 +55,14 @@ public class ReplicatedPutBenchmark implements PerformanceTest {
   public TestConfig configure() {
     TestConfig config = GeodeBenchmark.createConfig();
     before(config, new CreateReplicatedRegion(), SERVER);
-    before(config, new CreateClientProxyRegion(), CLIENT);
-    before(config, new PrePopulateRegion(keyRange), CLIENT);
-    workload(config, new PutTask(keyRange), CLIENT);
+    if (config.getRoles().containsKey(CLIENT)) {
+      before(config, new CreateClientProxyRegion(), CLIENT);
+      before(config, new PrePopulateRegion(keyRange), CLIENT);
+      workload(config, new PutTask(keyRange), CLIENT);
+    } else {
+      before(config, new PrePopulateRegion(keyRange), SERVER);
+      workload(config, new PutTask(keyRange), SERVER);
+    }
     return config;
 
   }
