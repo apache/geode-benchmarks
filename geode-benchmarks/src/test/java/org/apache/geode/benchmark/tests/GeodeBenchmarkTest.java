@@ -51,7 +51,7 @@ class GeodeBenchmarkTest {
   }
 
   @AfterAll
-  public void afterAll() {
+  public static void afterAll() {
     System.clearProperty(WITH_SNI_PROXY);
     System.clearProperty(WITH_CLUSTER_TOPOLOGY);
   }
