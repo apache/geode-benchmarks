@@ -66,11 +66,29 @@ public class PrePopulateRegion implements Task {
     final int numServers = context.getHostsIDsForRole(SERVER.name()).size();
     final int numClients = context.getHostsIDsForRole(CLIENT.name()).size();
     final int jvmID = context.getJvmID();
-    final int numWorkers = numClients > 0 ? numClients : numServers;
-    final int workerIndex = numClients > 0 ? jvmID - numLocators - numServers : jvmID - numLocators;
-
-    run(region, keyRangeToPrepopulate.sliceFor(numWorkers, workerIndex));
+    int index = 0;
+    boolean isClient = context.getHostsIDsForRole(CLIENT.name()).contains(jvmID);
+    try {
+      if (isClient) {
+        index = jvmID - numLocators - numServers;
+        run(region, keyRangeToPrepopulate.sliceFor(numClients, index));
+      } else {
+        index = jvmID - numLocators;
+        run(region, keyRangeToPrepopulate.sliceFor(numServers, index));
+      }
+    } catch (IndexOutOfBoundsException e) {
+      throw new RuntimeException(
+          String.format("Index out of bounds. numServers=%s numLocators=%s numClients=%s "
+              + "jvmID=%s workerIndex=%s",
+              numServers, numLocators, numClients, jvmID, index),
+          e);
+    }
+    // throw new RuntimeException("BRUCE: client host ids are " +
+    // context.getHostsIDsForRole(CLIENT.name())
+    // + " and this client's id is " + jvmID + " system property is " + System.getProperty("JVM_ID")
+    // + " and output dir is " + System.getProperty("OUTPUT_DIR"));
   }
+
 
   void run(final Map<Long, Portfolio> region, final LongRange range) throws InterruptedException {
     logger.info("*******************************************");
