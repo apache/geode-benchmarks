@@ -22,6 +22,7 @@ import static org.apache.geode.benchmark.topology.Roles.CLIENT;
 import static org.apache.geode.benchmark.topology.Roles.PROXY;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -47,6 +48,12 @@ class GeodeBenchmarkTest {
     System.clearProperty(WITH_CLUSTER_TOPOLOGY);
     startProxyStep =
         new TestStep(new StartSniProxy(LOCATOR_PORT), new String[] {PROXY.name()});
+  }
+
+  @AfterAll
+  public void afterAll() {
+    System.clearProperty(WITH_SNI_PROXY);
+    System.clearProperty(WITH_CLUSTER_TOPOLOGY);
   }
 
   @Test

@@ -66,8 +66,8 @@ public class PrePopulateRegion implements Task {
     final int numServers = context.getHostsIDsForRole(SERVER.name()).size();
     final int numClients = context.getHostsIDsForRole(CLIENT.name()).size();
     final int jvmID = context.getJvmID();
-    final int numWorkers = numClients>0? numClients : numServers;
-    final int workerIndex = numClients>0? jvmID - numLocators - numServers: jvmID - numLocators;
+    final int numWorkers = numClients > 0 ? numClients : numServers;
+    final int workerIndex = numClients > 0 ? jvmID - numLocators - numServers : jvmID - numLocators;
 
     run(region, keyRangeToPrepopulate.sliceFor(numWorkers, workerIndex));
   }
