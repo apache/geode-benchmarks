@@ -36,9 +36,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.apache.geode.benchmark.LongRange;
+import org.apache.geode.cache.Cache;
+import org.apache.geode.cache.CacheFactory;
 import org.apache.geode.cache.Region;
-import org.apache.geode.cache.client.ClientCache;
-import org.apache.geode.cache.client.ClientCacheFactory;
 import org.apache.geode.perftest.Task;
 import org.apache.geode.perftest.TestContext;
 
@@ -60,15 +60,16 @@ public class PrePopulateRegion implements Task {
    */
   @Override
   public void run(TestContext context) throws InterruptedException {
-    final ClientCache cache = ClientCacheFactory.getAnyInstance();
+    final Cache cache = CacheFactory.getAnyInstance();
     final Region<Long, Portfolio> region = cache.getRegion("region");
     final int numLocators = context.getHostsIDsForRole(LOCATOR.name()).size();
     final int numServers = context.getHostsIDsForRole(SERVER.name()).size();
-    final int numClient = context.getHostsIDsForRole(CLIENT.name()).size();
+    final int numClients = context.getHostsIDsForRole(CLIENT.name()).size();
     final int jvmID = context.getJvmID();
-    final int clientIndex = jvmID - numLocators - numServers;
+    final int numWorkers = numClients>0? numClients : numServers;
+    final int workerIndex = numClients>0? jvmID - numLocators - numServers: jvmID - numLocators;
 
-    run(region, keyRangeToPrepopulate.sliceFor(numClient, clientIndex));
+    run(region, keyRangeToPrepopulate.sliceFor(numWorkers, workerIndex));
   }
 
   void run(final Map<Long, Portfolio> region, final LongRange range) throws InterruptedException {
@@ -103,10 +104,6 @@ public class PrePopulateRegion implements Task {
       slice.forEach(i -> valueMap.put(i, new Portfolio(i)));
       region.putAll(valueMap);
     }
-  }
-
-  public int getBatchSize() {
-    return batchSize;
   }
 
   public void setBatchSize(int batchSize) {

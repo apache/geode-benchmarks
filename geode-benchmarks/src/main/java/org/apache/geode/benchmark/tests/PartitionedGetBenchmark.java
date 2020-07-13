@@ -61,8 +61,8 @@ public class PartitionedGetBenchmark implements PerformanceTest {
       before(config, new PrePopulateRegion(keyRange), CLIENT);
       workload(config, new GetTask(keyRange), CLIENT);
     } else {
-      before(config, new PrePopulateRegion(keyRange), CLIENT);
-      workload(config, new GetTask(keyRange), CLIENT);
+      before(config, new PrePopulateRegion(keyRange), SERVER);
+      workload(config, new GetTask(keyRange), SERVER);
     }
     return config;
 
