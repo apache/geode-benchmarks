@@ -46,12 +46,22 @@ while (( "$#" )); do
     --ci )
       CI=1
       ;;
+    -p|--purpose )
+      if [ "${2}" ]; then
+        PURPOSE=${2}
+        shift
+      else
+        echo 'ERROR: "--purpose" requires a non-empty argument.'
+        exit 1
+      fi
+      ;;
     -h|--help|-\? )
       echo "Usage: $(basename "$0") -t tag -c 4 [options ...] [-- arguments ...]"
       echo "Options:"
       echo "-t|--tag : Cluster tag"
       echo "-c|--count : The number of instances to start"
       echo "--ci : Set if starting instances for Continuous Integration"
+      echo "-p|--purpose : Purpose (Purpose tag to use for base AMI)"
       echo "-- : All subsequent arguments are passed to the benchmark task as arguments."
       echo "-h|--help : This help message"
       exit 1
@@ -72,10 +82,9 @@ if [[ -z "${AWS_ACCESS_KEY_ID}" ]]; then
   export AWS_PROFILE="geode-benchmarks"
 fi
 
-if [ -z "${CI}" ]; then
-  CI=0
-fi
+CI=${CI:-0}
+PURPOSE=${PURPOSE:-"geode-benchmarks"}
 
 pushd ../../../
-./gradlew launchCluster -Pci=${CI} --args "${TAG} ${COUNT}"
+./gradlew launchCluster -Pci=${CI} -Ppurpose=${PURPOSE} --args "${TAG} ${COUNT}"
 popd

@@ -1,7 +1,8 @@
 {
   "variables": {
     "aws_access_key": "",
-    "aws_secret_key": ""
+    "aws_secret_key": "",
+    "purpose": "geode-benchmarks"
   },
   "builders": [
     {
@@ -29,7 +30,7 @@
         "Release": "Latest",
         "Base_AMI_Name": "{{ .SourceAMIName }}",
         "Extra": "{{ .SourceAMITags.TagName }}",
-        "purpose": "geode-benchmarks"
+        "purpose": "{{user `purpose`}}"
       }
     }
   ],
