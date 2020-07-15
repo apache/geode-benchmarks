@@ -82,13 +82,8 @@ if [[ -z "${AWS_ACCESS_KEY_ID}" ]]; then
   export AWS_PROFILE="geode-benchmarks"
 fi
 
-if [ -z "${CI}" ]; then
-  CI=0
-fi
-
-if [ -z "${PURPOSE}" ]; then
-  PURPOSE="geode-benchmarks"
-fi
+CI=${CI:-0}
+PURPOSE=${PURPOSE:-"geode-benchmarks"}
 
 pushd ../../../
 ./gradlew launchCluster -Pci=${CI} -Ppurpose=${PURPOSE} --args "${TAG} ${COUNT}"

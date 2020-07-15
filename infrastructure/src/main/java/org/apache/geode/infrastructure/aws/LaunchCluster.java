@@ -397,7 +397,7 @@ public class LaunchCluster {
     DateTimeFormatter inputFormatter =
         DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.ENGLISH);
 
-    String purpose = System.getProperty("PURPOSE");
+    String purpose = System.getProperty("PURPOSE", "geode-benchmarks");
 
     if (purpose.isEmpty()) {
       purpose = "geode-benchmarks";
