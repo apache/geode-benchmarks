@@ -69,7 +69,6 @@ task benchmark(type: Test) {
   testLogging { exceptionFormat = 'full' }
 
   exclude "**/NoopBenchmark.class"
-  exclude "**/*LongBenchmark.class"
 
   forkEvery 1
 
