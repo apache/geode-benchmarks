@@ -83,8 +83,12 @@ public class Analyzer {
       for (BenchmarkRunResult.ProbeResult probeResult : benchmarkResult.probeResults) {
         if (isNaN(probeResult.baseline) || isNaN(probeResult.test)) {
           errorMessage.append("BENCHMARK FAILED: ").append(benchmarkResult.name)
-              .append(" missing result file.\n");
+              .append("probeResult=").append(probeResult.description)
+              .append("; baseline=").append(probeResult.baseline)
+              .append("; test=").append(probeResult.test)
+              .append("\n");
           writer.append(benchmarkResult.name + "\n");
+          System.out.print(errorMessage);
         } else if (probeResult.description.equals("average latency")) {
           if (probeResult.getDifference() > 0) {
             isHighWaterCandidate = false;
