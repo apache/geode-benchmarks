@@ -78,13 +78,6 @@ class GeodeBenchmarkTest {
   }
 
   @Test
-  public void withSniProxyNotLowercaseFalse() {
-    System.setProperty(WITH_SNI_PROXY, "AnythING");
-    config = GeodeBenchmark.createConfig();
-    assertThat(config.getBefore()).contains(startProxyStep);
-  }
-
-  @Test
   public void withClusterTopologyFalse() {
     System.setProperty(WITH_CLUSTER_TOPOLOGY, "false");
     config = GeodeBenchmark.createConfig();
@@ -94,13 +87,6 @@ class GeodeBenchmarkTest {
   @Test
   public void withClusterTopologyTrue() {
     System.setProperty(WITH_CLUSTER_TOPOLOGY, "true");
-    config = GeodeBenchmark.createConfig();
-    assertThat(config.getRoles().get(CLIENT.name())).isNull();
-  }
-
-  @Test
-  public void withClusterTopologyNotLowercaseFalse() {
-    System.setProperty(WITH_CLUSTER_TOPOLOGY, "AnythING");
     config = GeodeBenchmark.createConfig();
     assertThat(config.getRoles().get(CLIENT.name())).isNull();
   }

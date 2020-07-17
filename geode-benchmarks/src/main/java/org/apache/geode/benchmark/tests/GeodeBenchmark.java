@@ -46,11 +46,8 @@ public class GeodeBenchmark {
     config.durationSeconds(BENCHMARK_DURATION);
     config.threads(THREADS);
 
-    String prop = System.getProperty("withSniProxy");
-    final boolean withSniProxy = prop != null && !prop.equals("false");
-
-    prop = System.getProperty("withClusterTopology");
-    final boolean withClusterTopology = prop != null && !prop.equals("false");
+    final boolean withSniProxy = Boolean.getBoolean("withSniProxy");
+    final boolean withClusterTopology = Boolean.getBoolean("withClusterTopology");
 
     if (withSniProxy && withClusterTopology) {
       throw new UnsupportedOperationException(
