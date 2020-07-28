@@ -35,13 +35,13 @@ public class StartLocatorSNI extends StartLocator {
   @Override
   protected void startLocator(final Properties properties, final int locatorPort,
       final TestContext context) throws IOException {
-    new LocatorLauncher.Builder()
-        .set(properties)
-        .setPort(locatorPort)
-        .setHostnameForClients(
-            getOffPlatformHostName(context, InetAddress.getLocalHost()))
-        .build()
-        .start();
+//    new LocatorLauncher.Builder()
+//        .set(properties)
+//        .setPort(locatorPort)
+//        .setHostnameForClients(
+//            getOffPlatformHostName(context, InetAddress.getLocalHost()))
+//        .build()
+//        .start();
   }
 
 }
