@@ -17,8 +17,6 @@
 package org.apache.geode.benchmark.tasks;
 
 import static org.apache.geode.benchmark.topology.Roles.CLIENT;
-import static org.apache.geode.benchmark.topology.Roles.LOCATOR;
-import static org.apache.geode.benchmark.topology.Roles.SERVER;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -35,9 +33,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.apache.geode.benchmark.LongRange;
+import org.apache.geode.benchmark.topology.Roles;
+import org.apache.geode.cache.Cache;
+import org.apache.geode.cache.CacheFactory;
 import org.apache.geode.cache.Region;
-import org.apache.geode.cache.client.ClientCache;
-import org.apache.geode.cache.client.ClientCacheFactory;
 import org.apache.geode.perftest.Task;
 import org.apache.geode.perftest.TestContext;
 
@@ -45,13 +44,22 @@ import org.apache.geode.perftest.TestContext;
 public class PrePopulateRegionLong implements Task {
   private static final Logger logger = LoggerFactory.getLogger(PrePopulateRegionLong.class);
 
-  private LongRange keyRangeToPrepopulate = new LongRange(0, 10000);
+  private final LongRange keyRangeToPrepopulate;
+  private final Roles targetRole;
+
   private int batchSize = 1000;
 
-  public PrePopulateRegionLong() {}
+  public PrePopulateRegionLong() {
+    this(new LongRange(0, 10000), CLIENT);
+  }
 
   public PrePopulateRegionLong(LongRange keyRangeToPrepopulate) {
+    this(keyRangeToPrepopulate, CLIENT);
+  }
+
+  public PrePopulateRegionLong(final LongRange keyRangeToPrepopulate, final Roles targetRole) {
     this.keyRangeToPrepopulate = keyRangeToPrepopulate;
+    this.targetRole = targetRole;
   }
 
   /**
@@ -59,15 +67,13 @@ public class PrePopulateRegionLong implements Task {
    */
   @Override
   public void run(TestContext context) throws InterruptedException {
-    final ClientCache cache = ClientCacheFactory.getAnyInstance();
+    final Cache cache = CacheFactory.getAnyInstance();
     final Region<Long, Long> region = cache.getRegion("region");
-    final int numLocators = context.getHostsIDsForRole(LOCATOR.name()).size();
-    final int numServers = context.getHostsIDsForRole(SERVER.name()).size();
-    final int numClient = context.getHostsIDsForRole(CLIENT.name()).size();
-    final int jvmID = context.getJvmID();
-    final int clientIndex = jvmID - numLocators - numServers;
+    final ArrayList<Integer> hostIds =
+        new ArrayList<>(context.getHostsIDsForRole(targetRole.name()));
 
-    run(region, keyRangeToPrepopulate.sliceFor(numClient, clientIndex));
+    run(region,
+        keyRangeToPrepopulate.sliceFor(hostIds.size(), hostIds.indexOf(context.getJvmID())));
   }
 
   void run(final Map<Long, Long> region, final LongRange range) throws InterruptedException {
