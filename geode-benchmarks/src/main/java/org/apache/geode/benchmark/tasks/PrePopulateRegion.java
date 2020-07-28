@@ -17,8 +17,6 @@
 package org.apache.geode.benchmark.tasks;
 
 import static org.apache.geode.benchmark.topology.Roles.CLIENT;
-import static org.apache.geode.benchmark.topology.Roles.LOCATOR;
-import static org.apache.geode.benchmark.topology.Roles.SERVER;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -26,7 +24,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -41,8 +38,6 @@ import org.apache.geode.benchmark.topology.Roles;
 import org.apache.geode.cache.Cache;
 import org.apache.geode.cache.CacheFactory;
 import org.apache.geode.cache.Region;
-import org.apache.geode.cache.client.ClientCache;
-import org.apache.geode.cache.client.ClientCacheFactory;
 import org.apache.geode.perftest.Task;
 import org.apache.geode.perftest.TestContext;
 
@@ -75,9 +70,11 @@ public class PrePopulateRegion implements Task {
   public void run(TestContext context) throws InterruptedException {
     final Cache cache = CacheFactory.getAnyInstance();
     final Region<Long, Portfolio> region = cache.getRegion("region");
-    final ArrayList<Integer> hostIds = new ArrayList<>(context.getHostsIDsForRole(targetRole.name()));
+    final ArrayList<Integer> hostIds =
+        new ArrayList<>(context.getHostsIDsForRole(targetRole.name()));
 
-    run(region, keyRangeToPrepopulate.sliceFor(hostIds.size(), hostIds.indexOf(context.getJvmID())));
+    run(region,
+        keyRangeToPrepopulate.sliceFor(hostIds.size(), hostIds.indexOf(context.getJvmID())));
   }
 
   void run(final Map<Long, Portfolio> region, final LongRange range) throws InterruptedException {

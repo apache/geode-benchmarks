@@ -17,7 +17,6 @@ package org.apache.geode.benchmark.topology;
 import static org.apache.geode.benchmark.Config.after;
 import static org.apache.geode.benchmark.Config.before;
 import static org.apache.geode.benchmark.Config.role;
-import static org.apache.geode.benchmark.parameters.Utils.addToTestConfig;
 import static org.apache.geode.benchmark.parameters.Utils.configureGeodeProductJvms;
 import static org.apache.geode.benchmark.topology.Ports.LOCATOR_PORT;
 import static org.apache.geode.benchmark.topology.Ports.SERVER_PORT_FOR_SNI;
@@ -26,16 +25,10 @@ import static org.apache.geode.benchmark.topology.Roles.CLIENT;
 import static org.apache.geode.benchmark.topology.Roles.LOCATOR;
 import static org.apache.geode.benchmark.topology.Roles.PROXY;
 import static org.apache.geode.benchmark.topology.Roles.SERVER;
-import static org.apache.geode.benchmark.topology.Topology.WITH_SECURITY_MANAGER_ARGUMENT;
 import static org.apache.geode.benchmark.topology.Topology.WITH_SSL_ARGUMENT;
 
 import java.util.stream.Stream;
 
-import org.apache.geode.benchmark.parameters.GcLoggingParameters;
-import org.apache.geode.benchmark.parameters.GcParameters;
-import org.apache.geode.benchmark.parameters.HeapParameters;
-import org.apache.geode.benchmark.parameters.JvmParameters;
-import org.apache.geode.benchmark.parameters.ProfilerParameters;
 import org.apache.geode.benchmark.tasks.DefineHostNamingsOffPlatformTask;
 import org.apache.geode.benchmark.tasks.StartClientSNI;
 import org.apache.geode.benchmark.tasks.StartLocatorSNI;

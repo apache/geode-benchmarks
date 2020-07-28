@@ -15,7 +15,6 @@
 
 package org.apache.geode.benchmark.tests;
 
-import static java.util.concurrent.TimeUnit.MINUTES;
 
 import org.apache.geode.benchmark.topology.ClientServerTopology;
 import org.apache.geode.benchmark.topology.ClientServerTopologyWithSNIProxy;
@@ -25,7 +24,7 @@ public class ClientServerBenchmark extends GeodeBenchmark {
 
 
   public static TestConfig createConfig() {
-    TestConfig config =  GeodeBenchmark.createConfig();
+    TestConfig config = GeodeBenchmark.createConfig();
 
     final String sniProp = System.getProperty("withSniProxy");
     final boolean doSni = sniProp != null && !sniProp.equals("false");

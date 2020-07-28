@@ -16,22 +16,10 @@ package org.apache.geode.benchmark.topology;
 
 import static org.apache.geode.benchmark.Config.before;
 import static org.apache.geode.benchmark.Config.role;
-import static org.apache.geode.benchmark.parameters.Utils.addToTestConfig;
 import static org.apache.geode.benchmark.topology.Ports.LOCATOR_PORT;
-import static org.apache.geode.benchmark.topology.Roles.CLIENT;
 import static org.apache.geode.benchmark.topology.Roles.LOCATOR;
 import static org.apache.geode.benchmark.topology.Roles.SERVER;
-import static org.apache.geode.benchmark.topology.Topology.WITH_SECURITY_MANAGER_ARGUMENT;
-import static org.apache.geode.benchmark.topology.Topology.WITH_SECURITY_MANAGER_PROPERTY;
-import static org.apache.geode.benchmark.topology.Topology.WITH_SSL_ARGUMENT;
-import static org.apache.geode.benchmark.topology.Topology.WITH_SSL_PROPERTY;
 
-import org.apache.geode.benchmark.parameters.GcLoggingParameters;
-import org.apache.geode.benchmark.parameters.GcParameters;
-import org.apache.geode.benchmark.parameters.HeapParameters;
-import org.apache.geode.benchmark.parameters.JvmParameters;
-import org.apache.geode.benchmark.parameters.ProfilerParameters;
-import org.apache.geode.benchmark.tasks.StartClient;
 import org.apache.geode.benchmark.tasks.StartLocator;
 import org.apache.geode.benchmark.tasks.StartServer;
 import org.apache.geode.perftest.TestConfig;

@@ -17,8 +17,6 @@ package org.apache.geode.benchmark.tests;
 
 import static java.util.concurrent.TimeUnit.MINUTES;
 
-import org.apache.geode.benchmark.topology.ClientServerTopology;
-import org.apache.geode.benchmark.topology.ClientServerTopologyWithSNIProxy;
 import org.apache.geode.perftest.TestConfig;
 
 public class GeodeBenchmark {

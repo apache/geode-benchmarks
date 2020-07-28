@@ -22,7 +22,7 @@ public class P2pBenchmark extends GeodeBenchmark {
 
 
   public static TestConfig createConfig() {
-    TestConfig config =  GeodeBenchmark.createConfig();
+    TestConfig config = GeodeBenchmark.createConfig();
 
     P2pTopology.configure(config);
 

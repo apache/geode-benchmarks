@@ -47,7 +47,7 @@ dependencies {
   implementation(project(':harness'))
 
   implementation(group: 'org.apache.geode', name: 'geode-core', version: geodeVersion)
-//  runtime(group: 'org.apache.geode', name: 'geode-log4j', version: geodeVersion)
+  //  runtime(group: 'org.apache.geode', name: 'geode-log4j', version: geodeVersion)
 
   // Required for missing dependency on geode-core.
   runtime(group: 'org.eclipse.jetty', name: 'jetty-webapp', version: '9.4.12.v20180830')

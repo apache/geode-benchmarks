@@ -43,7 +43,6 @@ task(launchCluster, dependsOn: 'classes', type: JavaExec) {
 
   systemProperty 'TEST_CI', project.findProperty('ci')
   systemProperty 'PURPOSE', project.findProperty('purpose')
-
 }
 
 task(destroyCluster, dependsOn: 'classes', type: JavaExec) {
