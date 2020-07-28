@@ -21,6 +21,10 @@ import static org.apache.geode.benchmark.topology.Ports.LOCATOR_PORT;
 import static org.apache.geode.benchmark.topology.Roles.CLIENT;
 import static org.apache.geode.benchmark.topology.Roles.LOCATOR;
 import static org.apache.geode.benchmark.topology.Roles.SERVER;
+import static org.apache.geode.benchmark.topology.Topology.WITH_SECURITY_MANAGER_ARGUMENT;
+import static org.apache.geode.benchmark.topology.Topology.WITH_SECURITY_MANAGER_PROPERTY;
+import static org.apache.geode.benchmark.topology.Topology.WITH_SSL_ARGUMENT;
+import static org.apache.geode.benchmark.topology.Topology.WITH_SSL_PROPERTY;
 
 import org.apache.geode.benchmark.parameters.GcLoggingParameters;
 import org.apache.geode.benchmark.parameters.GcParameters;
@@ -32,20 +36,18 @@ import org.apache.geode.benchmark.tasks.StartLocator;
 import org.apache.geode.benchmark.tasks.StartServer;
 import org.apache.geode.perftest.TestConfig;
 
-public class ClientServerTopology extends Topology {
+public class P2pTopology extends Topology {
   private static final int NUM_LOCATORS = 1;
-  private static final int NUM_SERVERS = 2;
-  private static final int NUM_CLIENTS = 1;
+  private static final int NUM_SERVERS = 3;
 
   public static void configure(TestConfig config) {
     role(config, LOCATOR, NUM_LOCATORS);
     role(config, SERVER, NUM_SERVERS);
-    role(config, CLIENT, NUM_CLIENTS);
 
     configureCommon(config);
 
     before(config, new StartLocator(LOCATOR_PORT), LOCATOR);
     before(config, new StartServer(LOCATOR_PORT), SERVER);
-    before(config, new StartClient(LOCATOR_PORT), CLIENT);
   }
+
 }

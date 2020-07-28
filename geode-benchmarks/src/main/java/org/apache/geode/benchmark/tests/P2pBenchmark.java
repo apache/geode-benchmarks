@@ -15,35 +15,17 @@
 
 package org.apache.geode.benchmark.tests;
 
-import static java.util.concurrent.TimeUnit.MINUTES;
-
-import org.apache.geode.benchmark.topology.ClientServerTopology;
-import org.apache.geode.benchmark.topology.ClientServerTopologyWithSNIProxy;
+import org.apache.geode.benchmark.topology.P2pTopology;
 import org.apache.geode.perftest.TestConfig;
 
-public class GeodeBenchmark {
-
-  /**
-   * Warm up time for the benchmark running on the default runner
-   */
-  private static final long WARM_UP_TIME = MINUTES.toSeconds(1);
-
-  /**
-   * Total duration for which the benchmark will run on the default runner
-   */
-  private static final long BENCHMARK_DURATION = MINUTES.toSeconds(5);
-
-  /**
-   * Number of threads to run benchmark.
-   */
-  private static final int THREADS = Runtime.getRuntime().availableProcessors() * 10;
+public class P2pBenchmark extends GeodeBenchmark {
 
 
   public static TestConfig createConfig() {
-    TestConfig config = new TestConfig();
-    config.warmupSeconds(WARM_UP_TIME);
-    config.durationSeconds(BENCHMARK_DURATION);
-    config.threads(THREADS);
+    TestConfig config =  GeodeBenchmark.createConfig();
+
+    P2pTopology.configure(config);
+
     return config;
   }
 

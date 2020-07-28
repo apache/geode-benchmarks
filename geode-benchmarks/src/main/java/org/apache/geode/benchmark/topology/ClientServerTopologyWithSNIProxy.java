@@ -26,6 +26,8 @@ import static org.apache.geode.benchmark.topology.Roles.CLIENT;
 import static org.apache.geode.benchmark.topology.Roles.LOCATOR;
 import static org.apache.geode.benchmark.topology.Roles.PROXY;
 import static org.apache.geode.benchmark.topology.Roles.SERVER;
+import static org.apache.geode.benchmark.topology.Topology.WITH_SECURITY_MANAGER_ARGUMENT;
+import static org.apache.geode.benchmark.topology.Topology.WITH_SSL_ARGUMENT;
 
 import java.util.stream.Stream;
 
@@ -43,13 +45,11 @@ import org.apache.geode.benchmark.tasks.StopClient;
 import org.apache.geode.benchmark.tasks.StopSniProxy;
 import org.apache.geode.perftest.TestConfig;
 
-public class ClientServerTopologyWithSNIProxy {
+public class ClientServerTopologyWithSNIProxy extends Topology {
   private static final int NUM_LOCATORS = 1;
   private static final int NUM_SERVERS = 2;
   private static final int NUM_CLIENTS = 1;
   private static final int NUM_PROXIES = 1;
-  private static final String WITH_SSL_ARGUMENT = "-DwithSsl=true";
-  private static final String WITH_SECURITY_MANAGER_ARGUMENT = "-DwithSecurityManager=true";
 
   public static void configure(TestConfig config) {
     role(config, LOCATOR, NUM_LOCATORS);
@@ -57,14 +57,9 @@ public class ClientServerTopologyWithSNIProxy {
     role(config, CLIENT, NUM_CLIENTS);
     role(config, PROXY, NUM_PROXIES);
 
-    JvmParameters.configure(config);
-    HeapParameters.configure(config);
-    GcLoggingParameters.configure(config);
-    GcParameters.configure(config);
-    ProfilerParameters.configure(config);
+    configureCommon(config);
 
     configureGeodeProductJvms(config, WITH_SSL_ARGUMENT);
-    addToTestConfig(config, "withSecurityManager", WITH_SECURITY_MANAGER_ARGUMENT);
 
     Stream.concat(Roles.rolesFor(GEODE_PRODUCT), Stream.of(PROXY))
         .forEach(role -> before(config, new DefineHostNamingsOffPlatformTask(), role));

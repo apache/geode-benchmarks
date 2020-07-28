@@ -21,29 +21,21 @@ import org.apache.geode.benchmark.topology.ClientServerTopology;
 import org.apache.geode.benchmark.topology.ClientServerTopologyWithSNIProxy;
 import org.apache.geode.perftest.TestConfig;
 
-public class GeodeBenchmark {
-
-  /**
-   * Warm up time for the benchmark running on the default runner
-   */
-  private static final long WARM_UP_TIME = MINUTES.toSeconds(1);
-
-  /**
-   * Total duration for which the benchmark will run on the default runner
-   */
-  private static final long BENCHMARK_DURATION = MINUTES.toSeconds(5);
-
-  /**
-   * Number of threads to run benchmark.
-   */
-  private static final int THREADS = Runtime.getRuntime().availableProcessors() * 10;
+public class ClientServerBenchmark extends GeodeBenchmark {
 
 
   public static TestConfig createConfig() {
-    TestConfig config = new TestConfig();
-    config.warmupSeconds(WARM_UP_TIME);
-    config.durationSeconds(BENCHMARK_DURATION);
-    config.threads(THREADS);
+    TestConfig config =  GeodeBenchmark.createConfig();
+
+    final String sniProp = System.getProperty("withSniProxy");
+    final boolean doSni = sniProp != null && !sniProp.equals("false");
+
+    if (doSni) {
+      ClientServerTopologyWithSNIProxy.configure(config);
+    } else {
+      ClientServerTopology.configure(config);
+    }
+
     return config;
   }
 
