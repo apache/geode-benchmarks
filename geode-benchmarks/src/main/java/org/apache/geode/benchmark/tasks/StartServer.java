@@ -57,7 +57,7 @@ public class StartServer implements Task {
         .set(ConfigurationProperties.NAME,
             "server-" + context.getJvmID() + "-" + InetAddress.getLocalHost())
         .set(ConfigurationProperties.STATISTIC_ARCHIVE_FILE, statsFile)
-        .set(ConfigurationProperties.CONSERVE_SOCKETS, valueOf(false))
+        .set(ConfigurationProperties.CONSERVE_SOCKETS, valueOf(true))
         .create();
     CacheServer cacheServer = cache.addCacheServer();
     configureCacheServer(cacheServer, context);
