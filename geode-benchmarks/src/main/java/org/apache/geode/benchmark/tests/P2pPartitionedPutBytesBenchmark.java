@@ -51,7 +51,7 @@ public class P2pPartitionedPutBytesBenchmark implements PerformanceTest {
 
   @Override
   public TestConfig configure() {
-    TestConfig config = ClientServerBenchmark.createConfig();
+    TestConfig config = P2pBenchmark.createConfig();
     before(config, new CreatePartitionedRegion(), SERVER);
     before(config, new PrePopulateRegionBytes(keyRange, SERVER), SERVER);
     workload(config, new PutBytesTask(keyRange), SERVER);
