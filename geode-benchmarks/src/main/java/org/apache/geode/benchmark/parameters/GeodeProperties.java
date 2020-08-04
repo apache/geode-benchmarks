@@ -28,6 +28,7 @@ import static org.apache.geode.distributed.ConfigurationProperties.MEMBER_TIMEOU
 import static org.apache.geode.distributed.ConfigurationProperties.REMOVE_UNRESPONSIVE_CLIENT;
 import static org.apache.geode.distributed.ConfigurationProperties.SECURITY_MANAGER;
 import static org.apache.geode.distributed.ConfigurationProperties.SERIALIZABLE_OBJECT_FILTER;
+import static org.apache.geode.distributed.ConfigurationProperties.SSL_CIPHERS;
 import static org.apache.geode.distributed.ConfigurationProperties.SSL_ENABLED_COMPONENTS;
 import static org.apache.geode.distributed.ConfigurationProperties.STATISTIC_SAMPLING_ENABLED;
 import static org.apache.geode.distributed.ConfigurationProperties.USE_CLUSTER_CONFIGURATION;
@@ -90,6 +91,7 @@ public class GeodeProperties {
 
   public static Properties withSsl(Properties properties) {
     properties.setProperty(SSL_ENABLED_COMPONENTS, ALL);
+    properties.setProperty(SSL_CIPHERS, "TLS_RSA_WITH_AES_128_CBC_SHA");
     return properties;
   }
 
