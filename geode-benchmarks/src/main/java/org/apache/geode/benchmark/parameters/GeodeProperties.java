@@ -91,7 +91,6 @@ public class GeodeProperties {
 
   public static Properties withSsl(Properties properties) {
     properties.setProperty(SSL_ENABLED_COMPONENTS, ALL);
-    properties.setProperty(SSL_CIPHERS, "TLS_RSA_WITH_AES_128_CBC_SHA");
     return properties;
   }
 
