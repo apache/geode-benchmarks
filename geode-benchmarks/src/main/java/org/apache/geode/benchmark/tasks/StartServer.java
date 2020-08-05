@@ -17,7 +17,6 @@
 
 package org.apache.geode.benchmark.tasks;
 
-import static java.lang.String.valueOf;
 import static org.apache.geode.benchmark.parameters.GeodeProperties.serverProperties;
 
 import java.io.File;
