@@ -153,11 +153,7 @@ if [ -z "${TAG}" ]; then
   exit 1
 fi
 
-if [ ! -z "${OUTPUT}" ]; then
-  OUTPUT="${OUTPUT}-"
-fi
-
-OUTPUT="${OUTPUT}output-${DATE}-${TAG}"
+OUTPUT="${OUTPUT:-output-${DATE}-${TAG}}"
 
 set -x
 if ! [[ "$OUTPUT" = /* ]]; then
