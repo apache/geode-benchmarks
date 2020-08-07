@@ -1,0 +1,3 @@
+plugins { id 'application' }
+
+application { mainClassName = 'org.apache.geode.benchmarks.cryptoinfo.Main' }
