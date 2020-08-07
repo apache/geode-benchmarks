@@ -16,7 +16,6 @@ package org.apache.geode.benchmark.tasks;
 
 
 import org.apache.geode.cache.Cache;
-import org.apache.geode.cache.PartitionAttributesFactory;
 import org.apache.geode.cache.RegionShortcut;
 import org.apache.geode.perftest.Task;
 import org.apache.geode.perftest.TestContext;
