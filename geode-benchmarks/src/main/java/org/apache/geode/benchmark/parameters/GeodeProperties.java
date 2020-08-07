@@ -14,6 +14,9 @@
  */
 package org.apache.geode.benchmark.parameters;
 
+import static org.apache.geode.benchmark.topology.Topology.WITH_SECURITY_MANAGER_PROPERTY;
+import static org.apache.geode.benchmark.topology.Topology.WITH_SSL_CIPHERS_PROPERTY;
+import static org.apache.geode.benchmark.topology.Topology.WITH_SSL_PROPERTY;
 import static org.apache.geode.distributed.ConfigurationProperties.ARCHIVE_DISK_SPACE_LIMIT;
 import static org.apache.geode.distributed.ConfigurationProperties.ARCHIVE_FILE_SIZE_LIMIT;
 import static org.apache.geode.distributed.ConfigurationProperties.CONSERVE_SOCKETS;
@@ -91,16 +94,19 @@ public class GeodeProperties {
 
   public static Properties withSsl(Properties properties) {
     properties.setProperty(SSL_ENABLED_COMPONENTS, ALL);
-    properties.setProperty(SSL_CIPHERS, "TLS_AES_128_CCM_SHA256");
+    final String withCiphers = System.getProperty(WITH_SSL_CIPHERS_PROPERTY);
+    if (null != withCiphers) {
+      properties.setProperty(SSL_CIPHERS, withCiphers);
+    }
     return properties;
   }
 
   private static boolean isSecurityManagerEnabled() {
-    return isPropertySet("withSecurityManager");
+    return isPropertySet(WITH_SECURITY_MANAGER_PROPERTY);
   }
 
   private static boolean isSslEnabled() {
-    return isPropertySet("withSsl");
+    return isPropertySet(WITH_SSL_PROPERTY);
   }
 
   private static boolean isPropertySet(final String propertyName) {
