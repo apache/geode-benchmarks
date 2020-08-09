@@ -29,7 +29,6 @@ public abstract class Topology {
   static final String WITH_SSL_ARGUMENT = "-DwithSsl=true";
 
   public static final String WITH_SSL_CIPHERS_PROPERTY = "withSslCiphers";
-  static final String WITH_SSL_CIPHERS_ARGUMENT = "-DwithSslCiphers=true";
 
   public static final String WITH_SECURITY_MANAGER_PROPERTY = "withSecurityManager";
   static final String WITH_SECURITY_MANAGER_ARGUMENT = "-DwithSecurityManager=true";
@@ -42,9 +41,8 @@ public abstract class Topology {
     ProfilerParameters.configure(config);
 
     addToTestConfig(config, WITH_SSL_PROPERTY, WITH_SSL_ARGUMENT);
-    addToTestConfig(config, WITH_SSL_CIPHERS_PROPERTY, WITH_SSL_CIPHERS_ARGUMENT);
+    addToTestConfig(config, WITH_SSL_CIPHERS_PROPERTY);
     addToTestConfig(config, WITH_SECURITY_MANAGER_PROPERTY, WITH_SECURITY_MANAGER_ARGUMENT);
   }
-
 
 }

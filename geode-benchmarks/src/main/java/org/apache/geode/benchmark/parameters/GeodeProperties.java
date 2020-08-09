@@ -33,6 +33,7 @@ import static org.apache.geode.distributed.ConfigurationProperties.SECURITY_MANA
 import static org.apache.geode.distributed.ConfigurationProperties.SERIALIZABLE_OBJECT_FILTER;
 import static org.apache.geode.distributed.ConfigurationProperties.SSL_CIPHERS;
 import static org.apache.geode.distributed.ConfigurationProperties.SSL_ENABLED_COMPONENTS;
+import static org.apache.geode.distributed.ConfigurationProperties.SSL_PROTOCOLS;
 import static org.apache.geode.distributed.ConfigurationProperties.STATISTIC_SAMPLING_ENABLED;
 import static org.apache.geode.distributed.ConfigurationProperties.USE_CLUSTER_CONFIGURATION;
 import static org.apache.geode.security.SecurableCommunicationChannels.ALL;
@@ -94,10 +95,12 @@ public class GeodeProperties {
 
   public static Properties withSsl(Properties properties) {
     properties.setProperty(SSL_ENABLED_COMPONENTS, ALL);
-    final String withCiphers = System.getProperty(WITH_SSL_CIPHERS_PROPERTY);
-    if (null != withCiphers) {
-      properties.setProperty(SSL_CIPHERS, withCiphers);
-    }
+//    properties.setProperty(SSL_PROTOCOLS, "TLSv1.2");
+//    properties.setProperty(SSL_CIPHERS, "TLS_RSA_WITH_AES_128_GCM_SHA256");
+//    final String withCiphers = System.getProperty(WITH_SSL_CIPHERS_PROPERTY);
+//    if (null != withCiphers) {
+//      properties.setProperty(SSL_CIPHERS, withCiphers);
+//    }
     return properties;
   }
 
