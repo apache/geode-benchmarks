@@ -50,7 +50,7 @@ public class Utils {
   public static void addToTestConfig(TestConfig testConfig, String systemPropertyKey) {
     if (System.getProperties().containsKey(systemPropertyKey)) {
       final String value = System.getProperty(systemPropertyKey);
-      final String jvmArgument = "'-D" + systemPropertyKey + "=" + value + "'";
+      final String jvmArgument = "-D" + systemPropertyKey + "=" + value + "";
       logger.info("Configuring JVMs to run with " + jvmArgument);
       configureGeodeProductJvms(testConfig, jvmArgument);
     }

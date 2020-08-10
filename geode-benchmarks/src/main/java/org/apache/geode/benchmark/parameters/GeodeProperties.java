@@ -95,12 +95,10 @@ public class GeodeProperties {
 
   public static Properties withSsl(Properties properties) {
     properties.setProperty(SSL_ENABLED_COMPONENTS, ALL);
-//    properties.setProperty(SSL_PROTOCOLS, "TLSv1.2");
-//    properties.setProperty(SSL_CIPHERS, "TLS_RSA_WITH_AES_128_GCM_SHA256");
-//    final String withCiphers = System.getProperty(WITH_SSL_CIPHERS_PROPERTY);
-//    if (null != withCiphers) {
-//      properties.setProperty(SSL_CIPHERS, withCiphers);
-//    }
+    final String withCiphers = System.getProperty(WITH_SSL_CIPHERS_PROPERTY);
+    if (null != withCiphers) {
+      properties.setProperty(SSL_CIPHERS, withCiphers);
+    }
     return properties;
   }
 
