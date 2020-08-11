@@ -31,7 +31,10 @@ class AwsBenchmarkMetadata extends BenchmarkMetadata {
   public static InstanceType INSTANCE_TYPE = InstanceType.C5_18_XLARGE;
   public static Tenancy TENANCY = Tenancy.DEDICATED;
 
-  public static String setUserName(String user) {USER=user; return USER;}
+  public static String setUserName(String user) {
+    USER = user;
+    return USER;
+  }
 
   public static String securityGroup(String tag) {
     return BenchmarkMetadata.benchmarkString(tag, "securityGroup");

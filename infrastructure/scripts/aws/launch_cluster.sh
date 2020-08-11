@@ -19,6 +19,14 @@
 
 set -e
 
+SOURCE="${BASH_SOURCE[0]}"
+while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
+  SCRIPTDIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+  SOURCE="$(readlink "$SOURCE")"
+  [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE" # if $SOURCE was a relative symlink, we need to resolve it relative to the path where the symlink file was located
+done
+SCRIPTDIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+
 TAG=
 COUNT=
 CI=
@@ -97,6 +105,6 @@ if [[ ! -z "${USER}" ]]; then
   USER_ARG="-Puser=${USER}"
 fi
 
-pushd ../../../
+pushd "${SCRIPTDIR}/../../../"
 ./gradlew launchCluster "${USER_ARG}" -Pci=${CI} -Ppurpose=${PURPOSE} --args "${TAG} ${COUNT}"
 popd
