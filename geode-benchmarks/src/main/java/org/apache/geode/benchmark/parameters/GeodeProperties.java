@@ -97,14 +97,18 @@ public class GeodeProperties {
   public static Properties withSsl(Properties properties) {
     properties.setProperty(SSL_ENABLED_COMPONENTS, ALL);
     final String withSslProtocols = System.getProperty(WITH_SSL_PROTOCOLS_PROPERTY);
-    if (null != withSslProtocols) {
+    if (!isBlank(withSslProtocols)) {
       properties.setProperty(SSL_PROTOCOLS, withSslProtocols);
     }
     final String withSslCiphers = System.getProperty(WITH_SSL_CIPHERS_PROPERTY);
-    if (null != withSslCiphers) {
+    if (!isBlank(withSslCiphers)) {
       properties.setProperty(SSL_CIPHERS, withSslCiphers);
     }
     return properties;
+  }
+
+  private static boolean isBlank(final String value) {
+    return null == value || value.isEmpty() && value.trim().isEmpty();
   }
 
   private static boolean isSecurityManagerEnabled() {
