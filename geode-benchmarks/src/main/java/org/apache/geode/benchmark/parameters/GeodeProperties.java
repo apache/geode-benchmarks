@@ -17,6 +17,7 @@ package org.apache.geode.benchmark.parameters;
 import static org.apache.geode.benchmark.topology.Topology.WITH_SECURITY_MANAGER_PROPERTY;
 import static org.apache.geode.benchmark.topology.Topology.WITH_SSL_CIPHERS_PROPERTY;
 import static org.apache.geode.benchmark.topology.Topology.WITH_SSL_PROPERTY;
+import static org.apache.geode.benchmark.topology.Topology.WITH_SSL_PROTOCOLS_PROPERTY;
 import static org.apache.geode.distributed.ConfigurationProperties.ARCHIVE_DISK_SPACE_LIMIT;
 import static org.apache.geode.distributed.ConfigurationProperties.ARCHIVE_FILE_SIZE_LIMIT;
 import static org.apache.geode.distributed.ConfigurationProperties.CONSERVE_SOCKETS;
@@ -95,9 +96,13 @@ public class GeodeProperties {
 
   public static Properties withSsl(Properties properties) {
     properties.setProperty(SSL_ENABLED_COMPONENTS, ALL);
-    final String withCiphers = System.getProperty(WITH_SSL_CIPHERS_PROPERTY);
-    if (null != withCiphers) {
-      properties.setProperty(SSL_CIPHERS, withCiphers);
+    final String withSslProtocols = System.getProperty(WITH_SSL_PROTOCOLS_PROPERTY);
+    if (null != withSslProtocols) {
+      properties.setProperty(SSL_PROTOCOLS, withSslProtocols);
+    }
+    final String withSslCiphers = System.getProperty(WITH_SSL_CIPHERS_PROPERTY);
+    if (null != withSslCiphers) {
+      properties.setProperty(SSL_CIPHERS, withSslCiphers);
     }
     return properties;
   }
