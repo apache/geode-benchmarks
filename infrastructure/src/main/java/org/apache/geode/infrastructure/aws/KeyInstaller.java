@@ -41,7 +41,7 @@ public class KeyInstaller {
   private final Path privateKey;
 
   public KeyInstaller(String benchmarkTag) {
-    this.user = AwsBenchmarkMetadata.USER;
+    this.user = AwsBenchmarkMetadata.getUser();
     this.privateKey = Paths.get(AwsBenchmarkMetadata.keyPairFileName(benchmarkTag));
   }
 
@@ -51,6 +51,7 @@ public class KeyInstaller {
 
   private void installKey(String host) {
     try (SSHClient client = new SSHClient(CONFIG)) {
+      System.out.println("Installing SSH keys on host " + host + " for user: " + user );
       client.addHostKeyVerifier(new PromiscuousVerifier());
       connect(host, client);
       client.authPublickey(user, privateKey.toFile().getAbsolutePath());

@@ -43,7 +43,7 @@ public class MetadataInstaller {
   private final Path privateKey;
 
   public MetadataInstaller(String benchmarkTag) {
-    this.user = AwsBenchmarkMetadata.USER;
+    this.user = AwsBenchmarkMetadata.getUser();
     this.privateKey = Paths.get(AwsBenchmarkMetadata.keyPairFileName(benchmarkTag));
     this.metadata = Paths.get(AwsBenchmarkMetadata.metadataFileName(benchmarkTag));
   }
@@ -54,6 +54,7 @@ public class MetadataInstaller {
 
   private void installMetadata(String host) {
     try (SSHClient client = new SSHClient(CONFIG)) {
+      System.out.println("Installing metadata on host " + host + " for user: " + user );
       client.addHostKeyVerifier(new PromiscuousVerifier());
       connect(host, client);
       client.authPublickey(user, privateKey.toFile().getAbsolutePath());

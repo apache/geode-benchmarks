@@ -30,6 +30,7 @@ SCRIPTDIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
 TAG=
 COUNT=
 CI=
+USER=
 
 while (( "$#" )); do
   case "$1" in
@@ -106,5 +107,7 @@ if [[ ! -z "${USER}" ]]; then
 fi
 
 pushd "${SCRIPTDIR}/../../../"
-./gradlew launchCluster "${USER_ARG}" -Pci=${CI} -Ppurpose=${PURPOSE} --args "${TAG} ${COUNT}"
+set -x
+./gradlew launchCluster ${USER_ARG} -Pci=${CI} -Ppurpose=${PURPOSE} --args "${TAG} ${COUNT}"
+set +x
 popd

@@ -92,7 +92,7 @@ public class LaunchCluster {
       usage("Usage: LaunchCluster <tag> <count>");
     }
 
-    AwsBenchmarkMetadata.setUserName(System.getProperty("USER", AwsBenchmarkMetadata.USER));
+    AwsBenchmarkMetadata.setUserName(System.getProperty("USER", AwsBenchmarkMetadata.getUser()));
     List<Tag> tags = getTags(benchmarkTag);
     createKeyPair(benchmarkTag);
     Image newestImage = getNewestImage();
