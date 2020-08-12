@@ -17,15 +17,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
-SOURCE="${BASH_SOURCE[0]}"
-while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
-  SCRIPTDIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
-  SOURCE="$(readlink "$SOURCE")"
-  [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE" # if $SOURCE was a relative symlink, we need to resolve it relative to the path where the symlink file was located
-done
-SCRIPTDIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
-
 TAG=
 CI=
 
@@ -72,6 +63,6 @@ if [ -z "${CI}" ]; then
   CI=0
 fi
 
-pushd "${SCRIPTDIR}/../../../"
+pushd ../../../
 ./gradlew destroyCluster -Pci=${CI} --args "${TAG}"
 popd
