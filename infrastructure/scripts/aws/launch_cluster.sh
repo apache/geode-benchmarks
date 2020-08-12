@@ -19,6 +19,14 @@
 
 set -e
 
+SOURCE="${BASH_SOURCE[0]}"
+while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
+  SCRIPTDIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+  SOURCE="$(readlink "$SOURCE")"
+  [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE" # if $SOURCE was a relative symlink, we need to resolve it relative to the path where the symlink file was located
+done
+SCRIPTDIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+
 TAG=
 COUNT=
 CI=
@@ -55,6 +63,15 @@ while (( "$#" )); do
         exit 1
       fi
       ;;
+    -u|--user )
+      if [ "${2}" ]; then
+        USER="${2}"
+        shift
+    else
+      echo 'ERROR: "--user" requires a non-empty argument.'
+      exit 1
+    fi
+    ;;
     -h|--help|-\? )
       echo "Usage: $(basename "$0") -t tag -c 4 [options ...] [-- arguments ...]"
       echo "Options:"
@@ -84,7 +101,10 @@ fi
 
 CI=${CI:-0}
 PURPOSE=${PURPOSE:-"geode-benchmarks"}
+if [[ ! -z "${USER}" ]]; then
+  USER_ARG="-Puser=${USER}"
+fi
 
-pushd ../../../
-./gradlew launchCluster -Pci=${CI} -Ppurpose=${PURPOSE} --args "${TAG} ${COUNT}"
+pushd "${SCRIPTDIR}/../../../"
+./gradlew launchCluster "${USER_ARG}" -Pci=${CI} -Ppurpose=${PURPOSE} --args "${TAG} ${COUNT}"
 popd

@@ -26,10 +26,15 @@ import org.apache.geode.infrastructure.BenchmarkMetadata;
  * Static methods to generate common strings used for AWS infrastructure.
  */
 class AwsBenchmarkMetadata extends BenchmarkMetadata {
-  public static final String USER = "geode";
+  public static String USER = "geode";
   public static final int POLL_INTERVAL = 15000;
   public static InstanceType INSTANCE_TYPE = InstanceType.C5_18_XLARGE;
   public static Tenancy TENANCY = Tenancy.DEDICATED;
+
+  public static String setUserName(String user) {
+    USER = user;
+    return USER;
+  }
 
   public static String securityGroup(String tag) {
     return BenchmarkMetadata.benchmarkString(tag, "securityGroup");
