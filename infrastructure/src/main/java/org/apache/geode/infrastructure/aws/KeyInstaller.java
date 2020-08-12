@@ -51,7 +51,7 @@ public class KeyInstaller {
 
   private void installKey(String host) {
     try (SSHClient client = new SSHClient(CONFIG)) {
-      System.out.println("Installing SSH keys on host " + host + " for user: " + user );
+      System.out.println("Installing SSH keys on host " + host + " for user: " + user);
       client.addHostKeyVerifier(new PromiscuousVerifier());
       connect(host, client);
       client.authPublickey(user, privateKey.toFile().getAbsolutePath());
