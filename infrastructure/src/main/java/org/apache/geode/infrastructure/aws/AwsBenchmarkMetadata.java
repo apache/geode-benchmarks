@@ -18,6 +18,7 @@ package org.apache.geode.infrastructure.aws;
 
 import software.amazon.awssdk.services.ec2.model.InstanceType;
 import software.amazon.awssdk.services.ec2.model.PlacementStrategy;
+import software.amazon.awssdk.services.ec2.model.ResourceType;
 import software.amazon.awssdk.services.ec2.model.Tenancy;
 
 import org.apache.geode.infrastructure.BenchmarkMetadata;
@@ -28,8 +29,10 @@ import org.apache.geode.infrastructure.BenchmarkMetadata;
 class AwsBenchmarkMetadata extends BenchmarkMetadata {
   private static String USER = "geode";
   public static final int POLL_INTERVAL = 15000;
-  public static InstanceType INSTANCE_TYPE = InstanceType.C5_18_XLARGE;
-  public static Tenancy TENANCY = Tenancy.DEDICATED;
+//  public static InstanceType INSTANCE_TYPE = InstanceType.C5_18_XLARGE;
+  public static InstanceType INSTANCE_TYPE = InstanceType.C5_LARGE;
+//  public static Tenancy TENANCY = Tenancy.DEDICATED;
+  public static Tenancy TENANCY = Tenancy.DEFAULT;
 
   public static String getUser() {
     return USER;

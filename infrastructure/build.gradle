@@ -24,17 +24,14 @@ sourceCompatibility = 1.8
 repositories { mavenCentral() }
 
 dependencies {
+  implementation(platform('software.amazon.awssdk:bom:2.13.74'))
+
   implementation(group: 'org.json', name: 'json', version: project.'JSON.version')
-  implementation 'software.amazon.awssdk:ec2'
+  implementation(group: 'software.amazon.awssdk', name: 'ec2')
   implementation(group: 'com.hierynomus', name: 'sshj', version: project.'sshj.version')
   runtime(group: 'org.slf4j', name: 'slf4j-simple', version: project.'slf4j-simple.version')
 }
 
-apply plugin: "io.spring.dependency-management"
-
-dependencyManagement {
-  imports { mavenBom 'software.amazon.awssdk:bom:' + project.'software-amazon-awssdk.version' }
-}
 
 task(launchCluster, dependsOn: 'classes', type: JavaExec) {
   main = 'org.apache.geode.infrastructure.aws.LaunchCluster'

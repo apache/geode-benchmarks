@@ -127,27 +127,36 @@ public class LaunchCluster {
   private static List<String> allocateHosts(List<Tag> tags, int count, int timeout)
       throws InterruptedException {
     int gotHosts = 0;
+    final int fullCount = count;
     AllocateHostsResponse hosts;
     List<String> hostIds = new ArrayList<>();
 
     Instant end = Instant.now().plus(Duration.ofSeconds(timeout));
     do {
-      hosts = ec2.allocateHosts(AllocateHostsRequest.builder()
-          .availabilityZone("us-west-2a")
-          .instanceType(AwsBenchmarkMetadata.instanceType().toString())
-          .quantity(count - gotHosts)
-          .tagSpecifications(TagSpecification.builder()
-              .tags(tags)
-              .resourceType(ResourceType.DEDICATED_HOST)
-              .build())
-          .build());
-      hostIds.addAll(hosts.hostIds());
-      gotHosts += hosts.hostIds().size();
+      try {
+        System.out.println("Need: " + fullCount + ", Have: " + gotHosts + ", Requesting: " + count);
+        hosts = ec2.allocateHosts(AllocateHostsRequest.builder()
+                .availabilityZone("us-west-2c")
+                .instanceType(AwsBenchmarkMetadata.instanceType().toString())
+                .quantity(count)
+                .tagSpecifications(TagSpecification.builder()
+                  .tags(tags)
+                  .resourceType(ResourceType.DEDICATED_HOST)
+                  .build())
+                .build());
+        hostIds.addAll(hosts.hostIds());
+        gotHosts += hosts.hostIds().size();
+      } catch (Ec2Exception ex) {
+        System.err.println(ex.getLocalizedMessage());
+        sleep(1000);
+        count = count / 2 + ((count % 2 == 0) ? 0 : 1);
+      }
+      System.out.println("NOW: " + Instant.now() + " DONE: " + end);
       if (Instant.now().isAfter(end)) {
         throw new InterruptedException(
-            count + " hosts were not allocated before timeout of " + timeout + " seconds.");
+                count + " hosts were not allocated before timeout of " + timeout + " seconds.");
       }
-    } while (gotHosts < count);
+    } while (gotHosts < fullCount);
 
     return hostIds;
   }
