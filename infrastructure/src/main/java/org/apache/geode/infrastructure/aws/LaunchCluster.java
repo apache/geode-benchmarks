@@ -148,7 +148,7 @@ public class LaunchCluster {
         gotHosts += hosts.hostIds().size();
       } catch (Ec2Exception ex) {
         System.err.println(ex.getLocalizedMessage());
-        sleep(1000);
+        sleep(5000);
         count = count / 2 + ((count % 2 == 0) ? 0 : 1);
       }
       System.out.println("NOW: " + Instant.now() + " DONE: " + end);
