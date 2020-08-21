@@ -31,8 +31,8 @@ class AwsBenchmarkMetadata extends BenchmarkMetadata {
   public static final int POLL_INTERVAL = 15000;
 //  public static InstanceType INSTANCE_TYPE = InstanceType.C5_18_XLARGE;
   public static InstanceType INSTANCE_TYPE = InstanceType.C5_LARGE;
-//  public static Tenancy TENANCY = Tenancy.DEDICATED;
-  public static Tenancy TENANCY = Tenancy.DEFAULT;
+  public static Tenancy TENANCY = Tenancy.DEDICATED;
+//  public static Tenancy TENANCY = Tenancy.DEFAULT;
 
   public static String getUser() {
     return USER;
