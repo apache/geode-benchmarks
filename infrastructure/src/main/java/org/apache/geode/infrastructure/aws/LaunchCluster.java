@@ -136,7 +136,7 @@ public class LaunchCluster {
       try {
         System.out.println("Need: " + fullCount + ", Have: " + gotHosts + ", Requesting: " + count);
         hosts = ec2.allocateHosts(AllocateHostsRequest.builder()
-                .availabilityZone("us-west-2c")
+                .availabilityZone("us-west-2d")
                 .instanceType(AwsBenchmarkMetadata.instanceType().toString())
                 .quantity(count)
                 .tagSpecifications(TagSpecification.builder()
