@@ -132,11 +132,12 @@ public class LaunchCluster {
     List<String> hostIds = new ArrayList<>();
 
     Instant end = Instant.now().plus(Duration.ofSeconds(timeout));
+    int attempt = 0;
     do {
       try {
         System.out.println("Need: " + fullCount + ", Have: " + gotHosts + ", Requesting: " + count);
         hosts = ec2.allocateHosts(AllocateHostsRequest.builder()
-                .availabilityZone("us-west-2d")
+                .availabilityZone("us-west-2c")
                 .instanceType(AwsBenchmarkMetadata.instanceType().toString())
                 .quantity(count)
                 .tagSpecifications(TagSpecification.builder()
@@ -148,13 +149,13 @@ public class LaunchCluster {
         gotHosts += hosts.hostIds().size();
       } catch (Ec2Exception ex) {
         System.err.println(ex.getLocalizedMessage());
-        sleep(5000);
+        System.out.println("NOW: " + Instant.now() + " DONE: " + end);
+        if (Instant.now().isAfter(end)) {
+          throw new InterruptedException(
+                  count + " hosts were not allocated before timeout of " + timeout + " seconds.");
+        }
+        sleep(getWaitTimeExp(++attempt));
         count = count / 2 + ((count % 2 == 0) ? 0 : 1);
-      }
-      System.out.println("NOW: " + Instant.now() + " DONE: " + end);
-      if (Instant.now().isAfter(end)) {
-        throw new InterruptedException(
-                count + " hosts were not allocated before timeout of " + timeout + " seconds.");
       }
     } while (gotHosts < fullCount);
 
