@@ -30,7 +30,7 @@ class AwsBenchmarkMetadata extends BenchmarkMetadata {
   private static String USER = "geode";
   public static final int POLL_INTERVAL = 15000;
 //  public static InstanceType INSTANCE_TYPE = InstanceType.C5_18_XLARGE;
-  public static InstanceType INSTANCE_TYPE = InstanceType.C5_LARGE;
+  public static InstanceType INSTANCE_TYPE = InstanceType.C5_2_XLARGE;
   public static Tenancy TENANCY = Tenancy.DEDICATED;
 //  public static Tenancy TENANCY = Tenancy.DEFAULT;
 
