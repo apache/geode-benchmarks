@@ -20,14 +20,14 @@ import org.apache.geode.cache.execute.Function;
 import org.apache.geode.cache.execute.FunctionContext;
 import org.apache.geode.cache.execute.RegionFunctionContext;
 
-public class FunctionWithArguments implements Function {
+public class FunctionWithArguments implements Function<Long> {
 
   public FunctionWithArguments() {}
 
   @Override
-  public void execute(final FunctionContext context) {
+  public void execute(final FunctionContext<Long> context) {
     final RegionFunctionContext regionFunctionContext = (RegionFunctionContext) context;
-    final Region region = regionFunctionContext.getDataSet();
+    final Region<?, ?> region = regionFunctionContext.getDataSet();
     final Long key = (Long) regionFunctionContext.getArguments();
     context.getResultSender().lastResult(region.get(key));
   }

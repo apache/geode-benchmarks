@@ -21,12 +21,12 @@ import org.apache.geode.cache.execute.Function;
 import org.apache.geode.cache.execute.FunctionContext;
 import org.apache.geode.cache.execute.RegionFunctionContext;
 
-public class FunctionWithFilter implements Function {
+public class FunctionWithFilter implements Function<Long> {
 
   public FunctionWithFilter() {}
 
   @Override
-  public void execute(final FunctionContext context) {
+  public void execute(final FunctionContext<Long> context) {
     final RegionFunctionContext regionFunctionContext = (RegionFunctionContext) context;
     final Region<Long, Portfolio> region = regionFunctionContext.getDataSet();
     @SuppressWarnings("unchecked")

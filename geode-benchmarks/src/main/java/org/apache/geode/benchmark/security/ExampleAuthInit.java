@@ -19,11 +19,11 @@ package org.apache.geode.benchmark.security;
 
 import java.util.Properties;
 
-import org.apache.geode.LogWriter;
 import org.apache.geode.distributed.DistributedMember;
 import org.apache.geode.security.AuthInitialize;
 import org.apache.geode.security.AuthenticationFailedException;
 
+@SuppressWarnings("deprecation")
 public class ExampleAuthInit implements AuthInitialize {
 
   private static final String USER_NAME = "security-username";
@@ -53,12 +53,11 @@ public class ExampleAuthInit implements AuthInitialize {
   public void close() {}
 
   @Override
-  @Deprecated
-  public void init(LogWriter systemLogger, LogWriter securityLogger)
+  public void init(org.apache.geode.LogWriter systemLogger,
+      org.apache.geode.LogWriter securityLogger)
       throws AuthenticationFailedException {}
 
   @Override
-  @Deprecated
   public Properties getCredentials(Properties securityProps, DistributedMember server,
       boolean isPeer) throws AuthenticationFailedException {
     return getCredentials(securityProps);

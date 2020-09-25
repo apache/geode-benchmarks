@@ -62,6 +62,11 @@ dependencies {
   testImplementation(group: 'org.assertj', name: 'assertj-core', version: project.'assertj-core.version')
 }
 
+compileJava {
+  options.compilerArgs << '-Xlint:unchecked' << "-Werror"
+  options.deprecation = true
+}
+
 test{ useJUnitPlatform() }
 
 task benchmark(type: Test) {

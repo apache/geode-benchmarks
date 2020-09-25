@@ -51,12 +51,12 @@ public class ExecuteParameterizedFunction extends BenchmarkDriverAdapter impleme
 
   @Override
   public boolean test(Map<Object, Object> ctx) {
-    ResultCollector resultCollector = FunctionService
+    @SuppressWarnings("unchecked")
+    ResultCollector<?, ?> resultCollector = FunctionService
         .onRegion(region)
         .setArguments(keyRange.random())
         .execute(function);
     resultCollector.getResult();
     return true;
-
   }
 }

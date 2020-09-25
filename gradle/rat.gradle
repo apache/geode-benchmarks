@@ -17,6 +17,10 @@
 
 apply plugin: "org.nosphere.apache.rat"
 
+repositories {
+  mavenCentral()
+}
+
 rat {
   excludes = [
     '.travis.yml',

@@ -61,7 +61,8 @@ dependencies {
 compileJava {
   options.fork = true
   options.forkOptions.executable = 'javac'
-  options.compilerArgs << '-XDignore.symbol.file'
+  options.compilerArgs << '-XDignore.symbol.file' << '-Xlint:unchecked' << "-Werror"
+  options.deprecation = true
 }
 
 test{ useJUnitPlatform() }
