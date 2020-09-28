@@ -80,7 +80,6 @@ task benchmark(type: Test) {
   testLogging { exceptionFormat = 'full' }
 
   exclude "**/NoopBenchmark.class"
-  exclude "**/P2p*.class"
 
   forkEvery 1
 
