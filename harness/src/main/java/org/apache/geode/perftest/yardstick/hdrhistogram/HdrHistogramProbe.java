@@ -45,7 +45,7 @@ import org.yardstickframework.BenchmarkTotalsOnlyProbe;
 public class HdrHistogramProbe implements BenchmarkExecutionAwareProbe, BenchmarkTotalsOnlyProbe {
 
   private final int lower;
-  private final long upper;
+  private long upper;
   private final int numDigits;
   private final Clock clock;
   private final Consumer<Histogram> histogramConsumer;
@@ -78,6 +78,7 @@ public class HdrHistogramProbe implements BenchmarkExecutionAwareProbe, Benchmar
   @Override
   public void start(BenchmarkDriver drv, BenchmarkConfiguration cfg) throws Exception {
     int threads = cfg.threads();
+    upper = TimeUnit.SECONDS.toNanos(cfg.duration());
     start(threads);
 
   }
@@ -99,10 +100,7 @@ public class HdrHistogramProbe implements BenchmarkExecutionAwareProbe, Benchmar
 
   @Override
   public void stop() {
-    final long timeStampMsec = System.currentTimeMillis();
-    for (Histogram histogram : histograms) {
-      histogram.setEndTimeStamp(timeStampMsec);
-    }
+    // called after points has been recorded.
   }
 
   @Override
@@ -112,14 +110,14 @@ public class HdrHistogramProbe implements BenchmarkExecutionAwareProbe, Benchmar
 
   @Override
   public Collection<BenchmarkProbePoint> points() {
-    Histogram aggregate = getHistogram();
+    final Histogram aggregate = getHistogram();
     reset();
 
-    double mean = aggregate.getMean();
-    long percentile99 = aggregate.getValueAtPercentile(99);
+    final double mean = aggregate.getMean();
+    final long percentile99 = aggregate.getValueAtPercentile(99);
 
-    BenchmarkProbePoint point =
-        new BenchmarkProbePoint(0, new double[] {mean, percentile99});
+    final BenchmarkProbePoint point =
+        new BenchmarkProbePoint(System.currentTimeMillis(), new double[] {mean, percentile99});
 
     histogramConsumer.accept(aggregate);
     return Collections.singleton(point);
@@ -130,11 +128,9 @@ public class HdrHistogramProbe implements BenchmarkExecutionAwareProbe, Benchmar
 
   }
 
-
-
-  public Histogram getHistogram() {
-    Histogram aggregate = new Histogram(lower, upper, numDigits);
-    for (Histogram histogram : histograms) {
+  Histogram getHistogram() {
+    final Histogram aggregate = new Histogram(lower, upper, numDigits);
+    for (final Histogram histogram : histograms) {
       aggregate.add(histogram);
     }
     aggregate.setEndTimeStamp(System.currentTimeMillis());
