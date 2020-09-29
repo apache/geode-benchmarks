@@ -90,13 +90,20 @@ public class HdrHistogramProbe implements BenchmarkExecutionAwareProbe, Benchmar
   }
 
   private void reset() {
+    final long timeStampMsec = System.currentTimeMillis();
     for (int i = 0; i < histograms.length; i++) {
       histograms[i] = new Histogram(lower, upper, numDigits);
+      histograms[i].setStartTimeStamp(timeStampMsec);
     }
   }
 
   @Override
-  public void stop() {}
+  public void stop() {
+    final long timeStampMsec = System.currentTimeMillis();
+    for (int i = 0; i < histograms.length; i++) {
+      histograms[i].setEndTimeStamp(timeStampMsec);
+    }
+  }
 
   @Override
   public Collection<String> metaInfo() {
@@ -108,11 +115,11 @@ public class HdrHistogramProbe implements BenchmarkExecutionAwareProbe, Benchmar
     Histogram aggregate = getHistogram();
     reset();
 
-    double percentile50 = aggregate.getMean();
+    double mean = aggregate.getMean();
     long percentile99 = aggregate.getValueAtPercentile(99);
 
     BenchmarkProbePoint point =
-        new BenchmarkProbePoint(0, new double[] {percentile50, percentile99});
+        new BenchmarkProbePoint(0, new double[] {mean, percentile99});
 
     histogramConsumer.accept(aggregate);
     return Collections.singleton(point);
