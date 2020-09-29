@@ -100,8 +100,8 @@ public class HdrHistogramProbe implements BenchmarkExecutionAwareProbe, Benchmar
   @Override
   public void stop() {
     final long timeStampMsec = System.currentTimeMillis();
-    for (int i = 0; i < histograms.length; i++) {
-      histograms[i].setEndTimeStamp(timeStampMsec);
+    for (Histogram histogram : histograms) {
+      histogram.setEndTimeStamp(timeStampMsec);
     }
   }
 
@@ -137,6 +137,7 @@ public class HdrHistogramProbe implements BenchmarkExecutionAwareProbe, Benchmar
     for (Histogram histogram : histograms) {
       aggregate.add(histogram);
     }
+    aggregate.setEndTimeStamp(System.currentTimeMillis());
     return aggregate;
   }
 }
