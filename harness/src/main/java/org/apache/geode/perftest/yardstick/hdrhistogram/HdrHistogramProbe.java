@@ -18,6 +18,8 @@
 package org.apache.geode.perftest.yardstick.hdrhistogram;
 
 
+import static java.util.concurrent.TimeUnit.SECONDS;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -25,6 +27,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 import org.HdrHistogram.Histogram;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.yardstickframework.BenchmarkConfiguration;
 import org.yardstickframework.BenchmarkDriver;
 import org.yardstickframework.BenchmarkExecutionAwareProbe;
@@ -43,6 +47,7 @@ import org.yardstickframework.BenchmarkTotalsOnlyProbe;
  * TODO consider writing per interval histograms using HistogramLogWriter
  */
 public class HdrHistogramProbe implements BenchmarkExecutionAwareProbe, BenchmarkTotalsOnlyProbe {
+  private static final Logger logger = LoggerFactory.getLogger(HdrHistogramProbe.class);
 
   private final int lower;
   private long upper;
@@ -78,7 +83,7 @@ public class HdrHistogramProbe implements BenchmarkExecutionAwareProbe, Benchmar
   @Override
   public void start(BenchmarkDriver drv, BenchmarkConfiguration cfg) throws Exception {
     final int threads = cfg.threads();
-    upper = TimeUnit.SECONDS.toNanos(cfg.duration());
+    upper = SECONDS.toNanos(cfg.duration());
     start(threads);
 
   }
@@ -119,7 +124,19 @@ public class HdrHistogramProbe implements BenchmarkExecutionAwareProbe, Benchmar
     final BenchmarkProbePoint point =
         new BenchmarkProbePoint(aggregate.getEndTimeStamp(), new double[] {mean, percentile99});
 
-    histogramConsumer.accept(aggregate);
+    for (int r = 0; r < 5; ++r) {
+      try {
+        histogramConsumer.accept(aggregate);
+      } catch (Exception e) {
+        logger.error("Failed to log histogram. aggregate={}", aggregate, e);
+        try {
+          Thread.sleep(SECONDS.toMillis(1));
+        } catch (InterruptedException ignored) {
+        }
+        continue;
+      }
+      break;
+    }
     return Collections.singleton(point);
   }
 
