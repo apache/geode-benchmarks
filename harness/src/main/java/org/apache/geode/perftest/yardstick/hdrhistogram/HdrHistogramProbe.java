@@ -126,9 +126,10 @@ public class HdrHistogramProbe implements BenchmarkExecutionAwareProbe, Benchmar
 
     for (int r = 0; r < 5; ++r) {
       try {
+        logger.info("Saving histogram. r={}", r);
         histogramConsumer.accept(aggregate);
       } catch (Exception e) {
-        logger.error("Failed to log histogram. aggregate={}", aggregate, e);
+        logger.error("Failed to save histogram. aggregate={}", aggregate, e);
         try {
           Thread.sleep(SECONDS.toMillis(1));
         } catch (InterruptedException ignored) {
