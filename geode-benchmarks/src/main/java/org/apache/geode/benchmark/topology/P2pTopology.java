@@ -14,14 +14,19 @@
  */
 package org.apache.geode.benchmark.topology;
 
+import static org.apache.geode.benchmark.Config.after;
 import static org.apache.geode.benchmark.Config.before;
 import static org.apache.geode.benchmark.Config.role;
 import static org.apache.geode.benchmark.topology.Ports.LOCATOR_PORT;
+import static org.apache.geode.benchmark.topology.Roles.CLIENT;
 import static org.apache.geode.benchmark.topology.Roles.LOCATOR;
 import static org.apache.geode.benchmark.topology.Roles.SERVER;
 
 import org.apache.geode.benchmark.tasks.StartLocator;
 import org.apache.geode.benchmark.tasks.StartServer;
+import org.apache.geode.benchmark.tasks.StopClient;
+import org.apache.geode.benchmark.tasks.StopLocator;
+import org.apache.geode.benchmark.tasks.StopServer;
 import org.apache.geode.perftest.TestConfig;
 
 public class P2pTopology extends Topology {
@@ -36,6 +41,9 @@ public class P2pTopology extends Topology {
 
     before(config, new StartLocator(LOCATOR_PORT), LOCATOR);
     before(config, new StartServer(LOCATOR_PORT), SERVER);
+
+    after(config, new StopServer(), SERVER);
+    after(config, new StopLocator(), LOCATOR);
   }
 
 }

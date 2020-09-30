@@ -77,7 +77,7 @@ public class HdrHistogramProbe implements BenchmarkExecutionAwareProbe, Benchmar
 
   @Override
   public void start(BenchmarkDriver drv, BenchmarkConfiguration cfg) throws Exception {
-    int threads = cfg.threads();
+    final int threads = cfg.threads();
     upper = TimeUnit.SECONDS.toNanos(cfg.duration());
     start(threads);
 
@@ -117,7 +117,7 @@ public class HdrHistogramProbe implements BenchmarkExecutionAwareProbe, Benchmar
     final long percentile99 = aggregate.getValueAtPercentile(99);
 
     final BenchmarkProbePoint point =
-        new BenchmarkProbePoint(System.currentTimeMillis(), new double[] {mean, percentile99});
+        new BenchmarkProbePoint(aggregate.getEndTimeStamp(), new double[] {mean, percentile99});
 
     histogramConsumer.accept(aggregate);
     return Collections.singleton(point);
