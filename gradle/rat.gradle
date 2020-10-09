@@ -15,26 +15,37 @@
  * limitations under the License.
  */
 
-apply plugin: "org.nosphere.apache.rat"
-
 repositories {
   mavenCentral()
 }
 
 rat {
+  inputDir = rootDir
+
   excludes = [
-    '.travis.yml',
+    // git
     '.git/**',
-    '**/output/**',
-    '**/output-*/**',
+    '**/.gitignore',
+    '**/.gitkeep',
+    // gradle
+    '**/.gradle/**',
+    'gradlew',
+    'gradlew.bat',
+    'gradle/wrapper/gradle-wrapper.properties',
+    'caches/**',
+    'daemon/**',
+    'native/**',
+    'wrapper/**',
     '**/build/**',
-    '**/out/**',
-    'README.md',
+    '**/build-*/**',
+    '.buildinfo',
+    '**/release-features.rendered',
+    // just for jenkins
+
     // IDE
     'etc/eclipse-java-google-style.xml',
     'etc/intellij-java-modified-google-style.xml',
     'etc/eclipseOrganizeImports.importorder',
-    'etc/greclipse.properties',
     '**/.project',
     '**/.classpath',
     '**/.settings/**',
@@ -45,19 +56,6 @@ rat {
     '.idea/**',
     '**/tags',
     '**/out/**',
-    // gradle
-    '**/.gradle/**',
-    '.gradle/**',
-    'gradlew*',
-    'gradle/**',
-    'gradle/wrapper/gradle-wrapper.properties',
-    'caches/**',
-    'daemon/**',
-    'native/**',
-    'wrapper/**',
-    '**/build/**',
-    '**/build-*/**',
-    '.buildinfo',
     // text files
     '**/*.fig',
     '**/*.txt',
@@ -71,6 +69,33 @@ rat {
     '**/*.rej',
     '**/*.orig',
     '**/*.MF',
-    '**/*.cfg',
+    '**/cargo_logs/**',
+    '**/META-INF/**',
+    'jpf.properties',
+    // binary files
+    '**/*.cer',
+    '**/*.dia',
+    '**/*.gfs',
+    '**/*.gif',
+    '**/*.ico',
+    '**/*.jpg',
+    '**/*.keystore',
+    '**/*.pdf',
+    '**/*.png',
+    '**/*.ser',
+    '**/*.svg',
+    '**/*.truststore',
+    '**/*.xls',
+    '**/publickeyfile',
+    '**/*.dat',
+    // other text files
+    '**/log4j*.xml',
+    // file created by `jenv local`
+    '.java-version',
+    // benchmark outputs
+    'infrastructure/scripts/**/output-*',
+    'infrastructure/scripts/**/failedTests',
   ]
 }
+
+check.dependsOn rat
