@@ -6,3 +6,4 @@ output*/
 temp-self-signed.jks
 geode-benchmarks/security.json
 harness/security.json
+failedTests
