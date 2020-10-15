@@ -82,6 +82,7 @@ task benchmark(type: Test) {
   exclude "**/NoopBenchmark.class"
 
   forkEvery 1
+  failFast = true
 
   systemProperty 'TEST_HOSTS', project.findProperty('hosts')
   systemProperty 'TEST_METADATA', project.findProperty('metadata')
