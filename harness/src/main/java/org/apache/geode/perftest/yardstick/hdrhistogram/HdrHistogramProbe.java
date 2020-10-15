@@ -105,7 +105,7 @@ public class HdrHistogramProbe implements BenchmarkExecutionAwareProbe, Benchmar
 
   @Override
   public void stop() {
-    // called after points has been recorded.
+    logger.info("Stopped");
   }
 
   @Override
@@ -129,7 +129,7 @@ public class HdrHistogramProbe implements BenchmarkExecutionAwareProbe, Benchmar
         logger.info("Saving histogram. r={}", r);
         histogramConsumer.accept(aggregate);
       } catch (Exception e) {
-        logger.error("Failed to save histogram. aggregate={}", aggregate, e);
+        logger.error("Failed to save histogram. aggregate={}", aggregate.getTag(), e);
         try {
           Thread.sleep(SECONDS.toMillis(1));
         } catch (InterruptedException ignored) {
