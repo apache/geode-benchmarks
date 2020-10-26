@@ -49,8 +49,8 @@ public class StartClientSNI extends StartClient {
 
     final InetAddress firstLocatorAddy =
         context.getHostsForRole(LOCATOR.name()).iterator().next();
-    final String offPlatformLocatorName =
-        getOffPlatformHostName(context, firstLocatorAddy);
+//    final String offPlatformLocatorName =
+//        getOffPlatformHostName(context, firstLocatorAddy);
     final InetAddress proxyAddy =
         context.getHostsForRole(PROXY.name()).iterator().next();
 
@@ -58,7 +58,7 @@ public class StartClientSNI extends StartClient {
         .setPdxSerializer(new ReflectionBasedAutoSerializer("benchmark.geode.data.*"))
         .setPoolIdleTimeout(-1)
         .set(ConfigurationProperties.STATISTIC_ARCHIVE_FILE, statsFile)
-        .addPoolLocator(offPlatformLocatorName, locatorPort);
+        .addPoolLocator(firstLocatorAddy.getHostName(), locatorPort);
     final String proxyHostAddress = proxyAddy.getHostAddress();
     return reflectivelySetSniSocketFactory(cacheFactory, proxyHostAddress);
   }

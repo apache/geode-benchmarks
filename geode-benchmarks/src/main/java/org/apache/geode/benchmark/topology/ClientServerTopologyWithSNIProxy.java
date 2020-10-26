@@ -54,8 +54,8 @@ public class ClientServerTopologyWithSNIProxy extends Topology {
 
     configureGeodeProductJvms(config, WITH_SSL_ARGUMENT);
 
-    Stream.concat(Roles.rolesFor(GEODE_PRODUCT), Stream.of(PROXY))
-        .forEach(role -> before(config, new DefineHostNamingsOffPlatformTask(), role));
+//    Stream.concat(Roles.rolesFor(GEODE_PRODUCT), Stream.of(PROXY))
+//        .forEach(role -> before(config, new DefineHostNamingsOffPlatformTask(), role));
 
     before(config, new StartLocatorSNI(LOCATOR_PORT), LOCATOR);
     before(config, new StartServerSNI(LOCATOR_PORT, SERVER_PORT_FOR_SNI), SERVER);

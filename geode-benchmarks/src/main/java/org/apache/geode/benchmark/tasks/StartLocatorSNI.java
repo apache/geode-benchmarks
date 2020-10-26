@@ -38,8 +38,8 @@ public class StartLocatorSNI extends StartLocator {
     new LocatorLauncher.Builder()
         .set(properties)
         .setPort(locatorPort)
-        .setHostnameForClients(
-            getOffPlatformHostName(context, InetAddress.getLocalHost()))
+//        .setHostnameForClients(
+//            getOffPlatformHostName(context, InetAddress.getLocalHost()))
         .build()
         .start();
   }

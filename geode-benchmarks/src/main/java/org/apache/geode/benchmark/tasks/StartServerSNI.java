@@ -39,8 +39,8 @@ public class StartServerSNI extends StartServer {
       throws UnknownHostException {
     cacheServer.setMaxConnections(Integer.MAX_VALUE);
     cacheServer.setPort(serverPortForSni);
-    cacheServer.setHostnameForClients(
-        getOffPlatformHostName(context, InetAddress.getLocalHost()));
+//    cacheServer.setHostnameForClients(
+//        getOffPlatformHostName(context, InetAddress.getLocalHost()));
   }
 
 }
