@@ -37,7 +37,7 @@ import org.apache.geode.perftest.TestContext;
 public class StartSniProxy implements Task {
   public static final String START_DOCKER_DAEMON_COMMAND = "sudo service docker start";
   public static final String START_PROXY_COMMAND =
-      "docker run --rm -d -v %s:/etc/envoy/envoy.yaml --name envoy -p %d:%d envoyproxy/envoy:v1.15-latest";
+      "docker run --rm -d -v %s:/etc/envoy/envoy.yaml --name envoy -p %d:%d envoyproxy/envoy:v1.15-latest --log-level debug";
 
   private final int locatorPort;
   private final int serverPort;
@@ -100,6 +100,13 @@ public class StartSniProxy implements Task {
             + "                '@type': type.googleapis.com/envoy.extensions.filters.network.tcp_proxy.v3.TcpProxy\n"
             + "                stat_prefix: tcp\n"
             + "                cluster: geode_cluster\n"
+            + "                access_log:\n"
+            + "                  - name: envoy.access_loggers.file\n"
+            + "                    typed_config:\n"
+            + "                      \"@type\": type.googleapis.com/envoy.extensions.access_loggers.file.v3.FileAccessLog\n"
+            + "                      log_format:\n"
+            + "                        text_format: \"perf_listern: [%START_TIME%] %DOWNSTREAM_REMOTE_ADDRESS% %UPSTREAM_HOST% %RESPONSE_FLAGS% %BYTES_RECEIVED% %BYTES_SENT% %DURATION%\\n\"\n"
+            + "                      path: /dev/stdout\n"
             + "        - filter_chain_match:\n"
             + "            server_names:\n");
 
@@ -121,6 +128,13 @@ public class StartSniProxy implements Task {
             + "                '@type': type.googleapis.com/envoy.extensions.filters.network.tcp_proxy.v3.TcpProxy\n"
             + "                stat_prefix: tcp\n"
             + "                cluster: geode_cluster\n"
+            + "                access_log:\n"
+            + "                  - name: envoy.access_loggers.file\n"
+            + "                    typed_config:\n"
+            + "                      \"@type\": type.googleapis.com/envoy.extensions.access_loggers.file.v3.FileAccessLog\n"
+            + "                      log_format:\n"
+            + "                        text_format: \"perf_listern: [%START_TIME%] %DOWNSTREAM_REMOTE_ADDRESS% %UPSTREAM_HOST% %RESPONSE_FLAGS% %BYTES_RECEIVED% %BYTES_SENT% %DURATION%\\n\"\n"
+            + "                      path: /dev/stdout\n"
             + "  clusters:\n"
             + "    - name: geode_cluster\n"
             + "      connect_timeout: 1s\n"
