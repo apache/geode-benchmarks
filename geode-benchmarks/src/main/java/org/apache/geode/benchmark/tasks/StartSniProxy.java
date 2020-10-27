@@ -83,7 +83,8 @@ public class StartSniProxy implements Task {
             + "            server_names:\n");
 
     context.getHostsForRole(LOCATOR.name())
-        .forEach(hostname -> yaml.append("              - '").append(hostname).append("'\n"));
+        .forEach(inetAddress -> yaml.append("              - '").append(inetAddress.getHostName())
+            .append("'\n"));
 
     yaml.append("            transport_protocol: tls\n"
         + "          filters:\n"
@@ -103,7 +104,8 @@ public class StartSniProxy implements Task {
             + "            server_names:\n");
 
     context.getHostsForRole(SERVER.name())
-        .forEach(hostname -> yaml.append("              - '").append(hostname).append("'\n"));
+        .forEach(inetAddress -> yaml.append("              - '").append(inetAddress.getHostName())
+            .append("'\n"));
 
     yaml.append("            transport_protocol: tls\n"
         + "          filters:\n"
