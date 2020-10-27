@@ -111,7 +111,7 @@ public class StartSniProxy implements Task {
             + "            server_names:\n");
 
     context.getHostsForRole(SERVER.name())
-        .forEach(inetAddress -> yaml.append("              - '").append(inetAddress.getHostAddress())
+        .forEach(inetAddress -> yaml.append("              - '").append(inetAddress.getHostName())
             .append("'\n"));
 
     yaml.append("            transport_protocol: tls\n"
