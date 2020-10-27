@@ -16,17 +16,22 @@ package org.apache.geode.benchmark.topology;
 
 public class Ports {
   /**
-   * The port used to create the locator for the tests
+   * The ephemeral port constant.
+   */
+  public static final int EPHEMERAL_PORT = 0;
+
+  /**
+   * The port used to create the locator for the tests.
    */
   public static final int LOCATOR_PORT = 10334;
 
   /**
-   * With an SNI proxy, both the locator ports and the server ports
-   * have to be well-known (static) since the proxy has to know them
-   * and, in general, SNI proxies don't have visibility into locator
-   * responses carrying server port numbers.
+   * The port used to create the servers for tests.
    */
-  public static final int SERVER_PORT_FOR_SNI = 40404;
+  public static final int SERVER_PORT = 40404;
 
+  /**
+   * The SNI proxy port.
+   */
   public static final int SNI_PROXY_PORT = 15443;
 }

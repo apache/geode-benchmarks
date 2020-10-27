@@ -18,6 +18,8 @@
 package org.apache.geode.benchmark.tests;
 
 import static org.apache.geode.benchmark.topology.Ports.LOCATOR_PORT;
+import static org.apache.geode.benchmark.topology.Ports.SERVER_PORT;
+import static org.apache.geode.benchmark.topology.Ports.SNI_PROXY_PORT;
 import static org.apache.geode.benchmark.topology.Roles.PROXY;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -42,7 +44,8 @@ class GeodeBenchmarkTest {
   @BeforeEach
   public void beforeEach() {
     startProxyStep =
-        new TestStep(new StartSniProxy(LOCATOR_PORT), new String[] {PROXY.name()});
+        new TestStep(new StartSniProxy(LOCATOR_PORT, SERVER_PORT, SNI_PROXY_PORT),
+            new String[] {PROXY.name()});
   }
 
   @AfterAll
