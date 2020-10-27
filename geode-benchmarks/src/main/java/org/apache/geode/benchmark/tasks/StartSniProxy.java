@@ -17,6 +17,8 @@
 
 package org.apache.geode.benchmark.tasks;
 
+import static java.lang.String.format;
+import static java.lang.System.getProperty;
 import static org.apache.geode.benchmark.tasks.DefineHostNamingsOffPlatformTask.HOST_NAMINGS_OFF_PLATFORM;
 import static org.apache.geode.benchmark.topology.Ports.SERVER_PORT_FOR_SNI;
 import static org.apache.geode.benchmark.topology.Roles.LOCATOR;
@@ -41,7 +43,7 @@ import org.apache.geode.perftest.TestContext;
  */
 public class StartSniProxy implements Task {
   public static final String START_DOCKER_DAEMON_COMMAND = "sudo service docker start";
-  public static final String START_PROXY_COMMAND = "docker-compose up -d haproxy";
+  public static final String START_PROXY_COMMAND = "docker run --rm -d -v %s/envoy.yaml:/etc/envoy/envoy.yaml --name envoy -p 15443:15443 envoyproxy/envoy:v1.15-latest";
 
   private final int locatorPort;
 
@@ -56,17 +58,17 @@ public class StartSniProxy implements Task {
     final Map<InetAddress, String> namings =
         (Map<InetAddress, String>) context.getAttribute(HOST_NAMINGS_OFF_PLATFORM);
 
-    final String config = generateHaProxyConfig(
+    final String config = generateEnvoyConfig(
         internalHostNamesFor(context, LOCATOR),
         externalHostNamesFor(context, LOCATOR, namings),
         internalHostNamesFor(context, SERVER),
         externalHostNamesFor(context, SERVER, namings));
 
-    rewriteFile(config, "haproxy.cfg");
+    rewriteFile(config, "envoy.yaml");
 
     final ProcessControl processControl = new ProcessControl();
     processControl.runCommand(START_DOCKER_DAEMON_COMMAND);
-    processControl.runCommand(START_PROXY_COMMAND);
+    processControl.runCommand(format(START_PROXY_COMMAND, getProperty("user.home")));
   }
 
   private void rewriteFile(final String content, final String fileName) throws IOException {
@@ -88,7 +90,92 @@ public class StartSniProxy implements Task {
     return context.getHostsForRole(role.name()).stream();
   }
 
-  String generateHaProxyConfig(final Stream<String> locatorsInternalStream,
+  String generateEnvoyConfig(final Stream<String> locatorsInternalStream,
+                               final Stream<String> locatorsExternalStream,
+                               final Stream<String> serversInternalStream,
+                               final Stream<String> serversExternalStream) {
+
+    StringBuilder yaml = new StringBuilder("static_resources:\n"
+        + "  listeners:\n"
+        + "    - name: geode_listener\n"
+        + "      address:\n"
+        + "        socket_address:\n"
+        + "          address: 0.0.0.0\n"
+        + "          port_value: 15443\n"
+        + "      listener_filters:\n"
+        + "        - name: envoy.filters.listener.tls_inspector\n"
+        + "      filter_chains:\n"
+        + "        - filter_chain_match:\n"
+        + "            server_names:\n");
+
+    locatorsInternalStream.forEach(hostname -> {
+      yaml.append("              - '").append(hostname).append("'\n");
+    });
+
+    yaml.append("            transport_protocol: tls\n"
+        + "          filters:\n"
+        + "            - name: envoy.filters.network.sni_dynamic_forward_proxy\n"
+        + "              typed_config:\n"
+        + "                '@type': type.googleapis.com/envoy.extensions.filters.network.sni_dynamic_forward_proxy.v3alpha.FilterConfig\n"
+        + "                port_value: ").append(locatorPort).append("\n"
+        + "                dns_cache_config:\n"
+        + "                  name: geode_cluster_dns_cache_config\n"
+        + "                  dns_lookup_family: V4_ONLY\n"
+        + "            - name: envoy.tcp_proxy\n"
+        + "              typed_config:\n"
+        + "                '@type': type.googleapis.com/envoy.extensions.filters.network.tcp_proxy.v3.TcpProxy\n"
+        + "                stat_prefix: tcp\n"
+        + "                cluster: geode_cluster\n"
+        + "                access_log:\n"
+        + "                  - name: envoy.access_loggers.file\n"
+        + "                    typed_config:\n"
+        + "                      \"@type\": type.googleapis.com/envoy.extensions.access_loggers.file.v3.FileAccessLog\n"
+        + "                      log_format:\n"
+        + "                        text_format: \"[%START_TIME%] %DOWNSTREAM_REMOTE_ADDRESS% %UPSTREAM_HOST% %RESPONSE_FLAGS% %BYTES_RECEIVED% %BYTES_SENT% %DURATION%\\n\"\n"
+        + "                      path: /dev/stdout\n"
+        + "        - filter_chain_match:\n"
+        + "            server_names:\n");
+
+    serversInternalStream.forEach(hostname -> {
+      yaml.append("              - '").append(hostname).append("'\n");
+    });
+
+    yaml.append("            transport_protocol: tls\n"
+        + "          filters:\n"
+        + "            - name: envoy.filters.network.sni_dynamic_forward_proxy\n"
+        + "              typed_config:\n"
+        + "                '@type': type.googleapis.com/envoy.extensions.filters.network.sni_dynamic_forward_proxy.v3alpha.FilterConfig\n"
+        + "                port_value: ").append(SERVER_PORT_FOR_SNI).append("\n"
+        + "                dns_cache_config:\n"
+        + "                  name: geode_cluster_dns_cache_config\n"
+        + "                  dns_lookup_family: V4_ONLY\n"
+        + "            - name: envoy.tcp_proxy\n"
+        + "              typed_config:\n"
+        + "                '@type': type.googleapis.com/envoy.extensions.filters.network.tcp_proxy.v3.TcpProxy\n"
+        + "                stat_prefix: tcp\n"
+        + "                cluster: geode_cluster\n"
+        + "                access_log:\n"
+        + "                  - name: envoy.access_loggers.file\n"
+        + "                    typed_config:\n"
+        + "                      \"@type\": type.googleapis.com/envoy.extensions.access_loggers.file.v3.FileAccessLog\n"
+        + "                      log_format:\n"
+        + "                        text_format: \"[%START_TIME%] %DOWNSTREAM_REMOTE_ADDRESS% %UPSTREAM_HOST% %RESPONSE_FLAGS% %BYTES_RECEIVED% %BYTES_SENT% %DURATION%\\n\"\n"
+        + "                      path: /dev/stdout\n"
+        + "  clusters:\n"
+        + "    - name: geode_cluster\n"
+        + "      connect_timeout: 1s\n"
+        + "      lb_policy: CLUSTER_PROVIDED\n"
+        + "      cluster_type:\n"
+        + "        name: envoy.clusters.dynamic_forward_proxy\n"
+        + "        typed_config:\n"
+        + "          '@type': type.googleapis.com/envoy.extensions.clusters.dynamic_forward_proxy.v3.ClusterConfig\n"
+        + "          dns_cache_config:\n"
+        + "            name: geode_cluster_dns_cache_config\n"
+        + "            dns_lookup_family: V4_ONLY\n");
+    return yaml.toString();
+  }
+
+    String generateHaProxyConfig(final Stream<String> locatorsInternalStream,
       final Stream<String> locatorsExternalStream,
       final Stream<String> serversInternalStream,
       final Stream<String> serversExternalStream) {
