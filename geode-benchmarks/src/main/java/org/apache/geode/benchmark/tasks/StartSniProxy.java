@@ -37,7 +37,7 @@ import org.apache.geode.perftest.TestContext;
 public class StartSniProxy implements Task {
   public static final String START_DOCKER_DAEMON_COMMAND = "sudo service docker start";
   public static final String START_PROXY_COMMAND =
-      "docker run --rm -d -v %s:/etc/envoy/envoy.yaml --name envoy -p %d:%d envoyproxy/envoy:v1.16-latest --log-level debug -c /etc/envoy/envoy.yaml";
+      "docker run --rm -d -v %s:/etc/envoy/envoy.yaml --name envoy -p %d:%d envoyproxy/envoy:v1.16-latest --log-level debug -c /etc/envoy/envoy.yaml --concurrency 1000";
 
   private final int locatorPort;
   private final int serverPort;
@@ -108,7 +108,7 @@ public class StartSniProxy implements Task {
             + "                    typed_config:\n"
             + "                      \"@type\": type.googleapis.com/envoy.extensions.access_loggers.file.v3.FileAccessLog\n"
             + "                      log_format:\n"
-            + "                        text_format: \"[%START_TIME%] %DOWNSTREAM_REMOTE_ADDRESS% %UPSTREAM_HOST% %RESPONSE_FLAGS% %BYTES_RECEIVED% %BYTES_SENT% %DURATION%\\n\"\n"
+            + "                        text_format: \"[%START_TIME%] %DOWNSTREAM_REMOTE_ADDRESS% %UPSTREAM_HOST% %RESPONSE_FLAGS% %BYTES_RECEIVED% %BYTES_SENT% %DURATION% %CONNECTION_TERMINATION_DETAILS%\\n\"\n"
             + "                      path: /dev/stdout\n"
             + "        - filter_chain_match:\n"
             + "            server_names:\n");
@@ -137,7 +137,7 @@ public class StartSniProxy implements Task {
             + "                    typed_config:\n"
             + "                      \"@type\": type.googleapis.com/envoy.extensions.access_loggers.file.v3.FileAccessLog\n"
             + "                      log_format:\n"
-            + "                        text_format: \"[%START_TIME%] %DOWNSTREAM_REMOTE_ADDRESS% %UPSTREAM_HOST% %RESPONSE_FLAGS% %BYTES_RECEIVED% %BYTES_SENT% %DURATION%\\n\"\n"
+            + "                        text_format: \"[%START_TIME%] %DOWNSTREAM_REMOTE_ADDRESS% %UPSTREAM_HOST% %RESPONSE_FLAGS% %BYTES_RECEIVED% %BYTES_SENT% %DURATION% %CONNECTION_TERMINATION_DETAILS%\\n\"\n"
             + "                      path: /dev/stdout\n"
             + "  clusters:\n"
             + "    - name: geode_cluster\n"
