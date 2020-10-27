@@ -105,7 +105,7 @@ public class StartSniProxy implements Task {
             + "                    typed_config:\n"
             + "                      \"@type\": type.googleapis.com/envoy.extensions.access_loggers.file.v3.FileAccessLog\n"
             + "                      log_format:\n"
-            + "                        text_format: \"perf_listern: [%START_TIME%] %DOWNSTREAM_REMOTE_ADDRESS% %UPSTREAM_HOST% %RESPONSE_FLAGS% %BYTES_RECEIVED% %BYTES_SENT% %DURATION%\\n\"\n"
+            + "                        text_format: \"[%START_TIME%] %DOWNSTREAM_REMOTE_ADDRESS% %UPSTREAM_HOST% %RESPONSE_FLAGS% %BYTES_RECEIVED% %BYTES_SENT% %DURATION%\\n\"\n"
             + "                      path: /dev/stdout\n"
             + "        - filter_chain_match:\n"
             + "            server_names:\n");
@@ -133,7 +133,7 @@ public class StartSniProxy implements Task {
             + "                    typed_config:\n"
             + "                      \"@type\": type.googleapis.com/envoy.extensions.access_loggers.file.v3.FileAccessLog\n"
             + "                      log_format:\n"
-            + "                        text_format: \"perf_listern: [%START_TIME%] %DOWNSTREAM_REMOTE_ADDRESS% %UPSTREAM_HOST% %RESPONSE_FLAGS% %BYTES_RECEIVED% %BYTES_SENT% %DURATION%\\n\"\n"
+            + "                        text_format: \"[%START_TIME%] %DOWNSTREAM_REMOTE_ADDRESS% %UPSTREAM_HOST% %RESPONSE_FLAGS% %BYTES_RECEIVED% %BYTES_SENT% %DURATION%\\n\"\n"
             + "                      path: /dev/stdout\n"
             + "  clusters:\n"
             + "    - name: geode_cluster\n"
