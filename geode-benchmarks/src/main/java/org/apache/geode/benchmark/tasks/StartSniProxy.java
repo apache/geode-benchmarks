@@ -141,7 +141,7 @@ public class StartSniProxy implements Task {
             + "                      path: /dev/stdout\n"
             + "  clusters:\n"
             + "    - name: geode_cluster\n"
-            + "      connect_timeout: 1s\n"
+            + "      connect_timeout: 10s\n"
             + "      lb_policy: CLUSTER_PROVIDED\n"
             + "      cluster_type:\n"
             + "        name: envoy.clusters.dynamic_forward_proxy\n"
