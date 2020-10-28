@@ -37,7 +37,7 @@ import org.apache.geode.perftest.TestContext;
 public class StartSniProxy implements Task {
   public static final String START_DOCKER_DAEMON_COMMAND = "sudo service docker start";
   public static final String START_PROXY_COMMAND =
-      "docker run --rm -d -v %s:/etc/envoy/envoy.yaml --name envoy -p %d:%d envoyproxy/envoy:v1.15-latest --log-level debug -c /etc/envoy/envoy.yaml";
+      "docker run --rm -d -v %s:/etc/envoy/envoy.yaml --name envoy -p %d:%d envoyproxy/envoy:v1.15-latest --log-level debug -c /etc/envoy/envoy.yaml --concurrency 2000";
 
   private final int locatorPort;
   private final int serverPort;
