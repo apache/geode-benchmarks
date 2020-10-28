@@ -77,7 +77,6 @@ public class StartSniProxy implements Task {
         + "          address: 0.0.0.0\n"
         + "          port_value: ").append(proxyPort).append("\n"
         + "      reuse_port: true\n"
-        + "      tcp_backlog_size: 1000\n"
         + "      listener_filters:\n"
         + "        - name: envoy.filters.listener.tls_inspector\n"
         + "      filter_chains:\n"
