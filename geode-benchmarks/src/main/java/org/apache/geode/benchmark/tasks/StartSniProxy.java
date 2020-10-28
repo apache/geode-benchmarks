@@ -76,12 +76,11 @@ public class StartSniProxy implements Task {
         + "        socket_address:\n"
         + "          address: 0.0.0.0\n"
         + "          port_value: ").append(proxyPort).append("\n"
-        + "      reuse_port: true\n"
-        + "      listener_filters:\n"
-        + "        - name: envoy.filters.listener.tls_inspector\n"
-        + "      filter_chains:\n"
-        + "        - filter_chain_match:\n"
-        + "            server_names:\n");
+            + "      listener_filters:\n"
+            + "        - name: envoy.filters.listener.tls_inspector\n"
+            + "      filter_chains:\n"
+            + "        - filter_chain_match:\n"
+            + "            server_names:\n");
 
     context.getHostsForRole(LOCATOR.name())
         .forEach(inetAddress -> yaml.append("              - '").append(inetAddress.getHostName())
