@@ -34,17 +34,17 @@ public class HdrHistogramProbeTest {
 
   private HdrHistogramProbe probe;
   private Clock clock;
-  private Consumer consumer;
 
   @BeforeEach
   public void setUp() {
     clock = mock(Clock.class);
-    consumer = mock(Consumer.class);
+    @SuppressWarnings("unchecked")
+    final Consumer<Histogram> consumer = mock(Consumer.class);
     probe = new HdrHistogramProbe(1, 3_600_000, 3, clock, consumer);
   }
 
   @Test
-  public void recordsASingleValue() throws InterruptedException {
+  public void recordsASingleValue() {
     probe.start(8);
     when(clock.currentTimeNanos()).thenReturn(0L);
     probe.beforeExecute(1);
@@ -83,7 +83,7 @@ public class HdrHistogramProbeTest {
   }
 
   @Test
-  public void generatesASummaryBenchmarkPoint() throws Exception {
+  public void generatesASummaryBenchmarkPoint() {
     probe.start(1);
     when(clock.currentTimeNanos()).thenReturn(0L);
     probe.beforeExecute(0);
@@ -100,7 +100,7 @@ public class HdrHistogramProbeTest {
     assertEquals(1, points.size());
     BenchmarkProbePoint point = points.iterator().next();
 
-    assertEquals(0, point.time());
+    assertEquals(probe.getHistogram().getStartTimeStamp(), point.time());
     Assertions.assertThat(point.values()).containsExactly(3.0, 4.0);
   }
 }
