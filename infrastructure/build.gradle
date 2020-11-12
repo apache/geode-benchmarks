@@ -36,6 +36,11 @@ dependencyManagement {
   imports { mavenBom 'software.amazon.awssdk:bom:' + project.'software-amazon-awssdk.version' }
 }
 
+compileJava {
+  options.compilerArgs << '-Xlint:unchecked' << "-Werror"
+  options.deprecation = true
+}
+
 task(launchCluster, dependsOn: 'classes', type: JavaExec) {
   main = 'org.apache.geode.infrastructure.aws.LaunchCluster'
   workingDir = rootDir
@@ -43,7 +48,6 @@ task(launchCluster, dependsOn: 'classes', type: JavaExec) {
 
   systemProperty 'TEST_CI', project.findProperty('ci')
   systemProperty 'PURPOSE', project.findProperty('purpose')
-
 }
 
 task(destroyCluster, dependsOn: 'classes', type: JavaExec) {

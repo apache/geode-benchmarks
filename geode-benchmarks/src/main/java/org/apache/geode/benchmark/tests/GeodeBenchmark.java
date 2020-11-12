@@ -17,8 +17,6 @@ package org.apache.geode.benchmark.tests;
 
 import static java.util.concurrent.TimeUnit.MINUTES;
 
-import org.apache.geode.benchmark.topology.ClientServerTopology;
-import org.apache.geode.benchmark.topology.ClientServerTopologyWithSNIProxy;
 import org.apache.geode.perftest.TestConfig;
 
 public class GeodeBenchmark {
@@ -44,16 +42,6 @@ public class GeodeBenchmark {
     config.warmupSeconds(WARM_UP_TIME);
     config.durationSeconds(BENCHMARK_DURATION);
     config.threads(THREADS);
-
-    final String sniProp = System.getProperty("withSniProxy");
-    final boolean doSni = sniProp != null && !sniProp.equals("false");
-
-    if (doSni) {
-      ClientServerTopologyWithSNIProxy.configure(config);
-    } else {
-      ClientServerTopology.configure(config);
-    }
-
     return config;
   }
 

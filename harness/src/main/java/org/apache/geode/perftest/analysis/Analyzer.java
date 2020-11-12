@@ -56,7 +56,7 @@ public class Analyzer {
       return;
     }
 
-    boolean isCI = System.getProperty("TEST_CI").equals("1");
+    boolean isCI = System.getProperty("TEST_CI", "0").equals("1");
 
     System.out.println("Running analyzer");
     System.out.println(

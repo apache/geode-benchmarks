@@ -24,9 +24,9 @@ import org.yardstickframework.BenchmarkConfiguration;
 import org.yardstickframework.BenchmarkDriverAdapter;
 
 import org.apache.geode.benchmark.LongRange;
+import org.apache.geode.cache.Cache;
+import org.apache.geode.cache.CacheFactory;
 import org.apache.geode.cache.Region;
-import org.apache.geode.cache.client.ClientCache;
-import org.apache.geode.cache.client.ClientCacheFactory;
 
 /**
  * Task workload to perform get operations on keys within 0
@@ -46,7 +46,7 @@ public class GetTask extends BenchmarkDriverAdapter implements Serializable {
   public void setUp(BenchmarkConfiguration cfg) throws Exception {
     super.setUp(cfg);
 
-    final ClientCache cache = ClientCacheFactory.getAnyInstance();
+    final Cache cache = CacheFactory.getAnyInstance();
     region = cache.getRegion("region");
   }
 

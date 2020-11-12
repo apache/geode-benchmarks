@@ -38,6 +38,7 @@ public class DefineHostNamingsOffPlatformTask implements Task {
 
   public static String getOffPlatformHostName(final TestContext context,
       final InetAddress addy) throws UnknownHostException {
+    @SuppressWarnings("unchecked")
     final Map<InetAddress, String> namings =
         (Map<InetAddress, String>) context.getAttribute(HOST_NAMINGS_OFF_PLATFORM);
     return namings.get(addy);

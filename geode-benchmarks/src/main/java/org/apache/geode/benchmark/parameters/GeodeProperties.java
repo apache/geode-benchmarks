@@ -14,6 +14,10 @@
  */
 package org.apache.geode.benchmark.parameters;
 
+import static org.apache.geode.benchmark.topology.Topology.WITH_SECURITY_MANAGER_PROPERTY;
+import static org.apache.geode.benchmark.topology.Topology.WITH_SSL_CIPHERS_PROPERTY;
+import static org.apache.geode.benchmark.topology.Topology.WITH_SSL_PROPERTY;
+import static org.apache.geode.benchmark.topology.Topology.WITH_SSL_PROTOCOLS_PROPERTY;
 import static org.apache.geode.distributed.ConfigurationProperties.ARCHIVE_DISK_SPACE_LIMIT;
 import static org.apache.geode.distributed.ConfigurationProperties.ARCHIVE_FILE_SIZE_LIMIT;
 import static org.apache.geode.distributed.ConfigurationProperties.CONSERVE_SOCKETS;
@@ -28,7 +32,9 @@ import static org.apache.geode.distributed.ConfigurationProperties.MEMBER_TIMEOU
 import static org.apache.geode.distributed.ConfigurationProperties.REMOVE_UNRESPONSIVE_CLIENT;
 import static org.apache.geode.distributed.ConfigurationProperties.SECURITY_MANAGER;
 import static org.apache.geode.distributed.ConfigurationProperties.SERIALIZABLE_OBJECT_FILTER;
+import static org.apache.geode.distributed.ConfigurationProperties.SSL_CIPHERS;
 import static org.apache.geode.distributed.ConfigurationProperties.SSL_ENABLED_COMPONENTS;
+import static org.apache.geode.distributed.ConfigurationProperties.SSL_PROTOCOLS;
 import static org.apache.geode.distributed.ConfigurationProperties.STATISTIC_SAMPLING_ENABLED;
 import static org.apache.geode.distributed.ConfigurationProperties.USE_CLUSTER_CONFIGURATION;
 import static org.apache.geode.security.SecurableCommunicationChannels.ALL;
@@ -90,15 +96,27 @@ public class GeodeProperties {
 
   public static Properties withSsl(Properties properties) {
     properties.setProperty(SSL_ENABLED_COMPONENTS, ALL);
+    final String withSslProtocols = System.getProperty(WITH_SSL_PROTOCOLS_PROPERTY);
+    if (!isBlank(withSslProtocols)) {
+      properties.setProperty(SSL_PROTOCOLS, withSslProtocols);
+    }
+    final String withSslCiphers = System.getProperty(WITH_SSL_CIPHERS_PROPERTY);
+    if (!isBlank(withSslCiphers)) {
+      properties.setProperty(SSL_CIPHERS, withSslCiphers);
+    }
     return properties;
   }
 
+  private static boolean isBlank(final String value) {
+    return null == value || value.trim().isEmpty();
+  }
+
   private static boolean isSecurityManagerEnabled() {
-    return isPropertySet("withSecurityManager");
+    return isPropertySet(WITH_SECURITY_MANAGER_PROPERTY);
   }
 
   private static boolean isSslEnabled() {
-    return isPropertySet("withSsl");
+    return isPropertySet(WITH_SSL_PROPERTY);
   }
 
   private static boolean isPropertySet(final String propertyName) {

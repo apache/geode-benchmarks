@@ -25,9 +25,9 @@ import org.yardstickframework.BenchmarkConfiguration;
 import org.yardstickframework.BenchmarkDriverAdapter;
 
 import org.apache.geode.benchmark.LongRange;
+import org.apache.geode.cache.Cache;
+import org.apache.geode.cache.CacheFactory;
 import org.apache.geode.cache.Region;
-import org.apache.geode.cache.client.ClientCache;
-import org.apache.geode.cache.client.ClientCacheFactory;
 
 public class PutTask extends BenchmarkDriverAdapter implements Serializable {
 
@@ -42,7 +42,7 @@ public class PutTask extends BenchmarkDriverAdapter implements Serializable {
   @Override
   public void setUp(BenchmarkConfiguration cfg) throws Exception {
     super.setUp(cfg);
-    ClientCache cache = ClientCacheFactory.getAnyInstance();
+    final Cache cache = CacheFactory.getAnyInstance();
     region = cache.getRegion("region");
   }
 

@@ -66,7 +66,8 @@ public class YardstickHdrHistogramParser implements ProbeResultParser {
     results.add(new ResultData("latency standard deviation", histogram.getStdDeviation()));
     results.add(new ResultData("latency standard error",
         histogram.getStdDeviation() / Math.sqrt(histogram.getTotalCount())));
-
+    results.add(new ResultData("average ops/second", ((double) histogram.getTotalCount())
+        / (histogram.getEndTimeStamp() - histogram.getStartTimeStamp()) * 1000));
     return results;
   }
 }

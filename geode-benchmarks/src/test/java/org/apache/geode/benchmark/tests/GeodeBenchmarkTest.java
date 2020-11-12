@@ -53,28 +53,28 @@ class GeodeBenchmarkTest {
   @Test
   public void withoutSniProxy() {
     System.clearProperty("withSniProxy");
-    config = GeodeBenchmark.createConfig();
+    config = ClientServerBenchmark.createConfig();
     assertThat(config.getBefore()).doesNotContain(startProxyStep);
   }
 
   @Test
   public void withSniProxyFalse() {
     System.setProperty("withSniProxy", "false");
-    config = GeodeBenchmark.createConfig();
+    config = ClientServerBenchmark.createConfig();
     assertThat(config.getBefore()).doesNotContain(startProxyStep);
   }
 
   @Test
   public void withSniProxyTrue() {
     System.setProperty("withSniProxy", "true");
-    config = GeodeBenchmark.createConfig();
+    config = ClientServerBenchmark.createConfig();
     assertThat(config.getBefore()).contains(startProxyStep);
   }
 
   @Test
   public void withSniProxyNotLowercaseFalse() {
     System.setProperty("withSniProxy", "AnythING");
-    config = GeodeBenchmark.createConfig();
+    config = ClientServerBenchmark.createConfig();
     assertThat(config.getBefore()).contains(startProxyStep);
   }
 

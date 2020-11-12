@@ -52,7 +52,7 @@ public class PartitionedIndexedQueryBenchmark implements PerformanceTest {
 
   @Override
   public TestConfig configure() {
-    TestConfig config = GeodeBenchmark.createConfig();
+    TestConfig config = ClientServerBenchmark.createConfig();
     config.threads(Runtime.getRuntime().availableProcessors() * 8);
     before(config, new CreatePartitionedRegion(), SERVER);
     before(config, new CreateClientProxyRegion(), CLIENT);

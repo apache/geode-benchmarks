@@ -15,6 +15,8 @@
  * limitations under the License.
  */
 
+import org.gradle.util.VersionNumber
+
 plugins { id 'java' }
 
 group 'org.apache.geode-benchmark'
@@ -47,13 +49,22 @@ dependencies {
   implementation(project(':harness'))
 
   implementation(group: 'org.apache.geode', name: 'geode-core', version: geodeVersion)
-  runtime(group: 'org.apache.geode', name: 'geode-log4j', version: geodeVersion)
+  if (VersionNumber.parse(geodeVersion) >= VersionNumber.parse("1.11.0")) {
+    runtime(group: 'org.apache.geode', name: 'geode-log4j', version: geodeVersion)
+  } else {
+    runtime(group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.13.3')
+  }
 
   // Required for missing dependency on geode-core.
   runtime(group: 'org.eclipse.jetty', name: 'jetty-webapp', version: '9.4.12.v20180830')
 
   testImplementation(group: 'org.mockito', name: 'mockito-all', version: project.'mockito-all.version')
   testImplementation(group: 'org.assertj', name: 'assertj-core', version: project.'assertj-core.version')
+}
+
+compileJava {
+  options.compilerArgs << '-Xlint:unchecked' << "-Werror"
+  options.deprecation = true
 }
 
 test{ useJUnitPlatform() }
@@ -69,9 +80,9 @@ task benchmark(type: Test) {
   testLogging { exceptionFormat = 'full' }
 
   exclude "**/NoopBenchmark.class"
-  exclude "**/*LongBenchmark.class"
 
   forkEvery 1
+  failFast = true
 
   systemProperty 'TEST_HOSTS', project.findProperty('hosts')
   systemProperty 'TEST_METADATA', project.findProperty('metadata')
@@ -92,6 +103,8 @@ task benchmark(type: Test) {
     systemProperty 'withDuration', project.findProperty('withDuration')
   }
   systemProperty 'withSsl', project.hasProperty('withSsl')
+  systemProperty 'withSslProtocols', project.findProperty('withSslProtocols')
+  systemProperty 'withSslCiphers', project.findProperty('withSslCiphers')
   systemProperty 'withSniProxy', project.hasProperty('withSniProxy')
   systemProperty 'withSecurityManager', project.hasProperty('withSecurityManager')
   systemProperty 'benchmark.profiler.argument', project.findProperty('benchmark.profiler.argument')
