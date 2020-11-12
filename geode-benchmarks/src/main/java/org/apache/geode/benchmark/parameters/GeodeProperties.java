@@ -108,7 +108,7 @@ public class GeodeProperties {
   }
 
   private static boolean isBlank(final String value) {
-    return null == value || value.isEmpty() && value.trim().isEmpty();
+    return null == value || value.trim().isEmpty();
   }
 
   private static boolean isSecurityManagerEnabled() {
