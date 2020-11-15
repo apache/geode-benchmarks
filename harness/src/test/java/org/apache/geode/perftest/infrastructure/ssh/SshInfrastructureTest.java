@@ -19,7 +19,6 @@ package org.apache.geode.perftest.infrastructure.ssh;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junitpioneer.jupiter.TempDirectory.TempDir;
 
 import java.io.File;
 import java.io.IOException;
@@ -37,23 +36,22 @@ import org.apache.sshd.server.shell.ProcessShellCommandFactory;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.junitpioneer.jupiter.TempDirectory;
+import org.junit.jupiter.api.io.TempDir;
 
 import org.apache.geode.perftest.infrastructure.Infrastructure;
 
-@ExtendWith(TempDirectory.class)
 public class SshInfrastructureTest {
-
 
   private static final Set<String> HOSTS = Collections.singleton("localhost");
   private static final String USER = System.getProperty("user.name");
+
+  @TempDir
   Path temporaryFolder;
+
   public SshServer server;
 
   @BeforeEach
-  void createTempFolder(@TempDir Path tempDir, @TempDir Path serverPath) throws IOException {
-    temporaryFolder = tempDir;
+  void createTempFolder(@TempDir Path serverPath) throws IOException {
     server = createServer(serverPath);
   }
 
@@ -139,7 +137,6 @@ public class SshInfrastructureTest {
     assertTrue(new File(targetFolder, someFile.getName()).exists());
     assertFalse(fileToRemove.exists());
   }
-
 
   @Test
   public void canCopyFilesFromANode()

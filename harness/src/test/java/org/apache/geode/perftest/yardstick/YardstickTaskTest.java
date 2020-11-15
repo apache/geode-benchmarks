@@ -23,10 +23,8 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.junitpioneer.jupiter.TempDirectory;
+import org.junit.jupiter.api.io.TempDir;
 
 import org.apache.geode.perftest.Task;
 import org.apache.geode.perftest.TestContext;
@@ -35,15 +33,10 @@ import org.apache.geode.perftest.benchmarks.EmptyBenchmark;
 import org.apache.geode.perftest.runner.DefaultTestContext;
 import org.apache.geode.perftest.yardstick.hdrhistogram.HdrHistogramWriter;
 
-@ExtendWith(TempDirectory.class)
 public class YardstickTaskTest {
 
-  public Path folder;
-
-  @BeforeEach
-  void createTempFolder(@TempDirectory.TempDir Path tempDir) {
-    this.folder = tempDir;
-  }
+  @TempDir
+  Path folder;
 
   @Test
   public void testExecuteBenchmark() throws Exception {

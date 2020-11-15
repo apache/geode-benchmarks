@@ -21,7 +21,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.function.Predicate;
@@ -29,8 +28,7 @@ import java.util.stream.Stream;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.junitpioneer.jupiter.TempDirectory;
+import org.junit.jupiter.api.io.TempDir;
 
 import org.apache.geode.perftest.benchmarks.EmptyBenchmark;
 import org.apache.geode.perftest.infrastructure.local.LocalInfrastructureFactory;
@@ -38,26 +36,19 @@ import org.apache.geode.perftest.jvms.RemoteJVMFactory;
 import org.apache.geode.perftest.runner.DefaultTestRunner;
 import org.apache.geode.perftest.yardstick.analysis.YardstickThroughputSensorParser;
 
-@ExtendWith(TempDirectory.class)
 public class TestRunnerIntegrationTest {
 
-  Path temporaryFolder;
-
-  @BeforeEach
-  void setup(@TempDirectory.TempDir Path tempDirPath) {
-    this.temporaryFolder = tempDirPath;
-    outputDir = temporaryFolder.toFile();
-    runner = new DefaultTestRunner(new RemoteJVMFactory(new LocalInfrastructureFactory()),
-        outputDir);
-  }
-
   private TestRunner runner;
-  private File outputDir;
+
+  @TempDir
+  File outputDir;
+
   public static final String SAMPLE_BENCHMARK = "SampleBenchmark";
 
   @BeforeEach
-  public void setup() throws IOException {
-
+  void beforeEach() {
+    runner = new DefaultTestRunner(new RemoteJVMFactory(new LocalInfrastructureFactory()),
+        outputDir);
   }
 
   @Test

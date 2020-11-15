@@ -24,23 +24,15 @@ import java.nio.file.Path;
 import java.util.Collections;
 import java.util.Map;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.junitpioneer.jupiter.TempDirectory;
+import org.junit.jupiter.api.io.TempDir;
 
 import org.apache.geode.perftest.infrastructure.local.LocalInfrastructureFactory;
 
-@ExtendWith(TempDirectory.class)
 public class RemoteJVMFactoryIntegrationTest {
 
-
+  @TempDir
   Path temporaryFolder;
-
-  @BeforeEach
-  void createTemporaryFolder(@TempDirectory.TempDir Path temporaryFolder) {
-    this.temporaryFolder = temporaryFolder;
-  }
 
   @Test
   public void canExecuteCodeOnWorker() throws Exception {

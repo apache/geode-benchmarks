@@ -30,20 +30,18 @@ import java.util.concurrent.ExecutionException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.junitpioneer.jupiter.TempDirectory;
+import org.junit.jupiter.api.io.TempDir;
 
-@ExtendWith(TempDirectory.class)
 public class LocalInfrastructureTest {
 
-  private Path temporaryFolder;
+  @TempDir
+  Path temporaryFolder;
 
   private LocalInfrastructure infra;
   private LocalInfrastructure.LocalNode node;
 
   @BeforeEach
-  public void createInfra(@TempDirectory.TempDir Path tempDir) throws IOException {
-    temporaryFolder = tempDir;
+  public void createInfra() throws IOException {
     infra = new LocalInfrastructure(1);
     node = (LocalInfrastructure.LocalNode) infra.getNodes().iterator().next();
   }
@@ -52,7 +50,6 @@ public class LocalInfrastructureTest {
   public void deleteInfra() throws IOException, InterruptedException {
     infra.close();
   }
-
 
   @Test
   public void copyToNodesPutsFileOnNode() throws IOException, InterruptedException {
@@ -65,8 +62,6 @@ public class LocalInfrastructureTest {
     infra.copyToNodes(Arrays.asList(someFile), node -> "lib", true);
     assertTrue(expectedDir.exists());
     assertTrue(new File(expectedDir, someFile.getName()).exists());
-
-
     infra.close();
 
     assertFalse(expectedDir.exists());

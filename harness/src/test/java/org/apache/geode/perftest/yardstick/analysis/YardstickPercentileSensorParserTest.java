@@ -25,20 +25,13 @@ import java.io.IOException;
 import java.nio.file.Path;
 
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.junitpioneer.jupiter.TempDirectory;
+import org.junit.jupiter.api.io.TempDir;
 
-@ExtendWith(TempDirectory.class)
 public class YardstickPercentileSensorParserTest {
 
-  private Path temporaryFolder;
-
-  @BeforeEach
-  void createTemporaryFolder(@TempDirectory.TempDir Path tempDir) {
-    temporaryFolder = tempDir;
-  }
+  @TempDir
+  Path temporaryFolder;
 
   @Test
   public void parsesInputFile() throws IOException {
