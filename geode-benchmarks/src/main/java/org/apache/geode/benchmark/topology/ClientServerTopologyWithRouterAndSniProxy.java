@@ -25,6 +25,8 @@ import static org.apache.geode.benchmark.topology.Roles.PROXY;
 import static org.apache.geode.benchmark.topology.Roles.ROUTER;
 import static org.apache.geode.benchmark.topology.Roles.SERVER;
 
+import com.google.common.base.Strings;
+
 import org.apache.geode.benchmark.tasks.StartClientWithSniProxy;
 import org.apache.geode.benchmark.tasks.StartRouter;
 import org.apache.geode.benchmark.tasks.StopRouter;
@@ -33,6 +35,7 @@ import org.apache.geode.perftest.TestConfig;
 
 public class ClientServerTopologyWithRouterAndSniProxy extends ClientServerTopologyWithSniProxy {
   public static final String WITH_ROUTER_PROPERTY = "withRouter";
+  public static final String WITH_ROUTER_IMAGE_PROPERTY = "withRouterImage";
 
   private static final int NUM_LOCATORS = 1;
   private static final int NUM_SERVERS = 2;
@@ -49,7 +52,8 @@ public class ClientServerTopologyWithRouterAndSniProxy extends ClientServerTopol
 
     configureBefore(config);
 
-    before(config, new StartRouter(SNI_PROXY_PORT, null), ROUTER);
+    final String image = System.getProperty(WITH_ROUTER_IMAGE_PROPERTY);
+    before(config, new StartRouter(SNI_PROXY_PORT, image), ROUTER);
 
     before(config, new StartClientWithSniProxy(LOCATOR_PORT, SNI_PROXY_PORT, ROUTER), CLIENT);
 

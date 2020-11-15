@@ -40,6 +40,7 @@ import org.apache.geode.perftest.TestConfig;
 
 public class ClientServerTopologyWithSniProxy extends Topology {
   public static final String WITH_SNI_PROXY_PROPERTY = "withSniProxy";
+  public static final String WITH_SNI_PROXY_IMAGE_PROPERTY = "withSniProxyImage";
 
   private static final int NUM_LOCATORS = 1;
   private static final int NUM_SERVERS = 2;
@@ -85,7 +86,7 @@ public class ClientServerTopologyWithSniProxy extends Topology {
 
     final SniProxyImplementation sniProxyImplementation = getSniProxyImplementation();
 
-    final String image = System.getProperty("withSniProxyImage");
+    final String image = System.getProperty(WITH_SNI_PROXY_IMAGE_PROPERTY);
     switch (sniProxyImplementation) {
       case HAProxy:
         before(config, new StartHAProxy(LOCATOR_PORT, SERVER_PORT, SNI_PROXY_PORT, image), PROXY);
