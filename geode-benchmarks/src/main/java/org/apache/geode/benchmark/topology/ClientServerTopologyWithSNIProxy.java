@@ -69,7 +69,6 @@ public class ClientServerTopologyWithSNIProxy extends Topology {
         break;
     }
 
-    before(config, new StartEnvoy(LOCATOR_PORT, SERVER_PORT, SNI_PROXY_PORT), PROXY);
     before(config, new StartClientSNI(LOCATOR_PORT, SNI_PROXY_PORT), CLIENT);
 
     after(config, new StopClient(), CLIENT);
