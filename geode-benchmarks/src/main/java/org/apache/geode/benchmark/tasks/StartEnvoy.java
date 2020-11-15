@@ -17,6 +17,7 @@
 
 package org.apache.geode.benchmark.tasks;
 
+import static com.google.common.base.Strings.isNullOrEmpty;
 import static java.lang.String.format;
 import static java.lang.System.getProperty;
 import static org.apache.geode.benchmark.topology.Roles.LOCATOR;
@@ -50,7 +51,7 @@ public class StartEnvoy implements Task {
     this.locatorPort = locatorPort;
     this.serverPort = serverPort;
     this.proxyPort = proxyPort;
-    this.image = null == image ? "envoyproxy/envoy:v1.16-latest" : image;
+    this.image = isNullOrEmpty(image) ? "envoyproxy/envoy:v1.16-latest" : image;
   }
 
   @Override

@@ -17,6 +17,7 @@
 
 package org.apache.geode.benchmark.tasks;
 
+import static com.google.common.base.Strings.isNullOrEmpty;
 import static java.lang.String.format;
 import static java.lang.System.getProperty;
 import static org.apache.geode.benchmark.topology.Roles.LOCATOR;
@@ -53,7 +54,7 @@ public class StartHAProxy implements Task {
     this.locatorPort = locatorPort;
     this.serverPort = serverPort;
     this.proxyPort = proxyPort;
-    this.image = null == image ? "haproxy:1.8-alpine" : image;
+    this.image = isNullOrEmpty(image) ? "haproxy:1.8-alpine" : image;
   }
 
   @Override
