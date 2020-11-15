@@ -62,12 +62,14 @@ public class ClientServerTopologyWithSNIProxy extends Topology {
     before(config, new StartLocator(LOCATOR_PORT), LOCATOR);
     before(config, new StartServer(LOCATOR_PORT, SERVER_PORT), SERVER);
 
+    final String image = System.getProperty("withSniProxyImage");
+
     switch (sniProxyImplementation) {
       case HAProxy:
-        before(config, new StartHAProxy(LOCATOR_PORT, SERVER_PORT, SNI_PROXY_PORT), PROXY);
+        before(config, new StartHAProxy(LOCATOR_PORT, SERVER_PORT, SNI_PROXY_PORT, image), PROXY);
         break;
       case Envoy:
-        before(config, new StartEnvoy(LOCATOR_PORT, SERVER_PORT, SNI_PROXY_PORT), PROXY);
+        before(config, new StartEnvoy(LOCATOR_PORT, SERVER_PORT, SNI_PROXY_PORT, image), PROXY);
         break;
       case Manual:
         // expect proxy already configured.

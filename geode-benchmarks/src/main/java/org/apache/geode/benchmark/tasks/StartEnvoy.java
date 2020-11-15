@@ -38,16 +38,19 @@ import org.apache.geode.perftest.TestContext;
 public class StartEnvoy implements Task {
   public static final String START_DOCKER_DAEMON_COMMAND = "sudo service docker start";
   public static final String START_PROXY_COMMAND =
-      "docker run --rm -d -v %s:/etc/envoy/envoy.yaml:ro --name proxy -p %d:%d envoyproxy/envoy:v1.16-latest";
+      "docker run --rm -d -v %s:/etc/envoy/envoy.yaml:ro --name proxy -p %d:%d %s";
 
   private final int locatorPort;
   private final int serverPort;
   private final int proxyPort;
+  private final String image;
 
-  public StartEnvoy(final int locatorPort, final int serverPort, final int proxyPort) {
+  public StartEnvoy(final int locatorPort, final int serverPort, final int proxyPort,
+      final String image) {
     this.locatorPort = locatorPort;
     this.serverPort = serverPort;
     this.proxyPort = proxyPort;
+    this.image = null == image ? "envoyproxy/envoy:v1.16-latest" : image;
   }
 
   @Override
@@ -58,7 +61,7 @@ public class StartEnvoy implements Task {
 
     final ProcessControl processControl = new ProcessControl();
     processControl.runCommand(START_DOCKER_DAEMON_COMMAND);
-    processControl.runCommand(format(START_PROXY_COMMAND, configFile, proxyPort, proxyPort));
+    processControl.runCommand(format(START_PROXY_COMMAND, configFile, proxyPort, proxyPort, image));
   }
 
   private void rewriteFile(final String content, final Path path) throws IOException {

@@ -103,12 +103,17 @@ task benchmark(type: Test) {
   if (project.hasProperty('withDuration')) {
     systemProperty 'withDuration', project.findProperty('withDuration')
   }
+
   systemProperty 'withSsl', project.hasProperty('withSsl')
   systemProperty 'withSslProtocols', project.findProperty('withSslProtocols')
   systemProperty 'withSslCiphers', project.findProperty('withSslCiphers')
+
   systemProperty 'withSniProxy', project.findProperty('withSniProxy')
+  systemProperty 'withSniProxyImage', project.findProperty('withSniProxyImage')
+
   systemProperty 'withSecurityManager', project.hasProperty('withSecurityManager')
   systemProperty 'benchmark.profiler.argument', project.findProperty('benchmark.profiler.argument')
+
 
   doFirst {
     if(!project.hasProperty('hosts')) {

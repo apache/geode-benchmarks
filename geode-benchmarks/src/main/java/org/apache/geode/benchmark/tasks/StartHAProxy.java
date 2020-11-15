@@ -41,16 +41,19 @@ import org.apache.geode.perftest.TestContext;
 public class StartHAProxy implements Task {
   public static final String START_DOCKER_DAEMON_COMMAND = "sudo service docker start";
   public static final String START_PROXY_COMMAND =
-      "docker run --rm -d -v %s:/usr/local/etc/haproxy:ro --name proxy -p %d:%d haproxy:1.8-alpine";
+      "docker run --rm -d -v %s:/usr/local/etc/haproxy:ro --name proxy -p %d:%d %s";
 
   private final int locatorPort;
   private final int serverPort;
   private final int proxyPort;
+  private final String image;
 
-  public StartHAProxy(final int locatorPort, final int serverPort, final int proxyPort) {
+  public StartHAProxy(final int locatorPort, final int serverPort, final int proxyPort,
+      final String image) {
     this.locatorPort = locatorPort;
     this.serverPort = serverPort;
     this.proxyPort = proxyPort;
+    this.image = null == image ? "haproxy:1.8-alpine" : image;
   }
 
   @Override
@@ -62,7 +65,7 @@ public class StartHAProxy implements Task {
 
     final ProcessControl processControl = new ProcessControl();
     processControl.runCommand(START_DOCKER_DAEMON_COMMAND);
-    processControl.runCommand(format(START_PROXY_COMMAND, configPath, proxyPort, proxyPort));
+    processControl.runCommand(format(START_PROXY_COMMAND, configPath, proxyPort, proxyPort, image));
   }
 
   private void rewriteFile(final String content, final Path path) throws IOException {
@@ -88,9 +91,14 @@ public class StartHAProxy implements Task {
 
   String generateConfig(final Set<InetSocketAddress> members) {
     StringBuilder conf = new StringBuilder("global\n"
-        + "  maxconn 5000\n"
+        + "  daemon\n"
+        + "  maxconn 64000\n"
+        + "  spread-checks 4\n"
         + "defaults\n"
         + "  log global\n"
+        + "  timeout connect 30000ms\n"
+        + "  timeout client 30000ms\n"
+        + "  timeout server 30000ms\n"
         + "frontend sniproxy\n"
         + "  bind *:").append(proxyPort).append("\n"
             + "  mode tcp\n"
@@ -99,7 +107,7 @@ public class StartHAProxy implements Task {
 
     members
         .forEach(s -> conf.append("  use_backend ").append(s.getHostName())
-            .append(" if { req.ssl_sni -i ").append(s.getHostName()).append(" }\n"));
+            .append(" if { req.ssl_sni ").append(s.getHostName()).append(" }\n"));
 
     members
         .forEach(s -> conf.append("backend ").append(s.getHostName())

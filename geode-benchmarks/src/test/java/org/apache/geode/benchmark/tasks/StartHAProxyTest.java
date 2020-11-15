@@ -36,21 +36,26 @@ class StartHAProxyTest {
         add(InetSocketAddress.createUnresolved("s3", 3));
       }
     };
-    final StartHAProxy startHAProxy = new StartHAProxy(0, 0, 3);
+    final StartHAProxy startHAProxy = new StartHAProxy(0, 0, 3, null);
     final String config = startHAProxy.generateConfig(members);
 
     assertThat(config).isEqualTo("global\n"
-        + "  maxconn 5000\n"
+        + "  daemon\n"
+        + "  maxconn 64000\n"
+        + "  spread-checks 4\n"
         + "defaults\n"
         + "  log global\n"
+        + "  timeout connect 30000ms\n"
+        + "  timeout client 30000ms\n"
+        + "  timeout server 30000ms\n"
         + "frontend sniproxy\n"
         + "  bind *:3\n"
         + "  mode tcp\n"
         + "  tcp-request inspect-delay 5s\n"
         + "  tcp-request content accept if { req_ssl_hello_type 1 }\n"
-        + "  use_backend s2 if { req.ssl_sni -i s2 }\n"
-        + "  use_backend s3 if { req.ssl_sni -i s3 }\n"
-        + "  use_backend l1 if { req.ssl_sni -i l1 }\n"
+        + "  use_backend s2 if { req.ssl_sni s2 }\n"
+        + "  use_backend s3 if { req.ssl_sni s3 }\n"
+        + "  use_backend l1 if { req.ssl_sni l1 }\n"
         + "backend s2\n"
         + "  mode tcp\n"
         + "  server host s2:2\n"

@@ -45,7 +45,7 @@ class GeodeBenchmarkTest {
   @BeforeEach
   public void beforeEach() {
     startProxyStep =
-        new TestStep(new StartEnvoy(LOCATOR_PORT, SERVER_PORT, SNI_PROXY_PORT),
+        new TestStep(new StartEnvoy(LOCATOR_PORT, SERVER_PORT, SNI_PROXY_PORT, null),
             new String[] {PROXY.name()});
   }
 

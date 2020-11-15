@@ -51,7 +51,7 @@ class StartEnvoyTest {
     };
     when(testContext.getHostsForRole(SERVER.name())).thenReturn(servers);
 
-    final StartEnvoy startEnvoy = new StartEnvoy(0, 0, 3);
+    final StartEnvoy startEnvoy = new StartEnvoy(0, 0, 3, null);
     final String config = startEnvoy.generateConfig(testContext);
 
     assertThat(config).isEqualTo("static_resources:\n"
