@@ -60,19 +60,19 @@ public class ClientServerTopologyWithSNIProxy extends Topology {
     before(config, new StartLocator(LOCATOR_PORT), LOCATOR);
     before(config, new StartServer(LOCATOR_PORT, SERVER_PORT), SERVER);
 
-    switch (sniProxyImplementation) {
-      case HAProxy:
-        before(config, new StartHAProxy(LOCATOR_PORT, SERVER_PORT, SNI_PROXY_PORT), PROXY);
-        break;
-      case Envoy:
-        before(config, new StartEnvoy(LOCATOR_PORT, SERVER_PORT, SNI_PROXY_PORT), PROXY);
-        break;
-    }
+//    switch (sniProxyImplementation) {
+//      case HAProxy:
+//        before(config, new StartHAProxy(LOCATOR_PORT, SERVER_PORT, SNI_PROXY_PORT), PROXY);
+//        break;
+//      case Envoy:
+//        before(config, new StartEnvoy(LOCATOR_PORT, SERVER_PORT, SNI_PROXY_PORT), PROXY);
+//        break;
+//    }
 
     before(config, new StartClientSNI(LOCATOR_PORT, SNI_PROXY_PORT), CLIENT);
 
     after(config, new StopClient(), CLIENT);
-    after(config, new StopSniProxy(), PROXY);
+//    after(config, new StopSniProxy(), PROXY);
   }
 
 }
