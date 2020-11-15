@@ -27,6 +27,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Objects;
 
 import org.apache.geode.perftest.Task;
 import org.apache.geode.perftest.TestContext;
@@ -34,16 +35,16 @@ import org.apache.geode.perftest.TestContext;
 /**
  * Task to start the SNI proxy
  */
-public class StartSniProxy implements Task {
+public class StartEnvoy implements Task {
   public static final String START_DOCKER_DAEMON_COMMAND = "sudo service docker start";
   public static final String START_PROXY_COMMAND =
-      "docker run --rm -d -v %s:/etc/envoy/envoy.yaml --name envoy -p %d:%d envoyproxy/envoy:v1.16-latest --log-level debug -c /etc/envoy/envoy.yaml --concurrency 2000";
+      "docker run --rm -d -v %s:/etc/envoy/envoy.yaml:ro --name proxy -p %d:%d envoyproxy/envoy:v1.16-latest";
 
   private final int locatorPort;
   private final int serverPort;
   private final int proxyPort;
 
-  public StartSniProxy(final int locatorPort, final int serverPort, final int proxyPort) {
+  public StartEnvoy(final int locatorPort, final int serverPort, final int proxyPort) {
     this.locatorPort = locatorPort;
     this.serverPort = serverPort;
     this.proxyPort = proxyPort;
@@ -53,7 +54,7 @@ public class StartSniProxy implements Task {
   public void run(final TestContext context) throws Exception {
 
     final Path configFile = Paths.get(getProperty("user.home"), "envoy.yaml");
-    rewriteFile(generateEnvoyConfig(context), configFile);
+    rewriteFile(generateConfig(context), configFile);
 
     final ProcessControl processControl = new ProcessControl();
     processControl.runCommand(START_DOCKER_DAEMON_COMMAND);
@@ -67,7 +68,7 @@ public class StartSniProxy implements Task {
   }
 
 
-  String generateEnvoyConfig(final TestContext context) {
+  String generateConfig(final TestContext context) {
 
     StringBuilder yaml = new StringBuilder("static_resources:\n"
         + "  listeners:\n"
@@ -76,13 +77,13 @@ public class StartSniProxy implements Task {
         + "        socket_address:\n"
         + "          address: 0.0.0.0\n"
         + "          port_value: ").append(proxyPort).append("\n"
-        + "      reuse_port: true\n"
-        + "      tcp_backlog_size: 1000\n"
-        + "      listener_filters:\n"
-        + "        - name: envoy.filters.listener.tls_inspector\n"
-        + "      filter_chains:\n"
-        + "        - filter_chain_match:\n"
-        + "            server_names:\n");
+            + "      reuse_port: true\n"
+            + "      tcp_backlog_size: 1000\n"
+            + "      listener_filters:\n"
+            + "        - name: envoy.filters.listener.tls_inspector\n"
+            + "      filter_chains:\n"
+            + "        - filter_chain_match:\n"
+            + "            server_names:\n");
 
     context.getHostsForRole(LOCATOR.name())
         .forEach(inetAddress -> yaml.append("              - '").append(inetAddress.getHostName())
@@ -151,5 +152,24 @@ public class StartSniProxy implements Task {
             + "            name: geode_cluster_dns_cache_config\n"
             + "            dns_lookup_family: V4_ONLY\n");
     return yaml.toString();
+  }
+
+  @Override
+  public boolean equals(final Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    final StartEnvoy that = (StartEnvoy) o;
+    return locatorPort == that.locatorPort &&
+        serverPort == that.serverPort &&
+        proxyPort == that.proxyPort;
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(locatorPort, serverPort, proxyPort);
   }
 }

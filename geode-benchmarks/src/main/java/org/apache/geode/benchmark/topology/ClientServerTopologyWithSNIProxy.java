@@ -27,9 +27,10 @@ import static org.apache.geode.benchmark.topology.Roles.PROXY;
 import static org.apache.geode.benchmark.topology.Roles.SERVER;
 
 import org.apache.geode.benchmark.tasks.StartClientSNI;
+import org.apache.geode.benchmark.tasks.StartEnvoy;
+import org.apache.geode.benchmark.tasks.StartHAProxy;
 import org.apache.geode.benchmark.tasks.StartLocator;
 import org.apache.geode.benchmark.tasks.StartServer;
-import org.apache.geode.benchmark.tasks.StartSniProxy;
 import org.apache.geode.benchmark.tasks.StopClient;
 import org.apache.geode.benchmark.tasks.StopSniProxy;
 import org.apache.geode.perftest.TestConfig;
@@ -40,7 +41,13 @@ public class ClientServerTopologyWithSNIProxy extends Topology {
   private static final int NUM_CLIENTS = 1;
   private static final int NUM_PROXIES = 1;
 
-  public static void configure(TestConfig config) {
+  public enum SniProxyImplementation {
+    HAProxy,
+    Envoy;
+  }
+
+  public static void configure(final TestConfig config,
+      final SniProxyImplementation sniProxyImplementation) {
     role(config, LOCATOR, NUM_LOCATORS);
     role(config, SERVER, NUM_SERVERS);
     role(config, CLIENT, NUM_CLIENTS);
@@ -52,7 +59,17 @@ public class ClientServerTopologyWithSNIProxy extends Topology {
 
     before(config, new StartLocator(LOCATOR_PORT), LOCATOR);
     before(config, new StartServer(LOCATOR_PORT, SERVER_PORT), SERVER);
-    before(config, new StartSniProxy(LOCATOR_PORT, SERVER_PORT, SNI_PROXY_PORT), PROXY);
+
+    switch (sniProxyImplementation) {
+      case HAProxy:
+        before(config, new StartHAProxy(LOCATOR_PORT, SERVER_PORT, SNI_PROXY_PORT), PROXY);
+        break;
+      case Envoy:
+        before(config, new StartEnvoy(LOCATOR_PORT, SERVER_PORT, SNI_PROXY_PORT), PROXY);
+        break;
+    }
+
+    before(config, new StartEnvoy(LOCATOR_PORT, SERVER_PORT, SNI_PROXY_PORT), PROXY);
     before(config, new StartClientSNI(LOCATOR_PORT, SNI_PROXY_PORT), CLIENT);
 
     after(config, new StopClient(), CLIENT);

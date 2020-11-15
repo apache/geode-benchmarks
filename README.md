@@ -156,7 +156,9 @@ On AWS, you can run any benchmark on a topology that routes all client-server co
  
 To run a test, e.g. `PartitionedGetBenchmark`, with SNI:
 
-`./run_tests.sh -t anytagname -- -PwithSniProxy '--tests=PartitionedGetBenchmark'`
+`./run_tests.sh -t anytagname -- -PwithSniProxy=HAProxy '--tests=PartitionedGetBenchmark'`
+
+The `withSniProxy` property accepts `HAProxy` or `Envoy` depending on which proxy you want to utilize.
 
 Since SNI is a feature of TLS, running with the SNI topology incurs TLS overheads.
 

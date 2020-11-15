@@ -15,7 +15,6 @@
 
 package org.apache.geode.benchmark.topology;
 
-
 import static org.apache.geode.benchmark.topology.Roles.CLIENT;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -23,8 +22,10 @@ import java.util.Properties;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 
+import org.apache.geode.benchmark.topology.ClientServerTopologyWithSNIProxy.SniProxyImplementation;
 import org.apache.geode.perftest.TestConfig;
 
 public class ClientServerTopologyWithSNIProxyTest {
@@ -41,11 +42,11 @@ public class ClientServerTopologyWithSNIProxyTest {
     System.setProperties(systemProperties);
   }
 
-
-  @Test
-  public void configWithNoSsl() {
+  @ParameterizedTest
+  @EnumSource(SniProxyImplementation.class)
+  public void configWithNoSsl(final SniProxyImplementation sniProxyImplementation) {
     TestConfig testConfig = new TestConfig();
-    ClientServerTopologyWithSNIProxy.configure(testConfig);
+    ClientServerTopologyWithSNIProxy.configure(testConfig, sniProxyImplementation);
     assertThat(testConfig.getJvmArgs().get(CLIENT.name())).contains("-DwithSsl=true");
   }
 

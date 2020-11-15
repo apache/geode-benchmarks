@@ -18,19 +18,21 @@ package org.apache.geode.benchmark.tests;
 
 import org.apache.geode.benchmark.topology.ClientServerTopology;
 import org.apache.geode.benchmark.topology.ClientServerTopologyWithSNIProxy;
+import org.apache.geode.benchmark.topology.ClientServerTopologyWithSNIProxy.SniProxyImplementation;
 import org.apache.geode.perftest.TestConfig;
 
 public class ClientServerBenchmark extends GeodeBenchmark {
 
 
   public static TestConfig createConfig() {
-    TestConfig config = GeodeBenchmark.createConfig();
+    final TestConfig config = GeodeBenchmark.createConfig();
 
-    final String sniProp = System.getProperty("withSniProxy");
-    final boolean doSni = sniProp != null && !sniProp.equals("false");
-
-    if (doSni) {
-      ClientServerTopologyWithSNIProxy.configure(config);
+    String sniProp = System.getProperty("withSniProxy");
+    if (sniProp != null) {
+      if (sniProp.isEmpty()) {
+        sniProp = SniProxyImplementation.HAProxy.name();
+      }
+      ClientServerTopologyWithSNIProxy.configure(config, SniProxyImplementation.valueOf(sniProp));
     } else {
       ClientServerTopology.configure(config);
     }
