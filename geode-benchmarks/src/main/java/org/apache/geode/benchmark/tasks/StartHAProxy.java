@@ -41,7 +41,7 @@ import org.apache.geode.perftest.TestContext;
 public class StartHAProxy implements Task {
   public static final String START_DOCKER_DAEMON_COMMAND = "sudo service docker start";
   public static final String START_PROXY_COMMAND =
-      "docker run --rm -d -v %s:/usr/local/etc/haproxy:ro --name proxy -p %d:%d haproxy-alpine:1.8";
+      "docker run --rm -d -v %s:/usr/local/etc/haproxy:ro --name proxy -p %d:%d haproxy:1.8-alpine";
 
   private final int locatorPort;
   private final int serverPort;
@@ -88,7 +88,6 @@ public class StartHAProxy implements Task {
 
   String generateConfig(final Set<InetSocketAddress> members) {
     StringBuilder conf = new StringBuilder("global\n"
-        + "  log stdout format raw local0 debug\n"
         + "  maxconn 5000\n"
         + "defaults\n"
         + "  log global\n"

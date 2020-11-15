@@ -40,7 +40,6 @@ class StartHAProxyTest {
     final String config = startHAProxy.generateConfig(members);
 
     assertThat(config).isEqualTo("global\n"
-        + "  log stdout format raw local0 debug\n"
         + "  maxconn 5000\n"
         + "defaults\n"
         + "  log global\n"
