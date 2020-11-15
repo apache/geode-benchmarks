@@ -132,11 +132,12 @@ public class StartHAProxy implements Task {
     final StartHAProxy that = (StartHAProxy) o;
     return locatorPort == that.locatorPort &&
         serverPort == that.serverPort &&
-        proxyPort == that.proxyPort;
+        proxyPort == that.proxyPort &&
+        Objects.equals(image, that.image);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(locatorPort, serverPort, proxyPort);
+    return Objects.hash(locatorPort, serverPort, proxyPort, image);
   }
 }
