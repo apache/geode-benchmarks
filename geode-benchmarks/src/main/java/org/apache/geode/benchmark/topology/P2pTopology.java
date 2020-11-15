@@ -18,6 +18,7 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.apache.geode.benchmark.Config.after;
 import static org.apache.geode.benchmark.Config.before;
 import static org.apache.geode.benchmark.Config.role;
+import static org.apache.geode.benchmark.topology.Ports.EPHEMERAL_PORT;
 import static org.apache.geode.benchmark.topology.Ports.LOCATOR_PORT;
 import static org.apache.geode.benchmark.topology.Roles.LOCATOR;
 import static org.apache.geode.benchmark.topology.Roles.SERVER;
@@ -40,7 +41,7 @@ public class P2pTopology extends Topology {
     configureCommon(config);
 
     before(config, new StartLocator(LOCATOR_PORT), LOCATOR);
-    before(config, new StartServer(LOCATOR_PORT), SERVER);
+    before(config, new StartServer(LOCATOR_PORT, EPHEMERAL_PORT), SERVER);
 
     after(config, new Sleep(10, SECONDS), SERVER);
     after(config, new StopServer(), SERVER);
