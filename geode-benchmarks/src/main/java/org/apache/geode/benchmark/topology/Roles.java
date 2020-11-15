@@ -27,7 +27,8 @@ public enum Roles {
   SERVER(GEODE_PRODUCT),
   CLIENT(GEODE_PRODUCT),
   LOCATOR(GEODE_PRODUCT),
-  PROXY(SUPPORTING);
+  PROXY(SUPPORTING),
+  ROUTER(SUPPORTING);
 
   public final RoleKinds roleKind;
 

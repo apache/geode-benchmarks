@@ -40,13 +40,13 @@ class StartEnvoyTest {
   void generateConfig() throws UnknownHostException {
     final TestContext testContext = mock(TestContext.class);
     final Set<InetAddress> locators =
-        Collections.singleton(getByAddress("l1", new byte[]{0, 0, 0, 0}));
+        Collections.singleton(getByAddress("l1", new byte[] {0, 0, 0, 0}));
     when(testContext.getHostsForRole(LOCATOR.name()))
         .thenReturn(locators);
     final HashSet<InetAddress> servers = new HashSet<InetAddress>() {
       {
-        add(getByAddress("s1", new byte[]{0, 0, 0, 1}));
-        add(getByAddress("s2", new byte[]{0, 0, 0, 2}));
+        add(getByAddress("s1", new byte[] {0, 0, 0, 1}));
+        add(getByAddress("s2", new byte[] {0, 0, 0, 2}));
       }
     };
     when(testContext.getHostsForRole(SERVER.name())).thenReturn(servers);
@@ -139,9 +139,12 @@ class StartEnvoyTest {
 
   @Test
   public void hashcode() {
-    assertThat(new StartEnvoy(1, 2, 3, null).hashCode()).isEqualTo(new StartEnvoy(1, 2, 3, null).hashCode());
-    assertThat(new StartEnvoy(1, 2, 3, "a").hashCode()).isEqualTo(new StartEnvoy(1, 2, 3, "a").hashCode());
-    assertThat(new StartEnvoy(1, 2, 3, "a").hashCode()).isNotEqualTo(new StartEnvoy(1, 2, 3, "b").hashCode());
+    assertThat(new StartEnvoy(1, 2, 3, null).hashCode())
+        .isEqualTo(new StartEnvoy(1, 2, 3, null).hashCode());
+    assertThat(new StartEnvoy(1, 2, 3, "a").hashCode())
+        .isEqualTo(new StartEnvoy(1, 2, 3, "a").hashCode());
+    assertThat(new StartEnvoy(1, 2, 3, "a").hashCode())
+        .isNotEqualTo(new StartEnvoy(1, 2, 3, "b").hashCode());
   }
 
 }

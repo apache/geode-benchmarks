@@ -113,6 +113,10 @@ task benchmark(type: Test) {
   }
   systemProperty 'withSniProxyImage', project.findProperty('withSniProxyImage')
 
+  if (project.hasProperty('withRouter')) {
+    systemProperty 'withRouter', project.findProperty('withRouter')
+  }
+
   systemProperty 'withSecurityManager', project.hasProperty('withSecurityManager')
   systemProperty 'benchmark.profiler.argument', project.findProperty('benchmark.profiler.argument')
 
