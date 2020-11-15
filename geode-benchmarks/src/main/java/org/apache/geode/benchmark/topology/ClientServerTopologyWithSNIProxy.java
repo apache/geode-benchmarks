@@ -18,6 +18,7 @@ import static org.apache.geode.benchmark.Config.after;
 import static org.apache.geode.benchmark.Config.before;
 import static org.apache.geode.benchmark.Config.role;
 import static org.apache.geode.benchmark.parameters.Utils.configureGeodeProductJvms;
+import static org.apache.geode.benchmark.topology.ClientServerTopologyWithSNIProxy.SniProxyImplementation.Manual;
 import static org.apache.geode.benchmark.topology.Ports.LOCATOR_PORT;
 import static org.apache.geode.benchmark.topology.Ports.SERVER_PORT;
 import static org.apache.geode.benchmark.topology.Ports.SNI_PROXY_PORT;
@@ -42,6 +43,7 @@ public class ClientServerTopologyWithSNIProxy extends Topology {
   private static final int NUM_PROXIES = 1;
 
   public enum SniProxyImplementation {
+    Manual,
     HAProxy,
     Envoy;
   }
@@ -67,12 +69,17 @@ public class ClientServerTopologyWithSNIProxy extends Topology {
       case Envoy:
         before(config, new StartEnvoy(LOCATOR_PORT, SERVER_PORT, SNI_PROXY_PORT), PROXY);
         break;
+      case Manual:
+        // expect proxy already configured.
     }
 
     before(config, new StartClientSNI(LOCATOR_PORT, SNI_PROXY_PORT), CLIENT);
 
     after(config, new StopClient(), CLIENT);
-    after(config, new StopSniProxy(), PROXY);
+
+    if (Manual != sniProxyImplementation) {
+      after(config, new StopSniProxy(), PROXY);
+    }
   }
 
 }
