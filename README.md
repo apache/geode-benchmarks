@@ -55,6 +55,8 @@ Options:
     -PwithSslProtocols    : Specifies enabled SSL protocols. See Geode property `ssl-protocols`
     -PwithSslCiphers      : Specifies enabled SSL chipher suites. See Geode property `ssl-ciphers`
     -PwithSecurityManager : Flag to start Geode with the example implementation of SecurityManager
+    -PwithSniProxy        : Use SNI proxy topology.
+    -PwithSniProxyImage   : Provide an alternative Docker image coordinate for SNI proxy.
     -PwithGc              : Select which GC to use. Valid values CMS (default), G1, Z.
     -PwithHeap            : Specify how large a heap the benchmark VMs should use, default "8g". Accepts any `-Xmx` value, like "32g".
     -PwithThreads         : Specify how many threads to use when executing the benchmark. Default varies by benchmark.
@@ -150,34 +152,21 @@ public class PutTask extends BenchmarkDriverAdapter implements Serializable {
 }
 ```
 
-## SNI
+## SNI Proxy
 
-On AWS, you can run any benchmark on a topology that routes all client-server communication through an SNI proxy (HAproxy).
+You can run any benchmark on a topology that routes all client-server communication through an SNI proxy.
+
+The `withSniProxy` property accepts:
+ * `HAProxy` for HAProxy based SNI proxy (default).
+ * `Envoy` for Envoy based SNI proxy.
+ * `Manual` for providing your own SNI proxy and managing its lifecycle.
  
-To run a test, e.g. `PartitionedGetBenchmark`, with SNI:
+The `withSniProxyImage` property can be used to provide an alternative Docker image to one of the 
+supported proxy implementations. The value should be set to a valid Docker image coordinate. 
+ 
+To run a test, e.g. `PartitionedGetBenchmark`, with HAProxy SNI Proxy:
 
-`./run_tests.sh -t anytagname -- -PwithSniProxy=HAProxy '--tests=PartitionedGetBenchmark'`
+`./run_tests.sh -t anytagname -- -PwithSniProxy=HAProxy --tests=PartitionedGetBenchmark`
 
-The `withSniProxy` property accepts `HAProxy` or `Envoy` depending on which proxy you want to utilize.
+Since SNI is a feature of TLS, running with the SNI topology incurs TLS overheads with implied `-PwithSsl`.
 
-Since SNI is a feature of TLS, running with the SNI topology incurs TLS overheads.
-
-### TODO for SNI
-* ~~verify `StartSniProxy` runs on proxy node~~
-* ~~don't require operator to supply `-PwithSSL`/`-DwithSSL=true` when running SNI tests~~
-* ~~generate `haproxy.cfg` with client-visible SNI hostnames~~
-* ~~turn on SNI via `setPoolSocketFactory` in a new `StartClientSNI` task~~
-* ~~set `--hostname-for-clients` on locator and servers for SNI~~
-* ~~reinstate thread-per-core in `PrePopulateRegion.run()` and in `PartitionedPutBenchmark[SNI]` ya~~
-* ~~set `keyRange` back to 1e6 in `PartitionedPutBenchmark[SNI]` after client-server connections are healthy~~
-* ~~make topology orthogonal to tests so all tests can run with SNI; have a `-PwithSniProxy`/`-DwithSniProxy=true` flag~~
-* Potential performance improvement: HAproxy as configured runs one process with the max threads-per-process of 64 threads, ostensibly using 64/72 cores (89%.) We might be able to improve performance by configuring HAproxy to run in daemon mode where we can run two processes, each multithreaded, to run more than 64 threads, thereby utilizing 100% of our cores.  
-
-## TODO (General)
-* add logic to clean up existing locator.dat files before running a locator on a node
-* eliminate `harness` module dependency on Geode by moving Geode keystore/truststore setting out of `harness` module and up into `geode-benchmarks` i.e. set 'em in properties sent to `Locator.startLocatorAndDS` in `StartLocator`, `StartServer`
-* move `docker-compose.yml` distribution out of `harness` module up into `geode-benchmarks` so it gets distributed whenever it changes (without requiring rebuilding AWS AMI and cluster on AWS) 
-* generate 2048-bit keys (instead of 1024-bit ones) for TLS; will slow TLS handshakes which may necessitate a new baseline
-* make `StartServer` task use `ServerLauncher` (instead of `CacheFactory`) for symmetry with `LocatorLauncher`&mdash;also too: encapsulation!
-* `./run_tests.sh` sometimes seems to hang after benchmarks have completed, requiring operator to enter ^C to un-stick it
-* make `rsync:` Git "scheme" work in `run_tests.sh` script for benchmark repo (not just for geode repo)
