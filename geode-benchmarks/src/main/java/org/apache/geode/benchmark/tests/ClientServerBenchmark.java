@@ -32,7 +32,8 @@ public class ClientServerBenchmark extends GeodeBenchmark {
       if (sniProp.isEmpty()) {
         sniProp = SniProxyImplementation.HAProxy.name();
       }
-      ClientServerTopologyWithSNIProxy.configure(config, SniProxyImplementation.valueOf(sniProp));
+      ClientServerTopologyWithSNIProxy.configure(config,
+          SniProxyImplementation.valueOfIgnoreCase(sniProp));
     } else {
       ClientServerTopology.configure(config);
     }
