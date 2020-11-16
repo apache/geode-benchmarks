@@ -18,6 +18,7 @@ import static org.apache.geode.benchmark.Config.after;
 import static org.apache.geode.benchmark.Config.before;
 import static org.apache.geode.benchmark.Config.role;
 import static org.apache.geode.benchmark.parameters.Utils.configureGeodeProductJvms;
+import static org.apache.geode.benchmark.topology.ClientServerTopologyWithSniProxy.SniProxyImplementation.HAProxy;
 import static org.apache.geode.benchmark.topology.ClientServerTopologyWithSniProxy.SniProxyImplementation.Manual;
 import static org.apache.geode.benchmark.topology.Ports.LOCATOR_PORT;
 import static org.apache.geode.benchmark.topology.Ports.SERVER_PORT;
@@ -84,10 +85,8 @@ public class ClientServerTopologyWithSniProxy extends Topology {
     before(config, new StartLocator(LOCATOR_PORT), LOCATOR);
     before(config, new StartServer(LOCATOR_PORT, SERVER_PORT), SERVER);
 
-    final SniProxyImplementation sniProxyImplementation = getSniProxyImplementation();
-
     final String image = System.getProperty(WITH_SNI_PROXY_IMAGE_PROPERTY);
-    switch (sniProxyImplementation) {
+    switch (getSniProxyImplementation()) {
       case HAProxy:
         before(config, new StartHAProxy(LOCATOR_PORT, SERVER_PORT, SNI_PROXY_PORT, image), PROXY);
         break;
@@ -108,9 +107,9 @@ public class ClientServerTopologyWithSniProxy extends Topology {
   }
 
   private static SniProxyImplementation getSniProxyImplementation() {
-    String sniProp = System.getProperty(WITH_SNI_PROXY_PROPERTY);
+    final String sniProp = System.getProperty(WITH_SNI_PROXY_PROPERTY);
     if (Strings.isNullOrEmpty(sniProp)) {
-      sniProp = SniProxyImplementation.HAProxy.name();
+      return HAProxy;
     }
 
     return SniProxyImplementation.valueOfIgnoreCase(sniProp);

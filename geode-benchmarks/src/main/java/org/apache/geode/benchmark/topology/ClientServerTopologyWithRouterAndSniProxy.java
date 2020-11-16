@@ -17,6 +17,8 @@ package org.apache.geode.benchmark.topology;
 import static org.apache.geode.benchmark.Config.after;
 import static org.apache.geode.benchmark.Config.before;
 import static org.apache.geode.benchmark.Config.role;
+import static org.apache.geode.benchmark.topology.ClientServerTopologyWithRouterAndSniProxy.RouterImplementation.HAProxy;
+import static org.apache.geode.benchmark.topology.ClientServerTopologyWithRouterAndSniProxy.RouterImplementation.Manual;
 import static org.apache.geode.benchmark.topology.Ports.LOCATOR_PORT;
 import static org.apache.geode.benchmark.topology.Ports.SNI_PROXY_PORT;
 import static org.apache.geode.benchmark.topology.Roles.CLIENT;
@@ -30,7 +32,6 @@ import com.google.common.base.Strings;
 import org.apache.geode.benchmark.tasks.StartClientWithSniProxy;
 import org.apache.geode.benchmark.tasks.StartRouter;
 import org.apache.geode.benchmark.tasks.StopRouter;
-import org.apache.geode.benchmark.tasks.StopSniProxy;
 import org.apache.geode.perftest.TestConfig;
 
 public class ClientServerTopologyWithRouterAndSniProxy extends ClientServerTopologyWithSniProxy {
@@ -43,6 +44,21 @@ public class ClientServerTopologyWithRouterAndSniProxy extends ClientServerTopol
   private static final int NUM_PROXIES = 1;
   private static final int NUM_ROUTERS = 1;
 
+  public enum RouterImplementation {
+    Manual,
+    HAProxy;
+
+    public static RouterImplementation valueOfIgnoreCase(String name) {
+      name = name.toLowerCase();
+      for (RouterImplementation routerImplementation : RouterImplementation.values()) {
+        if (routerImplementation.name().toLowerCase().equals(name)) {
+          return routerImplementation;
+        }
+      }
+      throw new IllegalArgumentException();
+    }
+  }
+
   public static void configure(final TestConfig config) {
     role(config, LOCATOR, NUM_LOCATORS);
     role(config, SERVER, NUM_SERVERS);
@@ -53,13 +69,30 @@ public class ClientServerTopologyWithRouterAndSniProxy extends ClientServerTopol
     configureBefore(config);
 
     final String image = System.getProperty(WITH_ROUTER_IMAGE_PROPERTY);
-    before(config, new StartRouter(SNI_PROXY_PORT, image), ROUTER);
+    switch (getRouterImplementation()) {
+      case HAProxy:
+        before(config, new StartRouter(SNI_PROXY_PORT, image), ROUTER);
+        break;
+      case Manual:
+        // expect router already configured
+    }
 
     before(config, new StartClientWithSniProxy(LOCATOR_PORT, SNI_PROXY_PORT, ROUTER), CLIENT);
 
     configureAfter(config);
 
-    after(config, new StopRouter(), ROUTER);
+    if (Manual != getRouterImplementation()) {
+      after(config, new StopRouter(), ROUTER);
+    }
+  }
+
+  private static RouterImplementation getRouterImplementation() {
+    final String router = System.getProperty(WITH_ROUTER_PROPERTY);
+    if (Strings.isNullOrEmpty(router)) {
+      return HAProxy;
+    }
+
+    return RouterImplementation.valueOfIgnoreCase(router);
   }
 
 }
