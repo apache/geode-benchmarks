@@ -58,6 +58,7 @@ dependencies {
   // Required for missing dependency on geode-core.
   runtime(group: 'org.eclipse.jetty', name: 'jetty-webapp', version: '9.4.12.v20180830')
 
+  testImplementation(group: 'org.junit.jupiter', name: 'junit-jupiter-params', version:project.'junit-jupiter-engine.version')
   testImplementation(group: 'org.mockito', name: 'mockito-all', version: project.'mockito-all.version')
   testImplementation(group: 'org.assertj', name: 'assertj-core', version: project.'assertj-core.version')
 }
@@ -102,12 +103,19 @@ task benchmark(type: Test) {
   if (project.hasProperty('withDuration')) {
     systemProperty 'withDuration', project.findProperty('withDuration')
   }
+
   systemProperty 'withSsl', project.hasProperty('withSsl')
   systemProperty 'withSslProtocols', project.findProperty('withSslProtocols')
   systemProperty 'withSslCiphers', project.findProperty('withSslCiphers')
-  systemProperty 'withSniProxy', project.hasProperty('withSniProxy')
+
+  if (project.hasProperty('withSniProxy')) {
+    systemProperty 'withSniProxy', project.findProperty('withSniProxy')
+  }
+  systemProperty 'withSniProxyImage', project.findProperty('withSniProxyImage')
+
   systemProperty 'withSecurityManager', project.hasProperty('withSecurityManager')
   systemProperty 'benchmark.profiler.argument', project.findProperty('benchmark.profiler.argument')
+
 
   doFirst {
     if(!project.hasProperty('hosts')) {

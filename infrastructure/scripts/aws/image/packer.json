@@ -41,11 +41,6 @@
       "destination": "/tmp/defaults.cfg"
     },
     {
-      "type": "file",
-      "source": "./files/docker-compose.yml",
-      "destination": "/home/geode/docker-compose.yml"
-    },
-    {
       "type": "shell",
       "inline": [
         "# install Docker per https://docs.docker.com/engine/install/ubuntu/",
@@ -56,12 +51,6 @@
         "sudo add-apt-repository \"deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable\"",
         "sudo apt-get update",
         "sudo apt-get install -y docker-ce docker-ce-cli containerd.io"
-      ]
-    },
-    {
-      "type": "shell",
-      "inline": [
-        "sudo apt install -y docker-compose"
       ]
     },
     {

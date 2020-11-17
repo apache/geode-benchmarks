@@ -18,14 +18,18 @@
 package org.apache.geode.benchmark.tests;
 
 import static org.apache.geode.benchmark.topology.Ports.LOCATOR_PORT;
+import static org.apache.geode.benchmark.topology.Ports.SERVER_PORT;
+import static org.apache.geode.benchmark.topology.Ports.SNI_PROXY_PORT;
 import static org.apache.geode.benchmark.topology.Roles.PROXY;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import org.apache.geode.benchmark.tasks.StartSniProxy;
+import org.apache.geode.benchmark.tasks.StartEnvoy;
+import org.apache.geode.benchmark.tasks.StartHAProxy;
 import org.apache.geode.perftest.TestConfig;
 import org.apache.geode.perftest.TestStep;
 
@@ -37,12 +41,17 @@ import org.apache.geode.perftest.TestStep;
 class GeodeBenchmarkTest {
 
   private TestConfig config;
-  private TestStep startProxyStep;
+  private TestStep startHAProxyStep;
+  private TestStep startEnvoyStep;
 
   @BeforeEach
   public void beforeEach() {
-    startProxyStep =
-        new TestStep(new StartSniProxy(LOCATOR_PORT), new String[] {PROXY.name()});
+    startHAProxyStep =
+        new TestStep(new StartHAProxy(LOCATOR_PORT, SERVER_PORT, SNI_PROXY_PORT, null),
+            new String[] {PROXY.name()});
+    startEnvoyStep =
+        new TestStep(new StartEnvoy(LOCATOR_PORT, SERVER_PORT, SNI_PROXY_PORT, null),
+            new String[] {PROXY.name()});
   }
 
   @AfterAll
@@ -54,28 +63,35 @@ class GeodeBenchmarkTest {
   public void withoutSniProxy() {
     System.clearProperty("withSniProxy");
     config = ClientServerBenchmark.createConfig();
-    assertThat(config.getBefore()).doesNotContain(startProxyStep);
+    assertThat(config.getBefore()).doesNotContain(startHAProxyStep, startEnvoyStep);
   }
 
   @Test
-  public void withSniProxyFalse() {
-    System.setProperty("withSniProxy", "false");
-    config = ClientServerBenchmark.createConfig();
-    assertThat(config.getBefore()).doesNotContain(startProxyStep);
+  public void withSniProxyInvalid() {
+    System.setProperty("withSniProxy", "invalid");
+    assertThatThrownBy(() -> ClientServerBenchmark.createConfig())
+        .isInstanceOf(IllegalArgumentException.class);
   }
 
   @Test
-  public void withSniProxyTrue() {
-    System.setProperty("withSniProxy", "true");
+  public void withSniProxyDefault() {
+    System.setProperty("withSniProxy", "");
     config = ClientServerBenchmark.createConfig();
-    assertThat(config.getBefore()).contains(startProxyStep);
+    assertThat(config.getBefore()).contains(startHAProxyStep).doesNotContain(startEnvoyStep);
   }
 
   @Test
-  public void withSniProxyNotLowercaseFalse() {
-    System.setProperty("withSniProxy", "AnythING");
+  public void withSniProxyHAProxy() {
+    System.setProperty("withSniProxy", "HAProxy");
     config = ClientServerBenchmark.createConfig();
-    assertThat(config.getBefore()).contains(startProxyStep);
+    assertThat(config.getBefore()).contains(startHAProxyStep);
+  }
+
+  @Test
+  public void withSniProxyEnvoy() {
+    System.setProperty("withSniProxy", "Envoy");
+    config = ClientServerBenchmark.createConfig();
+    assertThat(config.getBefore()).contains(startEnvoyStep);
   }
 
 }

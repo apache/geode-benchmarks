@@ -18,22 +18,20 @@ import static org.apache.geode.benchmark.Config.after;
 import static org.apache.geode.benchmark.Config.before;
 import static org.apache.geode.benchmark.Config.role;
 import static org.apache.geode.benchmark.parameters.Utils.configureGeodeProductJvms;
+import static org.apache.geode.benchmark.topology.ClientServerTopologyWithSNIProxy.SniProxyImplementation.Manual;
 import static org.apache.geode.benchmark.topology.Ports.LOCATOR_PORT;
-import static org.apache.geode.benchmark.topology.Ports.SERVER_PORT_FOR_SNI;
-import static org.apache.geode.benchmark.topology.RoleKinds.GEODE_PRODUCT;
+import static org.apache.geode.benchmark.topology.Ports.SERVER_PORT;
+import static org.apache.geode.benchmark.topology.Ports.SNI_PROXY_PORT;
 import static org.apache.geode.benchmark.topology.Roles.CLIENT;
 import static org.apache.geode.benchmark.topology.Roles.LOCATOR;
 import static org.apache.geode.benchmark.topology.Roles.PROXY;
 import static org.apache.geode.benchmark.topology.Roles.SERVER;
-import static org.apache.geode.benchmark.topology.Topology.WITH_SSL_ARGUMENT;
 
-import java.util.stream.Stream;
-
-import org.apache.geode.benchmark.tasks.DefineHostNamingsOffPlatformTask;
 import org.apache.geode.benchmark.tasks.StartClientSNI;
-import org.apache.geode.benchmark.tasks.StartLocatorSNI;
-import org.apache.geode.benchmark.tasks.StartServerSNI;
-import org.apache.geode.benchmark.tasks.StartSniProxy;
+import org.apache.geode.benchmark.tasks.StartEnvoy;
+import org.apache.geode.benchmark.tasks.StartHAProxy;
+import org.apache.geode.benchmark.tasks.StartLocator;
+import org.apache.geode.benchmark.tasks.StartServer;
 import org.apache.geode.benchmark.tasks.StopClient;
 import org.apache.geode.benchmark.tasks.StopSniProxy;
 import org.apache.geode.perftest.TestConfig;
@@ -44,7 +42,24 @@ public class ClientServerTopologyWithSNIProxy extends Topology {
   private static final int NUM_CLIENTS = 1;
   private static final int NUM_PROXIES = 1;
 
-  public static void configure(TestConfig config) {
+  public enum SniProxyImplementation {
+    Manual,
+    HAProxy,
+    Envoy;
+
+    public static SniProxyImplementation valueOfIgnoreCase(String name) {
+      name = name.toLowerCase();
+      for (SniProxyImplementation sniProxyImplementation : SniProxyImplementation.values()) {
+        if (sniProxyImplementation.name().toLowerCase().equals(name)) {
+          return sniProxyImplementation;
+        }
+      }
+      throw new IllegalArgumentException();
+    }
+  }
+
+  public static void configure(final TestConfig config,
+      final SniProxyImplementation sniProxyImplementation) {
     role(config, LOCATOR, NUM_LOCATORS);
     role(config, SERVER, NUM_SERVERS);
     role(config, CLIENT, NUM_CLIENTS);
@@ -54,16 +69,29 @@ public class ClientServerTopologyWithSNIProxy extends Topology {
 
     configureGeodeProductJvms(config, WITH_SSL_ARGUMENT);
 
-    Stream.concat(Roles.rolesFor(GEODE_PRODUCT), Stream.of(PROXY))
-        .forEach(role -> before(config, new DefineHostNamingsOffPlatformTask(), role));
+    before(config, new StartLocator(LOCATOR_PORT), LOCATOR);
+    before(config, new StartServer(LOCATOR_PORT, SERVER_PORT), SERVER);
 
-    before(config, new StartLocatorSNI(LOCATOR_PORT), LOCATOR);
-    before(config, new StartServerSNI(LOCATOR_PORT, SERVER_PORT_FOR_SNI), SERVER);
-    before(config, new StartSniProxy(LOCATOR_PORT), PROXY);
-    before(config, new StartClientSNI(LOCATOR_PORT), CLIENT);
+    final String image = System.getProperty("withSniProxyImage");
+
+    switch (sniProxyImplementation) {
+      case HAProxy:
+        before(config, new StartHAProxy(LOCATOR_PORT, SERVER_PORT, SNI_PROXY_PORT, image), PROXY);
+        break;
+      case Envoy:
+        before(config, new StartEnvoy(LOCATOR_PORT, SERVER_PORT, SNI_PROXY_PORT, image), PROXY);
+        break;
+      case Manual:
+        // expect proxy already configured.
+    }
+
+    before(config, new StartClientSNI(LOCATOR_PORT, SNI_PROXY_PORT), CLIENT);
 
     after(config, new StopClient(), CLIENT);
-    after(config, new StopSniProxy(), PROXY);
+
+    if (Manual != sniProxyImplementation) {
+      after(config, new StopSniProxy(), PROXY);
+    }
   }
 
 }

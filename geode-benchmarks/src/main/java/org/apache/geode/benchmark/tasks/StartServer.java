@@ -21,7 +21,6 @@ import static org.apache.geode.benchmark.parameters.GeodeProperties.serverProper
 
 import java.io.File;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.Properties;
 
 import org.apache.geode.cache.Cache;
@@ -37,10 +36,12 @@ import org.apache.geode.perftest.TestContext;
  */
 public class StartServer implements Task {
 
-  private int locatorPort;
+  private final int locatorPort;
+  private final int serverPort;
 
-  public StartServer(int locatorPort) {
+  public StartServer(final int locatorPort, final int serverPort) {
     this.locatorPort = locatorPort;
+    this.serverPort = serverPort;
   }
 
   @Override
@@ -71,10 +72,9 @@ public class StartServer implements Task {
    *
    * @param cacheServer is modified by this method!
    */
-  protected void configureCacheServer(final CacheServer cacheServer,
-      final TestContext context) throws UnknownHostException {
+  protected void configureCacheServer(final CacheServer cacheServer, final TestContext context) {
     cacheServer.setMaxConnections(Integer.MAX_VALUE);
-    cacheServer.setPort(0);
+    cacheServer.setPort(serverPort);
   }
 
 }
