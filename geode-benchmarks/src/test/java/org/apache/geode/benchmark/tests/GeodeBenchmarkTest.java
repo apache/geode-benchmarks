@@ -29,6 +29,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import org.apache.geode.benchmark.tasks.StartEnvoy;
+import org.apache.geode.benchmark.tasks.StartHAProxy;
 import org.apache.geode.perftest.TestConfig;
 import org.apache.geode.perftest.TestStep;
 
@@ -40,11 +41,15 @@ import org.apache.geode.perftest.TestStep;
 class GeodeBenchmarkTest {
 
   private TestConfig config;
-  private TestStep startProxyStep;
+  private TestStep startHAProxyStep;
+  private TestStep startEnvoyStep;
 
   @BeforeEach
   public void beforeEach() {
-    startProxyStep =
+    startHAProxyStep =
+        new TestStep(new StartHAProxy(LOCATOR_PORT, SERVER_PORT, SNI_PROXY_PORT, null),
+            new String[] {PROXY.name()});
+    startEnvoyStep =
         new TestStep(new StartEnvoy(LOCATOR_PORT, SERVER_PORT, SNI_PROXY_PORT, null),
             new String[] {PROXY.name()});
   }
@@ -58,7 +63,7 @@ class GeodeBenchmarkTest {
   public void withoutSniProxy() {
     System.clearProperty("withSniProxy");
     config = ClientServerBenchmark.createConfig();
-    assertThat(config.getBefore()).doesNotContain(startProxyStep);
+    assertThat(config.getBefore()).doesNotContain(startHAProxyStep, startEnvoyStep);
   }
 
   @Test
@@ -72,21 +77,21 @@ class GeodeBenchmarkTest {
   public void withSniProxyDefault() {
     System.setProperty("withSniProxy", "");
     config = ClientServerBenchmark.createConfig();
-    assertThat(config.getBefore()).contains(startProxyStep);
+    assertThat(config.getBefore()).contains(startHAProxyStep).doesNotContain(startEnvoyStep);
   }
 
   @Test
   public void withSniProxyHAProxy() {
     System.setProperty("withSniProxy", "HAProxy");
     config = ClientServerBenchmark.createConfig();
-    assertThat(config.getBefore()).contains(startProxyStep);
+    assertThat(config.getBefore()).contains(startHAProxyStep);
   }
 
   @Test
   public void withSniProxyEnvoy() {
     System.setProperty("withSniProxy", "Envoy");
     config = ClientServerBenchmark.createConfig();
-    assertThat(config.getBefore()).contains(startProxyStep);
+    assertThat(config.getBefore()).contains(startEnvoyStep);
   }
 
 }
