@@ -20,8 +20,7 @@ package org.apache.geode.benchmark.tasks;
 import static com.google.common.base.Strings.isNullOrEmpty;
 import static java.lang.String.format;
 import static java.lang.System.getProperty;
-import static org.apache.geode.benchmark.topology.Roles.LOCATOR;
-import static org.apache.geode.benchmark.topology.Roles.SERVER;
+import static org.apache.geode.benchmark.topology.Roles.PROXY;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -39,20 +38,15 @@ import org.apache.geode.perftest.TestContext;
 /**
  * Task to start the SNI proxy
  */
-public class StartHAProxy implements Task {
+public class StartRouter implements Task {
   public static final String START_DOCKER_DAEMON_COMMAND = "sudo service docker start";
-  public static final String START_PROXY_COMMAND =
-      "docker run --rm -d -v %s:/usr/local/etc/haproxy:ro --name proxy -p %d:%d %s";
+  public static final String START_ROUTER_COMMAND =
+      "docker run --rm -d -v %s:/usr/local/etc/haproxy:ro --name router -p %d:%d %s";
 
-  private final int locatorPort;
-  private final int serverPort;
   private final int proxyPort;
   private final String image;
 
-  public StartHAProxy(final int locatorPort, final int serverPort, final int proxyPort,
-      final String image) {
-    this.locatorPort = locatorPort;
-    this.serverPort = serverPort;
+  public StartRouter(final int proxyPort, final String image) {
     this.proxyPort = proxyPort;
     this.image = isNullOrEmpty(image) ? "haproxy:1.8-alpine" : image;
   }
@@ -66,7 +60,8 @@ public class StartHAProxy implements Task {
 
     final ProcessControl processControl = new ProcessControl();
     processControl.runCommand(START_DOCKER_DAEMON_COMMAND);
-    processControl.runCommand(format(START_PROXY_COMMAND, configPath, proxyPort, proxyPort, image));
+    processControl
+        .runCommand(format(START_ROUTER_COMMAND, configPath, proxyPort, proxyPort, image));
   }
 
   private void rewriteFile(final String content, final Path path) throws IOException {
@@ -79,12 +74,8 @@ public class StartHAProxy implements Task {
 
     final Set<InetSocketAddress> members = new HashSet<>();
 
-    context.getHostsForRole(LOCATOR.name()).stream()
-        .map(a -> InetSocketAddress.createUnresolved(a.getHostName(), locatorPort))
-        .forEachOrdered(members::add);
-
-    context.getHostsForRole(SERVER.name()).stream()
-        .map(a -> InetSocketAddress.createUnresolved(a.getHostName(), serverPort))
+    context.getHostsForRole(PROXY.name()).stream()
+        .map(a -> InetSocketAddress.createUnresolved(a.getHostName(), proxyPort))
         .forEachOrdered(members::add);
 
     return generateConfig(members);
@@ -100,21 +91,11 @@ public class StartHAProxy implements Task {
         + "  timeout connect 30000ms\n"
         + "  timeout client 30000ms\n"
         + "  timeout server 30000ms\n"
-        + "frontend sniproxy\n"
+        + "listen router\n"
         + "  bind *:").append(proxyPort).append("\n"
-            + "  mode tcp\n"
-            + "  tcp-request inspect-delay 5s\n"
-            + "  tcp-request content accept if { req_ssl_hello_type 1 }\n");
-
+            + "  mode tcp\n");
     members
-        .forEach(s -> conf.append("  use_backend ").append(s.getHostName())
-            .append(" if { req.ssl_sni ").append(s.getHostName()).append(" }\n"));
-
-    members
-        .forEach(s -> conf.append("backend ").append(s.getHostName())
-            .append("\n"
-                + "  mode tcp\n"
-                + "  server host ")
+        .forEach(s -> conf.append("  server ").append(s.getHostName()).append(" ")
             .append(s.getHostName())
             .append(":").append(s.getPort()).append("\n"));
 
@@ -129,15 +110,13 @@ public class StartHAProxy implements Task {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    final StartHAProxy that = (StartHAProxy) o;
-    return locatorPort == that.locatorPort &&
-        serverPort == that.serverPort &&
-        proxyPort == that.proxyPort &&
+    final StartRouter that = (StartRouter) o;
+    return proxyPort == that.proxyPort &&
         Objects.equals(image, that.image);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(locatorPort, serverPort, proxyPort, image);
+    return Objects.hash(proxyPort, image);
   }
 }

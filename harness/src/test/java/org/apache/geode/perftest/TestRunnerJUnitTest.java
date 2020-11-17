@@ -24,29 +24,20 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.io.File;
-import java.nio.file.Path;
 
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.junitpioneer.jupiter.TempDirectory;
+import org.junit.jupiter.api.io.TempDir;
 import org.mockito.InOrder;
 
 import org.apache.geode.perftest.jvms.RemoteJVMFactory;
 import org.apache.geode.perftest.jvms.RemoteJVMs;
 import org.apache.geode.perftest.runner.DefaultTestRunner;
 
-@ExtendWith(TempDirectory.class)
 public class TestRunnerJUnitTest {
 
-  private static File folder;
-
-  @BeforeAll
-  public static void createTemporaryFolder(@TempDirectory.TempDir Path tempFolder) {
-    folder = tempFolder.toFile();
-  }
-
+  @TempDir
+  static File folder;
 
   @Test
   public void testRunnerRunsBeforeAndAfterTasks() throws Exception {

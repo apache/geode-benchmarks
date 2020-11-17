@@ -25,22 +25,16 @@ import java.io.PrintStream;
 import java.io.StringWriter;
 import java.nio.file.Path;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.junitpioneer.jupiter.TempDirectory;
+import org.junit.jupiter.api.io.TempDir;
 
 import org.apache.geode.perftest.yardstick.analysis.YardstickPercentileSensorParser;
 import org.apache.geode.perftest.yardstick.analysis.YardstickThroughputSensorParser;
 
-@ExtendWith(TempDirectory.class)
 public class BenchmarkRunAnalyzerTest {
-  private Path temporaryFolder;
 
-  @BeforeEach
-  void createTempFolder(@TempDirectory.TempDir Path tempDir) {
-    temporaryFolder = tempDir;
-  }
+  @TempDir
+  Path temporaryFolder;
 
   @Test
   public void verifyResultHarvester() throws IOException {

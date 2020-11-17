@@ -15,25 +15,25 @@
 
 package org.apache.geode.benchmark.tests;
 
+import static org.apache.geode.benchmark.topology.ClientServerTopologyWithRouterAndSniProxy.WITH_ROUTER_PROPERTY;
+import static org.apache.geode.benchmark.topology.ClientServerTopologyWithSniProxy.WITH_SNI_PROXY_PROPERTY;
+
+import java.util.Properties;
 
 import org.apache.geode.benchmark.topology.ClientServerTopology;
-import org.apache.geode.benchmark.topology.ClientServerTopologyWithSNIProxy;
-import org.apache.geode.benchmark.topology.ClientServerTopologyWithSNIProxy.SniProxyImplementation;
+import org.apache.geode.benchmark.topology.ClientServerTopologyWithRouterAndSniProxy;
+import org.apache.geode.benchmark.topology.ClientServerTopologyWithSniProxy;
 import org.apache.geode.perftest.TestConfig;
 
 public class ClientServerBenchmark extends GeodeBenchmark {
-
-
   public static TestConfig createConfig() {
     final TestConfig config = GeodeBenchmark.createConfig();
 
-    String sniProp = System.getProperty("withSniProxy");
-    if (sniProp != null) {
-      if (sniProp.isEmpty()) {
-        sniProp = SniProxyImplementation.HAProxy.name();
-      }
-      ClientServerTopologyWithSNIProxy.configure(config,
-          SniProxyImplementation.valueOfIgnoreCase(sniProp));
+    final Properties properties = System.getProperties();
+    if (properties.containsKey(WITH_ROUTER_PROPERTY)) {
+      ClientServerTopologyWithRouterAndSniProxy.configure(config);
+    } else if (properties.containsKey(WITH_SNI_PROXY_PROPERTY)) {
+      ClientServerTopologyWithSniProxy.configure(config);
     } else {
       ClientServerTopology.configure(config);
     }

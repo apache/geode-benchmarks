@@ -14,27 +14,18 @@
  */
 package org.apache.geode.benchmark.tests;
 
-
 import java.io.File;
-import java.nio.file.Path;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.junitpioneer.jupiter.TempDirectory;
+import org.junit.jupiter.api.io.TempDir;
 
 import org.apache.geode.benchmark.LongRange;
 import org.apache.geode.perftest.TestRunners;
 
-@ExtendWith(TempDirectory.class)
 public class PartitionedGetBenchmarkTest {
 
-  private File folder;
-
-  @BeforeEach
-  void createTemporaryFolder(@TempDirectory.TempDir Path tempFolder) {
-    folder = tempFolder.toFile();
-  }
+  @TempDir
+  File folder;
 
   @Test
   public void benchmarkRunsSuccessfully()

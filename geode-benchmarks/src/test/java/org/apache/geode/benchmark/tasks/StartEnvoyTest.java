@@ -129,4 +129,22 @@ class StartEnvoyTest {
         + "            name: geode_cluster_dns_cache_config\n"
         + "            dns_lookup_family: V4_ONLY\n");
   }
+
+  @Test
+  public void equals() {
+    assertThat(new StartEnvoy(1, 2, 3, null)).isEqualTo(new StartEnvoy(1, 2, 3, null));
+    assertThat(new StartEnvoy(1, 2, 3, "a")).isEqualTo(new StartEnvoy(1, 2, 3, "a"));
+    assertThat(new StartEnvoy(1, 2, 3, "a")).isNotEqualTo(new StartEnvoy(1, 2, 3, "b"));
+  }
+
+  @Test
+  public void hashcode() {
+    assertThat(new StartEnvoy(1, 2, 3, null).hashCode())
+        .isEqualTo(new StartEnvoy(1, 2, 3, null).hashCode());
+    assertThat(new StartEnvoy(1, 2, 3, "a").hashCode())
+        .isEqualTo(new StartEnvoy(1, 2, 3, "a").hashCode());
+    assertThat(new StartEnvoy(1, 2, 3, "a").hashCode())
+        .isNotEqualTo(new StartEnvoy(1, 2, 3, "b").hashCode());
+  }
+
 }

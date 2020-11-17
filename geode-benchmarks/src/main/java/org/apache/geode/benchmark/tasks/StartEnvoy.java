@@ -169,11 +169,12 @@ public class StartEnvoy implements Task {
     final StartEnvoy that = (StartEnvoy) o;
     return locatorPort == that.locatorPort &&
         serverPort == that.serverPort &&
-        proxyPort == that.proxyPort;
+        proxyPort == that.proxyPort &&
+        Objects.equals(image, that.image);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(locatorPort, serverPort, proxyPort);
+    return Objects.hash(locatorPort, serverPort, proxyPort, image);
   }
 }

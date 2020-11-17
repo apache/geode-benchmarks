@@ -15,27 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.geode.benchmark.tests;
+package org.apache.geode.benchmark.tasks;
 
-import java.io.File;
+import org.apache.geode.perftest.Task;
+import org.apache.geode.perftest.TestContext;
 
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
+/**
+ * Task to stop the SNI proxy
+ */
+public class StopRouter implements Task {
 
-import org.apache.geode.benchmark.LongRange;
-import org.apache.geode.perftest.TestRunners;
+  public static final String STOP_PROXY_COMMAND = "docker kill router";
 
-public class PartitionedPutBenchmarkTest {
-
-  @TempDir
-  File folder;
-
-  @Test
-  public void benchmarkRunsSuccessfully()
-      throws Exception {
-    PartitionedPutBenchmark test = new PartitionedPutBenchmark();
-    test.setKeyRange(new LongRange(0, 100));
-    TestRunners.minimalRunner(folder)
-        .runTest(test);
+  @Override
+  public void run(TestContext context) throws Exception {
+    final ProcessControl processControl = new ProcessControl();
+    processControl.runCommand(STOP_PROXY_COMMAND);
   }
+
 }

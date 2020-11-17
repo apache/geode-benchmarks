@@ -17,7 +17,7 @@
 
 package org.apache.geode.benchmark.tasks;
 
-import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.net.InetSocketAddress;
 import java.util.HashSet;
@@ -66,4 +66,22 @@ class StartHAProxyTest {
         + "  mode tcp\n"
         + "  server host l1:1\n");
   }
+
+  @Test
+  public void equals() {
+    assertThat(new StartHAProxy(1, 2, 3, null)).isEqualTo(new StartHAProxy(1, 2, 3, null));
+    assertThat(new StartHAProxy(1, 2, 3, "a")).isEqualTo(new StartHAProxy(1, 2, 3, "a"));
+    assertThat(new StartHAProxy(1, 2, 3, "a")).isNotEqualTo(new StartHAProxy(1, 2, 3, "b"));
+  }
+
+  @Test
+  public void hashcode() {
+    assertThat(new StartHAProxy(1, 2, 3, null).hashCode())
+        .isEqualTo(new StartHAProxy(1, 2, 3, null).hashCode());
+    assertThat(new StartHAProxy(1, 2, 3, "a").hashCode())
+        .isEqualTo(new StartHAProxy(1, 2, 3, "a").hashCode());
+    assertThat(new StartHAProxy(1, 2, 3, "a").hashCode())
+        .isNotEqualTo(new StartHAProxy(1, 2, 3, "b").hashCode());
+  }
+
 }

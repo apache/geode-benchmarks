@@ -57,6 +57,8 @@ Options:
     -PwithSecurityManager : Flag to start Geode with the example implementation of SecurityManager
     -PwithSniProxy        : Use SNI proxy topology.
     -PwithSniProxyImage   : Provide an alternative Docker image coordinate for SNI proxy.
+    -PwithRouter          : Use router with SNI proxy topology.
+    -PwithRouterImage     : Provide an alternative Docker image coordinate for router.
     -PwithGc              : Select which GC to use. Valid values CMS (default), G1, Z.
     -PwithHeap            : Specify how large a heap the benchmark VMs should use, default "8g". Accepts any `-Xmx` value, like "32g".
     -PwithThreads         : Specify how many threads to use when executing the benchmark. Default varies by benchmark.
@@ -164,9 +166,24 @@ The `withSniProxy` property accepts:
 The `withSniProxyImage` property can be used to provide an alternative Docker image to one of the 
 supported proxy implementations. The value should be set to a valid Docker image coordinate. 
  
-To run a test, e.g. `PartitionedGetBenchmark`, with HAProxy SNI Proxy:
-
-`./run_tests.sh -t anytagname -- -PwithSniProxy=HAProxy --tests=PartitionedGetBenchmark`
+To run a test, e.g. `PartitionedGetBenchmark`, with default SNI Proxy:
+```console
+./run_tests.sh -t anytagname -- -PwithSniProxy --tests=PartitionedGetBenchmark
+```
 
 Since SNI is a feature of TLS, running with the SNI topology incurs TLS overheads with implied `-PwithSsl`.
 
+### Router
+An alternative topology uses a router sitting in front of the SNI proxy to simulate off network access
+to the cluster, enabled with `-PwithRouter`.
+
+Enabling the router implies `-PwithSniProxy`.
+
+The `withRouter` property accepts:
+ * `HAProxy` for HAProxy based router (default).
+ * `Manual` for providing your own router and managing its lifecycle.
+
+Example:
+```console
+./run_tests.sh -t anytagname -- -PwithRouter --tests=PartitionedGetBenchmark
+```

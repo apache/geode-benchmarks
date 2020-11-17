@@ -17,23 +17,25 @@
 
 package org.apache.geode.benchmark.tasks;
 
-import static org.apache.geode.benchmark.topology.Roles.PROXY;
-
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.InetAddress;
 import java.util.Properties;
 
+import org.apache.geode.benchmark.topology.Roles;
 import org.apache.geode.cache.client.ClientCacheFactory;
 import org.apache.geode.perftest.TestContext;
 
-public class StartClientSNI extends StartClient {
+public class StartClientWithSniProxy extends StartClient {
 
   private final int proxyPort;
+  private final Roles proxyRole;
 
-  public StartClientSNI(final int locatorPort, final int proxyPort) {
+  public StartClientWithSniProxy(final int locatorPort, final int proxyPort,
+      final Roles proxyRole) {
     super(locatorPort);
     this.proxyPort = proxyPort;
+    this.proxyRole = proxyRole;
   }
 
   @Override
@@ -48,7 +50,7 @@ public class StartClientSNI extends StartClient {
         super.createClientCacheFactory(locator, statsFile, properties, context);
 
     final InetAddress proxyInetAddress =
-        context.getHostsForRole(PROXY.name()).stream().findFirst().get();
+        context.getHostsForRole(proxyRole.name()).stream().findFirst().get();
     return reflectivelySetSniSocketFactory(cacheFactory, proxyInetAddress);
   }
 
