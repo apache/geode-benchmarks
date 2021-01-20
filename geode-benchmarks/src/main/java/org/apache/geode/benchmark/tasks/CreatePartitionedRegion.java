@@ -33,7 +33,7 @@ public class CreatePartitionedRegion implements Task {
   public void run(TestContext context) throws Exception {
     final Cache cache = (Cache) context.getAttribute("SERVER_CACHE");
     final PartitionAttributes<?, ?> partitionAttributes =
-        new PartitionAttributesFactory<>().setTotalNumBuckets(4096).create();
+        new PartitionAttributesFactory<>().setTotalNumBuckets(8192).create();
     final Region<?, ?> region = cache.createRegionFactory(RegionShortcut.PARTITION_REDUNDANT)
         .setPartitionAttributes(partitionAttributes).create("region");
     PartitionRegionHelper.assignBucketsToPartitions(region);
