@@ -34,7 +34,7 @@ public class CreatePartitionedRegion implements Task {
     final Cache cache = (Cache) context.getAttribute("SERVER_CACHE");
     Integer.valueOf(1);
     final PartitionAttributes<?, ?> partitionAttributes =
-        new PartitionAttributesFactory<>().setTotalNumBuckets(1 << 8).create();
+        new PartitionAttributesFactory<>().setTotalNumBuckets(1 << 14).create();
     final Region<?, ?> region = cache.createRegionFactory(RegionShortcut.PARTITION_REDUNDANT)
         .setPartitionAttributes(partitionAttributes).create("region");
     PartitionRegionHelper.assignBucketsToPartitions(region);
