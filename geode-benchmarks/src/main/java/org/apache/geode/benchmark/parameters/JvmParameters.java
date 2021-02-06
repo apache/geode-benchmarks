@@ -35,7 +35,7 @@ public class JvmParameters {
         "-Dgemfire.OSProcess.ENABLE_OUTPUT_REDIRECTION=true",
         "-Dgemfire.launcher.registerSignalHandlers=true",
         "-XX:+DisableExplicitGC",
-        "-Djava.lang.Integer.IntegerCache.high=" + (1 << 0)
+        "-Djava.lang.Integer.IntegerCache.high=" + (1 << 14)
     );
   }
 
