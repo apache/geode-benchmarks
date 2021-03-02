@@ -24,6 +24,8 @@ import java.util.Map;
 
 import io.lettuce.core.ReadFrom;
 import io.lettuce.core.cluster.api.StatefulRedisClusterConnection;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.yardstickframework.BenchmarkConfiguration;
 import org.yardstickframework.BenchmarkDriverAdapter;
 
@@ -34,6 +36,7 @@ import org.apache.geode.benchmark.LongRange;
  * and the keyRange (exclusive)
  */
 public class GetRedisTask extends BenchmarkDriverAdapter implements Serializable {
+  private static final Logger logger = LoggerFactory.getLogger(GetRedisTask.class);
 
   private final LongRange keyRange;
 
@@ -48,6 +51,8 @@ public class GetRedisTask extends BenchmarkDriverAdapter implements Serializable
   @Override
   public void setUp(final BenchmarkConfiguration cfg) throws Exception {
     super.setUp(cfg);
+
+    logger.info("Setup for instance {} on thread {}", System.identityHashCode(this), Thread.currentThread().getId());
 
     redisClusterConnection = RedisClusterClientSingleton.instance.connect();
     redisClusterConnection.setReadFrom(ReadFrom.ANY);

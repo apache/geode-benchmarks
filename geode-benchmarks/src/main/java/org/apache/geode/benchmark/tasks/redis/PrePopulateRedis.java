@@ -37,7 +37,7 @@ import org.apache.geode.perftest.Task;
 import org.apache.geode.perftest.TestContext;
 
 public class PrePopulateRedis implements Task {
-  private static final Logger logger = LoggerFactory.getLogger(StartRedisClient.class);
+  private static final Logger logger = LoggerFactory.getLogger(PrePopulateRedis.class);
 
   private final LongRange keyRangeToPrepopulate;
 
