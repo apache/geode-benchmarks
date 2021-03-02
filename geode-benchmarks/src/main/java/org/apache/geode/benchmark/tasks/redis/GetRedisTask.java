@@ -22,6 +22,7 @@ import static java.lang.String.valueOf;
 import java.io.Serializable;
 import java.util.Map;
 
+import io.lettuce.core.ReadFrom;
 import io.lettuce.core.cluster.api.StatefulRedisClusterConnection;
 import org.yardstickframework.BenchmarkConfiguration;
 import org.yardstickframework.BenchmarkDriverAdapter;
@@ -49,7 +50,7 @@ public class GetRedisTask extends BenchmarkDriverAdapter implements Serializable
     super.setUp(cfg);
 
     redisClusterConnection = RedisClusterClientSingleton.instance.connect();
-    redisClusterConnection.sync().readOnly();
+    redisClusterConnection.setReadFrom(ReadFrom.REPLICA);
 
     offset = keyRange.getMin();
     keys = new String[(int) (keyRange.getMax() - offset)];
