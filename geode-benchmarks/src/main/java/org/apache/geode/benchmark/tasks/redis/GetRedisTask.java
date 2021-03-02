@@ -49,6 +49,7 @@ public class GetRedisTask extends BenchmarkDriverAdapter implements Serializable
     super.setUp(cfg);
 
     redisClusterConnection = RedisClusterClientSingleton.instance.connect();
+    redisClusterConnection.sync().readOnly();
 
     offset = keyRange.getMin();
     keys = new String[(int) (keyRange.getMax() - offset)];
