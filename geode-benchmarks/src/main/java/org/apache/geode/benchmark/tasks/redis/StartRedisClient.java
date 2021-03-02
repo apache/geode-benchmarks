@@ -22,8 +22,8 @@ import static org.apache.geode.benchmark.topology.Roles.SERVER;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import redis.clients.jedis.HostAndPort;
-import redis.clients.jedis.JedisCluster;
+import io.lettuce.core.RedisURI;
+import io.lettuce.core.cluster.RedisClusterClient;
 
 import org.apache.geode.perftest.Task;
 import org.apache.geode.perftest.TestContext;
@@ -40,10 +40,12 @@ public class StartRedisClient implements Task {
   @Override
   public void run(TestContext context) throws Exception {
 
-    final Set<HostAndPort> nodes = context.getHostsForRole(SERVER.name()).stream()
-        .map(i -> new HostAndPort(i.getHostAddress(), 6379)).collect(Collectors.toSet());
+    final Set<RedisURI> nodes = context.getHostsForRole(SERVER.name()).stream()
+        .map(i ->  RedisURI.create(i.getHostAddress(), 6379)).collect(Collectors.toSet());
 
-    JedisClusterSingleton.nodes = nodes;
+    final RedisClusterClient redisClusterClient = RedisClusterClient.create(nodes);
+
+    RedisClusterClientSingleton.instance = redisClusterClient;
   }
 
 }
