@@ -157,6 +157,7 @@ public class DefaultTestRunner implements TestRunner {
   private void runTasks(List<TestStep> steps,
       RemoteJVMs remoteJVMs) {
     steps.forEach(testStep -> {
+      logger.info("Executing task {} on {}...", testStep.getTask(), testStep.getRoles());
       remoteJVMs.execute(testStep.getTask(), testStep.getRoles());
     });
   }
