@@ -56,7 +56,7 @@ dependencies {
   }
 
   implementation(group: 'io.lettuce', name: 'lettuce-core', version: project.'lettuce.version')
-  runtime(group: 'org.apache.geode', name: 'geode-redis', version: geodeVersion)
+  implementation(group: 'org.apache.geode', name: 'geode-redis', version: geodeVersion)
 
   // Required for missing dependency on geode-core.
   runtime(group: 'org.eclipse.jetty', name: 'jetty-webapp', version: '9.4.12.v20180830')
