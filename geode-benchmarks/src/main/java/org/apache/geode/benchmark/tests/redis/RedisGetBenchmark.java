@@ -25,10 +25,8 @@ import static org.apache.geode.benchmark.topology.Roles.CLIENT;
 import org.junit.jupiter.api.Test;
 
 import org.apache.geode.benchmark.LongRange;
-import org.apache.geode.benchmark.tasks.redis.CreateRedisCluster;
 import org.apache.geode.benchmark.tasks.redis.GetRedisTask;
 import org.apache.geode.benchmark.tasks.redis.PrePopulateRedis;
-import org.apache.geode.benchmark.tasks.redis.StartRedisClient;
 import org.apache.geode.perftest.PerformanceTest;
 import org.apache.geode.perftest.TestConfig;
 import org.apache.geode.perftest.TestRunners;

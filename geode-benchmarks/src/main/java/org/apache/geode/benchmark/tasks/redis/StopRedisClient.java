@@ -17,10 +17,7 @@
 
 package org.apache.geode.benchmark.tasks.redis;
 
-import static org.apache.geode.benchmark.topology.Roles.SERVER;
 
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.apache.geode.perftest.Task;
 import org.apache.geode.perftest.TestContext;

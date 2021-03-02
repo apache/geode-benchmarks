@@ -24,6 +24,9 @@ import java.util.stream.Collectors;
 
 import io.lettuce.core.RedisURI;
 import io.lettuce.core.cluster.RedisClusterClient;
+import io.lettuce.core.cluster.api.StatefulRedisClusterConnection;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.apache.geode.perftest.Task;
 import org.apache.geode.perftest.TestContext;
@@ -32,6 +35,8 @@ import org.apache.geode.perftest.TestContext;
  * Task to create the client cache
  */
 public class StartRedisClient implements Task {
+  private static final Logger logger = LoggerFactory.getLogger(StartRedisClient.class);
+
 
   public StartRedisClient() {
 
@@ -41,9 +46,20 @@ public class StartRedisClient implements Task {
   public void run(TestContext context) throws Exception {
 
     final Set<RedisURI> nodes = context.getHostsForRole(SERVER.name()).stream()
-        .map(i ->  RedisURI.create(i.getHostAddress(), 6379)).collect(Collectors.toSet());
+        .map(i -> RedisURI.create(i.getHostAddress(), 6379)).collect(Collectors.toSet());
 
     final RedisClusterClient redisClusterClient = RedisClusterClient.create(nodes);
+
+    try (final StatefulRedisClusterConnection<String, String> connection = redisClusterClient.connect()) {
+      while (true) {
+        logger.info("Waiting for cluster to come up.");
+        final String clusterInfo = connection.sync().clusterInfo();
+        if (clusterInfo.contains("cluster_state:ok")) {
+          break;
+        }
+        logger.debug(clusterInfo);
+      }
+    }
 
     RedisClusterClientSingleton.instance = redisClusterClient;
   }
