@@ -25,6 +25,8 @@ import java.util.stream.Collectors;
 import io.lettuce.core.RedisURI;
 import io.lettuce.core.cluster.RedisClusterClient;
 import io.lettuce.core.cluster.api.StatefulRedisClusterConnection;
+import io.lettuce.core.resource.ClientResources;
+import io.lettuce.core.resource.DefaultClientResources;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,7 +49,12 @@ public class StartRedisClient implements Task {
     final Set<RedisURI> nodes = context.getHostsForRole(SERVER.name()).stream()
         .map(i -> RedisURI.create(i.getHostAddress(), 6379)).collect(Collectors.toSet());
 
-    final RedisClusterClient redisClusterClient = RedisClusterClient.create(nodes);
+    final ClientResources res = DefaultClientResources.builder()
+        .ioThreadPoolSize(Runtime.getRuntime().availableProcessors() * 3)
+        .computationThreadPoolSize(Runtime.getRuntime().availableProcessors() * 3)
+        .build();
+
+    final RedisClusterClient redisClusterClient = RedisClusterClient.create(res, nodes);
 
     try (final StatefulRedisClusterConnection<String, String> connection = redisClusterClient.connect()) {
       while (true) {
