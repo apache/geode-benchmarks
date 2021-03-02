@@ -15,21 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.geode.benchmark.tests;
+package org.apache.geode.benchmark.tests.redis;
 
 
 import static org.apache.geode.benchmark.Config.before;
 import static org.apache.geode.benchmark.Config.workload;
 import static org.apache.geode.benchmark.topology.Roles.CLIENT;
-import static org.apache.geode.benchmark.topology.Roles.SERVER;
 
 import org.junit.jupiter.api.Test;
 
 import org.apache.geode.benchmark.LongRange;
-import org.apache.geode.benchmark.tasks.CreateClientProxyRegion;
-import org.apache.geode.benchmark.tasks.CreatePartitionedRegion;
-import org.apache.geode.benchmark.tasks.GetStringTask;
-import org.apache.geode.benchmark.tasks.PrePopulateRegionString;
+import org.apache.geode.benchmark.tasks.redis.GetRedisTask;
+import org.apache.geode.benchmark.tasks.redis.PrePopulateRedis;
 import org.apache.geode.perftest.PerformanceTest;
 import org.apache.geode.perftest.TestConfig;
 import org.apache.geode.perftest.TestRunners;
@@ -37,7 +34,7 @@ import org.apache.geode.perftest.TestRunners;
 /**
  * Benchmark of gets on a partitioned region.
  */
-public class PartitionedGetStringBenchmark implements PerformanceTest {
+public class GedisGetBenchmark implements PerformanceTest {
 
   private LongRange keyRange = new LongRange(0, 1000000);
 
@@ -46,7 +43,7 @@ public class PartitionedGetStringBenchmark implements PerformanceTest {
     TestRunners.defaultRunner().runTest(this);
   }
 
-  public PartitionedGetStringBenchmark() {}
+  public GedisGetBenchmark() {}
 
   public void setKeyRange(final LongRange keyRange) {
     this.keyRange = keyRange;
@@ -54,11 +51,9 @@ public class PartitionedGetStringBenchmark implements PerformanceTest {
 
   @Override
   public TestConfig configure() {
-    TestConfig config = ClientServerBenchmark.createConfig();
-    before(config, new CreatePartitionedRegion(), SERVER);
-    before(config, new CreateClientProxyRegion(), CLIENT);
-    before(config, new PrePopulateRegionString(keyRange), CLIENT);
-    workload(config, new GetStringTask(keyRange), CLIENT);
+    final TestConfig config = GedisBenchmark.createConfig();
+    before(config, new PrePopulateRedis(keyRange), CLIENT);
+    workload(config, new GetRedisTask(keyRange), CLIENT);
     return config;
 
   }
