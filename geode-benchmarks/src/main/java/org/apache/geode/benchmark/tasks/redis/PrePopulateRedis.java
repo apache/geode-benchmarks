@@ -19,15 +19,25 @@ package org.apache.geode.benchmark.tasks.redis;
 
 import static java.lang.String.valueOf;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+
 import io.lettuce.core.cluster.RedisClusterClient;
 import io.lettuce.core.cluster.api.StatefulRedisClusterConnection;
 import io.lettuce.core.cluster.api.sync.RedisAdvancedClusterCommands;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.apache.geode.benchmark.LongRange;
 import org.apache.geode.perftest.Task;
 import org.apache.geode.perftest.TestContext;
 
 public class PrePopulateRedis implements Task {
+  private static final Logger logger = LoggerFactory.getLogger(StartRedisClient.class);
 
   private final LongRange keyRangeToPrepopulate;
 
@@ -39,13 +49,27 @@ public class PrePopulateRedis implements Task {
   public void run(final TestContext context) throws Exception {
     final RedisClusterClient redisClient = RedisClusterClientSingleton.instance;
 
-    try (StatefulRedisClusterConnection<String, String> connection = redisClient.connect()) {
-      final RedisAdvancedClusterCommands<String, String> sync = connection.sync();
+    final int numThreads = Runtime.getRuntime().availableProcessors();
+    final ExecutorService threadPool = Executors.newFixedThreadPool(numThreads);
+    final List<CompletableFuture<Void>> futures = new ArrayList<>();
 
-      keyRangeToPrepopulate.forEach(i -> {
-        final String key = valueOf(i);
-        sync.set(key, key);
-      });
+    for (final LongRange slice : keyRangeToPrepopulate.slice(numThreads)) {
+      futures.add(CompletableFuture.runAsync(() -> {
+        logger.info("Prepopulating slice: {} starting...", slice);
+        try (StatefulRedisClusterConnection<String, String> connection = redisClient.connect()) {
+          final RedisAdvancedClusterCommands<String, String> sync = connection.sync();
+          slice.forEach(i -> {
+            final String key = valueOf(i);
+            sync.set(key, key);
+          });
+        }
+        logger.info("Prepopulating slice: {} complete.", slice);
+      }, threadPool));
     }
+
+    futures.forEach(CompletableFuture::join);
+
+    threadPool.shutdownNow();
+    threadPool.awaitTermination(5, TimeUnit.MINUTES);
   }
 }
