@@ -19,11 +19,9 @@ package org.apache.geode.benchmark.tasks.redis;
 
 import static java.util.Arrays.asList;
 import static org.apache.geode.benchmark.tasks.ProcessControl.retryUntilZeroExit;
-import static org.apache.geode.benchmark.tasks.ProcessControl.runAndExpectZeroExit;
 import static org.apache.geode.benchmark.topology.Roles.SERVER;
 
 import java.net.InetAddress;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -56,12 +54,10 @@ public class CreateRedisCluster implements Task {
     processBuilder.command().addAll(redisNodes);
 
     processBuilder.command().addAll(asList(
-            "--cluster-replicas", "1",
-            "--cluster-yes"));
+        "--cluster-replicas", "1",
+        "--cluster-yes"));
 
     retryUntilZeroExit(processBuilder);
-
-    Thread.sleep(30000);
   }
 
 }

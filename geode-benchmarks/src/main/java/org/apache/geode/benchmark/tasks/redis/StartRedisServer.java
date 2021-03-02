@@ -40,14 +40,15 @@ public class StartRedisServer implements Task {
     final String redisNodes =
         servers.stream().map(InetAddress::getHostAddress).collect(Collectors.joining(" "));;
 
-    final ProcessBuilder processBuilder = new ProcessBuilder().command("docker", "run", "-d", "--rm",
-        "-e", "ALLOW_EMPTY_PASSWORD=yes",
-        "-e", "REDIS_NODES=" + redisNodes,
-        "-e", "REDIS_CLUSTER_DYNAMIC_IPS=no",
-        "-e", "REDIS_CLUSTER_ANNOUNCE_IP=" + getLocalHost().getHostAddress(),
-        "--name", "redis-cluster-node",
-        "--network", "host",
-        "bitnami/redis-cluster:latest");
+    final ProcessBuilder processBuilder =
+        new ProcessBuilder().command("docker", "run", "-d", "--rm",
+            "-e", "ALLOW_EMPTY_PASSWORD=yes",
+            "-e", "REDIS_NODES=" + redisNodes,
+            "-e", "REDIS_CLUSTER_DYNAMIC_IPS=no",
+            "-e", "REDIS_CLUSTER_ANNOUNCE_IP=" + getLocalHost().getHostAddress(),
+            "--name", "redis-cluster-node",
+            "--network", "host",
+            "bitnami/redis-cluster:latest");
 
     runAndExpectZeroExit(processBuilder);
   }

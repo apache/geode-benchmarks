@@ -42,7 +42,8 @@ public class ProcessControl {
     final Process process = processBuilder.start();
     final int exitStatus = process.waitFor();
     if (exitStatus != 0) {
-      final String msg = format("'%s' command exited with status %d", join(" ", processBuilder.command()),
+      final String msg =
+          format("'%s' command exited with status %d", join(" ", processBuilder.command()),
               exitStatus, System.getProperty("user.dir"));
       logger.error(msg);
       throw new IllegalStateException(msg);
@@ -55,8 +56,7 @@ public class ProcessControl {
       final Process process = processBuilder.start();
       final int exitStatus = process.waitFor();
       if (exitStatus != 0) {
-        final String
-            msg =
+        final String msg =
             format("'%s' command exited with status %d", join(" ", processBuilder.command()),
                 exitStatus, System.getProperty("user.dir"));
         logger.error(msg);
