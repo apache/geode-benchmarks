@@ -49,9 +49,9 @@ public class StartRedisClient implements Task {
 
     final RedisClusterClient redisClusterClient = RedisClusterClient.create(nodes);
 
-    try (final StatefulRedisClusterConnection<String, String> connection =
-        redisClusterClient.connect()) {
-      while (true) {
+    while (true) {
+      try (final StatefulRedisClusterConnection<String, String> connection =
+               redisClusterClient.connect()) {
         logger.info("Waiting for cluster to come up.");
         final String clusterInfo = connection.sync().clusterInfo();
         if (clusterInfo.contains("cluster_state:ok")) {
