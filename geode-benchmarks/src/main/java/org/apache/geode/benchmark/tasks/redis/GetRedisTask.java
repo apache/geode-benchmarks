@@ -40,9 +40,11 @@ public class GetRedisTask extends BenchmarkDriverAdapter implements Serializable
 
   private final LongRange keyRange;
 
-  private StatefulRedisClusterConnection<String, String> redisClusterConnection;
-  private long offset;
-  private String[] keys;
+  private transient long offset;
+  private transient String[] keys;
+
+  private transient ThreadLocal<StatefulRedisClusterConnection<String, String>>
+      statefulRedisClusterConnection;
 
   public GetRedisTask(final LongRange keyRange) {
     this.keyRange = keyRange;
@@ -52,27 +54,29 @@ public class GetRedisTask extends BenchmarkDriverAdapter implements Serializable
   public void setUp(final BenchmarkConfiguration cfg) throws Exception {
     super.setUp(cfg);
 
-    logger.info("Setup for instance {} on thread {}", System.identityHashCode(this), Thread.currentThread().getId());
-
-    redisClusterConnection = RedisClusterClientSingleton.instance.connect();
-    redisClusterConnection.setReadFrom(ReadFrom.ANY);
-
     offset = keyRange.getMin();
     keys = new String[(int) (keyRange.getMax() - offset)];
     keyRange.forEach(i -> keys[(int) i] = valueOf(i));
+
+    statefulRedisClusterConnection = ThreadLocal.withInitial(() -> {
+      logger.info("Setup for instance {} on thread {}", System.identityHashCode(this), Thread.currentThread().getId());
+
+      final StatefulRedisClusterConnection<String, String> redisClusterConnection = RedisClusterClientSingleton.instance.connect();
+      redisClusterConnection.setReadFrom(ReadFrom.ANY);
+      return redisClusterConnection;
+    });
   }
 
   @Override
   public void tearDown() throws Exception {
     super.tearDown();
-
-    redisClusterConnection.close();
   }
 
   @Override
   public boolean test(Map<Object, Object> ctx) throws Exception {
     final String key = keys[(int) (keyRange.random() - offset)];
-    redisClusterConnection.sync().get(key);
+    statefulRedisClusterConnection.get().sync().get(key);
     return true;
   }
+
 }
