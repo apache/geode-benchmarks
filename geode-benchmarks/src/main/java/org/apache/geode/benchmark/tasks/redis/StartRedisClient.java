@@ -49,12 +49,7 @@ public class StartRedisClient implements Task {
     final Set<RedisURI> nodes = context.getHostsForRole(SERVER.name()).stream()
         .map(i -> RedisURI.create(i.getHostAddress(), 6379)).collect(Collectors.toSet());
 
-    final ClientResources res = DefaultClientResources.builder()
-        .ioThreadPoolSize(Runtime.getRuntime().availableProcessors() * 10)
-        .computationThreadPoolSize(Runtime.getRuntime().availableProcessors() * 10)
-        .build();
-
-    final RedisClusterClient redisClusterClient = RedisClusterClient.create(res, nodes);
+    final RedisClusterClient redisClusterClient = RedisClusterClient.create(nodes);
 
     try (final StatefulRedisClusterConnection<String, String> connection = redisClusterClient.connect()) {
       while (true) {
