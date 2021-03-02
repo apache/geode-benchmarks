@@ -22,7 +22,9 @@ import org.apache.geode.benchmark.tasks.StartServer;
 import org.apache.geode.cache.CacheFactory;
 import org.apache.geode.cache.server.CacheServer;
 import org.apache.geode.distributed.ConfigurationProperties;
+import org.apache.geode.internal.cache.InternalCache;
 import org.apache.geode.perftest.TestContext;
+import org.apache.geode.redis.internal.GeodeRedisService;
 
 public class StartGedisServer extends StartServer {
 
@@ -31,16 +33,25 @@ public class StartGedisServer extends StartServer {
   }
 
   @Override
-  protected void configureCacheFactory(final CacheFactory cacheFactory, final TestContext context)
+  protected void configureCache(final InternalCache cache, final TestContext context) {
+    super.configureCache(cache, context);
+
+    GeodeRedisService geodeRedisService = cache.getService(GeodeRedisService.class);
+    geodeRedisService.setEnableUnsupported(true);
+  }
+
+  @Override
+  protected CacheFactory configureCacheFactory(final CacheFactory cacheFactory,
+                                               final TestContext context)
       throws Exception {
-    super.configureCacheFactory(cacheFactory, context);
-    cacheFactory.set(ConfigurationProperties.REDIS_ENABLED, "true");
-    cacheFactory.set(ConfigurationProperties.REDIS_PORT, "6379");
+    return super.configureCacheFactory(cacheFactory, context)
+        .set(ConfigurationProperties.REDIS_ENABLED, "true")
+        .set(ConfigurationProperties.REDIS_PORT, "6379");
   }
 
   @Override
   protected CacheServer configureCacheServer(final CacheServer cacheServer,
-      final TestContext context) {
+                                             final TestContext context) {
     return null;
   }
 }
