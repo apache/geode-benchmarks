@@ -17,30 +17,32 @@
 
 package org.apache.geode.benchmark.tasks;
 
+import static java.lang.String.valueOf;
+
 import org.apache.geode.benchmark.LongRange;
 import org.apache.geode.benchmark.topology.Roles;
 
-public class PrePopulateRegionLong extends AbstractPrePopulateRegion<Long, Long> {
+public class PrePopulateRegionString extends AbstractPrePopulateRegion<String, String> {
 
-  public PrePopulateRegionLong() {}
+  public PrePopulateRegionString() {}
 
-  public PrePopulateRegionLong(LongRange keyRangeToPrepopulate) {
+  public PrePopulateRegionString(LongRange keyRangeToPrepopulate) {
     super(keyRangeToPrepopulate);
   }
 
-  public PrePopulateRegionLong(LongRange keyRangeToPrepopulate,
-      Roles targetRole) {
+  public PrePopulateRegionString(LongRange keyRangeToPrepopulate,
+                                 Roles targetRole) {
     super(keyRangeToPrepopulate, targetRole);
   }
 
   @Override
-  protected Long getKey(final long i) {
-    return i;
+  protected String getKey(final long i) {
+    return valueOf(i);
   }
 
   @Override
-  protected Long getValue(final long i) {
-    return i;
+  protected String getValue(final long i) {
+    return valueOf(i);
   }
 
 }

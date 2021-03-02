@@ -33,7 +33,7 @@ import org.apache.geode.perftest.TestConfig;
 
 public class ClientServerTopology extends Topology {
   private static final int NUM_LOCATORS = 1;
-  private static final int NUM_SERVERS = 2;
+  private static final int NUM_SERVERS = 6;
   private static final int NUM_CLIENTS = 1;
 
   public static void configure(TestConfig config) {
