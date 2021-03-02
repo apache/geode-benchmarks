@@ -50,8 +50,8 @@ public class StartRedisClient implements Task {
         .map(i -> RedisURI.create(i.getHostAddress(), 6379)).collect(Collectors.toSet());
 
     final ClientResources res = DefaultClientResources.builder()
-        .ioThreadPoolSize(Runtime.getRuntime().availableProcessors() * 3)
-        .computationThreadPoolSize(Runtime.getRuntime().availableProcessors() * 3)
+        .ioThreadPoolSize(Runtime.getRuntime().availableProcessors() * 10)
+        .computationThreadPoolSize(Runtime.getRuntime().availableProcessors() * 10)
         .build();
 
     final RedisClusterClient redisClusterClient = RedisClusterClient.create(res, nodes);
