@@ -60,6 +60,8 @@ public class CreateRedisCluster implements Task {
             "--cluster-yes"));
 
     retryUntilZeroExit(processBuilder);
+
+    Thread.sleep(30000);
   }
 
 }
