@@ -58,6 +58,8 @@ public class StartRedisClient implements Task {
           break;
         }
         logger.debug(clusterInfo);
+      } catch (Exception e) {
+        logger.info("Failed connecting.", e);
       }
     }
 
