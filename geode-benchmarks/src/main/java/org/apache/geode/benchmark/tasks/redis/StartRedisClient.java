@@ -62,6 +62,8 @@ public class StartRedisClient implements Task {
       }
     }
 
+    redisClusterClient.refreshPartitions();
+
     RedisClusterClientSingleton.instance = redisClusterClient;
   }
 
