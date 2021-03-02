@@ -37,7 +37,6 @@ import org.apache.geode.perftest.TestContext;
 public class StartRedisClient implements Task {
   private static final Logger logger = LoggerFactory.getLogger(StartRedisClient.class);
 
-
   public StartRedisClient() {
 
   }
