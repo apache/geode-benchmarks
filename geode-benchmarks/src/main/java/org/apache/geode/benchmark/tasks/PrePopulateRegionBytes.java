@@ -20,7 +20,7 @@ package org.apache.geode.benchmark.tasks;
 import org.apache.geode.benchmark.LongRange;
 import org.apache.geode.benchmark.topology.Roles;
 
-public class PrePopulateRegionBytes extends AbstractPrePopulateRegion<byte[]> {
+public class PrePopulateRegionBytes extends AbstractPrePopulateRegion<Long, byte[]> {
 
   public PrePopulateRegionBytes() {}
 
@@ -34,7 +34,12 @@ public class PrePopulateRegionBytes extends AbstractPrePopulateRegion<byte[]> {
   }
 
   @Override
-  protected byte[] getValue(long i) {
+  protected Long getKey(final long i) {
+    return i;
+  }
+
+  @Override
+  protected byte[] getValue(final long i) {
     return new byte[1204];
   }
 
