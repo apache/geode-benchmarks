@@ -43,8 +43,7 @@ public class GetRedisTask extends BenchmarkDriverAdapter implements Serializable
   private transient long offset;
   private transient String[] keys;
 
-  private transient ThreadLocal<StatefulRedisClusterConnection<String, String>>
-      statefulRedisClusterConnection;
+  private transient ThreadLocal<StatefulRedisClusterConnection<String, String>> statefulRedisClusterConnection;
 
   public GetRedisTask(final LongRange keyRange) {
     this.keyRange = keyRange;
@@ -59,9 +58,11 @@ public class GetRedisTask extends BenchmarkDriverAdapter implements Serializable
     keyRange.forEach(i -> keys[(int) i] = valueOf(i));
 
     statefulRedisClusterConnection = ThreadLocal.withInitial(() -> {
-      logger.info("Setup for instance {} on thread {}", System.identityHashCode(this), Thread.currentThread().getId());
+      logger.info("Setup for instance {} on thread {}", System.identityHashCode(this),
+          Thread.currentThread().getId());
 
-      final StatefulRedisClusterConnection<String, String> redisClusterConnection = RedisClusterClientSingleton.instance.connect();
+      final StatefulRedisClusterConnection<String, String> redisClusterConnection =
+          RedisClusterClientSingleton.instance.connect();
       redisClusterConnection.setReadFrom(ReadFrom.ANY);
       return redisClusterConnection;
     });

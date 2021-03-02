@@ -31,7 +31,7 @@ public class PrePopulateRegionString extends AbstractPrePopulateRegion<String, S
   }
 
   public PrePopulateRegionString(LongRange keyRangeToPrepopulate,
-                                 Roles targetRole) {
+      Roles targetRole) {
     super(keyRangeToPrepopulate, targetRole);
   }
 
