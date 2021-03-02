@@ -17,6 +17,7 @@
 
 package org.apache.geode.benchmark.tasks;
 
+import static java.lang.String.valueOf;
 import static org.apache.geode.benchmark.parameters.GeodeProperties.locatorProperties;
 
 import java.io.File;
@@ -47,6 +48,9 @@ public class StartLocator implements Task {
     properties.setProperty(ConfigurationProperties.STATISTIC_ARCHIVE_FILE, statsFile);
 
     properties.setProperty(ConfigurationProperties.NAME, "locator-" + InetAddress.getLocalHost());
+
+    properties.setProperty(ConfigurationProperties.LOCATOR_WAIT_TIME, valueOf(0));
+
     startLocator(properties, locatorPort, context);
   }
 
