@@ -14,6 +14,7 @@
  */
 package org.apache.geode.benchmark.parameters;
 
+import static java.lang.String.valueOf;
 import static org.apache.geode.benchmark.topology.Topology.WITH_SECURITY_MANAGER_PROPERTY;
 import static org.apache.geode.benchmark.topology.Topology.WITH_SSL_CIPHERS_PROPERTY;
 import static org.apache.geode.benchmark.topology.Topology.WITH_SSL_PROPERTY;
@@ -42,6 +43,7 @@ import static org.apache.geode.security.SecurableCommunicationChannels.ALL;
 import java.util.Properties;
 
 import org.apache.geode.benchmark.security.ExampleAuthInit;
+import org.apache.geode.distributed.ConfigurationProperties;
 
 public class GeodeProperties {
 
@@ -67,7 +69,9 @@ public class GeodeProperties {
   }
 
   public static Properties locatorProperties() {
-    // Locator properties are the same as the server properties right now
+    final Properties properties = serverProperties();
+    properties.setProperty(ConfigurationProperties.LOCATOR_WAIT_TIME, valueOf(0));
+
     return withOptions(serverProperties());
   }
 
