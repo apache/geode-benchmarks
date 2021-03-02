@@ -28,9 +28,6 @@ import java.util.stream.Collectors;
 import org.apache.geode.perftest.Task;
 import org.apache.geode.perftest.TestContext;
 
-/**
- * Task to create the server cache and start the cache server.
- */
 public class StartRedisServer implements Task {
 
 

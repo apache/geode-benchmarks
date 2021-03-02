@@ -20,9 +20,6 @@ package org.apache.geode.benchmark.tasks.redis;
 import org.apache.geode.perftest.Task;
 import org.apache.geode.perftest.TestContext;
 
-/**
- * Task to stop the server.
- */
 public class StopRedisServer implements Task {
 
   @Override

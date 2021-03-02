@@ -22,9 +22,9 @@ import static java.lang.String.valueOf;
 import java.io.Serializable;
 import java.util.Map;
 
+import io.lettuce.core.cluster.api.StatefulRedisClusterConnection;
 import org.yardstickframework.BenchmarkConfiguration;
 import org.yardstickframework.BenchmarkDriverAdapter;
-import redis.clients.jedis.JedisCluster;
 
 import org.apache.geode.benchmark.LongRange;
 
@@ -36,7 +36,7 @@ public class GetRedisTask extends BenchmarkDriverAdapter implements Serializable
 
   private final LongRange keyRange;
 
-  private JedisCluster jedisCluster;
+  private StatefulRedisClusterConnection<String, String> redisClusterConnection;
   private long offset;
   private String[] keys;
 
@@ -48,7 +48,7 @@ public class GetRedisTask extends BenchmarkDriverAdapter implements Serializable
   public void setUp(final BenchmarkConfiguration cfg) throws Exception {
     super.setUp(cfg);
 
-    jedisCluster = new JedisCluster(JedisClusterSingleton.nodes);
+    redisClusterConnection = RedisClusterClientSingleton.instance.connect();
 
     offset = keyRange.getMin();
     keys = new String[(int) (keyRange.getMax() - offset)];
@@ -56,9 +56,16 @@ public class GetRedisTask extends BenchmarkDriverAdapter implements Serializable
   }
 
   @Override
+  public void tearDown() throws Exception {
+    super.tearDown();
+
+    redisClusterConnection.close();
+  }
+
+  @Override
   public boolean test(Map<Object, Object> ctx) throws Exception {
     final String key = keys[(int) (keyRange.random() - offset)];
-    jedisCluster.get(key);
+    redisClusterConnection.sync().get(key);
     return true;
   }
 }

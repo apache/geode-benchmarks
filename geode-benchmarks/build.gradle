@@ -55,7 +55,7 @@ dependencies {
     runtime(group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.13.3')
   }
 
-  implementation(group: 'redis.clients', name: 'jedis', version: project.'jedis.version')
+  implementation(group: 'io.lettuce', name: 'lettuce-core', version: project.'lettuce.version')
 
   // Required for missing dependency on geode-core.
   runtime(group: 'org.eclipse.jetty', name: 'jetty-webapp', version: '9.4.12.v20180830')

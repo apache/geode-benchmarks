@@ -17,35 +17,24 @@
 
 package org.apache.geode.benchmark.tasks.redis;
 
-import static java.lang.String.valueOf;
+import static org.apache.geode.benchmark.topology.Roles.SERVER;
 
-import io.lettuce.core.cluster.RedisClusterClient;
-import io.lettuce.core.cluster.api.StatefulRedisClusterConnection;
-import io.lettuce.core.cluster.api.sync.RedisAdvancedClusterCommands;
+import java.util.Set;
+import java.util.stream.Collectors;
 
-import org.apache.geode.benchmark.LongRange;
 import org.apache.geode.perftest.Task;
 import org.apache.geode.perftest.TestContext;
 
-public class PrePopulateRedis implements Task {
+public class StopRedisClient implements Task {
 
-  private final LongRange keyRangeToPrepopulate;
+  public StopRedisClient() {
 
-  public PrePopulateRedis(final LongRange keyRangeToPrepopulate) {
-    this.keyRangeToPrepopulate = keyRangeToPrepopulate;
   }
 
   @Override
-  public void run(final TestContext context) throws Exception {
-    final RedisClusterClient redisClient = RedisClusterClientSingleton.instance;
-
-    try (StatefulRedisClusterConnection<String, String> connection = redisClient.connect()) {
-      final RedisAdvancedClusterCommands<String, String> sync = connection.sync();
-
-      keyRangeToPrepopulate.forEach(i -> {
-        final String key = valueOf(i);
-        sync.set(key, key);
-      });
-    }
+  public void run(TestContext context) throws Exception {
+    RedisClusterClientSingleton.instance.shutdown();
+    RedisClusterClientSingleton.instance = null;
   }
+
 }
