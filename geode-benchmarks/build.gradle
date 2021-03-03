@@ -51,7 +51,12 @@ dependencies {
   testImplementation(group: 'org.assertj', name: 'assertj-core', version: project.'assertj-core.version')
 }
 
-test{ useJUnitPlatform() }
+test{
+  afterTest { desc, result ->
+    logger.quiet "Executing test ${desc.className}.${desc.name} with result: ${result.resultType}"
+  }
+  useJUnitPlatform()
+}
 
 task benchmark(type: Test) {
   if (project.hasProperty('testJVM') && !testJVM.trim().isEmpty()) {
