@@ -26,7 +26,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import redis.clients.jedis.HostAndPort;
 import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisCluster;
 
 import org.apache.geode.perftest.Task;
 import org.apache.geode.perftest.TestContext;
@@ -42,20 +41,18 @@ public class StartJedisClient implements Task {
     final Set<HostAndPort> nodes = context.getHostsForRole(SERVER.name()).stream()
         .map(i -> new HostAndPort(i.getHostAddress(), 6379)).collect(Collectors.toSet());
 
-    JedisClusterSingleton.nodes = nodes;
+    JedisClusterConnectionFactory.setNodes(nodes);
 
-    try (final JedisCluster jedisCluster = new JedisCluster(JedisClusterSingleton.nodes)) {
-      while (true) {
-        try (final Jedis jedis = jedisCluster.getConnectionFromSlot(0)) {
-          logger.info("Waiting for cluster to come up.");
-          final String clusterInfo = jedis.clusterInfo();
-          if (clusterInfo.contains("cluster_state:ok")) {
-            break;
-          }
-          logger.debug(clusterInfo);
-        } catch (Exception e) {
-          logger.info("Failed connecting.", e);
+    while (true) {
+      try (final Jedis jedis = JedisClusterConnectionFactory.getConnection().getConnectionFromSlot(0)) {
+        logger.info("Waiting for cluster to come up.");
+        final String clusterInfo = jedis.clusterInfo();
+        if (clusterInfo.contains("cluster_state:ok")) {
+          break;
         }
+        logger.debug(clusterInfo);
+      } catch (Exception e) {
+        logger.info("Failed connecting.", e);
       }
     }
   }

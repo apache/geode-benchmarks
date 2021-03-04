@@ -15,10 +15,31 @@
 
 package org.apache.geode.benchmark.tasks.redis;
 
+import static java.lang.Thread.currentThread;
+
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import redis.clients.jedis.HostAndPort;
+import redis.clients.jedis.JedisCluster;
 
-public class JedisClusterSingleton {
-  public static Set<HostAndPort> nodes;
+public class JedisClusterConnectionFactory {
+  private static final Logger logger = LoggerFactory.getLogger(JedisClusterConnectionFactory.class);
+
+  private static Set<HostAndPort> nodes;
+
+  private static ThreadLocal<JedisCluster> jedisCluster = ThreadLocal.withInitial(() -> {
+    logger.info("Setup for thread {}", currentThread().getId());
+
+    return new JedisCluster(nodes);
+  });
+
+  public static void setNodes(Set<HostAndPort> nodes) {
+    JedisClusterConnectionFactory.nodes = nodes;
+  }
+
+  public static JedisCluster getConnection() {
+    return jedisCluster.get();
+  }
 }

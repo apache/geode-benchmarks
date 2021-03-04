@@ -18,6 +18,7 @@
 package org.apache.geode.benchmark.tasks.redis;
 
 import static java.lang.String.valueOf;
+import static org.apache.geode.benchmark.tasks.redis.JedisClusterConnectionFactory.*;
 
 import java.io.Serializable;
 import java.util.Map;
@@ -30,10 +31,6 @@ import redis.clients.jedis.JedisCluster;
 
 import org.apache.geode.benchmark.LongRange;
 
-/**
- * Task workload to perform get operations on keys within 0
- * and the keyRange (exclusive)
- */
 public class GetJedisTask extends BenchmarkDriverAdapter implements Serializable {
   private static final Logger logger = LoggerFactory.getLogger(GetJedisTask.class);
 
@@ -41,8 +38,6 @@ public class GetJedisTask extends BenchmarkDriverAdapter implements Serializable
 
   private transient long offset;
   private transient String[] keys;
-
-  private transient ThreadLocal<JedisCluster> jedisCluster;
 
   public GetJedisTask(final LongRange keyRange) {
     this.keyRange = keyRange;
@@ -55,19 +50,12 @@ public class GetJedisTask extends BenchmarkDriverAdapter implements Serializable
     offset = keyRange.getMin();
     keys = new String[(int) (keyRange.getMax() - offset)];
     keyRange.forEach(i -> keys[(int) i] = valueOf(i));
-
-    jedisCluster = ThreadLocal.withInitial(() -> {
-      logger.info("Setup for instance {} on thread {}", System.identityHashCode(this),
-          Thread.currentThread().getId());
-
-      return new JedisCluster(JedisClusterSingleton.nodes);
-    });
   }
 
   @Override
   public boolean test(Map<Object, Object> ctx) throws Exception {
     final String key = keys[(int) (keyRange.random() - offset)];
-    jedisCluster.get().get(key);
+    getConnection().get(key);
     return true;
   }
 }
