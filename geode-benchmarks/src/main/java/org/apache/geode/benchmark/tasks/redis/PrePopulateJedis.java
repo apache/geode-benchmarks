@@ -17,17 +17,29 @@
 
 package org.apache.geode.benchmark.tasks.redis;
 
+import static java.lang.String.valueOf;
 
+import redis.clients.jedis.JedisCluster;
 
+import org.apache.geode.benchmark.LongRange;
 import org.apache.geode.perftest.Task;
 import org.apache.geode.perftest.TestContext;
 
-public class StopRedisClient implements Task {
+public class PrePopulateJedis implements Task {
 
-  @Override
-  public void run(TestContext context) throws Exception {
-    RedisClusterClientSingleton.instance.shutdown();
-    RedisClusterClientSingleton.instance = null;
+  private final LongRange keyRangeToPrepopulate;
+
+  public PrePopulateJedis(final LongRange keyRangeToPrepopulate) {
+    this.keyRangeToPrepopulate = keyRangeToPrepopulate;
   }
 
+  @Override
+  public void run(final TestContext context) throws Exception {
+    final JedisCluster jedisCluster = new JedisCluster(JedisClusterSingleton.nodes);
+
+    keyRangeToPrepopulate.forEach(i -> {
+      final String key = valueOf(i);
+      jedisCluster.set(key, key);
+    });
+  }
 }

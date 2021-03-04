@@ -22,12 +22,9 @@ package org.apache.geode.benchmark.tasks.redis;
 import org.apache.geode.perftest.Task;
 import org.apache.geode.perftest.TestContext;
 
-public class StopRedisClient implements Task {
+public class StopJedisClient implements Task {
 
   @Override
-  public void run(TestContext context) throws Exception {
-    RedisClusterClientSingleton.instance.shutdown();
-    RedisClusterClientSingleton.instance = null;
-  }
+  public void run(TestContext context) throws Exception {}
 
 }

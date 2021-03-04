@@ -1,3 +1,5 @@
+import org.gradle.internal.jvm.Jvm
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,8 +21,6 @@ plugins { id 'java' }
 
 group 'org.apache.geode-benchmark'
 version '1.0-SNAPSHOT'
-
-sourceCompatibility = 1.8
 
 def geodeVersion = project.hasProperty('geodeVersion') ? project.findProperty('geodeVersion') : '1.+'
 def isCI = project.hasProperty('ci') ? project.findProperty('ci') : 0

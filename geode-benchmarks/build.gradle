@@ -22,8 +22,6 @@ plugins { id 'java' }
 group 'org.apache.geode-benchmark'
 version '1.0-SNAPSHOT'
 
-sourceCompatibility = 1.8
-
 def outputDir = project.hasProperty('outputDir') ? project.findProperty('outputDir') : new File(project.buildDir, "benchmarks_" + getDate()).getAbsolutePath()
 def geodeVersion = project.hasProperty('geodeVersion') ? project.findProperty('geodeVersion') : '1.+'
 
@@ -55,6 +53,7 @@ dependencies {
     runtime(group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.13.3')
   }
 
+  implementation(group: 'redis.clients', name: 'jedis', version: project.'jedis.version')
   implementation(group: 'io.lettuce', name: 'lettuce-core', version: project.'lettuce.version')
   implementation(group: 'org.apache.geode', name: 'geode-redis', version: geodeVersion)
 

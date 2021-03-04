@@ -22,14 +22,14 @@ import static org.apache.geode.benchmark.topology.Roles.CLIENT;
 import static org.apache.geode.benchmark.topology.Roles.SERVER;
 
 import org.apache.geode.benchmark.tasks.redis.CreateRedisCluster;
-import org.apache.geode.benchmark.tasks.redis.StartRedisClient;
+import org.apache.geode.benchmark.tasks.redis.StartJedisClient;
 import org.apache.geode.benchmark.tasks.redis.StartRedisServer;
-import org.apache.geode.benchmark.tasks.redis.StopRedisClient;
+import org.apache.geode.benchmark.tasks.redis.StopJedisClient;
 import org.apache.geode.benchmark.tasks.redis.StopRedisServer;
 import org.apache.geode.perftest.TestConfig;
 
 
-public class RedisTopology extends Topology {
+public class JedisTopology extends Topology {
   private static final int NUM_SERVERS = 6;
   private static final int NUM_CLIENTS = 1;
 
@@ -41,9 +41,9 @@ public class RedisTopology extends Topology {
 
     before(config, new StartRedisServer(), SERVER);
     before(config, new CreateRedisCluster(), CLIENT);
-    before(config, new StartRedisClient(), CLIENT);
+    before(config, new StartJedisClient(), CLIENT);
 
-    after(config, new StopRedisClient(), CLIENT);
+    after(config, new StopJedisClient(), CLIENT);
     after(config, new StopRedisServer(), SERVER);
   }
 }

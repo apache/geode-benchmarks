@@ -17,37 +17,47 @@
 
 package org.apache.geode.benchmark.tasks.redis;
 
-import static java.net.InetAddress.getLocalHost;
-import static org.apache.geode.benchmark.tasks.ProcessControl.runAndExpectZeroExit;
 import static org.apache.geode.benchmark.topology.Roles.SERVER;
 
-import java.net.InetAddress;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import redis.clients.jedis.HostAndPort;
+import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisCluster;
 
 import org.apache.geode.perftest.Task;
 import org.apache.geode.perftest.TestContext;
 
-public class StartRedisServer implements Task {
+/**
+ * Task to create the client cache
+ */
+public class StartJedisClient implements Task {
+  private static final Logger logger = LoggerFactory.getLogger(StartJedisClient.class);
 
   @Override
   public void run(final TestContext context) throws Exception {
-    final Set<InetAddress> servers = context.getHostsForRole(SERVER.name());
+    final Set<HostAndPort> nodes = context.getHostsForRole(SERVER.name()).stream()
+        .map(i -> new HostAndPort(i.getHostAddress(), 6379)).collect(Collectors.toSet());
 
-    final String redisNodes =
-        servers.stream().map(InetAddress::getHostAddress).collect(Collectors.joining(" "));;
+    JedisClusterSingleton.nodes = nodes;
 
-    final ProcessBuilder processBuilder =
-        new ProcessBuilder().command("docker", "run", "-d", "--rm",
-            "-e", "ALLOW_EMPTY_PASSWORD=yes",
-            "-e", "REDIS_NODES=" + redisNodes,
-            "-e", "REDIS_CLUSTER_DYNAMIC_IPS=no",
-            "-e", "REDIS_CLUSTER_ANNOUNCE_IP=" + getLocalHost().getHostAddress(),
-            "--name", "redis-cluster-node",
-            "--network", "host",
-            "bitnami/redis-cluster:latest");
-
-    runAndExpectZeroExit(processBuilder);
+    try (final JedisCluster jedisCluster = new JedisCluster(JedisClusterSingleton.nodes)) {
+      while (true) {
+        try (final Jedis jedis = jedisCluster.getConnectionFromSlot(0)) {
+          logger.info("Waiting for cluster to come up.");
+          final String clusterInfo = jedis.clusterInfo();
+          if (clusterInfo.contains("cluster_state:ok")) {
+            break;
+          }
+          logger.debug(clusterInfo);
+        } catch (Exception e) {
+          logger.info("Failed connecting.", e);
+        }
+      }
+    }
   }
 
 }
