@@ -13,10 +13,20 @@
  * the License.
  */
 
-package org.apache.geode.benchmark.tasks.redis;
+package org.apache.geode.benchmark.tests.redis;
 
-import io.lettuce.core.cluster.RedisClusterClient;
+import org.apache.geode.benchmark.tests.GeodeBenchmark;
+import org.apache.geode.benchmark.topology.JedisTopology;
+import org.apache.geode.perftest.TestConfig;
 
-public class RedisClusterClientSingleton {
-  public static RedisClusterClient instance;
+public class JedisBenchmark extends GeodeBenchmark {
+
+  public static TestConfig createConfig() {
+    TestConfig config = GeodeBenchmark.createConfig();
+
+    JedisTopology.configure(config);
+
+    return config;
+  }
+
 }

@@ -23,7 +23,6 @@ import java.io.File;
 import java.net.InetAddress;
 import java.util.Properties;
 
-import org.apache.geode.cache.Cache;
 import org.apache.geode.cache.CacheFactory;
 import org.apache.geode.cache.server.CacheServer;
 import org.apache.geode.distributed.ConfigurationProperties;
@@ -31,7 +30,6 @@ import org.apache.geode.internal.cache.InternalCache;
 import org.apache.geode.pdx.ReflectionBasedAutoSerializer;
 import org.apache.geode.perftest.Task;
 import org.apache.geode.perftest.TestContext;
-import org.apache.geode.redis.internal.GeodeRedisService;
 
 /**
  * Task to create the server cache and start the cache server.
@@ -65,8 +63,7 @@ public class StartServer implements Task {
     context.setAttribute("SERVER_CACHE", cache);
   }
 
-  protected void configureCache(final InternalCache cache, final TestContext context) {
-  }
+  protected void configureCache(final InternalCache cache, final TestContext context) {}
 
   /**
    * Configure the {@link CacheFactory}
@@ -75,12 +72,14 @@ public class StartServer implements Task {
    *
    * @param cacheFactory is modified by this method!
    */
-  protected CacheFactory configureCacheFactory(final CacheFactory cacheFactory, final TestContext context)
+  protected CacheFactory configureCacheFactory(final CacheFactory cacheFactory,
+      final TestContext context)
       throws Exception {
     String locatorString = LocatorUtil.getLocatorString(context, locatorPort);
     String statsFile = new File(context.getOutputDir(), "stats.gfs").getAbsolutePath();
 
-    return cacheFactory.setPdxSerializer(new ReflectionBasedAutoSerializer("benchmark.geode.data.*"))
+    return cacheFactory
+        .setPdxSerializer(new ReflectionBasedAutoSerializer("benchmark.geode.data.*"))
         .set(ConfigurationProperties.LOCATORS, locatorString)
         .set(ConfigurationProperties.NAME,
             "server-" + context.getJvmID() + "-" + InetAddress.getLocalHost())

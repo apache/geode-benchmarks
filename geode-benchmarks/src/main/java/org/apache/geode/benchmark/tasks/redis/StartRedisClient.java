@@ -37,13 +37,8 @@ import org.apache.geode.perftest.TestContext;
 public class StartRedisClient implements Task {
   private static final Logger logger = LoggerFactory.getLogger(StartRedisClient.class);
 
-  public StartRedisClient() {
-
-  }
-
   @Override
-  public void run(TestContext context) throws Exception {
-
+  public void run(final TestContext context) throws Exception {
     final Set<RedisURI> nodes = context.getHostsForRole(SERVER.name()).stream()
         .map(i -> RedisURI.create(i.getHostAddress(), 6379)).collect(Collectors.toSet());
 
@@ -51,7 +46,7 @@ public class StartRedisClient implements Task {
 
     while (true) {
       try (final StatefulRedisClusterConnection<String, String> connection =
-               redisClusterClient.connect()) {
+          redisClusterClient.connect()) {
         logger.info("Waiting for cluster to come up.");
         final String clusterInfo = connection.sync().clusterInfo();
         if (clusterInfo.contains("cluster_state:ok")) {

@@ -15,8 +15,10 @@
 
 package org.apache.geode.benchmark.tasks.redis;
 
-import io.lettuce.core.cluster.RedisClusterClient;
+import java.util.Set;
 
-public class RedisClusterClientSingleton {
-  public static RedisClusterClient instance;
+import redis.clients.jedis.HostAndPort;
+
+public class JedisClusterSingleton {
+  public static Set<HostAndPort> nodes;
 }

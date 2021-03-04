@@ -42,7 +42,7 @@ public class StartGedisServer extends StartServer {
 
   @Override
   protected CacheFactory configureCacheFactory(final CacheFactory cacheFactory,
-                                               final TestContext context)
+      final TestContext context)
       throws Exception {
     return super.configureCacheFactory(cacheFactory, context)
         .set(ConfigurationProperties.REDIS_ENABLED, "true")
@@ -51,7 +51,7 @@ public class StartGedisServer extends StartServer {
 
   @Override
   protected CacheServer configureCacheServer(final CacheServer cacheServer,
-                                             final TestContext context) {
+      final TestContext context) {
     return null;
   }
 }
