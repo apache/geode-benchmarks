@@ -25,7 +25,9 @@ import static org.apache.geode.benchmark.topology.Roles.CLIENT;
 import org.junit.jupiter.api.Test;
 
 import org.apache.geode.benchmark.LongRange;
+import org.apache.geode.benchmark.tasks.redis.GetJedisTask;
 import org.apache.geode.benchmark.tasks.redis.GetRedisTask;
+import org.apache.geode.benchmark.tasks.redis.PrePopulateJedis;
 import org.apache.geode.benchmark.tasks.redis.PrePopulateRedis;
 import org.apache.geode.perftest.PerformanceTest;
 import org.apache.geode.perftest.TestConfig;
@@ -52,8 +54,8 @@ public class GedisGetBenchmark implements PerformanceTest {
   @Override
   public TestConfig configure() {
     final TestConfig config = GedisBenchmark.createConfig();
-    before(config, new PrePopulateRedis(keyRange), CLIENT);
-    workload(config, new GetRedisTask(keyRange), CLIENT);
+    before(config, new PrePopulateJedis(keyRange), CLIENT);
+    workload(config, new GetJedisTask(keyRange), CLIENT);
     return config;
 
   }

@@ -27,7 +27,9 @@ import org.apache.geode.benchmark.tasks.StartLocator;
 import org.apache.geode.benchmark.tasks.StopLocator;
 import org.apache.geode.benchmark.tasks.StopServer;
 import org.apache.geode.benchmark.tasks.redis.StartGedisServer;
+import org.apache.geode.benchmark.tasks.redis.StartJedisClient;
 import org.apache.geode.benchmark.tasks.redis.StartRedisClient;
+import org.apache.geode.benchmark.tasks.redis.StopJedisClient;
 import org.apache.geode.benchmark.tasks.redis.StopRedisClient;
 import org.apache.geode.perftest.TestConfig;
 
@@ -45,9 +47,9 @@ public class GedisTopology extends Topology {
 
     before(config, new StartLocator(LOCATOR_PORT), LOCATOR);
     before(config, new StartGedisServer(LOCATOR_PORT, EPHEMERAL_PORT), SERVER);
-    before(config, new StartRedisClient(), CLIENT);
+    before(config, new StartJedisClient(), CLIENT);
 
-    after(config, new StopRedisClient(), CLIENT);
+    after(config, new StopJedisClient(), CLIENT);
     after(config, new StopServer(), SERVER);
     after(config, new StopLocator(), LOCATOR);
   }
