@@ -44,7 +44,9 @@ public class StartJedisClient implements Task {
         .map(i -> new HostAndPort(i.getHostAddress(), 6379)).collect(Collectors.toSet());
 
     final JedisPoolConfig poolConfig = new JedisPoolConfig();
-    poolConfig.setMaxTotal(Integer.MAX_VALUE);
+    poolConfig.setMaxTotal(-1);
+    poolConfig.setMaxIdle(-1);
+    poolConfig.setLifo(false);
     JedisClusterSingleton.instance = new JedisCluster(nodes, poolConfig);
 
     while (true) {
