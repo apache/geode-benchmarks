@@ -18,7 +18,7 @@
 package org.apache.geode.benchmark.tasks.redis;
 
 import static java.lang.String.valueOf;
-import static org.apache.geode.benchmark.tasks.redis.JedisClusterConnectionFactory.*;
+import static org.apache.geode.benchmark.tasks.redis.JedisClusterSingleton.*;
 
 import java.io.Serializable;
 import java.util.Map;
@@ -27,7 +27,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.yardstickframework.BenchmarkConfiguration;
 import org.yardstickframework.BenchmarkDriverAdapter;
-import redis.clients.jedis.JedisCluster;
 
 import org.apache.geode.benchmark.LongRange;
 
@@ -55,7 +54,7 @@ public class GetJedisTask extends BenchmarkDriverAdapter implements Serializable
   @Override
   public boolean test(Map<Object, Object> ctx) throws Exception {
     final String key = keys[(int) (keyRange.random() - offset)];
-    getConnection().get(key);
+    instance.get(key);
     return true;
   }
 }

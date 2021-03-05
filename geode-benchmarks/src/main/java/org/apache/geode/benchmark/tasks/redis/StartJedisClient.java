@@ -26,6 +26,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import redis.clients.jedis.HostAndPort;
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisCluster;
+import redis.clients.jedis.JedisPoolConfig;
 
 import org.apache.geode.perftest.Task;
 import org.apache.geode.perftest.TestContext;
@@ -41,10 +43,12 @@ public class StartJedisClient implements Task {
     final Set<HostAndPort> nodes = context.getHostsForRole(SERVER.name()).stream()
         .map(i -> new HostAndPort(i.getHostAddress(), 6379)).collect(Collectors.toSet());
 
-    JedisClusterConnectionFactory.setNodes(nodes);
+    final JedisPoolConfig poolConfig = new JedisPoolConfig();
+    poolConfig.setMaxTotal(Integer.MAX_VALUE);
+    JedisClusterSingleton.instance = new JedisCluster(nodes, poolConfig);
 
     while (true) {
-      try (final Jedis jedis = JedisClusterConnectionFactory.getConnection().getConnectionFromSlot(0)) {
+      try (final Jedis jedis = JedisClusterSingleton.instance.getConnectionFromSlot(0)) {
         logger.info("Waiting for cluster to come up.");
         final String clusterInfo = jedis.clusterInfo();
         if (clusterInfo.contains("cluster_state:ok")) {
