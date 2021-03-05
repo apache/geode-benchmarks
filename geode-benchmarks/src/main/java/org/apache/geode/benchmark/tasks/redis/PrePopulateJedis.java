@@ -26,9 +26,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import io.lettuce.core.cluster.RedisClusterClient;
-import io.lettuce.core.cluster.api.StatefulRedisClusterConnection;
-import io.lettuce.core.cluster.api.sync.RedisAdvancedClusterCommands;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import redis.clients.jedis.JedisCluster;
@@ -48,6 +45,8 @@ public class PrePopulateJedis implements Task {
 
   @Override
   public void run(final TestContext context) throws Exception {
+    final JedisCluster jedisCluster = JedisClusterSingleton.instance;
+
     final int numThreads = Runtime.getRuntime().availableProcessors();
     final ExecutorService threadPool = Executors.newFixedThreadPool(numThreads);
     final List<CompletableFuture<Void>> futures = new ArrayList<>();
@@ -55,7 +54,6 @@ public class PrePopulateJedis implements Task {
     for (final LongRange slice : keyRangeToPrepopulate.slice(numThreads)) {
       futures.add(CompletableFuture.runAsync(() -> {
         logger.info("Prepopulating slice: {} starting...", slice);
-        final JedisCluster jedisCluster = JedisClusterConnectionFactory.getConnection();
           slice.forEach(i -> {
             final String key = valueOf(i);
             jedisCluster.set(key, key);
