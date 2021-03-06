@@ -53,10 +53,9 @@ public class ClientServerTopologyWithSniProxy extends Topology {
     HAProxy,
     Envoy;
 
-    public static SniProxyImplementation valueOfIgnoreCase(String name) {
-      name = name.toLowerCase();
+    public static SniProxyImplementation valueOfIgnoreCase(final String name) {
       for (SniProxyImplementation sniProxyImplementation : SniProxyImplementation.values()) {
-        if (sniProxyImplementation.name().toLowerCase().equals(name)) {
+        if (sniProxyImplementation.name().equalsIgnoreCase(name)) {
           return sniProxyImplementation;
         }
       }
