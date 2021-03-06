@@ -26,9 +26,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import io.lettuce.core.cluster.RedisClusterClient;
-import io.lettuce.core.cluster.api.StatefulRedisClusterConnection;
-import io.lettuce.core.cluster.api.sync.RedisAdvancedClusterCommands;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,16 +36,18 @@ import org.apache.geode.perftest.TestContext;
 public class PrePopulateRedis implements Task {
   private static final Logger logger = LoggerFactory.getLogger(PrePopulateRedis.class);
 
+  private final RedisClientManager redisClientManager;
   private final LongRange keyRangeToPrepopulate;
 
-  public PrePopulateRedis(final LongRange keyRangeToPrepopulate) {
+  public PrePopulateRedis(
+      final RedisClientManager redisClientManager,
+      final LongRange keyRangeToPrepopulate) {
+    this.redisClientManager = redisClientManager;
     this.keyRangeToPrepopulate = keyRangeToPrepopulate;
   }
 
   @Override
   public void run(final TestContext context) throws Exception {
-    final RedisClusterClient redisClient = RedisClusterClientSingleton.instance;
-
     final int numThreads = Runtime.getRuntime().availableProcessors();
     final ExecutorService threadPool = Executors.newFixedThreadPool(numThreads);
     final List<CompletableFuture<Void>> futures = new ArrayList<>();
@@ -56,14 +55,11 @@ public class PrePopulateRedis implements Task {
     for (final LongRange slice : keyRangeToPrepopulate.slice(numThreads)) {
       futures.add(CompletableFuture.runAsync(() -> {
         logger.info("Prepopulating slice: {} starting...", slice);
-        try (StatefulRedisClusterConnection<String, String> connection = redisClient.connect()) {
-          final RedisAdvancedClusterCommands<String, String> sync = connection.sync();
-          slice.forEach(i -> {
-            final String key = valueOf(i);
-            sync.set(key, key);
-          });
-        }
-        logger.info("Prepopulating slice: {} complete.", slice);
+        final RedisClient redisClient = redisClientManager.get();
+        slice.forEach(i -> {
+          final String key = valueOf(i);
+          redisClient.set(key, key);
+        });
       }, threadPool));
     }
 

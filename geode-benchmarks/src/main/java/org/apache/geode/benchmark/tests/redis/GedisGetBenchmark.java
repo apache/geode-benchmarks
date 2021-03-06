@@ -25,18 +25,15 @@ import static org.apache.geode.benchmark.topology.Roles.CLIENT;
 import org.junit.jupiter.api.Test;
 
 import org.apache.geode.benchmark.LongRange;
-import org.apache.geode.benchmark.tasks.redis.GetJedisTask;
 import org.apache.geode.benchmark.tasks.redis.GetRedisTask;
-import org.apache.geode.benchmark.tasks.redis.PrePopulateJedis;
 import org.apache.geode.benchmark.tasks.redis.PrePopulateRedis;
-import org.apache.geode.perftest.PerformanceTest;
 import org.apache.geode.perftest.TestConfig;
 import org.apache.geode.perftest.TestRunners;
 
 /**
  * Benchmark of gets on a partitioned region.
  */
-public class GedisGetBenchmark implements PerformanceTest {
+public class GedisGetBenchmark extends GedisBenchmark {
 
   private LongRange keyRange = new LongRange(0, 1000000);
 
@@ -53,9 +50,10 @@ public class GedisGetBenchmark implements PerformanceTest {
 
   @Override
   public TestConfig configure() {
-    final TestConfig config = GedisBenchmark.createConfig();
-    before(config, new PrePopulateJedis(keyRange), CLIENT);
-    workload(config, new GetJedisTask(keyRange), CLIENT);
+    final TestConfig config = super.configure();
+
+    before(config, new PrePopulateRedis(redisClientManager, keyRange), CLIENT);
+    workload(config, new GetRedisTask(redisClientManager, keyRange), CLIENT);
     return config;
 
   }

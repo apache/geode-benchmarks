@@ -19,12 +19,6 @@ package org.apache.geode.benchmark.tasks.redis;
 
 import static org.apache.geode.benchmark.topology.Roles.SERVER;
 
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import io.lettuce.core.RedisURI;
-import io.lettuce.core.cluster.RedisClusterClient;
-import io.lettuce.core.cluster.api.StatefulRedisClusterConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,30 +31,15 @@ import org.apache.geode.perftest.TestContext;
 public class StartRedisClient implements Task {
   private static final Logger logger = LoggerFactory.getLogger(StartRedisClient.class);
 
+  private final RedisClientManager redisClientManager;
+
+  public StartRedisClient(final RedisClientManager redisClientManager) {
+    this.redisClientManager = redisClientManager;
+  }
+
   @Override
   public void run(final TestContext context) throws Exception {
-    final Set<RedisURI> nodes = context.getHostsForRole(SERVER.name()).stream()
-        .map(i -> RedisURI.create(i.getHostAddress(), 6379)).collect(Collectors.toSet());
-
-    final RedisClusterClient redisClusterClient = RedisClusterClient.create(nodes);
-
-    while (true) {
-      try (final StatefulRedisClusterConnection<String, String> connection =
-          redisClusterClient.connect()) {
-        logger.info("Waiting for cluster to come up.");
-        final String clusterInfo = connection.sync().clusterInfo();
-        if (clusterInfo.contains("cluster_state:ok")) {
-          break;
-        }
-        logger.debug(clusterInfo);
-      } catch (Exception e) {
-        logger.info("Failed connecting.", e);
-      }
-    }
-
-    redisClusterClient.refreshPartitions();
-
-    RedisClusterClientSingleton.instance = redisClusterClient;
+    redisClientManager.connect(context.getHostsForRole(SERVER.name()));
   }
 
 }

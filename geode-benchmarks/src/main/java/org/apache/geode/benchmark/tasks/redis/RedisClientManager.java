@@ -15,10 +15,14 @@
 
 package org.apache.geode.benchmark.tasks.redis;
 
-import redis.clients.jedis.JedisCluster;
+import java.net.InetAddress;
+import java.util.Set;
 
-public class JedisClusterSingleton {
+public interface RedisClientManager {
+  void connect(final Set<InetAddress> servers);
 
-  public static JedisCluster instance;
+  void close();
+
+  RedisClient get();
 
 }
