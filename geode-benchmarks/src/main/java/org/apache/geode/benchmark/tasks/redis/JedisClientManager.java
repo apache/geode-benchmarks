@@ -15,6 +15,8 @@
 
 package org.apache.geode.benchmark.tasks.redis;
 
+import static java.lang.Thread.currentThread;
+
 import java.net.InetAddress;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -77,6 +79,7 @@ public final class JedisClientManager implements RedisClientManager {
 
   @Override
   public RedisClient get() {
+    logger.info("Getting RedisClient from {} on thread {}.", this, currentThread());
     return redisClient;
   }
 }
