@@ -47,6 +47,8 @@ public final class JedisClientManager implements RedisClientManager {
 
   @Override
   public void connect(final Set<InetAddress> servers) {
+    logger.info("Connect RedisClient from {} on thread {}.", this, currentThread());
+
     final Set<HostAndPort> nodes = servers.stream()
         .map(i -> new HostAndPort(i.getHostAddress(), 6379)).collect(Collectors.toSet());
 
@@ -74,12 +76,15 @@ public final class JedisClientManager implements RedisClientManager {
 
   @Override
   public void close() {
+    logger.info("Close RedisClient from {} on thread {}.", this, currentThread());
+
     jedisCluster.close();
   }
 
   @Override
   public RedisClient get() {
     logger.info("Getting RedisClient from {} on thread {}.", this, currentThread());
+
     return redisClient;
   }
 }
