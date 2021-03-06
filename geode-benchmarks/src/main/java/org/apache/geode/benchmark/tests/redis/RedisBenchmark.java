@@ -40,7 +40,7 @@ public class RedisBenchmark implements PerformanceTest {
 
   public enum RedisClientImplementation {
     Jedis,
-    Luttuce;
+    Lettuce;
 
     public static RedisClientImplementation valueOfIgnoreCase(final String name) {
       for (RedisClientImplementation redisClientImplementation : RedisClientImplementation
@@ -87,7 +87,7 @@ public class RedisBenchmark implements PerformanceTest {
       case Jedis:
         redisClientManager = new JedisClientManager();
         break;
-      case Luttuce:
+      case Lettuce:
         redisClientManager = new LettuceClientManager();
         break;
     }
