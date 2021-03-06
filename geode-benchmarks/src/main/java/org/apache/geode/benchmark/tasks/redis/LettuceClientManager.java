@@ -32,9 +32,9 @@ import org.slf4j.LoggerFactory;
 public final class LettuceClientManager implements RedisClientManager {
   private static final Logger logger = LoggerFactory.getLogger(LettuceClientManager.class);
 
-  private transient RedisClusterClient redisClusterClient;
+  private static RedisClusterClient redisClusterClient;
 
-  private final transient ThreadLocal<RedisAdvancedClusterCommands<String, String>> redisAdvancedClusterCommands =
+  private static final ThreadLocal<RedisAdvancedClusterCommands<String, String>> redisAdvancedClusterCommands =
       ThreadLocal.withInitial(() -> {
         logger.info("Setup for thread {}", Thread.currentThread().getId());
 

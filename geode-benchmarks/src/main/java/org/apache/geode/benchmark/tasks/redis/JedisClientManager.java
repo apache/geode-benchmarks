@@ -31,7 +31,7 @@ import redis.clients.jedis.JedisPoolConfig;
 public final class JedisClientManager implements RedisClientManager {
   private static final Logger logger = LoggerFactory.getLogger(RedisClientManager.class);
 
-  private transient JedisCluster jedisCluster;
+  private static JedisCluster jedisCluster;
 
   private final transient RedisClient redisClient = new RedisClient() {
     @Override
