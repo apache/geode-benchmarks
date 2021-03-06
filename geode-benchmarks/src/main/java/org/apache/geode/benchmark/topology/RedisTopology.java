@@ -22,9 +22,7 @@ import static org.apache.geode.benchmark.topology.Roles.CLIENT;
 import static org.apache.geode.benchmark.topology.Roles.SERVER;
 
 import org.apache.geode.benchmark.tasks.redis.CreateRedisCluster;
-import org.apache.geode.benchmark.tasks.redis.StartRedisClient;
 import org.apache.geode.benchmark.tasks.redis.StartRedisServer;
-import org.apache.geode.benchmark.tasks.redis.StopRedisClient;
 import org.apache.geode.benchmark.tasks.redis.StopRedisServer;
 import org.apache.geode.perftest.TestConfig;
 
@@ -41,9 +39,7 @@ public class RedisTopology extends Topology {
 
     before(config, new StartRedisServer(), SERVER);
     before(config, new CreateRedisCluster(), CLIENT);
-    before(config, new StartRedisClient(), CLIENT);
 
-    after(config, new StopRedisClient(), CLIENT);
     after(config, new StopRedisServer(), SERVER);
   }
 }

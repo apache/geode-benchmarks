@@ -22,8 +22,6 @@ import static java.lang.String.valueOf;
 import java.io.Serializable;
 import java.util.Map;
 
-import io.lettuce.core.ReadFrom;
-import io.lettuce.core.cluster.api.StatefulRedisClusterConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.yardstickframework.BenchmarkConfiguration;
@@ -38,14 +36,16 @@ import org.apache.geode.benchmark.LongRange;
 public class GetRedisTask extends BenchmarkDriverAdapter implements Serializable {
   private static final Logger logger = LoggerFactory.getLogger(GetRedisTask.class);
 
+  private final RedisClientManager redisClientManager;
   private final LongRange keyRange;
 
   private transient long offset;
   private transient String[] keys;
+  private transient RedisClient redisClient;
 
-  private transient ThreadLocal<StatefulRedisClusterConnection<String, String>> statefulRedisClusterConnection;
 
-  public GetRedisTask(final LongRange keyRange) {
+  public GetRedisTask(final RedisClientManager redisClientManager, final LongRange keyRange) {
+    this.redisClientManager = redisClientManager;
     this.keyRange = keyRange;
   }
 
@@ -57,15 +57,7 @@ public class GetRedisTask extends BenchmarkDriverAdapter implements Serializable
     keys = new String[(int) (keyRange.getMax() - offset)];
     keyRange.forEach(i -> keys[(int) i] = valueOf(i));
 
-    statefulRedisClusterConnection = ThreadLocal.withInitial(() -> {
-      logger.info("Setup for instance {} on thread {}", System.identityHashCode(this),
-          Thread.currentThread().getId());
-
-      final StatefulRedisClusterConnection<String, String> redisClusterConnection =
-          RedisClusterClientSingleton.instance.connect();
-      redisClusterConnection.setReadFrom(ReadFrom.ANY);
-      return redisClusterConnection;
-    });
+    redisClient = redisClientManager.get();
   }
 
   @Override
@@ -74,9 +66,9 @@ public class GetRedisTask extends BenchmarkDriverAdapter implements Serializable
   }
 
   @Override
-  public boolean test(Map<Object, Object> ctx) throws Exception {
+  public boolean test(final Map<Object, Object> ctx) throws Exception {
     final String key = keys[(int) (keyRange.random() - offset)];
-    statefulRedisClusterConnection.get().sync().get(key);
+    redisClient.get(key);
     return true;
   }
 

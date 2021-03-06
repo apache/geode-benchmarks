@@ -27,14 +27,13 @@ import org.junit.jupiter.api.Test;
 import org.apache.geode.benchmark.LongRange;
 import org.apache.geode.benchmark.tasks.redis.GetRedisTask;
 import org.apache.geode.benchmark.tasks.redis.PrePopulateRedis;
-import org.apache.geode.perftest.PerformanceTest;
 import org.apache.geode.perftest.TestConfig;
 import org.apache.geode.perftest.TestRunners;
 
 /**
  * Benchmark of gets on a partitioned region.
  */
-public class RedisGetBenchmark implements PerformanceTest {
+public class RedisGetBenchmark extends RedisBenchmark {
 
   private LongRange keyRange = new LongRange(0, 1000000);
 
@@ -51,9 +50,10 @@ public class RedisGetBenchmark implements PerformanceTest {
 
   @Override
   public TestConfig configure() {
-    final TestConfig config = RedisBenchmark.createConfig();
-    before(config, new PrePopulateRedis(keyRange), CLIENT);
-    workload(config, new GetRedisTask(keyRange), CLIENT);
+    final TestConfig config = super.configure();
+
+    before(config, new PrePopulateRedis(redisClientManager, keyRange), CLIENT);
+    workload(config, new GetRedisTask(redisClientManager, keyRange), CLIENT);
     return config;
 
   }

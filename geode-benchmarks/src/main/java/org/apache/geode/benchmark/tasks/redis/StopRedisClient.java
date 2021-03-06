@@ -23,11 +23,15 @@ import org.apache.geode.perftest.Task;
 import org.apache.geode.perftest.TestContext;
 
 public class StopRedisClient implements Task {
+  final RedisClientManager redisClientManager;
+
+  public StopRedisClient(final RedisClientManager redisClientManager) {
+    this.redisClientManager = redisClientManager;
+  }
 
   @Override
   public void run(TestContext context) throws Exception {
-    RedisClusterClientSingleton.instance.shutdown();
-    RedisClusterClientSingleton.instance = null;
+    redisClientManager.close();
   }
 
 }

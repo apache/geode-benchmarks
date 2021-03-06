@@ -15,18 +15,34 @@
 
 package org.apache.geode.benchmark.tests.redis;
 
+import static org.apache.geode.benchmark.Config.after;
+import static org.apache.geode.benchmark.Config.before;
+import static org.apache.geode.benchmark.topology.Roles.CLIENT;
+
+import org.apache.geode.benchmark.tasks.redis.JedisClientManager;
+import org.apache.geode.benchmark.tasks.redis.RedisClientManager;
+import org.apache.geode.benchmark.tasks.redis.StartRedisClient;
+import org.apache.geode.benchmark.tasks.redis.StopRedisClient;
 import org.apache.geode.benchmark.tests.GeodeBenchmark;
 import org.apache.geode.benchmark.topology.RedisTopology;
+import org.apache.geode.perftest.PerformanceTest;
 import org.apache.geode.perftest.TestConfig;
 
-public class RedisBenchmark extends GeodeBenchmark {
+public class RedisBenchmark implements PerformanceTest {
 
-  public static TestConfig createConfig() {
+  protected transient RedisClientManager redisClientManager;
+
+  @Override
+  public TestConfig configure() {
     TestConfig config = GeodeBenchmark.createConfig();
 
     RedisTopology.configure(config);
 
+    redisClientManager = new JedisClientManager();
+
+    before(config, new StartRedisClient(redisClientManager), CLIENT);
+    after(config, new StopRedisClient(redisClientManager), CLIENT);
+
     return config;
   }
-
 }

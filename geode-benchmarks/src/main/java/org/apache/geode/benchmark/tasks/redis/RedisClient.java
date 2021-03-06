@@ -13,20 +13,10 @@
  * the License.
  */
 
-package org.apache.geode.benchmark.tests.redis;
+package org.apache.geode.benchmark.tasks.redis;
 
-import org.apache.geode.benchmark.tests.GeodeBenchmark;
-import org.apache.geode.benchmark.topology.JedisTopology;
-import org.apache.geode.perftest.TestConfig;
+public interface RedisClient {
+  String get(String key);
 
-public class JedisBenchmark extends GeodeBenchmark {
-
-  public static TestConfig createConfig() {
-    TestConfig config = GeodeBenchmark.createConfig();
-
-    JedisTopology.configure(config);
-
-    return config;
-  }
-
+  String set(String key, String value);
 }
