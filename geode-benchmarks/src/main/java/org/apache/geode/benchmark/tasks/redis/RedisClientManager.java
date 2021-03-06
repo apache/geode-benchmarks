@@ -15,10 +15,11 @@
 
 package org.apache.geode.benchmark.tasks.redis;
 
+import java.io.Serializable;
 import java.net.InetAddress;
 import java.util.Set;
 
-public interface RedisClientManager {
+public interface RedisClientManager extends Serializable {
   void connect(final Set<InetAddress> servers);
 
   void close();

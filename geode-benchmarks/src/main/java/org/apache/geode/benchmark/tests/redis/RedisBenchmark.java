@@ -19,7 +19,7 @@ import static com.google.common.base.Strings.isNullOrEmpty;
 import static org.apache.geode.benchmark.Config.after;
 import static org.apache.geode.benchmark.Config.before;
 import static org.apache.geode.benchmark.tests.redis.RedisBenchmark.RedisClientImplementation.Jedis;
-import static org.apache.geode.benchmark.tests.redis.RedisBenchmark.RedisServerImplementation.Redis;
+import static org.apache.geode.benchmark.tests.redis.RedisBenchmark.RedisClusterImplementation.Redis;
 import static org.apache.geode.benchmark.topology.Roles.CLIENT;
 
 import org.apache.geode.benchmark.tasks.redis.JedisClientManager;
@@ -36,10 +36,7 @@ import org.apache.geode.perftest.TestConfig;
 public class RedisBenchmark implements PerformanceTest {
 
   public static final String WITH_REDIS_CLIENT_PROPERTY = "withRedisClient";
-  public static final String WITH_REDIS_SERVER_PROPERTY = "withRedisServer";
-
-  private static final int NUM_SERVERS = 6;
-  private static final int NUM_CLIENTS = 1;
+  public static final String WITH_REDIS_CLUSTER_PROPERTY = "withRedisCluster";
 
   public enum RedisClientImplementation {
     Jedis,
@@ -56,15 +53,15 @@ public class RedisBenchmark implements PerformanceTest {
     }
   }
 
-  public enum RedisServerImplementation {
+  public enum RedisClusterImplementation {
     Redis,
     Geode;
 
-    public static RedisServerImplementation valueOfIgnoreCase(final String name) {
-      for (RedisServerImplementation redisServerImplementation : RedisServerImplementation
+    public static RedisClusterImplementation valueOfIgnoreCase(final String name) {
+      for (RedisClusterImplementation redisClusterImplementation : RedisClusterImplementation
           .values()) {
-        if (redisServerImplementation.name().equalsIgnoreCase(name)) {
-          return redisServerImplementation;
+        if (redisClusterImplementation.name().equalsIgnoreCase(name)) {
+          return redisClusterImplementation;
         }
       }
       throw new IllegalArgumentException();
@@ -77,7 +74,7 @@ public class RedisBenchmark implements PerformanceTest {
   public TestConfig configure() {
     TestConfig config = GeodeBenchmark.createConfig();
 
-    switch (getRedisServerImplementation()) {
+    switch (getRedisClusterImplementation()) {
       case Redis:
         RedisTopology.configure(config);
         break;
@@ -110,13 +107,13 @@ public class RedisBenchmark implements PerformanceTest {
     return RedisClientImplementation.valueOfIgnoreCase(sniProp);
   }
 
-  private RedisServerImplementation getRedisServerImplementation() {
-    final String sniProp = System.getProperty(WITH_REDIS_SERVER_PROPERTY);
+  private RedisClusterImplementation getRedisClusterImplementation() {
+    final String sniProp = System.getProperty(WITH_REDIS_CLUSTER_PROPERTY);
     if (isNullOrEmpty(sniProp)) {
       return Redis;
     }
 
-    return RedisServerImplementation.valueOfIgnoreCase(sniProp);
+    return RedisClusterImplementation.valueOfIgnoreCase(sniProp);
   }
 
 }
