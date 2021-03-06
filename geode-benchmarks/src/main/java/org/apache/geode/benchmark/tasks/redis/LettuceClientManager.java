@@ -45,7 +45,7 @@ public final class LettuceClientManager implements RedisClientManager {
       });
 
 
-  private final transient RedisClient redisClient = new RedisClient() {
+  private static final RedisClient redisClient = new RedisClient() {
     @Override
     public String get(final String key) {
       return redisAdvancedClusterCommands.get().get(key);
@@ -59,7 +59,7 @@ public final class LettuceClientManager implements RedisClientManager {
 
   @Override
   public void connect(final Set<InetAddress> servers) {
-    logger.info("Connect RedisClient from {} on thread {}.", this, currentThread());
+    logger.info("Connect RedisClient on thread {}.", currentThread());
 
     final Set<RedisURI> nodes = servers.stream()
         .map(i -> RedisURI.create(i.getHostAddress(), 6379)).collect(Collectors.toSet());
@@ -82,19 +82,19 @@ public final class LettuceClientManager implements RedisClientManager {
 
     redisClusterClient.refreshPartitions();
 
-    this.redisClusterClient = redisClusterClient;
+    LettuceClientManager.redisClusterClient = redisClusterClient;
   }
 
   @Override
   public void close() {
-    logger.info("Close RedisClient from {} on thread {}.", this, currentThread());
+    logger.info("Close RedisClient on thread {}.", currentThread());
 
     redisClusterClient.shutdown();
   }
 
   @Override
   public RedisClient get() {
-    logger.info("Getting RedisClient from {} on thread {}.", this, currentThread());
+    logger.info("Getting RedisClient on thread {}.", currentThread());
 
     return redisClient;
   }

@@ -33,7 +33,7 @@ public final class JedisClientManager implements RedisClientManager {
 
   private static JedisCluster jedisCluster;
 
-  private final transient RedisClient redisClient = new RedisClient() {
+  private static final RedisClient redisClient = new RedisClient() {
     @Override
     public String get(final String key) {
       return jedisCluster.get(key);
@@ -47,7 +47,7 @@ public final class JedisClientManager implements RedisClientManager {
 
   @Override
   public void connect(final Set<InetAddress> servers) {
-    logger.info("Connect RedisClient from {} on thread {}.", this, currentThread());
+    logger.info("Connect RedisClient on thread {}.", currentThread());
 
     final Set<HostAndPort> nodes = servers.stream()
         .map(i -> new HostAndPort(i.getHostAddress(), 6379)).collect(Collectors.toSet());
@@ -71,19 +71,19 @@ public final class JedisClientManager implements RedisClientManager {
       }
     }
 
-    this.jedisCluster = jedisCluster;
+    JedisClientManager.jedisCluster = jedisCluster;
   }
 
   @Override
   public void close() {
-    logger.info("Close RedisClient from {} on thread {}.", this, currentThread());
+    logger.info("Close RedisClient on thread {}.", currentThread());
 
     jedisCluster.close();
   }
 
   @Override
   public RedisClient get() {
-    logger.info("Getting RedisClient from {} on thread {}.", this, currentThread());
+    logger.info("Getting RedisClient on thread {}.", currentThread());
 
     return redisClient;
   }
