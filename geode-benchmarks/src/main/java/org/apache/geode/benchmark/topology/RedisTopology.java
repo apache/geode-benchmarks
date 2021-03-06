@@ -26,7 +26,6 @@ import org.apache.geode.benchmark.tasks.redis.StartRedisServer;
 import org.apache.geode.benchmark.tasks.redis.StopRedisServer;
 import org.apache.geode.perftest.TestConfig;
 
-
 public class RedisTopology extends Topology {
   private static final int NUM_SERVERS = 6;
   private static final int NUM_CLIENTS = 1;
