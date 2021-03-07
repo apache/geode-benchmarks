@@ -33,8 +33,8 @@ import org.apache.geode.benchmark.LongRange;
  * Task workload to perform get operations on keys within 0
  * and the keyRange (exclusive)
  */
-public class GetRedisTask extends BenchmarkDriverAdapter implements Serializable {
-  private static final Logger logger = LoggerFactory.getLogger(GetRedisTask.class);
+public class PutRedisTask extends BenchmarkDriverAdapter implements Serializable {
+  private static final Logger logger = LoggerFactory.getLogger(PutRedisTask.class);
 
   private final RedisClientManager redisClientManager;
   private final LongRange keyRange;
@@ -45,7 +45,7 @@ public class GetRedisTask extends BenchmarkDriverAdapter implements Serializable
   private transient RedisClient redisClient;
 
 
-  public GetRedisTask(final RedisClientManager redisClientManager, final LongRange keyRange,
+  public PutRedisTask(final RedisClientManager redisClientManager, final LongRange keyRange,
       final boolean validate) {
     logger.info("Initialized: keyRange={}, validate={}", keyRange, validate);
     this.redisClientManager = redisClientManager;
@@ -72,8 +72,8 @@ public class GetRedisTask extends BenchmarkDriverAdapter implements Serializable
   @Override
   public boolean test(final Map<Object, Object> ctx) throws Exception {
     final String key = keys[(int) (keyRange.random() - offset)];
-    final String value = redisClient.get(key);
-    return !validate || key.equals(value);
+    final String response = redisClient.set(key, key);
+    return !validate || key.equals("OK");
   }
 
 }
