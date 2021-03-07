@@ -128,6 +128,8 @@ task benchmark(type: Test) {
     systemProperty 'withRedisCluster', project.findProperty('withRedisCluster')
   }
 
+  systemProperty 'withValidation', project.hasProperty('withValidation')
+
   systemProperty 'withSecurityManager', project.hasProperty('withSecurityManager')
   systemProperty 'benchmark.profiler.argument', project.findProperty('benchmark.profiler.argument')
 

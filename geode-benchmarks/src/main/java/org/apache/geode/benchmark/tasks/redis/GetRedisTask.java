@@ -38,15 +38,17 @@ public class GetRedisTask extends BenchmarkDriverAdapter implements Serializable
 
   private final RedisClientManager redisClientManager;
   private final LongRange keyRange;
+  private final boolean validate;
 
   private transient long offset;
   private transient String[] keys;
   private transient RedisClient redisClient;
 
 
-  public GetRedisTask(final RedisClientManager redisClientManager, final LongRange keyRange) {
+  public GetRedisTask(final RedisClientManager redisClientManager, final LongRange keyRange, final boolean validate) {
     this.redisClientManager = redisClientManager;
     this.keyRange = keyRange;
+    this.validate = validate;
   }
 
   @Override
@@ -68,8 +70,8 @@ public class GetRedisTask extends BenchmarkDriverAdapter implements Serializable
   @Override
   public boolean test(final Map<Object, Object> ctx) throws Exception {
     final String key = keys[(int) (keyRange.random() - offset)];
-    redisClient.get(key);
-    return true;
+    final String value = redisClient.get(key);
+    return !validate || key.equals(value);
   }
 
 }

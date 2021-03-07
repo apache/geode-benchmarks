@@ -53,7 +53,7 @@ public class RedisGetBenchmark extends RedisBenchmark {
     final TestConfig config = super.configure();
 
     before(config, new PrePopulateRedis(redisClientManager, keyRange), CLIENT);
-    workload(config, new GetRedisTask(redisClientManager, keyRange), CLIENT);
+    workload(config, new GetRedisTask(redisClientManager, keyRange, isValidationEnabled()), CLIENT);
     return config;
 
   }
