@@ -18,7 +18,6 @@
 package org.apache.geode.benchmark.tasks;
 
 import static java.lang.String.valueOf;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.Serializable;
 import java.util.Map;
@@ -35,18 +34,16 @@ import org.apache.geode.cache.Region;
  * Task workload to perform get operations on keys within 0
  * and the keyRange (exclusive)
  */
-public class GetStringTask extends BenchmarkDriverAdapter implements Serializable {
+public class PutStringTask extends BenchmarkDriverAdapter implements Serializable {
 
   private final LongRange keyRange;
-  private final boolean validate;
 
   private Region<String, String> region;
   private long offset;
   private String[] keys;
 
-  public GetStringTask(final LongRange keyRange, final boolean validate) {
+  public PutStringTask(LongRange keyRange) {
     this.keyRange = keyRange;
-    this.validate = validate;
   }
 
   @Override
@@ -64,10 +61,7 @@ public class GetStringTask extends BenchmarkDriverAdapter implements Serializabl
   @Override
   public boolean test(Map<Object, Object> ctx) throws Exception {
     final String key = keys[(int) (keyRange.random() - offset)];
-    final String value = region.get(key);
-    if (validate) {
-      assertEquals(key, value);
-    }
+    region.put(key, key);
     return true;
   }
 }

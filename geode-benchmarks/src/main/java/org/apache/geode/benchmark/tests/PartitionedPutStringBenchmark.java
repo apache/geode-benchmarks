@@ -17,10 +17,8 @@
 
 package org.apache.geode.benchmark.tests;
 
-
 import static org.apache.geode.benchmark.Config.before;
 import static org.apache.geode.benchmark.Config.workload;
-import static org.apache.geode.benchmark.tests.GeodeBenchmark.isValidationEnabled;
 import static org.apache.geode.benchmark.topology.Roles.CLIENT;
 import static org.apache.geode.benchmark.topology.Roles.SERVER;
 
@@ -29,38 +27,38 @@ import org.junit.jupiter.api.Test;
 import org.apache.geode.benchmark.LongRange;
 import org.apache.geode.benchmark.tasks.CreateClientProxyRegion;
 import org.apache.geode.benchmark.tasks.CreatePartitionedRegion;
-import org.apache.geode.benchmark.tasks.GetStringTask;
 import org.apache.geode.benchmark.tasks.PrePopulateRegionString;
+import org.apache.geode.benchmark.tasks.PutStringTask;
 import org.apache.geode.perftest.PerformanceTest;
 import org.apache.geode.perftest.TestConfig;
 import org.apache.geode.perftest.TestRunners;
 
 /**
- * Benchmark of gets on a partitioned region.
+ * Benchmark of puts on a partitioned region.
  */
-public class PartitionedGetStringBenchmark implements PerformanceTest {
+public class PartitionedPutStringBenchmark implements PerformanceTest {
 
-  private LongRange keyRange = new LongRange(0, 1000000);
+  private LongRange keyRange = new LongRange(0, 1_000_000);
+
+  public PartitionedPutStringBenchmark() {}
+
+  public void setKeyRange(final LongRange keyRange) {
+    this.keyRange = keyRange;
+  }
 
   @Test
   public void run() throws Exception {
     TestRunners.defaultRunner().runTest(this);
   }
 
-  public PartitionedGetStringBenchmark() {}
-
-  public void setKeyRange(final LongRange keyRange) {
-    this.keyRange = keyRange;
-  }
-
   @Override
   public TestConfig configure() {
     TestConfig config = ClientServerBenchmark.createConfig();
+
     before(config, new CreatePartitionedRegion(), SERVER);
     before(config, new CreateClientProxyRegion(), CLIENT);
     before(config, new PrePopulateRegionString(keyRange), CLIENT);
-    workload(config, new GetStringTask(keyRange, isValidationEnabled()), CLIENT);
+    workload(config, new PutStringTask(keyRange), CLIENT);
     return config;
-
   }
 }

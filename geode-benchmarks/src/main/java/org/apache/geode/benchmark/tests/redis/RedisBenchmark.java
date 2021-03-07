@@ -35,7 +35,6 @@ import org.apache.geode.perftest.TestConfig;
 
 public class RedisBenchmark implements PerformanceTest {
 
-  public static final String WITH_VALIDATION_PROPERTY = "withValidation";
   public static final String WITH_REDIS_CLIENT_PROPERTY = "withRedisClient";
   public static final String WITH_REDIS_CLUSTER_PROPERTY = "withRedisCluster";
 
@@ -117,7 +116,4 @@ public class RedisBenchmark implements PerformanceTest {
     return RedisClusterImplementation.valueOfIgnoreCase(sniProp);
   }
 
-  protected boolean isValidationEnabled() {
-    return Boolean.getBoolean(WITH_VALIDATION_PROPERTY);
-  }
 }
