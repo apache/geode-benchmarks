@@ -18,6 +18,7 @@
 package org.apache.geode.benchmark.tasks.redis;
 
 import static java.lang.String.valueOf;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.Serializable;
 import java.util.Map;
@@ -73,7 +74,10 @@ public class GetRedisTask extends BenchmarkDriverAdapter implements Serializable
   public boolean test(final Map<Object, Object> ctx) throws Exception {
     final String key = keys[(int) (keyRange.random() - offset)];
     final String value = redisClient.get(key);
-    return !validate || key.equals(value);
+    if (validate) {
+      assertEquals(key, value);
+    }
+    return true;
   }
 
 }
