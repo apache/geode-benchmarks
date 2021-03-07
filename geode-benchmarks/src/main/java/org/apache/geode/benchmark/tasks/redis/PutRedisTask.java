@@ -18,10 +18,12 @@
 package org.apache.geode.benchmark.tasks.redis;
 
 import static java.lang.String.valueOf;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.Serializable;
 import java.util.Map;
 
+import org.junit.jupiter.api.Assertions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.yardstickframework.BenchmarkConfiguration;
@@ -73,7 +75,10 @@ public class PutRedisTask extends BenchmarkDriverAdapter implements Serializable
   public boolean test(final Map<Object, Object> ctx) throws Exception {
     final String key = keys[(int) (keyRange.random() - offset)];
     final String response = redisClient.set(key, key);
-    return !validate || key.equals("OK");
+    if (validate) {
+      assertEquals("OK", response);
+    }
+    return true;
   }
 
 }
