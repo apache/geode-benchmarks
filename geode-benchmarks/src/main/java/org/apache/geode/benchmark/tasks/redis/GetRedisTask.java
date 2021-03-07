@@ -46,6 +46,7 @@ public class GetRedisTask extends BenchmarkDriverAdapter implements Serializable
 
 
   public GetRedisTask(final RedisClientManager redisClientManager, final LongRange keyRange, final boolean validate) {
+    logger.info("Initialized: keyRange={}, validate={}", keyRange, validate);
     this.redisClientManager = redisClientManager;
     this.keyRange = keyRange;
     this.validate = validate;
