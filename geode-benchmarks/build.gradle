@@ -162,6 +162,7 @@ task benchmark(type: Test) {
     systemProperty 'benchmark.withRedisServer', project.findProperty('withRedisServer')
   }
 
+  systemProperty 'benchmark.withValidation', project.hasProperty('withValidation')
 
   doFirst {
     if(!project.hasProperty('hosts')) {
