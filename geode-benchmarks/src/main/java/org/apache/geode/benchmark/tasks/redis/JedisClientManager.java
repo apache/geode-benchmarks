@@ -17,7 +17,8 @@ package org.apache.geode.benchmark.tasks.redis;
 
 import static java.lang.Thread.currentThread;
 
-import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.util.Collection;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -46,11 +47,11 @@ public final class JedisClientManager implements RedisClientManager {
   };
 
   @Override
-  public void connect(final Set<InetAddress> servers) {
+  public void connect(final Collection<InetSocketAddress> servers) {
     logger.info("Connect RedisClient on thread {}.", currentThread());
 
     final Set<HostAndPort> nodes = servers.stream()
-        .map(i -> new HostAndPort(i.getHostAddress(), 6379)).collect(Collectors.toSet());
+        .map(i -> new HostAndPort(i.getHostString(), i.getPort())).collect(Collectors.toSet());
 
     final JedisPoolConfig poolConfig = new JedisPoolConfig();
     poolConfig.setMaxTotal(-1);

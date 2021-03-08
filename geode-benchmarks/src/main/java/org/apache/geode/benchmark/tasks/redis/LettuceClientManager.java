@@ -17,8 +17,9 @@ package org.apache.geode.benchmark.tasks.redis;
 
 import static java.lang.Thread.currentThread;
 
-import java.net.InetAddress;
-import java.util.Set;
+import java.net.InetSocketAddress;
+import java.util.Collection;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import io.lettuce.core.ReadFrom;
@@ -58,11 +59,11 @@ public final class LettuceClientManager implements RedisClientManager {
   };
 
   @Override
-  public void connect(final Set<InetAddress> servers) {
+  public void connect(final Collection<InetSocketAddress> servers) {
     logger.info("Connect RedisClient on thread {}.", currentThread());
 
-    final Set<RedisURI> nodes = servers.stream()
-        .map(i -> RedisURI.create(i.getHostAddress(), 6379)).collect(Collectors.toSet());
+    final List<RedisURI> nodes = servers.stream()
+        .map(i -> RedisURI.create(i.getHostString(), i.getPort())).collect(Collectors.toList());
 
     final RedisClusterClient redisClusterClient = RedisClusterClient.create(nodes);
 

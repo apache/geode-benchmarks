@@ -17,36 +17,24 @@
 
 package org.apache.geode.benchmark.tasks.redis;
 
-import static org.apache.geode.benchmark.tests.redis.RedisBenchmark.REDIS_SERVERS_ATTRIBUTE;
 
 import java.net.InetSocketAddress;
 import java.util.Collection;
-import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import org.apache.geode.benchmark.tests.redis.RedisBenchmark;
 import org.apache.geode.perftest.Task;
 import org.apache.geode.perftest.TestContext;
 
-/**
- * Task to create the client cache
- */
-public class StartRedisClient implements Task {
-  private static final Logger logger = LoggerFactory.getLogger(StartRedisClient.class);
+public class InitRedisServersAttribute implements Task {
+  final Collection<InetSocketAddress> servers;
 
-  private final RedisClientManager redisClientManager;
-
-  public StartRedisClient(final RedisClientManager redisClientManager) {
-    this.redisClientManager = redisClientManager;
+  public InitRedisServersAttribute(final Collection<InetSocketAddress> servers) {
+    this.servers = servers;
   }
 
   @Override
   public void run(final TestContext context) throws Exception {
-    @SuppressWarnings("unchecked")
-    final Collection<InetSocketAddress> redisClusterAddresses =
-        (Collection<InetSocketAddress>) context.getAttribute(REDIS_SERVERS_ATTRIBUTE);
-    redisClientManager.connect(redisClusterAddresses);
+    context.setAttribute(RedisBenchmark.REDIS_SERVERS_ATTRIBUTE, servers);
   }
 
 }

@@ -28,8 +28,9 @@ import org.apache.geode.benchmark.tasks.redis.RedisClientManager;
 import org.apache.geode.benchmark.tasks.redis.StartRedisClient;
 import org.apache.geode.benchmark.tasks.redis.StopRedisClient;
 import org.apache.geode.benchmark.tests.GeodeBenchmark;
-import org.apache.geode.benchmark.topology.GedisTopology;
-import org.apache.geode.benchmark.topology.RedisTopology;
+import org.apache.geode.benchmark.topology.redis.GedisTopology;
+import org.apache.geode.benchmark.topology.redis.ManualRedisTopology;
+import org.apache.geode.benchmark.topology.redis.RedisTopology;
 import org.apache.geode.perftest.PerformanceTest;
 import org.apache.geode.perftest.TestConfig;
 
@@ -37,6 +38,8 @@ public class RedisBenchmark implements PerformanceTest {
 
   public static final String WITH_REDIS_CLIENT_PROPERTY = "withRedisClient";
   public static final String WITH_REDIS_CLUSTER_PROPERTY = "withRedisCluster";
+
+  public static final String REDIS_SERVERS_ATTRIBUTE = "RedisBenchmark.Servers";
 
   public enum RedisClientImplementation {
     Jedis,
@@ -49,13 +52,14 @@ public class RedisBenchmark implements PerformanceTest {
           return redisClientImplementation;
         }
       }
-      throw new IllegalArgumentException();
+      throw new IllegalArgumentException("Unknown Redis client implementation: " + name);
     }
   }
 
   public enum RedisClusterImplementation {
     Redis,
-    Geode;
+    Geode,
+    Manual;
 
     public static RedisClusterImplementation valueOfIgnoreCase(final String name) {
       for (RedisClusterImplementation redisClusterImplementation : RedisClusterImplementation
@@ -64,7 +68,7 @@ public class RedisBenchmark implements PerformanceTest {
           return redisClusterImplementation;
         }
       }
-      throw new IllegalArgumentException();
+      throw new IllegalArgumentException("Unknown Redis cluster implementation: " + name);
     }
   }
 
@@ -80,6 +84,9 @@ public class RedisBenchmark implements PerformanceTest {
         break;
       case Geode:
         GedisTopology.configure(config);
+        break;
+      case Manual:
+        ManualRedisTopology.configure(config);
         break;
     }
 
