@@ -19,7 +19,7 @@ import static com.google.common.base.Strings.isNullOrEmpty;
 import static org.apache.geode.benchmark.Config.after;
 import static org.apache.geode.benchmark.Config.before;
 import static org.apache.geode.benchmark.tests.redis.RedisBenchmark.RedisClientImplementation.Jedis;
-import static org.apache.geode.benchmark.tests.redis.RedisBenchmark.RedisClusterImplementation.Redis;
+import static org.apache.geode.benchmark.tests.redis.RedisBenchmark.RedisClusterImplementation.Geode;
 import static org.apache.geode.benchmark.topology.Roles.CLIENT;
 
 import org.apache.geode.benchmark.tasks.redis.JedisClientManager;
@@ -57,8 +57,8 @@ public class RedisBenchmark implements PerformanceTest {
   }
 
   public enum RedisClusterImplementation {
-    Redis,
     Geode,
+    Redis,
     Manual;
 
     public static RedisClusterImplementation valueOfIgnoreCase(final String name) {
@@ -117,7 +117,7 @@ public class RedisBenchmark implements PerformanceTest {
   private RedisClusterImplementation getRedisClusterImplementation() {
     final String sniProp = System.getProperty(WITH_REDIS_CLUSTER_PROPERTY);
     if (isNullOrEmpty(sniProp)) {
-      return Redis;
+      return Geode;
     }
 
     return RedisClusterImplementation.valueOfIgnoreCase(sniProp);
