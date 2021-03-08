@@ -50,10 +50,6 @@ public class StartRedisServer implements Task {
             "bitnami/redis-cluster:latest");
 
     runAndExpectZeroExit(processBuilder);
-
-    context.setAttribute(RedisBenchmark.REDIS_SERVERS_ATTRIBUTE,
-        servers.stream().map(i -> InetSocketAddress.createUnresolved(i.getHostAddress(), 6379))
-            .collect(Collectors.toList()));
   }
 
 }
