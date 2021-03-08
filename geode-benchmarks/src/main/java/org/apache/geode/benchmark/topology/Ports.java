@@ -38,6 +38,6 @@ public class Ports {
   /**
    * Default Redis port.
    */
-  public static final int REDIS_PORT = 15443;
+  public static final int REDIS_PORT = 6379;
 
 }
