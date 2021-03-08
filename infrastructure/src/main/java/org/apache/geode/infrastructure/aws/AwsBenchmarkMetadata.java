@@ -16,6 +16,9 @@
  */
 package org.apache.geode.infrastructure.aws;
 
+import static java.lang.System.getProperty;
+import static software.amazon.awssdk.services.ec2.model.InstanceType.C5_18_XLARGE;
+
 import software.amazon.awssdk.services.ec2.model.InstanceType;
 import software.amazon.awssdk.services.ec2.model.PlacementStrategy;
 import software.amazon.awssdk.services.ec2.model.Tenancy;
@@ -28,7 +31,8 @@ import org.apache.geode.infrastructure.BenchmarkMetadata;
 class AwsBenchmarkMetadata extends BenchmarkMetadata {
   public static final String USER = "geode";
   public static final int POLL_INTERVAL = 15000;
-  public static InstanceType INSTANCE_TYPE = InstanceType.C5_18_XLARGE;
+  public static InstanceType INSTANCE_TYPE = InstanceType.fromValue(
+      getProperty("INSTANCE_TYPE", C5_18_XLARGE.toString()));
   public static Tenancy TENANCY = Tenancy.DEDICATED;
 
   public static String securityGroup(String tag) {
