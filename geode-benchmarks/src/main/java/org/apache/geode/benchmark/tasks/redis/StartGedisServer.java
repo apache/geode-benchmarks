@@ -41,15 +41,6 @@ public class StartGedisServer extends StartServer {
   }
 
   @Override
-  public void run(final TestContext context) throws Exception {
-    super.run(context);
-
-    context.setAttribute(RedisBenchmark.REDIS_SERVERS_ATTRIBUTE,
-        context.getHostsForRole(SERVER.name()).stream().map(i -> InetSocketAddress
-            .createUnresolved(i.getHostAddress(), REDIS_PORT)).collect(Collectors.toList()));
-  }
-
-  @Override
   protected void configureCache(final InternalCache cache, final TestContext context) {
     super.configureCache(cache, context);
 
