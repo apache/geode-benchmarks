@@ -46,14 +46,15 @@ Creates an instance group in AWS based on an image created.
 
 Usage:
 
-    ./launch_cluster.sh -t [tag] -c [count] [--ci]
+    ./launch_cluster.sh -t [tag] -c [count]
 
 Options:
 
-    -t|--tag     : Cluster tag to identify the cluster for use with other utilities
-    -c|--count   : Number of AWS instances to start (recommended: 4)
-    --ci         : (Optional) Set when the instances are being started for use in Continuous Integration
-    -h|-?|--help : Help message
+    -t|--tag             : Cluster tag to identify the cluster for use with other utilities
+    -c|--count           : Number of AWS instances to start (recommended: 4)
+    -i|--instance-type   : AWS instance type to start (default: c5.18xlarge)
+    --ci                 : (Optional) Set when the instances are being started for use in Continuous Integration
+    -h|-?|--help         : Help message
 
 # run_tests.sh
 Runs benchmark tests against a single branch of `geode` on the AWS instances with the specified tag.
