@@ -18,7 +18,15 @@
 package org.apache.geode.benchmark.tasks.redis;
 
 
+import static java.lang.String.valueOf;
+import static org.apache.geode.benchmark.topology.Ports.REDIS_PORT;
+import static org.apache.geode.benchmark.topology.Roles.SERVER;
+
+import java.net.InetSocketAddress;
+import java.util.stream.Collectors;
+
 import org.apache.geode.benchmark.tasks.StartServer;
+import org.apache.geode.benchmark.tests.redis.RedisBenchmark;
 import org.apache.geode.cache.CacheFactory;
 import org.apache.geode.cache.server.CacheServer;
 import org.apache.geode.distributed.ConfigurationProperties;
@@ -30,6 +38,15 @@ public class StartGedisServer extends StartServer {
 
   public StartGedisServer(final int locatorPort, final int serverPort) {
     super(locatorPort, serverPort);
+  }
+
+  @Override
+  public void run(final TestContext context) throws Exception {
+    super.run(context);
+
+    context.setAttribute(RedisBenchmark.REDIS_SERVERS_ATTRIBUTE,
+        context.getHostsForRole(SERVER.name()).stream().map(i -> InetSocketAddress
+            .createUnresolved(i.getHostAddress(), REDIS_PORT)).collect(Collectors.toList()));
   }
 
   @Override
@@ -45,8 +62,8 @@ public class StartGedisServer extends StartServer {
       final TestContext context)
       throws Exception {
     return super.configureCacheFactory(cacheFactory, context)
-        .set(ConfigurationProperties.REDIS_ENABLED, "true")
-        .set(ConfigurationProperties.REDIS_PORT, "6379");
+        .set(ConfigurationProperties.REDIS_ENABLED, valueOf(true))
+        .set(ConfigurationProperties.REDIS_PORT, valueOf(REDIS_PORT));
   }
 
   @Override

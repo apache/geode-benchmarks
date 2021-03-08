@@ -34,7 +34,7 @@ public abstract class Topology {
   public static final String WITH_SECURITY_MANAGER_PROPERTY = "benchmark.withSecurityManager";
   static final String WITH_SECURITY_MANAGER_ARGUMENT = "-Dbenchmark.withSecurityManager=true";
 
-  static void configureCommon(TestConfig config) {
+  protected static void configureCommon(TestConfig config) {
     JvmParameters.configure(config);
     HeapParameters.configure(config);
     GcLoggingParameters.configure(config);

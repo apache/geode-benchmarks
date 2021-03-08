@@ -16,11 +16,11 @@
 package org.apache.geode.benchmark.tasks.redis;
 
 import java.io.Serializable;
-import java.net.InetAddress;
-import java.util.Set;
+import java.net.InetSocketAddress;
+import java.util.Collection;
 
 public interface RedisClientManager extends Serializable {
-  void connect(final Set<InetAddress> servers);
+  void connect(final Collection<InetSocketAddress> servers);
 
   void close();
 

@@ -13,32 +13,40 @@
  * the License.
  */
 
-package org.apache.geode.benchmark.topology;
+package org.apache.geode.benchmark.topology.redis;
 
 import static org.apache.geode.benchmark.Config.after;
 import static org.apache.geode.benchmark.Config.before;
 import static org.apache.geode.benchmark.Config.role;
+import static org.apache.geode.benchmark.topology.Ports.EPHEMERAL_PORT;
+import static org.apache.geode.benchmark.topology.Ports.LOCATOR_PORT;
 import static org.apache.geode.benchmark.topology.Roles.CLIENT;
+import static org.apache.geode.benchmark.topology.Roles.LOCATOR;
 import static org.apache.geode.benchmark.topology.Roles.SERVER;
 
-import org.apache.geode.benchmark.tasks.redis.CreateRedisCluster;
-import org.apache.geode.benchmark.tasks.redis.StartRedisServer;
-import org.apache.geode.benchmark.tasks.redis.StopRedisServer;
+import org.apache.geode.benchmark.tasks.StartLocator;
+import org.apache.geode.benchmark.tasks.StopLocator;
+import org.apache.geode.benchmark.tasks.StopServer;
+import org.apache.geode.benchmark.tasks.redis.StartGedisServer;
+import org.apache.geode.benchmark.topology.Topology;
 import org.apache.geode.perftest.TestConfig;
 
-public class RedisTopology extends Topology {
+public class GedisTopology extends Topology {
+  private static final int NUM_LOCATORS = 1;
   private static final int NUM_SERVERS = 6;
   private static final int NUM_CLIENTS = 1;
 
   public static void configure(TestConfig config) {
+    role(config, LOCATOR, NUM_LOCATORS);
     role(config, SERVER, NUM_SERVERS);
     role(config, CLIENT, NUM_CLIENTS);
 
     configureCommon(config);
 
-    before(config, new StartRedisServer(), SERVER);
-    before(config, new CreateRedisCluster(), CLIENT);
+    before(config, new StartLocator(LOCATOR_PORT), LOCATOR);
+    before(config, new StartGedisServer(LOCATOR_PORT, EPHEMERAL_PORT), SERVER);
 
-    after(config, new StopRedisServer(), SERVER);
+    after(config, new StopServer(), SERVER);
+    after(config, new StopLocator(), LOCATOR);
   }
 }

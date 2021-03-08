@@ -158,8 +158,12 @@ task benchmark(type: Test) {
     systemProperty 'benchmark.withRedisClient', project.findProperty('withRedisClient')
   }
 
-  if (project.hasProperty('withRedisServer')) {
-    systemProperty 'benchmark.withRedisServer', project.findProperty('withRedisServer')
+  if (project.hasProperty('withRedisCluster')) {
+    systemProperty 'benchmark.withRedisCluster', project.findProperty('withRedisCluster')
+  }
+
+  if (project.hasProperty('withRedisServers')) {
+    systemProperty 'benchmark.withRedisServers', project.findProperty('withRedisServers')
   }
 
   systemProperty 'benchmark.withValidation', project.hasProperty('withValidation')
