@@ -59,6 +59,9 @@ Options:
     -PwithSniProxyImage   : Provide an alternative Docker image coordinate for SNI proxy.
     -PwithRouter          : Use router with SNI proxy topology.
     -PwithRouterImage     : Provide an alternative Docker image coordinate for router.
+    -PwithRedisClient     : Redis client library to use, Jedis (default) or Lettuce.
+    -PwithRedisCluster    : Redis cluster type to build, Geode (default), Redis, or manual.
+    -PwithRedisServers    : Redis server address(es) to connect to when `withRedisCluster` is `manual`.
     -PwithGc              : Select which GC to use. Valid values CMS (default), G1, Z.
     -PwithHeap            : Specify how large a heap the benchmark VMs should use, default "8g". Accepts any `-Xmx` value, like "32g".
     -PwithThreads         : Specify how many threads to use when executing the benchmark. Default varies by benchmark.
