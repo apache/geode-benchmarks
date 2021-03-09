@@ -23,4 +23,6 @@ public interface RedisClient {
   String hget(String key, String field);
 
   boolean hset(String key, String field, String value);
+
+  void flushdb();
 }
