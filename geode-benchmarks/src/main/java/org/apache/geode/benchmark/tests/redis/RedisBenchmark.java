@@ -101,7 +101,7 @@ public class RedisBenchmark implements PerformanceTest {
     }
 
     before(config, new StartRedisClient(redisClientManager), CLIENT);
-    before(config, new FlushDbTask(redisClientManager), CLIENT);
+//    before(config, new FlushDbTask(redisClientManager), CLIENT);
 
     after(config, new StopRedisClient(redisClientManager), CLIENT);
 
