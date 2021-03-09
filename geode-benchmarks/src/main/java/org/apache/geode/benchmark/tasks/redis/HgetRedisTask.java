@@ -29,18 +29,17 @@ import org.yardstickframework.BenchmarkDriverAdapter;
 
 import org.apache.geode.benchmark.LongRange;
 
-
-public class GetRedisTask extends BenchmarkDriverAdapter implements Serializable {
-  private static final Logger logger = LoggerFactory.getLogger(GetRedisTask.class);
+public class HgetRedisTask extends BenchmarkDriverAdapter implements Serializable {
+  private static final Logger logger = LoggerFactory.getLogger(HgetRedisTask.class);
 
   private final RedisClientManager redisClientManager;
   private final LongRange keyRange;
   private final boolean validate;
 
-  private LongStringCache keyCache;
+  private transient LongStringCache keyCache;
   private transient RedisClient redisClient;
 
-  public GetRedisTask(final RedisClientManager redisClientManager, final LongRange keyRange,
+  public HgetRedisTask(final RedisClientManager redisClientManager, final LongRange keyRange,
       final boolean validate) {
     logger.info("Initialized: keyRange={}, validate={}", keyRange, validate);
     this.redisClientManager = redisClientManager;
@@ -58,8 +57,11 @@ public class GetRedisTask extends BenchmarkDriverAdapter implements Serializable
 
   @Override
   public boolean test(final Map<Object, Object> ctx) throws Exception {
-    final String key = keyCache.valueOf(keyRange.random());
-    final String value = redisClient.get(key);
+    final long k = keyRange.random();
+
+    final String key = keyCache.valueOf(k / 1000);
+    final String field = keyCache.valueOf(k % 1000);
+    final String value = redisClient.hget(key, field);
     if (validate) {
       assertEquals(key, value);
     }

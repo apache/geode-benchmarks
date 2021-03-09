@@ -17,7 +17,6 @@
 
 package org.apache.geode.benchmark.tasks.redis;
 
-import static java.lang.String.valueOf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.Serializable;
@@ -30,10 +29,6 @@ import org.yardstickframework.BenchmarkDriverAdapter;
 
 import org.apache.geode.benchmark.LongRange;
 
-/**
- * Task workload to perform get operations on keys within 0
- * and the keyRange (exclusive)
- */
 public class PutRedisTask extends BenchmarkDriverAdapter implements Serializable {
   private static final Logger logger = LoggerFactory.getLogger(PutRedisTask.class);
 
@@ -41,8 +36,7 @@ public class PutRedisTask extends BenchmarkDriverAdapter implements Serializable
   private final LongRange keyRange;
   private final boolean validate;
 
-  private transient long offset;
-  private transient String[] keys;
+  private LongStringCache keyCache;
   private transient RedisClient redisClient;
 
 
@@ -58,21 +52,13 @@ public class PutRedisTask extends BenchmarkDriverAdapter implements Serializable
   public void setUp(final BenchmarkConfiguration cfg) throws Exception {
     super.setUp(cfg);
 
-    offset = keyRange.getMin();
-    keys = new String[(int) (keyRange.getMax() - offset)];
-    keyRange.forEach(i -> keys[(int) i] = valueOf(i));
-
+    keyCache = new LongStringCache(keyRange);
     redisClient = redisClientManager.get();
   }
 
   @Override
-  public void tearDown() throws Exception {
-    super.tearDown();
-  }
-
-  @Override
   public boolean test(final Map<Object, Object> ctx) throws Exception {
-    final String key = keys[(int) (keyRange.random() - offset)];
+    final String key = keyCache.valueOf(keyRange.random());
     final String response = redisClient.set(key, key);
     if (validate) {
       assertEquals("OK", response);

@@ -20,20 +20,15 @@ import static org.apache.geode.benchmark.Config.before;
 import static org.apache.geode.benchmark.Config.role;
 import static org.apache.geode.benchmark.topology.Ports.EPHEMERAL_PORT;
 import static org.apache.geode.benchmark.topology.Ports.LOCATOR_PORT;
-import static org.apache.geode.benchmark.topology.Ports.REDIS_PORT;
 import static org.apache.geode.benchmark.topology.Roles.CLIENT;
 import static org.apache.geode.benchmark.topology.Roles.LOCATOR;
 import static org.apache.geode.benchmark.topology.Roles.SERVER;
-
-import java.net.InetSocketAddress;
-import java.util.stream.Collectors;
 
 import org.apache.geode.benchmark.tasks.StartLocator;
 import org.apache.geode.benchmark.tasks.StopLocator;
 import org.apache.geode.benchmark.tasks.StopServer;
 import org.apache.geode.benchmark.tasks.redis.InitRedisServersAttribute;
 import org.apache.geode.benchmark.tasks.redis.StartGedisServer;
-import org.apache.geode.benchmark.tests.redis.RedisBenchmark;
 import org.apache.geode.benchmark.topology.Topology;
 import org.apache.geode.perftest.TestConfig;
 

@@ -44,6 +44,16 @@ public final class JedisClientManager implements RedisClientManager {
     public String set(final String key, final String value) {
       return jedisCluster.set(key, value);
     }
+
+    @Override
+    public String hget(final String key, final String field) {
+      return jedisCluster.hget(key, field);
+    }
+
+    @Override
+    public boolean hset(final String key, final String field, final String value) {
+      return 1 == jedisCluster.hset(key, field, value);
+    }
   };
 
   @Override

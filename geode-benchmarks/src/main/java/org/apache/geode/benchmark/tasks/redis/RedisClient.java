@@ -19,4 +19,8 @@ public interface RedisClient {
   String get(String key);
 
   String set(String key, String value);
+
+  String hget(String key, String field);
+
+  boolean hset(String key, String field, String value);
 }
