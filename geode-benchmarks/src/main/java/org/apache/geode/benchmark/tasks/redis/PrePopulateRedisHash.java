@@ -21,9 +21,9 @@ import static java.lang.String.valueOf;
 
 import org.apache.geode.benchmark.LongRange;
 
-public class PrePopulateRedis extends AbstractPrePopulate {
+public class PrePopulateRedisHash extends AbstractPrePopulate {
 
-  public PrePopulateRedis(
+  public PrePopulateRedisHash(
       final RedisClientManager redisClientManager,
       final LongRange keyRangeToPrepopulate) {
     super(redisClientManager, keyRangeToPrepopulate);
@@ -31,7 +31,7 @@ public class PrePopulateRedis extends AbstractPrePopulate {
 
   @Override
   protected void prepopulate(final RedisClient redisClient, final long key) {
-    final String keyString = valueOf(key);
-    redisClient.set(keyString, keyString);
+    final String value = valueOf(key % 1000);
+    redisClient.hset(valueOf(key / 1000), value, value);
   }
 }

@@ -22,11 +22,9 @@ import static org.apache.geode.benchmark.tasks.ProcessControl.runAndExpectZeroEx
 import static org.apache.geode.benchmark.topology.Roles.SERVER;
 
 import java.net.InetAddress;
-import java.net.InetSocketAddress;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.geode.benchmark.tests.redis.RedisBenchmark;
 import org.apache.geode.perftest.Task;
 import org.apache.geode.perftest.TestContext;
 

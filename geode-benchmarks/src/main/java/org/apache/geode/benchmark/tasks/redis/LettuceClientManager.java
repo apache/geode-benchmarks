@@ -56,6 +56,16 @@ public final class LettuceClientManager implements RedisClientManager {
     public String set(final String key, final String value) {
       return redisAdvancedClusterCommands.get().set(key, value);
     }
+
+    @Override
+    public String hget(final String key, final String field) {
+      return redisAdvancedClusterCommands.get().hget(key, field);
+    }
+
+    @Override
+    public boolean hset(final String key, final String field, final String value) {
+      return redisAdvancedClusterCommands.get().hset(key, field, value);
+    }
   };
 
   @Override
