@@ -63,7 +63,7 @@ public class HgetRedisTask extends BenchmarkDriverAdapter implements Serializabl
     final String field = keyCache.valueOf(k % 1000);
     final String value = redisClient.hget(key, field);
     if (validate) {
-      assertEquals(key, value);
+      assertEquals(field, value);
     }
     return true;
   }

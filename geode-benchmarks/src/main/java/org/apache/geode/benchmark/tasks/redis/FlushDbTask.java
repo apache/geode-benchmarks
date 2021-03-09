@@ -17,19 +17,31 @@
 
 package org.apache.geode.benchmark.tasks.redis;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import java.io.Serializable;
+import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.yardstickframework.BenchmarkConfiguration;
+import org.yardstickframework.BenchmarkDriverAdapter;
+
 import org.apache.geode.benchmark.LongRange;
+import org.apache.geode.perftest.Task;
+import org.apache.geode.perftest.TestContext;
 
-public class LongStringCache {
-  private final int offset;
-  private final String[] cache;
+public class FlushDbTask implements Task {
 
-  public LongStringCache(final LongRange longRange) {
-    offset = (int) longRange.getMin();
-    cache = new String[(int) (longRange.getMax() - offset)];
-    longRange.forEach(i -> cache[(int) i] = String.valueOf(i));
+  private final RedisClientManager redisClientManager;
+
+  public FlushDbTask(final RedisClientManager redisClientManager) {
+    this.redisClientManager = redisClientManager;
   }
 
-  public String valueOf(final long value) {
-    return cache[(int) (value - offset)];
+  @Override
+  public void run(final TestContext context) throws Exception {
+    redisClientManager.get().flushdb();
   }
+
 }

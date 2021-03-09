@@ -34,6 +34,8 @@ public final class JedisClientManager implements RedisClientManager {
 
   private static JedisCluster jedisCluster;
 
+  public static final int MAX_SLOTS = 1 << 14;
+
   private static final RedisClient redisClient = new RedisClient() {
     @Override
     public String get(final String key) {
@@ -53,6 +55,13 @@ public final class JedisClientManager implements RedisClientManager {
     @Override
     public boolean hset(final String key, final String field, final String value) {
       return 1 == jedisCluster.hset(key, field, value);
+    }
+
+    @Override
+    public void flushdb() {
+      for (int i = 0; i < MAX_SLOTS; ++i) {
+        jedisCluster.getConnectionFromSlot(i).flushDB();
+      }
     }
   };
 
