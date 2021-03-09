@@ -19,6 +19,7 @@ import static java.lang.Thread.currentThread;
 
 import java.net.InetSocketAddress;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -59,8 +60,13 @@ public final class JedisClientManager implements RedisClientManager {
 
     @Override
     public void flushdb() {
+      Set<String> seen = new HashSet<>();
       for (int i = 0; i < MAX_SLOTS; ++i) {
-        jedisCluster.getConnectionFromSlot(i).flushDB();
+        final Jedis connectionFromSlot = jedisCluster.getConnectionFromSlot(i);
+        if (seen.add(connectionFromSlot.getClient().getHost())) {
+          logger.info("Executing flushdb on {}", connectionFromSlot.getClient().getHost());
+          connectionFromSlot.flushDB();
+        }
       }
     }
   };
