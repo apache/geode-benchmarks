@@ -20,21 +20,20 @@ package org.apache.geode.benchmark.tests.redis;
 
 import static org.apache.geode.benchmark.Config.before;
 import static org.apache.geode.benchmark.Config.workload;
-import static org.apache.geode.benchmark.tests.GeodeBenchmark.isValidationEnabled;
 import static org.apache.geode.benchmark.topology.Roles.CLIENT;
 
 import org.junit.jupiter.api.Test;
 
 import org.apache.geode.benchmark.LongRange;
-import org.apache.geode.benchmark.tasks.redis.PrePopulateRedis;
-import org.apache.geode.benchmark.tasks.redis.SetRedisTask;
+import org.apache.geode.benchmark.tasks.redis.HsetRedisTask;
+import org.apache.geode.benchmark.tasks.redis.PrePopulateRedisHash;
 import org.apache.geode.perftest.TestConfig;
 import org.apache.geode.perftest.TestRunners;
 
 /**
  * Benchmark of gets on a partitioned region.
  */
-public class RedisPutBenchmark extends RedisBenchmark {
+public class RedisHsetBenchmark extends RedisBenchmark {
 
   private LongRange keyRange = new LongRange(0, 1000000);
 
@@ -43,7 +42,7 @@ public class RedisPutBenchmark extends RedisBenchmark {
     TestRunners.defaultRunner().runTest(this);
   }
 
-  public RedisPutBenchmark() {}
+  public RedisHsetBenchmark() {}
 
   public void setKeyRange(final LongRange keyRange) {
     this.keyRange = keyRange;
@@ -53,8 +52,9 @@ public class RedisPutBenchmark extends RedisBenchmark {
   public TestConfig configure() {
     final TestConfig config = super.configure();
 
-    before(config, new PrePopulateRedis(redisClientManager, keyRange), CLIENT);
-    workload(config, new SetRedisTask(redisClientManager, keyRange, isValidationEnabled()), CLIENT);
+    before(config, new PrePopulateRedisHash(redisClientManager, keyRange), CLIENT);
+    workload(config, new HsetRedisTask(redisClientManager, keyRange),
+        CLIENT);
     return config;
 
   }

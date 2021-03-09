@@ -17,17 +17,8 @@
 
 package org.apache.geode.benchmark.tasks.redis;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.io.Serializable;
-import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.yardstickframework.BenchmarkConfiguration;
-import org.yardstickframework.BenchmarkDriverAdapter;
-
-import org.apache.geode.benchmark.LongRange;
 import org.apache.geode.perftest.Task;
 import org.apache.geode.perftest.TestContext;
 
