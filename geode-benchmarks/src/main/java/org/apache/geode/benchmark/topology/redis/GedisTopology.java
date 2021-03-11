@@ -15,6 +15,7 @@
 
 package org.apache.geode.benchmark.topology.redis;
 
+import static java.lang.Boolean.getBoolean;
 import static org.apache.geode.benchmark.Config.after;
 import static org.apache.geode.benchmark.Config.before;
 import static org.apache.geode.benchmark.Config.role;
@@ -43,8 +44,6 @@ public class GedisTopology extends Topology {
     role(config, CLIENT, NUM_CLIENTS);
 
     configureCommon(config);
-
-//    config.jvmArgs(SERVER.name(), "-Dgemfire.disablePartitionedRegionBucketAck=true");
 
     before(config, new StartLocator(LOCATOR_PORT), LOCATOR);
     before(config, new StartGedisServer(LOCATOR_PORT, EPHEMERAL_PORT), SERVER);
