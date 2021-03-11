@@ -45,6 +45,8 @@ public class GedisTopology extends Topology {
 
     configureCommon(config);
 
+    config.jvmArgs(SERVER.name(), "-Dredis.replicas=" + Integer.getInteger("withReplicas", 1));
+
     before(config, new StartLocator(LOCATOR_PORT), LOCATOR);
     before(config, new StartGedisServer(LOCATOR_PORT, EPHEMERAL_PORT), SERVER);
     before(config, new InitRedisServersAttribute(), CLIENT);
