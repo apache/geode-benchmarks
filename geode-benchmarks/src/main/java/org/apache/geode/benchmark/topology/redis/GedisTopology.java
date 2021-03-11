@@ -44,6 +44,8 @@ public class GedisTopology extends Topology {
 
     configureCommon(config);
 
+    config.jvmArgs(SERVER.name(), "-Dgemfire.disablePartitionedRegionBucketAck=true");
+
     before(config, new StartLocator(LOCATOR_PORT), LOCATOR);
     before(config, new StartGedisServer(LOCATOR_PORT, EPHEMERAL_PORT), SERVER);
     before(config, new InitRedisServersAttribute(), CLIENT);
