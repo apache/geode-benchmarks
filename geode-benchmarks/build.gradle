@@ -166,9 +166,14 @@ task benchmark(type: Test) {
     systemProperty 'benchmark.withRedisServers', project.findProperty('withRedisServers')
   }
 
+  if (project.hasProperty('withReplicas')) {
+    systemProperty 'withReplicas', project.findProperty('withReplicas')
+  }
+
   systemProperty 'benchmark.withValidation', project.hasProperty('withValidation')
 
   systemProperty 'benchmark.withAsyncReplication', project.hasProperty('withAsyncReplication')
+
 
   doFirst {
     if(!project.hasProperty('hosts')) {
