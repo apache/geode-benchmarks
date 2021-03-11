@@ -168,6 +168,8 @@ task benchmark(type: Test) {
 
   systemProperty 'benchmark.withValidation', project.hasProperty('withValidation')
 
+  systemProperty 'benchmark.withAsyncReplication', project.hasProperty('withAsyncReplication')
+
   doFirst {
     if(!project.hasProperty('hosts')) {
       throw new GradleException("You must set the hosts property to a comma separated list of hosts. Eg ./gradlew benchmark -Phosts=localhost,localhost,localhost")

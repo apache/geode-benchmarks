@@ -15,7 +15,9 @@
 
 package org.apache.geode.benchmark.topology;
 
+import static java.lang.Boolean.getBoolean;
 import static org.apache.geode.benchmark.parameters.Utils.addToTestConfig;
+import static org.apache.geode.benchmark.topology.Roles.SERVER;
 
 import org.apache.geode.benchmark.parameters.GcLoggingParameters;
 import org.apache.geode.benchmark.parameters.GcParameters;
@@ -45,6 +47,11 @@ public abstract class Topology {
     addToTestConfig(config, WITH_SSL_PROTOCOLS_PROPERTY);
     addToTestConfig(config, WITH_SSL_CIPHERS_PROPERTY);
     addToTestConfig(config, WITH_SECURITY_MANAGER_PROPERTY, WITH_SECURITY_MANAGER_ARGUMENT);
+
+    if (getBoolean("withAsyncReplication")) {
+      config.jvmArgs(SERVER.name(), "-Dgemfire.disablePartitionedRegionBucketAck=true");
+    }
+
   }
 
 }
