@@ -50,8 +50,7 @@ public class StartGedisServer extends StartServer {
       throws Exception {
     return super.configureCacheFactory(cacheFactory, context)
         .set(ConfigurationProperties.REDIS_ENABLED, valueOf(true))
-        .set(ConfigurationProperties.REDIS_PORT, valueOf(REDIS_PORT))
-        .set(ConfigurationProperties.MEMBER_TIMEOUT, valueOf(600000));
+        .set(ConfigurationProperties.REDIS_PORT, valueOf(REDIS_PORT));
   }
 
   @Override

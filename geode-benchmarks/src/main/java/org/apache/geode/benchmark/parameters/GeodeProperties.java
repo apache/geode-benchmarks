@@ -64,6 +64,7 @@ public class GeodeProperties {
     properties.setProperty(ENABLE_CLUSTER_CONFIGURATION, "false");
     properties.setProperty(USE_CLUSTER_CONFIGURATION, "false");
     properties.setProperty(SERIALIZABLE_OBJECT_FILTER, "benchmark.geode.data.**");
+    properties.setProperty(MEMBER_TIMEOUT, valueOf(600000));
 
     return withOptions(properties);
   }
