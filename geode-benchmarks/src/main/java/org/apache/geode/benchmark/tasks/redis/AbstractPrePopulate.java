@@ -17,6 +17,9 @@
 
 package org.apache.geode.benchmark.tasks.redis;
 
+import static java.util.stream.Collectors.toList;
+import static org.apache.geode.benchmark.topology.Roles.CLIENT;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -46,11 +49,17 @@ public abstract class AbstractPrePopulate implements Task {
 
   @Override
   public void run(final TestContext context) throws Exception {
+    final List<Integer> hostsIDsForRole = context.getHostsIDsForRole(CLIENT.name()).stream().sorted().collect(toList());
+    final int self = context.getJvmID();
+    final int position = hostsIDsForRole.indexOf(self);
+
+    final LongRange keyRange = keyRangeToPrepopulate.sliceFor(hostsIDsForRole.size(), position);
+
     final int numThreads = Runtime.getRuntime().availableProcessors();
     final ExecutorService threadPool = Executors.newFixedThreadPool(numThreads);
     final List<CompletableFuture<Void>> futures = new ArrayList<>();
 
-    for (final LongRange slice : keyRangeToPrepopulate.slice(numThreads)) {
+    for (final LongRange slice : keyRange.slice(numThreads)) {
       futures.add(CompletableFuture.runAsync(() -> {
         logger.info("Prepopulating slice: {} starting...", slice);
         final RedisClient redisClient = redisClientManager.get();
