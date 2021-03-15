@@ -17,10 +17,13 @@ package org.apache.geode.benchmark.tasks.redis;
 
 import java.io.Serializable;
 import java.net.InetSocketAddress;
+import java.time.Duration;
 import java.util.Collection;
 
 public interface RedisClientManager extends Serializable {
-  void connect(final Collection<InetSocketAddress> servers);
+  Duration CONNECT_TIMEOUT = Duration.ofMinutes(1);
+
+  void connect(final Collection<InetSocketAddress> servers) throws InterruptedException;
 
   void close();
 

@@ -72,7 +72,7 @@ public final class JedisClientManager implements RedisClientManager {
   };
 
   @Override
-  public void connect(final Collection<InetSocketAddress> servers) {
+  public void connect(final Collection<InetSocketAddress> servers) throws InterruptedException {
     logger.info("Connect RedisClient on thread {}.", currentThread());
 
     final Set<HostAndPort> nodes = servers.stream()
@@ -84,6 +84,7 @@ public final class JedisClientManager implements RedisClientManager {
     poolConfig.setLifo(false);
     final JedisCluster jedisCluster = new JedisCluster(nodes, Integer.MAX_VALUE, poolConfig);
 
+    long start = System.nanoTime();
     while (true) {
       try (final Jedis jedis = jedisCluster.getConnectionFromSlot(0)) {
         logger.info("Waiting for cluster to come up.");
@@ -93,6 +94,10 @@ public final class JedisClientManager implements RedisClientManager {
         }
         logger.debug(clusterInfo);
       } catch (Exception e) {
+        if(System.nanoTime() - start > CONNECT_TIMEOUT.toNanos()) {
+          throw e;
+        }
+        Thread.sleep(50);
         logger.info("Failed connecting.", e);
       }
     }
