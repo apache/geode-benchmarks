@@ -82,7 +82,7 @@ public final class JedisClientManager implements RedisClientManager {
     poolConfig.setMaxTotal(-1);
     poolConfig.setMaxIdle(-1);
     poolConfig.setLifo(false);
-    final JedisCluster jedisCluster = new JedisCluster(nodes, poolConfig);
+    final JedisCluster jedisCluster = new JedisCluster(nodes, Integer.MAX_VALUE, poolConfig);
 
     while (true) {
       try (final Jedis jedis = jedisCluster.getConnectionFromSlot(0)) {
