@@ -15,7 +15,6 @@
 
 package org.apache.geode.benchmark.topology.redis;
 
-import static java.lang.Boolean.getBoolean;
 import static org.apache.geode.benchmark.Config.after;
 import static org.apache.geode.benchmark.Config.before;
 import static org.apache.geode.benchmark.Config.role;

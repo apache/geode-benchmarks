@@ -20,7 +20,6 @@ package org.apache.geode.benchmark.tasks.redis;
 
 import static java.lang.String.valueOf;
 import static org.apache.geode.benchmark.topology.Ports.REDIS_PORT;
-import static org.apache.geode.util.internal.GeodeGlossary.GEMFIRE_PREFIX;
 
 import org.apache.geode.benchmark.tasks.StartServer;
 import org.apache.geode.cache.CacheFactory;

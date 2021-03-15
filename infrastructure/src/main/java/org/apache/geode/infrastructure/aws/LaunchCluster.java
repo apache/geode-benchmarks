@@ -16,6 +16,7 @@
  */
 package org.apache.geode.infrastructure.aws;
 
+import static java.lang.String.format;
 import static java.lang.Thread.sleep;
 
 import java.io.FileWriter;
@@ -78,7 +79,12 @@ public class LaunchCluster {
   private static final int MAX_DESCRIBE_RETRIES = 5;
   private static final int MAX_CREATE_RETRIES = 3;
   private static final int MAX_TAG_RETRIES = 3;
-  static Ec2Client ec2 = Ec2Client.create();
+
+  private static final Ec2Client ec2 = Ec2Client.create();
+
+  private static final Tenancy tenancy = Tenancy.fromValue(System.getProperty("TENANCY", "host"));
+  private static final String availabilityZone =
+      System.getProperty("AVAILABILITY_ZONE", "us-west-2a");
 
   public static void main(String[] args) throws IOException, InterruptedException {
     if (args.length != 2) {
@@ -92,25 +98,41 @@ public class LaunchCluster {
       usage("Usage: LaunchCluster <tag> <count>");
     }
 
-    List<Tag> tags = getTags(benchmarkTag);
+    final List<Tag> tags = getTags(benchmarkTag);
     createKeyPair(benchmarkTag);
-    Image newestImage = getNewestImage();
+
+    final Image newestImage = getNewestImage();
 
     createPlacementGroup(benchmarkTag);
     createSecurityGroup(benchmarkTag, tags);
     authorizeSecurityGroup(benchmarkTag);
     createLaunchTemplate(benchmarkTag, newestImage);
 
-    int ec2Timeout = 300;
-    List<String> hostIds = allocateHosts(tags, count, ec2Timeout);
-    List<String> instanceIds = launchInstances(benchmarkTag, tags, hostIds);
-    DescribeInstancesResponse instances = waitForInstances(instanceIds, ec2Timeout);
-    List<String> publicIps = getPublicIps(instances);
+    final int ec2Timeout = 300;
+    final List<String> instanceIds = launchInstances(benchmarkTag, count, tags, ec2Timeout);
+    final DescribeInstancesResponse instances = waitForInstances(instanceIds, ec2Timeout);
+    final List<String> publicIps = getPublicIps(instances);
+
     createMetadata(benchmarkTag, publicIps);
     installPrivateKey(benchmarkTag, publicIps);
     installMetadata(benchmarkTag, publicIps);
 
     System.out.println("Instances successfully launched! Public IPs: " + publicIps);
+  }
+
+  private static List<String> launchInstances(final String benchmarkTag, final int count,
+      final List<Tag> tags, final int ec2Timeout)
+      throws InterruptedException {
+    switch (tenancy) {
+      case HOST:
+        final List<String> hostIds = allocateHosts(tags, count, ec2Timeout);
+        return launchInstances(benchmarkTag, tags, hostIds);
+      case DEDICATED:
+      case DEFAULT:
+        return launchInstances(benchmarkTag, tags, count);
+      default:
+        throw new IllegalArgumentException(format("Unsupported tenancy mode: %s", tenancy));
+    }
   }
 
   private static List<String> getPublicIps(DescribeInstancesResponse describeInstancesResponse) {
@@ -132,7 +154,7 @@ public class LaunchCluster {
     Instant end = Instant.now().plus(Duration.ofSeconds(timeout));
     do {
       hosts = ec2.allocateHosts(AllocateHostsRequest.builder()
-          .availabilityZone("us-west-2a")
+          .availabilityZone(availabilityZone)
           .instanceType(AwsBenchmarkMetadata.instanceType().toString())
           .quantity(count - gotHosts)
           .tagSpecifications(TagSpecification.builder()
@@ -151,9 +173,9 @@ public class LaunchCluster {
     return hostIds;
   }
 
-  private static List<String> launchInstances(String launchTemplate, List<Tag> tags,
-      List<String> hosts) {
-    List<String> instanceIds = new ArrayList<>(hosts.size());
+  private static List<String> launchInstances(final String launchTemplate, final List<Tag> tags,
+      final List<String> hosts) {
+    final List<String> instanceIds = new ArrayList<>(hosts.size());
     for (String host : hosts) {
       RunInstancesResponse rir = ec2.runInstances(RunInstancesRequest.builder()
           .launchTemplate(LaunchTemplateSpecification.builder()
@@ -175,6 +197,26 @@ public class LaunchCluster {
     }
 
     return instanceIds;
+  }
+
+  private static List<String> launchInstances(final String launchTemplate, final List<Tag> tags,
+      final int count) {
+    RunInstancesResponse rir = ec2.runInstances(RunInstancesRequest.builder()
+        .launchTemplate(LaunchTemplateSpecification.builder()
+            .launchTemplateName(AwsBenchmarkMetadata.launchTemplate(launchTemplate))
+            .build())
+        .placement(Placement.builder()
+            .availabilityZone(availabilityZone)
+            .tenancy(tenancy)
+            .build())
+        .tagSpecifications(TagSpecification.builder()
+            .tags(tags)
+            .resourceType(ResourceType.INSTANCE)
+            .build())
+        .minCount(count)
+        .maxCount(count)
+        .build());
+    return rir.instances().stream().map(Instance::instanceId).collect(Collectors.toList());
   }
 
   private static DescribeInstancesResponse waitForInstances(List<String> instanceIds, int timeout)
