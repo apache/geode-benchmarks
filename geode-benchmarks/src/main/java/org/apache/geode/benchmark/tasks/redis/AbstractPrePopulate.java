@@ -49,7 +49,8 @@ public abstract class AbstractPrePopulate implements Task {
 
   @Override
   public void run(final TestContext context) throws Exception {
-    final List<Integer> hostsIDsForRole = context.getHostsIDsForRole(CLIENT.name()).stream().sorted().collect(toList());
+    final List<Integer> hostsIDsForRole =
+        context.getHostsIDsForRole(CLIENT.name()).stream().sorted().collect(toList());
     final int self = context.getJvmID();
     final int position = hostsIDsForRole.indexOf(self);
 
