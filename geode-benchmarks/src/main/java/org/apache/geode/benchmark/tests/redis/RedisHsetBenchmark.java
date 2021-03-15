@@ -18,6 +18,7 @@
 package org.apache.geode.benchmark.tests.redis;
 
 
+import static java.lang.Long.getLong;
 import static org.apache.geode.benchmark.Config.before;
 import static org.apache.geode.benchmark.Config.workload;
 import static org.apache.geode.benchmark.topology.Roles.CLIENT;
@@ -35,7 +36,7 @@ import org.apache.geode.perftest.TestRunners;
  */
 public class RedisHsetBenchmark extends RedisBenchmark {
 
-  private LongRange keyRange = new LongRange(0, 1000000);
+  private LongRange keyRange = new LongRange(getLong("withMinKey", 0), getLong("withMaxKey", 1000000));
 
   @Test
   public void run() throws Exception {
