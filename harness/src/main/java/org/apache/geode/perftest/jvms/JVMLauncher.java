@@ -89,6 +89,7 @@ class JVMLauncher {
     command.add("-D" + RemoteJVMFactory.RMI_HOST + "=" + rmiHost);
     command.add("-D" + RemoteJVMFactory.RMI_PORT_PROPERTY + "=" + rmiPort);
     command.add("-D" + RemoteJVMFactory.JVM_ID + "=" + jvmConfig.getId());
+    command.add("-D" + RemoteJVMFactory.ROLE + "=" + jvmConfig.getRole());
     command.add("-D" + RemoteJVMFactory.OUTPUT_DIR + "=" + jvmConfig.getOutputDir());
 
     if (jvmConfig.getJvmArgs().contains("-DwithSsl=true")) {

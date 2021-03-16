@@ -73,6 +73,10 @@ test{
     logger.quiet "Executing test ${desc.className}.${desc.name} with result: ${result.resultType}"
   }
   useJUnitPlatform()
+  systemProperty 'org.slf4j.simpleLogger.showDateTime', 'true'
+  systemProperty 'org.slf4j.simpleLogger.dateTimeFormat', 'yyyy-MM-dd HH:mm:ss.SSS'
+  systemProperty 'org.slf4j.simpleLogger.showThreadNam', 'false'
+  systemProperty 'org.slf4j.simpleLogger.showShortLogName', 'true'
 }
 
 task benchmark(type: Test) {
@@ -83,7 +87,10 @@ task benchmark(type: Test) {
   testClassesDirs = project.sourceSets.main.output.classesDirs
   classpath = project.sourceSets.main.runtimeClasspath
   useJUnitPlatform()
-  testLogging { exceptionFormat = 'full' }
+  testLogging {
+    exceptionFormat = 'full'
+    showStandardStreams = true
+  }
 
   exclude "**/NoopBenchmark.class"
   exclude "**/P2pPartitionedPutLongBenchmark.class"
@@ -91,6 +98,10 @@ task benchmark(type: Test) {
   forkEvery 1
   failFast = true
 
+  systemProperty 'org.slf4j.simpleLogger.showDateTime', 'true'
+  systemProperty 'org.slf4j.simpleLogger.dateTimeFormat', 'yyyy-MM-dd HH:mm:ss.SSS'
+  systemProperty 'org.slf4j.simpleLogger.showThreadName', 'false'
+  systemProperty 'org.slf4j.simpleLogger.showShortLogName', 'true'
   systemProperty 'TEST_HOSTS', project.findProperty('hosts')
   systemProperty 'TEST_METADATA', project.findProperty('metadata')
   systemProperty 'OUTPUT_DIR', outputDir

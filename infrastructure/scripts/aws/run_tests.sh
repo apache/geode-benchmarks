@@ -17,7 +17,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-set -x -e -o pipefail
+set -e -o pipefail
 
 DEFAULT_BENCHMARK_REPO='https://github.com/apache/geode-benchmarks'
 BENCHMARK_REPO=${DEFAULT_BENCHMARK_REPO}
@@ -222,6 +222,7 @@ remoteShell \
 
 mkdir -p ${OUTPUT}
 
-scp ${SSH_OPTIONS} -r geode@${FIRST_INSTANCE}:geode-benchmarks/geode-benchmarks/build/reports ${OUTPUT}/reports
+scp ${SSH_OPTIONS} -q -r geode@${FIRST_INSTANCE}:geode-benchmarks/geode-benchmarks/build/reports ${OUTPUT}/reports
 BENCHMARK_DIRECTORY="$(remoteShell ls -l geode-benchmarks/geode-benchmarks/build/ | grep benchmark | awk 'NF>1{print $NF}')"
-scp ${SSH_OPTIONS} -r geode@${FIRST_INSTANCE}:geode-benchmarks/geode-benchmarks/build/${BENCHMARK_DIRECTORY} ${OUTPUT}
+scp ${SSH_OPTIONS} -q -r geode@${FIRST_INSTANCE}:geode-benchmarks/geode-benchmarks/build/${BENCHMARK_DIRECTORY} ${OUTPUT}
+echo "Benchmark results saved in ${OUTPUT}"

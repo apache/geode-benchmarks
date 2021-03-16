@@ -45,7 +45,7 @@ public class YardstickTaskTest {
     workloadConfig.threads(1);
     Task task = new YardstickTask(benchmark, workloadConfig);
     File outputDir = folder.toFile();
-    TestContext context = new DefaultTestContext(null, outputDir, 1);
+    TestContext context = new DefaultTestContext(null, outputDir, 1, role, controller);
     task.run(context);
 
     assertTrue(1 <= benchmark.getInvocations());

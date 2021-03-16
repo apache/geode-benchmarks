@@ -37,7 +37,6 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import net.schmizz.sshj.Config;
-import net.schmizz.sshj.DefaultConfig;
 import net.schmizz.sshj.SSHClient;
 import net.schmizz.sshj.connection.channel.direct.Session;
 import net.schmizz.sshj.connection.channel.direct.Signal;
@@ -54,7 +53,7 @@ public class SshInfrastructure implements Infrastructure {
   private final Set<SshNode> hosts;
   private final String user;
   private final int port;
-  public static final Config CONFIG = new DefaultConfig();
+  public static final Config CONFIG = new QuietSshLoggingConfig();
   private ExecutorService streamReaderThreadPool = Executors.newCachedThreadPool();
 
   public SshInfrastructure(Collection<String> hosts, String user) {
@@ -87,7 +86,7 @@ public class SshInfrastructure implements Infrastructure {
     try (final SSHClient client = getSSHClient(node.getAddress());
         final Session session = client.startSession()) {
       final String script = "'" + String.join("' '", shellCommand) + "'";
-      logger.info("Executing {} on {}", script, node.getAddress());
+      logger.debug("Executing {} on {}", script, node.getAddress());
       try (final Session.Command cmd = session.exec(script)) {
         final CompletableFuture<Void> copyStdout =
             copyStreamAsynchronously(cmd.getInputStream(), System.out);
@@ -170,7 +169,7 @@ public class SshInfrastructure implements Infrastructure {
           }
 
           for (File file : files) {
-            logger.info("Copying " + file + " to " + address);
+            logger.debug("Copying " + file + " to " + address);
             client.newSCPFileTransfer().upload(new FileSystemFile(file), destDir);
           }
         } catch (IOException e) {
@@ -209,4 +208,5 @@ public class SshInfrastructure implements Infrastructure {
       return host;
     }
   }
+
 }
