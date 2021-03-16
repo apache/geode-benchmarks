@@ -161,7 +161,7 @@ public class RemoteJVMFactory {
     X509Certificate[] chain = new X509Certificate[1];
     chain[0] = keyGen.getSelfCertificate(new X500Name("CN=ROOT"), DAYS.toSeconds(365));
 
-    logger.info("Certificate : {}", chain[0]);
+    logger.debug("Certificate : {}", chain[0]);
 
     KeyStore ks = KeyStore.getInstance(KeyStore.getDefaultType());
     ks.load(null, null);

@@ -80,7 +80,10 @@ task benchmark(type: Test) {
   testClassesDirs = project.sourceSets.main.output.classesDirs
   classpath = project.sourceSets.main.runtimeClasspath
   useJUnitPlatform()
-  testLogging { exceptionFormat = 'full' }
+  testLogging {
+    exceptionFormat = 'full'
+    showStandardStreams = true
+  }
 
   exclude "**/NoopBenchmark.class"
 
