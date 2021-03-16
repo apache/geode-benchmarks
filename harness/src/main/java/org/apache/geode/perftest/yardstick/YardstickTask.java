@@ -20,7 +20,9 @@ package org.apache.geode.perftest.yardstick;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
+import org.HdrHistogram.Histogram;
 import org.yardstickframework.BenchmarkConfiguration;
 import org.yardstickframework.BenchmarkDriver;
 import org.yardstickframework.BenchmarkProbe;
@@ -91,8 +93,12 @@ public class YardstickTask implements Task {
     benchmark.setUp(cfg);
 
     TestDoneProbe testDoneProbe = new TestDoneProbe();
+    final HdrHistogramProbe
+        hdrHistogramProbe =
+        new HdrHistogramProbe(new HdrHistogramWriter(context.getOutputDir()));
+
     Collection<BenchmarkProbe> probes =
-        Arrays.asList(new HdrHistogramProbe(new HdrHistogramWriter(context.getOutputDir())),
+        Arrays.asList(hdrHistogramProbe,
             new ThroughputLatencyProbe(),
             new PercentileProbe(), new VmStatProbe(),
             testDoneProbe);
@@ -107,6 +113,33 @@ public class YardstickTask implements Task {
 
     runner.runBenchmark();
 
-    testDoneProbe.await();
+    Histogram lastHistogram = hdrHistogramProbe.getHistogram();
+    while(!testDoneProbe.await(10, TimeUnit.SECONDS)) {
+      boolean warmupFinished = hdrHistogramProbe.isWarmupFinished();
+      //Create a histogram for the previous 10 second window
+      Histogram histogram = hdrHistogramProbe.getHistogram();
+      Histogram currentHistogram = histogram.copy();
+      if(histogram.getStartTimeStamp() == lastHistogram.getStartTimeStamp()) {
+        currentHistogram.subtract(lastHistogram);
+        currentHistogram.setStartTimeStamp(lastHistogram.getEndTimeStamp());
+      }
+
+      String prefix = warmupFinished ? "WORK" : "WARMUP";
+
+      //Log the histogram
+      logProgress(context, prefix, currentHistogram);
+
+      //Capture the current histogram
+      lastHistogram = histogram;
+    }
+    logProgress(context, "TOTAL", hdrHistogramProbe.getHistogram());
+  }
+
+  private void logProgress(TestContext context, String prefix, Histogram histogram) {
+    double throughput = (((double) histogram.getTotalCount())
+        / (histogram.getEndTimeStamp() - histogram.getStartTimeStamp())) * 1000;
+    double meanLatency = histogram.getMean() / 1_000_000.0;
+    double percentile_99 = histogram.getValueAtPercentile(99) / 1_000_000.0;
+    context.logProgress(String.format("%6s ops/sec: %10.2f, latency: %4.3f ms, 99%% latency: %4.3f ms", prefix, throughput, meanLatency, percentile_99));
   }
 }

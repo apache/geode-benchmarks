@@ -132,7 +132,7 @@ public class DefaultTestRunner implements TestRunner {
       // Close before copy otherwise logs, stats, and profiles are incomplete or missing.
       remoteJVMs.closeController();
 
-      logger.info("Copying results...");
+      logger.info("Copying results to {}", benchmarkOutput);
       remoteJVMs.copyResults(benchmarkOutput);
 
       remoteJVMs.closeInfra();

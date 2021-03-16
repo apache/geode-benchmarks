@@ -24,6 +24,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
 import org.HdrHistogram.Histogram;
@@ -56,6 +57,7 @@ public class HdrHistogramProbe implements BenchmarkExecutionAwareProbe, Benchmar
   private final Consumer<Histogram> histogramConsumer;
   private long[] startTimes;
   private Histogram[] histograms;
+  private AtomicBoolean warmUpFinished = new AtomicBoolean(false);
 
   public HdrHistogramProbe(Consumer<Histogram> histogramConsumer) {
     this(1, TimeUnit.HOURS.toNanos(5), 3, () -> System.nanoTime(), histogramConsumer);
@@ -116,7 +118,9 @@ public class HdrHistogramProbe implements BenchmarkExecutionAwareProbe, Benchmar
   @Override
   public Collection<BenchmarkProbePoint> points() {
     final Histogram aggregate = getHistogram();
-    reset();
+    if(warmUpFinished.compareAndSet(false, true)) {
+      reset();
+    }
 
     final double mean = aggregate.getMean();
     final long percentile99 = aggregate.getValueAtPercentile(99);
@@ -146,12 +150,16 @@ public class HdrHistogramProbe implements BenchmarkExecutionAwareProbe, Benchmar
 
   }
 
-  Histogram getHistogram() {
+  public Histogram getHistogram() {
     final Histogram aggregate = new Histogram(lower, upper, numDigits);
     for (final Histogram histogram : histograms) {
       aggregate.add(histogram);
     }
     aggregate.setEndTimeStamp(System.currentTimeMillis());
     return aggregate;
+  }
+
+  public boolean isWarmupFinished() {
+    return warmUpFinished.get();
   }
 }

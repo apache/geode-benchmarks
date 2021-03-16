@@ -19,21 +19,28 @@ package org.apache.geode.perftest.runner;
 
 import java.io.File;
 import java.net.InetAddress;
+import java.rmi.RemoteException;
 import java.util.Set;
 import java.util.TreeMap;
 
 import org.apache.geode.perftest.TestContext;
+import org.apache.geode.perftest.jvms.rmi.ControllerRemote;
 
 public class DefaultTestContext implements TestContext {
 
   private SharedContext sharedContext;
   private File outputDir;
+  private String role;
+  private ControllerRemote controller;
   private int jvmID;
   TreeMap<String, Object> attributeMap;
 
-  public DefaultTestContext(SharedContext sharedContext, File outputDir, int jvmID) {
+  public DefaultTestContext(SharedContext sharedContext, File outputDir, int jvmID,
+                            String role, ControllerRemote controller) {
     this.sharedContext = sharedContext;
     this.outputDir = outputDir;
+    this.role = role;
+    this.controller = controller;
     attributeMap = new TreeMap<>();
     this.jvmID = jvmID;
   }
@@ -66,5 +73,15 @@ public class DefaultTestContext implements TestContext {
   @Override
   public File getOutputDir() {
     return outputDir;
+  }
+
+  @Override
+  public void logProgress(String progress) {
+    try {
+      controller.logProgress(String.format("%s-%02d: %s", role, jvmID, progress));
+    } catch (RemoteException e) {
+      throw new IllegalStateException("Controller connection lost", e);
+    }
+
   }
 }

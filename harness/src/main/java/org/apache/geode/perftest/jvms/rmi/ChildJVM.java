@@ -53,6 +53,7 @@ public class ChildJVM {
       String RMI_PORT = system.getProperty(RemoteJVMFactory.RMI_PORT_PROPERTY);
       String OUTPUT_DIR = system.getProperty(RemoteJVMFactory.OUTPUT_DIR);
       int id = system.getInteger(RemoteJVMFactory.JVM_ID);
+      String role = system.getProperty(RemoteJVMFactory.ROLE);
 
       if (RMI_HOST == null || RMI_PORT == null || OUTPUT_DIR == null) {
         throw new IllegalStateException(
@@ -68,7 +69,7 @@ public class ChildJVM {
             .lookup("//" + RMI_HOST + ":" + RMI_PORT + "/" + RemoteJVMFactory.CONTROLLER);
 
         SharedContext sharedContext = controller.getsharedContext();
-        DefaultTestContext context = new DefaultTestContext(sharedContext, outputDir, id);
+        DefaultTestContext context = new DefaultTestContext(sharedContext, outputDir, id, role, controller);
 
         Worker worker = new Worker(context);
 

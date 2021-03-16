@@ -53,5 +53,9 @@ public interface TestContext extends Serializable {
   Object getAttribute(String key);
 
 
-
+  /**
+   * Print a log message to the terminal about the progress of a test task
+   * @param progress The progress message to display
+   */
+  void logProgress(String progress);
 }
