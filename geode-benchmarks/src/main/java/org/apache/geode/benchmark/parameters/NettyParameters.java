@@ -29,8 +29,8 @@ public class NettyParameters {
   public static void configure(final TestConfig testConfig) {
     logger.info("Configuring Netty parameters.");
 
-//    testConfig.jvmArgs(SERVER.name(),
-//        format("-Dio.netty.eventLoopThreads=%d", testConfig.getThreads()));
+    testConfig.jvmArgs(SERVER.name(),
+        format("-Dio.netty.eventLoopThreads=%d", 1));
   }
 
 }
