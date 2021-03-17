@@ -18,7 +18,9 @@
 package org.apache.geode.benchmark.tasks.redis;
 
 import static java.util.Arrays.asList;
+import static java.util.stream.Collectors.toList;
 import static org.apache.geode.benchmark.tasks.ProcessControl.retryUntilZeroExit;
+import static org.apache.geode.benchmark.topology.Roles.CLIENT;
 import static org.apache.geode.benchmark.topology.Roles.SERVER;
 
 import java.net.InetAddress;
@@ -26,19 +28,27 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.apache.geode.perftest.Task;
 import org.apache.geode.perftest.TestContext;
 
-/**
- * Task to create the server cache and start the cache server.
- */
 public class CreateRedisCluster implements Task {
 
-
-  public CreateRedisCluster() {}
+  private static final Logger logger = LoggerFactory.getLogger(AbstractPrePopulate.class);
 
   @Override
   public void run(final TestContext context) throws Exception {
+    final List<Integer> hostsIDsForRole =
+        context.getHostsIDsForRole(CLIENT.name()).stream().sorted().collect(toList());
+    final int self = context.getJvmID();
+    final int position = hostsIDsForRole.indexOf(self);
+
+    if (0 != position) {
+      return;
+    }
+
     final Set<InetAddress> servers = context.getHostsForRole(SERVER.name());
 
     final List<String> redisNodes =
@@ -56,6 +66,8 @@ public class CreateRedisCluster implements Task {
     processBuilder.command().addAll(asList(
         "--cluster-replicas", "1",
         "--cluster-yes"));
+
+    logger.info("Creating redis cluster. {}", processBuilder.command());
 
     retryUntilZeroExit(processBuilder);
   }
