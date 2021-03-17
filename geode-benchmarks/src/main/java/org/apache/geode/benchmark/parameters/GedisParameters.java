@@ -15,6 +15,8 @@
 
 package org.apache.geode.benchmark.parameters;
 
+import static java.lang.Integer.getInteger;
+import static java.lang.String.format;
 import static org.apache.geode.benchmark.topology.Roles.SERVER;
 
 import org.slf4j.Logger;
@@ -28,7 +30,9 @@ public class GedisParameters {
   public static void configure(final TestConfig testConfig) {
     logger.info("Configuring Gedis parameters.");
 
-    testConfig.jvmArgs(SERVER.name(), "-Dredis.replicas=" + Integer.getInteger("withReplicas", 1));
+    testConfig.jvmArgs(SERVER.name(), format("-Dredis.replicas=%d", getInteger("withReplicas", 1)));
+    testConfig.jvmArgs(SERVER.name(), format("-Dredis.region.buckets=%d", 256));
+    testConfig.jvmArgs(SERVER.name(), format("-Djava.lang.Integer.IntegerCache.high=%d", 1 << 14));
   }
 
 }
