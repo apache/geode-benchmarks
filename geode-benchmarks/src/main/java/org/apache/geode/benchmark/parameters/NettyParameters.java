@@ -30,7 +30,7 @@ public class NettyParameters {
     logger.info("Configuring Netty parameters.");
 
     testConfig.jvmArgs(SERVER.name(),
-        format("-Dio.netty.eventLoopThreads=%d", 1));
+        format("-Dio.netty.eventLoopThreads=%d", 2));
   }
 
 }
