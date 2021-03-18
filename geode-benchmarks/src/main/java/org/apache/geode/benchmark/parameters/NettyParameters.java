@@ -15,6 +15,7 @@
 
 package org.apache.geode.benchmark.parameters;
 
+import static java.lang.Integer.getInteger;
 import static java.lang.String.format;
 import static org.apache.geode.benchmark.topology.Roles.SERVER;
 
@@ -29,8 +30,10 @@ public class NettyParameters {
   public static void configure(final TestConfig testConfig) {
     logger.info("Configuring Netty parameters.");
 
-    testConfig.jvmArgs(SERVER.name(),
-        format("-Dio.netty.eventLoopThreads=%d", 2));
+    final Integer withNettyThreads = getInteger("withNettyThreads", null);
+    if (null != withNettyThreads) {
+      testConfig.jvmArgs(SERVER.name(), format("-Dio.netty.eventLoopThreads=%d", withNettyThreads));
+    }
   }
 
 }
