@@ -36,7 +36,7 @@ import org.apache.geode.perftest.TestContext;
 
 public class CreateRedisCluster implements Task {
 
-  private static final Logger logger = LoggerFactory.getLogger(AbstractPrePopulate.class);
+  private static final Logger logger = LoggerFactory.getLogger(CreateRedisCluster.class);
 
   @Override
   public void run(final TestContext context) throws Exception {
@@ -55,7 +55,7 @@ public class CreateRedisCluster implements Task {
         servers.stream().map(i -> i.getHostAddress() + ":6379").collect(Collectors.toList());
 
     final ProcessBuilder processBuilder =
-        new ProcessBuilder().command("docker", "run", "--rm",
+        new ProcessBuilder().command("docker", "run", "--rm", "-it",
             "--network", "host",
             "bitnami/redis-cluster:latest",
             "redis-cli",
