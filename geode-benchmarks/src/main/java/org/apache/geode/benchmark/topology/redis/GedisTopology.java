@@ -18,7 +18,6 @@ package org.apache.geode.benchmark.topology.redis;
 import static org.apache.geode.benchmark.Config.after;
 import static org.apache.geode.benchmark.Config.before;
 import static org.apache.geode.benchmark.Config.role;
-import static org.apache.geode.benchmark.topology.Ports.EPHEMERAL_PORT;
 import static org.apache.geode.benchmark.topology.Ports.LOCATOR_PORT;
 import static org.apache.geode.benchmark.topology.Ports.REDIS_PORT;
 import static org.apache.geode.benchmark.topology.Roles.CLIENT;
