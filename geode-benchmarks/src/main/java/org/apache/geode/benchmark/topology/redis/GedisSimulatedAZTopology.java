@@ -15,10 +15,10 @@
 
 package org.apache.geode.benchmark.topology.redis;
 
+import static java.lang.String.format;
 import static org.apache.geode.benchmark.Config.after;
 import static org.apache.geode.benchmark.Config.before;
 import static org.apache.geode.benchmark.Config.role;
-import static org.apache.geode.benchmark.topology.Ports.EPHEMERAL_PORT;
 import static org.apache.geode.benchmark.topology.Ports.LOCATOR_PORT;
 import static org.apache.geode.benchmark.topology.Ports.REDIS_PORT;
 import static org.apache.geode.benchmark.topology.Roles.CLIENT;
@@ -27,15 +27,17 @@ import static org.apache.geode.benchmark.topology.Roles.SERVER;
 
 import org.apache.geode.benchmark.parameters.GedisParameters;
 import org.apache.geode.benchmark.parameters.NettyParameters;
+import org.apache.geode.benchmark.tasks.CreatePartitionedRegionBuckets;
 import org.apache.geode.benchmark.tasks.StartLocator;
 import org.apache.geode.benchmark.tasks.StopLocator;
 import org.apache.geode.benchmark.tasks.StopServer;
 import org.apache.geode.benchmark.tasks.redis.InitRedisServersAttribute;
 import org.apache.geode.benchmark.tasks.redis.StartGedisServer;
+import org.apache.geode.benchmark.tasks.redis.StartGedisServer.AvailabilityZoneConfig;
 import org.apache.geode.benchmark.topology.Topology;
 import org.apache.geode.perftest.TestConfig;
 
-public class GedisTopology extends Topology {
+public class GedisSimulatedAZTopology extends Topology {
   private static final int NUM_LOCATORS = 1;
   private static final int NUM_SERVERS = 6;
   private static final int NUM_CLIENTS = 4;
@@ -50,8 +52,12 @@ public class GedisTopology extends Topology {
     NettyParameters.configure(config);
     GedisParameters.configure(config);
 
+    config.jvmArgs(SERVER.name(), format("-Dgemfire.DISABLE_MOVE_PRIMARIES_ON_STARTUP=%s", true));
+
     before(config, new StartLocator(LOCATOR_PORT), LOCATOR);
-    before(config, new StartGedisServer(LOCATOR_PORT, REDIS_PORT), SERVER);
+    before(config, new StartGedisServer(LOCATOR_PORT, REDIS_PORT, new AvailabilityZoneConfig("A", 0, 1, 2)), SERVER);
+    before(config, new CreatePartitionedRegionBuckets("__REDIS_DATA"), SERVER);
+    before(config, new StartGedisServer(LOCATOR_PORT, REDIS_PORT, new AvailabilityZoneConfig("B", 3, 4, 5)), SERVER);
     before(config, new InitRedisServersAttribute(), CLIENT);
 
     after(config, new StopServer(), SERVER);

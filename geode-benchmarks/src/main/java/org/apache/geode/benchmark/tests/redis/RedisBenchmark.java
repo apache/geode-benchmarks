@@ -28,6 +28,7 @@ import org.apache.geode.benchmark.tasks.redis.RedisClientManager;
 import org.apache.geode.benchmark.tasks.redis.StartRedisClient;
 import org.apache.geode.benchmark.tasks.redis.StopRedisClient;
 import org.apache.geode.benchmark.tests.GeodeBenchmark;
+import org.apache.geode.benchmark.topology.redis.GedisSimulatedAZTopology;
 import org.apache.geode.benchmark.topology.redis.GedisTopology;
 import org.apache.geode.benchmark.topology.redis.ManualRedisTopology;
 import org.apache.geode.benchmark.topology.redis.RedisTopology;
@@ -58,6 +59,7 @@ public class RedisBenchmark implements PerformanceTest {
 
   public enum RedisClusterImplementation {
     Geode,
+    GeodeAZ,
     Redis,
     Manual;
 
@@ -84,6 +86,9 @@ public class RedisBenchmark implements PerformanceTest {
         break;
       case Geode:
         GedisTopology.configure(config);
+        break;
+      case GeodeAZ:
+        GedisSimulatedAZTopology.configure(config);
         break;
       case Manual:
         ManualRedisTopology.configure(config);
