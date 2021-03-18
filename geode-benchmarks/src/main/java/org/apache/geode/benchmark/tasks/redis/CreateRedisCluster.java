@@ -55,7 +55,7 @@ public class CreateRedisCluster implements Task {
         servers.stream().map(i -> i.getHostAddress() + ":6379").collect(Collectors.toList());
 
     final ProcessBuilder processBuilder =
-        new ProcessBuilder().command("docker", "run", "--rm", "-it",
+        new ProcessBuilder().command("docker", "run", "--rm",
             "--network", "host",
             "bitnami/redis-cluster:latest",
             "redis-cli",
