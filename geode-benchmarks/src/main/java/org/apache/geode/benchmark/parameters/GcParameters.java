@@ -82,7 +82,7 @@ public class GcParameters {
         "-XX:+ScavengeBeforeFullGC",
         "-XX:+UnlockDiagnosticVMOptions",
         "-XX:ParGCCardsPerStrideChunk=32768",
-        "-XX:NewRatio=3");
+        "-XX:NewRatio=2");
   }
 
 }
