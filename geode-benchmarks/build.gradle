@@ -41,6 +41,8 @@ repositories {
 }
 
 dependencies {
+  implementation platform("org.apache.geode:geode-all-bom:${geodeVersion}")
+
   implementation(group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: project.'junit-jupiter-engine.version')
   implementation(group: 'org.junit-pioneer', name: 'junit-pioneer', version: project.'junit-pioneer.version')
   implementation(group: 'org.slf4j', name: 'slf4j-simple', version: project.'slf4j-simple.version')
@@ -54,7 +56,10 @@ dependencies {
   }
 
   implementation(group: 'redis.clients', name: 'jedis', version: project.'jedis.version')
-  implementation(group: 'io.lettuce', name: 'lettuce-core', version: project.'lettuce.version')
+  implementation(group: 'io.lettuce', name: 'lettuce-core', version: project.'lettuce.version') {
+    exclude group: 'io.netty'
+  }
+
   implementation(group: 'org.apache.geode', name: 'geode-redis', version: geodeVersion)
 
   // Required for missing dependency on geode-core.
