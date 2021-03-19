@@ -81,7 +81,8 @@ public class GcParameters {
         "-XX:+UseNUMA",
         "-XX:+ScavengeBeforeFullGC",
         "-XX:+UnlockDiagnosticVMOptions",
-        "-XX:ParGCCardsPerStrideChunk=32768");
+        "-XX:ParGCCardsPerStrideChunk=32768",
+        "-XX:NewRatio=3");
   }
 
 }
