@@ -16,5 +16,5 @@
 package org.apache.geode.benchmark.parameters;
 
 public enum GcImplementation {
-  CMS, G1, Z, Shenandoah;
+  CMS, G1, Z, Shenandoah, Epsilon;
 }
