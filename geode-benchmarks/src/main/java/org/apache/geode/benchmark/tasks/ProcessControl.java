@@ -18,11 +18,13 @@ import static java.lang.String.format;
 import static java.lang.String.join;
 
 import java.io.IOException;
+import java.time.Duration;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ProcessControl {
+  private static final Duration RETRY_TIMEOUT = Duration.ofMinutes(1);
 
   private static final Logger logger = LoggerFactory.getLogger(ProcessControl.class);
 
@@ -52,6 +54,7 @@ public class ProcessControl {
 
   public static void retryUntilZeroExit(final ProcessBuilder processBuilder)
       throws IOException, InterruptedException {
+    long start = System.nanoTime();
     while (true) {
       final Process process = processBuilder.start();
       final int exitStatus = process.waitFor();
@@ -60,6 +63,10 @@ public class ProcessControl {
             format("'%s' command exited with status %d", join(" ", processBuilder.command()),
                 exitStatus, System.getProperty("user.dir"));
         logger.error(msg);
+        if(System.nanoTime() - start > RETRY_TIMEOUT.toNanos()) {
+          throw new RuntimeException(msg);
+        }
+        Thread.sleep(100);
         continue;
       }
       break;
