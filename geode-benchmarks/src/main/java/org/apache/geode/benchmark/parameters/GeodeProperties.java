@@ -52,7 +52,6 @@ public class GeodeProperties {
 
     properties.setProperty(CONSERVE_SOCKETS, "false");
     properties.setProperty(ENABLE_TIME_STATISTICS, "true");
-    properties.setProperty(LOCATOR_WAIT_TIME, "120");
     properties.setProperty(LOG_DISK_SPACE_LIMIT, "100");
     properties.setProperty(LOG_FILE_SIZE_LIMIT, "10");
     properties.setProperty(LOG_LEVEL, "config");
