@@ -16,7 +16,7 @@
 package org.apache.geode.benchmark.parameters;
 
 public enum JavaVersion {
-  v8, v11, v12, v13;
+  v8, v11, v12, v13, v16;
 
   public static JavaVersion current() {
     return valueOfVersion(System.getProperty("java.runtime.version"));
@@ -31,6 +31,8 @@ public enum JavaVersion {
       return v12;
     } else if (javaVersion.matches("^13\\b.*")) {
       return v13;
+    } else if (javaVersion.matches("^16\\b.*")) {
+      return v16;
     }
     throw new IllegalStateException("Unknown version " + javaVersion);
   }
