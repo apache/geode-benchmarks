@@ -86,6 +86,7 @@ task benchmark(type: Test) {
   testLogging { exceptionFormat = 'full' }
 
   exclude "**/NoopBenchmark.class"
+  exclude "**/P2pPartitionedPutLongBenchmark.class"
 
   forkEvery 1
   failFast = true
