@@ -104,7 +104,7 @@ public class BenchmarkRunAnalyzer {
 
   public static List<File> getYardstickOutputForBenchmarkDir(File benchmarkDir) throws IOException {
     return Files.walk(benchmarkDir.toPath(), 2)
-        .filter(path -> path.toString().endsWith(YardstickTask.YARDSTICK_OUTPUT))
+        .filter(path -> path.toString().contains(YardstickTask.YARDSTICK_OUTPUT))
         .map(Path::toFile)
         .collect(Collectors.toList());
   }

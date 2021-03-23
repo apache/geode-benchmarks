@@ -42,16 +42,16 @@ public class CompositeTask implements BenchmarkDriver, Serializable {
 
   @Override
   public String description() {
-    final StringBuilder stringBuilder = new StringBuilder("Composite Task: ");
+    final StringBuilder stringBuilder = new StringBuilder("Composite Task:\n");
     for (final BenchmarkDriver benchmarkDriver : benchmarkDrivers) {
-      stringBuilder.append(benchmarkDriver.description()).append(" ");
+      stringBuilder.append(benchmarkDriver.description()).append("\n");
     }
     return stringBuilder.toString();
   }
 
   @Override
   public String usage() {
-    final StringBuilder stringBuilder = new StringBuilder("Composite Task: \n");
+    final StringBuilder stringBuilder = new StringBuilder("Composite Task:\n");
     for (final BenchmarkDriver benchmarkDriver : benchmarkDrivers) {
       stringBuilder.append(benchmarkDriver.usage()).append("\n");
     }
