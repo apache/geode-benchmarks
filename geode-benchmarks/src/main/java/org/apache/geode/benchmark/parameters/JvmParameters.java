@@ -39,7 +39,8 @@ public class JvmParameters {
     final JavaVersion javaVersion = JavaVersion.current();
     if (javaVersion.atLeast(JavaVersion.v11)) {
       configureGeodeProductJvms(testConfig,
-          "-XX:-ThreadLocalHandshakes");
+          "-XX:-ThreadLocalHandshakes",
+      "-XX:MonitorUsedDeflationThreshold=0");
     }
   }
 
