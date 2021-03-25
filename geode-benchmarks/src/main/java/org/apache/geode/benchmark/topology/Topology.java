@@ -24,6 +24,7 @@ import org.apache.geode.benchmark.parameters.GcParameters;
 import org.apache.geode.benchmark.parameters.HeapParameters;
 import org.apache.geode.benchmark.parameters.JvmParameters;
 import org.apache.geode.benchmark.parameters.ProfilerParameters;
+import org.apache.geode.benchmark.parameters.SafepointLoggingParameters;
 import org.apache.geode.perftest.TestConfig;
 
 public abstract class Topology {
@@ -41,6 +42,7 @@ public abstract class Topology {
     HeapParameters.configure(config);
     GcLoggingParameters.configure(config);
     GcParameters.configure(config);
+    SafepointLoggingParameters.configure(config);
     ProfilerParameters.configure(config);
 
     addToTestConfig(config, WITH_SSL_PROPERTY, WITH_SSL_ARGUMENT);
