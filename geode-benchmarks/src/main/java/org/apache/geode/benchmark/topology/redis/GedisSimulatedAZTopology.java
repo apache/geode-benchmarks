@@ -55,13 +55,9 @@ public class GedisSimulatedAZTopology extends Topology {
     config.jvmArgs(SERVER.name(), format("-Dgemfire.DISABLE_MOVE_PRIMARIES_ON_STARTUP=%s", true));
 
     before(config, new StartLocator(LOCATOR_PORT), LOCATOR);
-    before(config,
-        new StartGedisServer(LOCATOR_PORT, REDIS_PORT, new AvailabilityZoneConfig("A", 0, 1, 2)),
-        SERVER);
+    before(config, new StartGedisServer(LOCATOR_PORT, REDIS_PORT, new AvailabilityZoneConfig("A", 0, 1, 2)), SERVER);
     before(config, new CreatePartitionedRegionBuckets("__REDIS_DATA"), SERVER);
-    before(config,
-        new StartGedisServer(LOCATOR_PORT, REDIS_PORT, new AvailabilityZoneConfig("B", 3, 4, 5)),
-        SERVER);
+    before(config, new StartGedisServer(LOCATOR_PORT, REDIS_PORT, new AvailabilityZoneConfig("B", 3, 4, 5)), SERVER);
     before(config, new InitRedisServersAttribute(), CLIENT);
 
     after(config, new StopServer(), SERVER);

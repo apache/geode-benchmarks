@@ -50,8 +50,7 @@ public class StartGedisServer extends StartServer {
     this(locatorPort, redisPort, null);
   }
 
-  public StartGedisServer(final int locatorPort, final int redisPort,
-      final AvailabilityZoneConfig availabilityZoneConfig) {
+  public StartGedisServer(final int locatorPort, final int redisPort, final AvailabilityZoneConfig availabilityZoneConfig) {
     super(locatorPort, EPHEMERAL_PORT);
 
     this.redisPort = redisPort;
@@ -60,13 +59,11 @@ public class StartGedisServer extends StartServer {
 
   @Override
   public void run(final TestContext context) throws Exception {
-    if (null != availabilityZoneConfig
-        && !availabilityZoneConfig.contains(context.getJvmID(), context)) {
+    if (null != availabilityZoneConfig && !availabilityZoneConfig.contains(context.getJvmID(), context)) {
       return;
     }
 
-    logger.info("Starting Gedis: port={}, availabilityZoneConfig={}", redisPort,
-        availabilityZoneConfig);
+    logger.info("Starting Gedis: port={}, availabilityZoneConfig={}", redisPort, availabilityZoneConfig);
 
     super.run(context);
   }
@@ -93,7 +90,6 @@ public class StartGedisServer extends StartServer {
         .set(ConfigurationProperties.REDIS_PORT, valueOf(redisPort));
   }
 
-
   @Override
   protected CacheServer configureCacheServer(final CacheServer cacheServer,
       final TestContext context) {
@@ -104,7 +100,7 @@ public class StartGedisServer extends StartServer {
     private final String name;
     private final Set<Integer> includedServers;
 
-    public AvailabilityZoneConfig(final String name, final int... includedServers) {
+    public AvailabilityZoneConfig(final String name, final int ... includedServers) {
       this.name = name;
       this.includedServers = stream(includedServers).boxed().collect(toSet());
     }
