@@ -170,7 +170,7 @@ if [[ -z "${VERSION}" ]]; then
     remoteShell "cd geode && [ \"${REPO}\" == \"\$(git remote get-url origin)\" ] && git fetch origin" \
       || remoteShell rm -rf geode '&&' git clone "${REPO}" geode
   fi
-  remoteShell cd geode '&&' git checkout "${BRANCH}" '&&' git reset --hard "origin/${BRANCH}"
+  remoteShell "cd geode && git checkout \"${BRANCH}\" && [ \"\$(git rev-parse --abbrev-ref --symbolic-full-name HEAD)\" == \"HEAD\" ] || git reset --hard \"origin/${BRANCH}\""
 
   set +e
   for i in {1..5}; do
