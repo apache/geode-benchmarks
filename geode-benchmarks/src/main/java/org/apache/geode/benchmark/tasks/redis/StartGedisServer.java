@@ -44,9 +44,6 @@ public class StartGedisServer extends StartServer {
 
     final GeodeRedisService geodeRedisService = cache.getService(GeodeRedisService.class);
     geodeRedisService.setEnableUnsupported(true);
-
-    final Region<?, ?> region = cache.getRegion(REDIS_DATA_REGION);
-    PartitionRegionHelper.assignBucketsToPartitions(region);
   }
 
   @Override
