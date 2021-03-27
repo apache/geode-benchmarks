@@ -50,7 +50,7 @@ public class GeodeProperties {
   public static Properties serverProperties() {
     final Properties properties = new Properties();
 
-    properties.setProperty(CONSERVE_SOCKETS, valueOf(true));
+    properties.setProperty(CONSERVE_SOCKETS, valueOf(false));
     properties.setProperty(ENABLE_TIME_STATISTICS, valueOf(true));
     properties.setProperty(LOCATOR_WAIT_TIME, valueOf(120));
     properties.setProperty(LOG_DISK_SPACE_LIMIT, valueOf(100));
