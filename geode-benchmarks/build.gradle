@@ -150,6 +150,10 @@ task benchmark(type: Test) {
     systemProperty 'benchmark.withMaxKey', project.findProperty('withMaxKey')
   }
 
+  if (project.hasProperty('withServerCount')) {
+    systemProperty 'benchmark.withServerCount', project.findProperty('withServerCount')
+  }
+
   systemProperty 'benchmark.withSsl', project.hasProperty('withSsl')
   systemProperty 'benchmark.withSslProtocols', project.findProperty('withSslProtocols')
   systemProperty 'benchmark.withSslCiphers', project.findProperty('withSslCiphers')

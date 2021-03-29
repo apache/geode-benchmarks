@@ -37,7 +37,7 @@ import org.apache.geode.perftest.TestConfig;
 
 public class GedisTopology extends Topology {
   private static final int NUM_LOCATORS = 1;
-  private static final int NUM_SERVERS = 6;
+  private static final int NUM_SERVERS = Integer.getInteger("withServerCount", 6);
   private static final int NUM_CLIENTS = 4;
 
   public static void configure(TestConfig config) {
