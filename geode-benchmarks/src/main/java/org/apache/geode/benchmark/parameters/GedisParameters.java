@@ -31,7 +31,7 @@ public class GedisParameters {
     logger.info("Configuring Gedis parameters.");
 
     testConfig.jvmArgs(SERVER.name(), format("-Dredis.replicas=%d", getInteger("withReplicas", 1)));
-    testConfig.jvmArgs(SERVER.name(), format("-Dredis.region.buckets=%d", getInteger("withBuckets", 256)));
+    testConfig.jvmArgs(SERVER.name(), format("-Dredis.region.buckets=%d", getInteger("withBuckets", 128)));
     testConfig.jvmArgs(SERVER.name(), format("-Djava.lang.Integer.IntegerCache.high=%d", 1 << 14));
   }
 
