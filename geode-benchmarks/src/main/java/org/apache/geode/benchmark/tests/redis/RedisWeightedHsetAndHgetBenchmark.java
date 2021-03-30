@@ -59,8 +59,8 @@ public class RedisWeightedHsetAndHgetBenchmark extends RedisBenchmark {
     before(config, new PrePopulateRedisHash(redisClientManager, keyRange), CLIENT);
 
     workload(config, new WeightedTasks(
-        new WeightedTask(10, new HsetRedisTask(redisClientManager, keyRange)),
-        new WeightedTask(90, new HgetRedisTask(redisClientManager, keyRange, false))), CLIENT);
+        new WeightedTask(20, new HsetRedisTask(redisClientManager, keyRange)),
+        new WeightedTask(80, new HgetRedisTask(redisClientManager, keyRange, false))), CLIENT);
 
     return config;
   }
