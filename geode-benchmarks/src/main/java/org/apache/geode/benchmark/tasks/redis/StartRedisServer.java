@@ -43,6 +43,7 @@ public class StartRedisServer implements Task {
             "-e", "REDIS_NODES=" + redisNodes,
             "-e", "REDIS_CLUSTER_DYNAMIC_IPS=no",
             "-e", "REDIS_CLUSTER_ANNOUNCE_IP=" + getLocalHost().getHostAddress(),
+            "-e", "REDIS_AOF_ENABLED=no",
             "--name", "redis-cluster-node",
             "--network", "host",
             "bitnami/redis-cluster:latest");
