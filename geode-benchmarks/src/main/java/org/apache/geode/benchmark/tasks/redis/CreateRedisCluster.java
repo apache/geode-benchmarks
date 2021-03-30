@@ -70,6 +70,8 @@ public class CreateRedisCluster implements Task {
     logger.info("Creating redis cluster. {}", processBuilder.command());
 
     retryUntilZeroExit(processBuilder);
+
+    Thread.sleep(10_000);
   }
 
 }
