@@ -93,8 +93,7 @@ public class YardstickTask implements Task {
     benchmark.setUp(cfg);
 
     TestDoneProbe testDoneProbe = new TestDoneProbe();
-    final HdrHistogramProbe
-        hdrHistogramProbe =
+    final HdrHistogramProbe hdrHistogramProbe =
         new HdrHistogramProbe(new HdrHistogramWriter(context.getOutputDir()));
 
     Collection<BenchmarkProbe> probes =
@@ -114,22 +113,22 @@ public class YardstickTask implements Task {
     runner.runBenchmark();
 
     Histogram lastHistogram = hdrHistogramProbe.getHistogram();
-    while(!testDoneProbe.await(10, TimeUnit.SECONDS)) {
+    while (!testDoneProbe.await(10, TimeUnit.SECONDS)) {
       boolean warmupFinished = hdrHistogramProbe.isWarmupFinished();
-      //Create a histogram for the previous 10 second window
+      // Create a histogram for the previous 10 second window
       Histogram histogram = hdrHistogramProbe.getHistogram();
       Histogram currentHistogram = histogram.copy();
-      if(histogram.getStartTimeStamp() == lastHistogram.getStartTimeStamp()) {
+      if (histogram.getStartTimeStamp() == lastHistogram.getStartTimeStamp()) {
         currentHistogram.subtract(lastHistogram);
         currentHistogram.setStartTimeStamp(lastHistogram.getEndTimeStamp());
       }
 
       String prefix = warmupFinished ? "WORK" : "WARMUP";
 
-      //Log the histogram
+      // Log the histogram
       logProgress(context, prefix, currentHistogram);
 
-      //Capture the current histogram
+      // Capture the current histogram
       lastHistogram = histogram;
     }
     logProgress(context, "TOTAL", hdrHistogramProbe.getHistogram());
@@ -140,6 +139,8 @@ public class YardstickTask implements Task {
         / (histogram.getEndTimeStamp() - histogram.getStartTimeStamp())) * 1000;
     double meanLatency = histogram.getMean() / 1_000_000.0;
     double percentile_99 = histogram.getValueAtPercentile(99) / 1_000_000.0;
-    context.logProgress(String.format("%6s ops/sec: %10.2f, latency: %4.3f ms, 99%% latency: %4.3f ms", prefix, throughput, meanLatency, percentile_99));
+    context
+        .logProgress(String.format("%6s ops/sec: %10.2f, latency: %4.3f ms, 99%% latency: %4.3f ms",
+            prefix, throughput, meanLatency, percentile_99));
   }
 }

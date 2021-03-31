@@ -36,7 +36,7 @@ public class DefaultTestContext implements TestContext {
   TreeMap<String, Object> attributeMap;
 
   public DefaultTestContext(SharedContext sharedContext, File outputDir, int jvmID,
-                            String role, ControllerRemote controller) {
+      String role, ControllerRemote controller) {
     this.sharedContext = sharedContext;
     this.outputDir = outputDir;
     this.role = role;

@@ -10,7 +10,7 @@ class QuietSshLoggingConfig extends DefaultConfig {
 
   @Override
   public net.schmizz.sshj.common.LoggerFactory getLoggerFactory() {
-    if(logger.isDebugEnabled()) {
+    if (logger.isDebugEnabled()) {
       return super.getLoggerFactory();
     } else {
       return new NOPLoggerFactory();

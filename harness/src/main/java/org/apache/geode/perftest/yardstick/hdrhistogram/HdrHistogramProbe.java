@@ -118,7 +118,7 @@ public class HdrHistogramProbe implements BenchmarkExecutionAwareProbe, Benchmar
   @Override
   public Collection<BenchmarkProbePoint> points() {
     final Histogram aggregate = getHistogram();
-    if(warmUpFinished.compareAndSet(false, true)) {
+    if (warmUpFinished.compareAndSet(false, true)) {
       reset();
     }
 

@@ -69,7 +69,8 @@ public class ChildJVM {
             .lookup("//" + RMI_HOST + ":" + RMI_PORT + "/" + RemoteJVMFactory.CONTROLLER);
 
         SharedContext sharedContext = controller.getsharedContext();
-        DefaultTestContext context = new DefaultTestContext(sharedContext, outputDir, id, role, controller);
+        DefaultTestContext context =
+            new DefaultTestContext(sharedContext, outputDir, id, role, controller);
 
         Worker worker = new Worker(context);
 

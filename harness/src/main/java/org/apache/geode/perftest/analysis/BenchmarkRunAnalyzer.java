@@ -93,7 +93,7 @@ public class BenchmarkRunAnalyzer {
     return result;
   }
 
-  private List<ProbeResultParser.ResultData> getTestResult(List<File> resultDirs,
+  public static List<ProbeResultParser.ResultData> getTestResult(List<File> resultDirs,
       ProbeResultParser probe) throws IOException {
     probe.reset();
     for (File outputDirectory : resultDirs) {
@@ -102,7 +102,7 @@ public class BenchmarkRunAnalyzer {
     return probe.getProbeResults();
   }
 
-  private List<File> getYardstickOutputForBenchmarkDir(File benchmarkDir) throws IOException {
+  public static List<File> getYardstickOutputForBenchmarkDir(File benchmarkDir) throws IOException {
     return Files.walk(benchmarkDir.toPath(), 2)
         .filter(path -> path.toString().endsWith(YardstickTask.YARDSTICK_OUTPUT))
         .map(Path::toFile)
