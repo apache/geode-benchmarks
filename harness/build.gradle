@@ -36,7 +36,7 @@ repositories {
 }
 
 task(dumpRun, dependsOn: 'classes', type: JavaExec) {
-  main = 'org.apache.geode.perftest.analysis.Analyzer2'
+  main = 'org.apache.geode.perftest.analysis.DumpResults'
   workingDir = project.findProperty("dumpWorkingDir") ?: rootDir
   classpath = sourceSets.main.runtimeClasspath
 }
