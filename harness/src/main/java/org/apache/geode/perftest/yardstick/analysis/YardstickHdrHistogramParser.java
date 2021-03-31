@@ -33,6 +33,9 @@ import org.apache.geode.perftest.yardstick.hdrhistogram.HdrHistogramWriter;
  */
 public class YardstickHdrHistogramParser implements ProbeResultParser {
   public static final String sensorOutputFile = HdrHistogramWriter.FILE_NAME;
+  public static final String AVERAGE_OPS_SECOND = "average ops/second";
+  public static final String AVERAGE_LATENCY = "average latency";
+  public static final String PERCENTILE_LATENCY_99 = "99th percentile latency";
 
   public Histogram histogram = null;
 
@@ -60,13 +63,13 @@ public class YardstickHdrHistogramParser implements ProbeResultParser {
     List<ResultData> results = new ArrayList<>(3);
     results.add(new ResultData("median latency", histogram.getValueAtPercentile(50)));
     results.add(new ResultData("90th percentile latency", histogram.getValueAtPercentile(90)));
-    results.add(new ResultData("99th percentile latency", histogram.getValueAtPercentile(99)));
+    results.add(new ResultData(PERCENTILE_LATENCY_99, histogram.getValueAtPercentile(99)));
     results.add(new ResultData("99.9th percentile latency", histogram.getValueAtPercentile(99.9)));
-    results.add(new ResultData("average latency", histogram.getMean()));
+    results.add(new ResultData(AVERAGE_LATENCY, histogram.getMean()));
     results.add(new ResultData("latency standard deviation", histogram.getStdDeviation()));
     results.add(new ResultData("latency standard error",
         histogram.getStdDeviation() / Math.sqrt(histogram.getTotalCount())));
-    results.add(new ResultData("average ops/second", ((double) histogram.getTotalCount())
+    results.add(new ResultData(AVERAGE_OPS_SECOND, ((double) histogram.getTotalCount())
         / (histogram.getEndTimeStamp() - histogram.getStartTimeStamp()) * 1000));
     return results;
   }
