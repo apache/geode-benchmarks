@@ -94,7 +94,7 @@ public final class JedisClientManager implements RedisClientManager {
         }
         logger.debug(clusterInfo);
       } catch (Exception e) {
-        if(System.nanoTime() - start > CONNECT_TIMEOUT.toNanos()) {
+        if (System.nanoTime() - start > CONNECT_TIMEOUT.toNanos()) {
           throw e;
         }
         Thread.sleep(50);
