@@ -18,6 +18,7 @@ package org.apache.geode.infrastructure.aws;
 
 import static java.lang.Thread.sleep;
 
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -31,11 +32,10 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Properties;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
 import software.amazon.awssdk.services.ec2.Ec2Client;
 import software.amazon.awssdk.services.ec2.model.AllocateHostsRequest;
 import software.amazon.awssdk.services.ec2.model.AllocateHostsResponse;
@@ -241,19 +241,21 @@ public class LaunchCluster {
   private static void createMetadata(String benchmarkTag, List<String> publicIps)
       throws IOException {
     UUID instanceId = UUID.randomUUID();
-    JSONObject metadataJSON = new JSONObject();
-
-    metadataJSON.put("instanceId", instanceId.toString());
-    metadataJSON.put("publicIps", new JSONArray(publicIps));
+    // TODO - Filter out only benchmark properties from system properties? Maybe not necessary.
+    Properties metadata = new Properties(System.getProperties());
+    metadata.setProperty("benchmark.instanceId", instanceId.toString());
+    metadata.setProperty("benchmark.publicIps", String.join(",", publicIps));
     Path configDirectory = Paths.get(BenchmarkMetadata.benchmarkConfigDirectory());
 
     if (!configDirectory.toFile().exists()) {
       Files.createDirectories(Paths.get(BenchmarkMetadata.benchmarkConfigDirectory()));
     }
 
-    Path metadata = Files.write(Paths.get(AwsBenchmarkMetadata.metadataFileName(benchmarkTag)),
-        metadataJSON.toString().getBytes());
-    Files.setPosixFilePermissions(metadata, PosixFilePermissions.fromString("rw-------"));
+    Path metadataPath = Paths.get(AwsBenchmarkMetadata.metadataFileName(benchmarkTag));
+    try (FileWriter writer = new FileWriter(metadataPath.toFile())) {
+      metadata.store(writer, "Benchmark metadata generated during cluster launch");
+    }
+    Files.setPosixFilePermissions(metadataPath, PosixFilePermissions.fromString("rw-------"));
   }
 
   private static void createLaunchTemplate(String benchmarkTag, Image newestImage) {
