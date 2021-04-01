@@ -38,8 +38,8 @@ import org.apache.geode.perftest.runner.DefaultTestRunner;
  */
 public class TestRunners {
 
-  public static final String TEST_HOSTS = "TEST_HOSTS";
-  public static final String OUTPUT_DIR = "OUTPUT_DIR";
+  public static final String TEST_HOSTS = "benchmark.TEST_HOSTS";
+  public static final String OUTPUT_DIR = "benchmark.OUTPUT_DIR";
 
   public static final String[] JVM_ARGS_SMALL_SIZE = new String[] {
       "-XX:CMSInitiatingOccupancyFraction=60",
@@ -91,7 +91,7 @@ public class TestRunners {
   static TestRunner defaultRunner(String testHosts, File outputDir) {
     if (testHosts == null) {
       throw new IllegalStateException(
-          "You must set the TEST_HOSTS system property to a comma separated list of hosts to run the benchmarks on.");
+          "You must set the benchmark.TEST_HOSTS system property to a comma separated list of hosts to run the benchmarks on.");
     }
 
     String userName = System.getProperty("user.name");

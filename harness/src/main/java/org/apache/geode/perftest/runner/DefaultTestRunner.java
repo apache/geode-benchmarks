@@ -74,12 +74,16 @@ public class DefaultTestRunner implements TestRunner {
     }
 
     benchmarkOutput.mkdirs();
+    Properties properties = new Properties();
+    addVersionProperties(properties, getVersionProperties());
+    addSystemProperties(properties);
+    logger.info("Benchmark Properties {}", properties);
+
+
     String metadataFilename = outputDir + "/testrunner.properties";
     Path metadataOutput = Paths.get(metadataFilename);
 
     if (!metadataOutput.toFile().exists()) {
-      Properties properties = new Properties(System.getProperties());
-      addVersionProperties(properties, getVersionProperties());
       try (FileWriter writer = new FileWriter(metadataOutput.toFile().getAbsoluteFile())) {
         properties.store(writer, "Benchmark metadata generated while running tests");
       }
@@ -110,6 +114,12 @@ public class DefaultTestRunner implements TestRunner {
       remoteJVMs.closeInfra();
     }
 
+  }
+
+  private void addSystemProperties(Properties properties) {
+    System.getProperties().stringPropertyNames().stream()
+        .filter(name -> name.startsWith("benchmark."))
+        .forEach(name -> properties.setProperty(name, System.getProperty(name)));
   }
 
   private void addVersionProperties(Properties jsonMetadata, Properties versionProperties) {
