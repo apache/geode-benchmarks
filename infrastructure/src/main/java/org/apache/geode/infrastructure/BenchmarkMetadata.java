@@ -44,6 +44,6 @@ public class BenchmarkMetadata {
   }
 
   public static String benchmarkMetadataFileName(String tag) {
-    return benchmarkConfigDirectory() + "/" + tag + "-metadata.json";
+    return benchmarkConfigDirectory() + "/" + tag + "-cluster-launch.properties";
   }
 }
