@@ -17,6 +17,7 @@
 
 package org.apache.geode.perftest;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -26,6 +27,7 @@ import java.nio.file.Path;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -38,6 +40,7 @@ import org.apache.geode.perftest.yardstick.analysis.YardstickThroughputSensorPar
 
 public class TestRunnerIntegrationTest {
 
+  public static final String TEST_PROPERTY = "benchmark.system.all.prop3";
   private TestRunner runner;
 
   @TempDir
@@ -49,6 +52,11 @@ public class TestRunnerIntegrationTest {
   void beforeEach() {
     runner = new DefaultTestRunner(new RemoteJVMFactory(new LocalInfrastructureFactory()),
         outputDir);
+  }
+
+  @AfterEach()
+  void clearProperty() {
+    System.clearProperty(TEST_PROPERTY);
   }
 
   @Test
@@ -93,6 +101,7 @@ public class TestRunnerIntegrationTest {
 
   @Test
   public void configuresJVMOptions() throws Exception {
+    System.setProperty(TEST_PROPERTY, "p3");
     runner.runTest(() -> {
       TestConfig testConfig = new TestConfig();
       testConfig.role("all", 1);
@@ -102,6 +111,7 @@ public class TestRunnerIntegrationTest {
             "Expecting system property to be set in launched JVM, but it was not present.");
         assertEquals(5, Integer.getInteger("prop2").intValue(),
             "Expecting system property to be set in launched JVM, but it was not present.");
+        assertThat(System.getProperty("prop3")).isEqualTo("p3");
       }, "all");
       return testConfig;
     });

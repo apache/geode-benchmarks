@@ -21,7 +21,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,7 +38,7 @@ public class TestConfig implements Serializable {
 
   private final WorkloadConfig workloadConfig = new WorkloadConfig();
   private Map<String, Integer> roles = new LinkedHashMap<>();
-  private Map<String, List<String>> jvmArgs = new HashMap<>();
+  private Map<String, List<String>> jvmArgs = BenchmarkProperties.getDefaultJVMArgs();
   private List<TestStep> before = new ArrayList<>();
   private List<TestStep> workload = new ArrayList<>();
   private List<TestStep> after = new ArrayList<>();
