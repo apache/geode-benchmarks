@@ -18,6 +18,7 @@
 package org.apache.geode.perftest.yardstick;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -30,6 +31,7 @@ import org.apache.geode.perftest.Task;
 import org.apache.geode.perftest.TestContext;
 import org.apache.geode.perftest.WorkloadConfig;
 import org.apache.geode.perftest.benchmarks.EmptyBenchmark;
+import org.apache.geode.perftest.jvms.rmi.ControllerRemote;
 import org.apache.geode.perftest.runner.DefaultTestContext;
 import org.apache.geode.perftest.yardstick.hdrhistogram.HdrHistogramWriter;
 
@@ -45,7 +47,8 @@ public class YardstickTaskTest {
     workloadConfig.threads(1);
     Task task = new YardstickTask(benchmark, workloadConfig);
     File outputDir = folder.toFile();
-    TestContext context = new DefaultTestContext(null, outputDir, 1, role, controller);
+    ControllerRemote controller = mock(ControllerRemote.class);
+    TestContext context = new DefaultTestContext(null, outputDir, 1, "role", controller);
     task.run(context);
 
     assertTrue(1 <= benchmark.getInvocations());

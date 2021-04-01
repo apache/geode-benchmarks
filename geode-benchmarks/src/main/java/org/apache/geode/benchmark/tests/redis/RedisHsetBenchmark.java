@@ -37,7 +37,7 @@ import org.apache.geode.perftest.TestRunners;
 public class RedisHsetBenchmark extends RedisBenchmark {
 
   private LongRange keyRange =
-      new LongRange(getLong("withMinKey", 0), getLong("withMaxKey", 1000000));
+      new LongRange(getLong("benchmark.withMinKey", 0), getLong("benchmark.withMaxKey", 1000000));
 
   @Test
   public void run() throws Exception {

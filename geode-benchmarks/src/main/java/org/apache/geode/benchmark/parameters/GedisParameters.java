@@ -28,7 +28,8 @@ public class GedisParameters {
   public static void configure(final TestConfig testConfig) {
     logger.info("Configuring Gedis parameters.");
 
-    testConfig.jvmArgs(SERVER.name(), "-Dredis.replicas=" + Integer.getInteger("withReplicas", 1));
+    testConfig.jvmArgs(SERVER.name(),
+        "-Dredis.replicas=" + Integer.getInteger("benchmark.withReplicas", 1));
   }
 
 }

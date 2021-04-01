@@ -92,7 +92,7 @@ class JVMLauncher {
     command.add("-D" + RemoteJVMFactory.ROLE + "=" + jvmConfig.getRole());
     command.add("-D" + RemoteJVMFactory.OUTPUT_DIR + "=" + jvmConfig.getOutputDir());
 
-    if (jvmConfig.getJvmArgs().contains("-DwithSsl=true")) {
+    if (jvmConfig.getJvmArgs().contains("-Dbenchmark.withSsl=true")) {
       command
           .add("-Dgemfire." + SSL_KEYSTORE + "=" + jvmConfig.getLibDir() + "/temp-self-signed.jks");
       command.add("-Dgemfire." + SSL_KEYSTORE_PASSWORD + "=123456");

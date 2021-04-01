@@ -26,7 +26,7 @@ public class HeapParameters {
   private static final Logger logger = LoggerFactory.getLogger(HeapParameters.class);
 
   public static void configure(final TestConfig testConfig) {
-    final String heap = System.getProperty("withHeap", "8g");
+    final String heap = System.getProperty("benchmark.withHeap", "8g");
     logger.info("Configuring heap parameters {}.", heap);
     configureGeodeProductJvms(testConfig, "-Xmx" + heap, "-Xms" + heap);
   }

@@ -40,8 +40,8 @@ import org.apache.geode.benchmark.tasks.StopSniProxy;
 import org.apache.geode.perftest.TestConfig;
 
 public class ClientServerTopologyWithSniProxy extends Topology {
-  public static final String WITH_SNI_PROXY_PROPERTY = "withSniProxy";
-  public static final String WITH_SNI_PROXY_IMAGE_PROPERTY = "withSniProxyImage";
+  public static final String WITH_SNI_PROXY_PROPERTY = "benchmark.withSniProxy";
+  public static final String WITH_SNI_PROXY_IMAGE_PROPERTY = "benchmark.withSniProxyImage";
 
   private static final int NUM_LOCATORS = 1;
   private static final int NUM_SERVERS = 2;

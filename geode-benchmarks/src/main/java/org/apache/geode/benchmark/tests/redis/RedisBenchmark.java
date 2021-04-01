@@ -36,8 +36,8 @@ import org.apache.geode.perftest.TestConfig;
 
 public class RedisBenchmark implements PerformanceTest {
 
-  public static final String WITH_REDIS_CLIENT_PROPERTY = "withRedisClient";
-  public static final String WITH_REDIS_CLUSTER_PROPERTY = "withRedisCluster";
+  public static final String WITH_REDIS_CLIENT_PROPERTY = "benchmark.withRedisClient";
+  public static final String WITH_REDIS_CLUSTER_PROPERTY = "benchmark.withRedisCluster";
 
   public static final String REDIS_SERVERS_ATTRIBUTE = "RedisBenchmark.Servers";
 

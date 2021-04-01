@@ -33,7 +33,7 @@ import org.apache.geode.perftest.TestConfig;
 public class ManualRedisTopology extends Topology {
   private static final int NUM_CLIENTS = 4;
 
-  public static final String WITH_REDIS_SERVERS_PROPERTY = "withRedisServers";
+  public static final String WITH_REDIS_SERVERS_PROPERTY = "benchmark.withRedisServers";
 
   public static void configure(TestConfig config) {
     role(config, CLIENT, NUM_CLIENTS);

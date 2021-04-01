@@ -36,7 +36,7 @@ public class GeodeBenchmark {
    */
   private static final int THREADS = Runtime.getRuntime().availableProcessors() * 10;
 
-  public static final String WITH_VALIDATION_PROPERTY = "withValidation";
+  public static final String WITH_VALIDATION_PROPERTY = "benchmark.withValidation";
 
   public static TestConfig createConfig() {
     TestConfig config = new TestConfig();

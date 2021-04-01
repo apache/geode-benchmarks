@@ -30,7 +30,7 @@ import org.junit.jupiter.api.Test;
 import org.apache.geode.perftest.TestConfig;
 
 class GcParametersTest {
-  private static final String WITH_GC = "withGc";
+  private static final String WITH_GC = "benchmark.withGc";
   private static final String JAVA_RUNTIME_VERSION = "java.runtime.version";
   private static final String XX_USE_ZGC = "-XX:+UseZGC";
   private static final String XX_USE_G_1_GC = "-XX:+UseG1GC";

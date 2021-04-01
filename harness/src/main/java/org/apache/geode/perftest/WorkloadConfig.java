@@ -42,15 +42,15 @@ public class WorkloadConfig implements Serializable {
   public WorkloadConfig() {}
 
   public void durationSeconds(long durationSeconds) {
-    this.durationSeconds = Long.getLong("withDuration", durationSeconds);
+    this.durationSeconds = Long.getLong("benchmark.withDuration", durationSeconds);
   }
 
   public void warmupSeconds(long warmupSeconds) {
-    this.warmupSeconds = Long.getLong("withWarmup", warmupSeconds);
+    this.warmupSeconds = Long.getLong("benchmark.withWarmup", warmupSeconds);
   }
 
   public void threads(int threads) {
-    this.threads = Integer.getInteger("withThreads", threads);
+    this.threads = Integer.getInteger("benchmark.withThreads", threads);
   }
 
   public long getDurationSeconds() {

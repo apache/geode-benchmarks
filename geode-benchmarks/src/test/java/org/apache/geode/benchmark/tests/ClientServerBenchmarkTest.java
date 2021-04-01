@@ -56,40 +56,40 @@ class GeodeBenchmarkTest {
 
   @AfterAll
   public static void afterAll() {
-    System.clearProperty("withSniProxy");
+    System.clearProperty("benchmark.withSniProxy");
   }
 
   @Test
   public void withoutSniProxy() {
-    System.clearProperty("withSniProxy");
+    System.clearProperty("benchmark.withSniProxy");
     config = ClientServerBenchmark.createConfig();
     assertThat(config.getBefore()).doesNotContain(startHAProxyStep, startEnvoyStep);
   }
 
   @Test
   public void withSniProxyInvalid() {
-    System.setProperty("withSniProxy", "invalid");
+    System.setProperty("benchmark.withSniProxy", "invalid");
     assertThatThrownBy(() -> ClientServerBenchmark.createConfig())
         .isInstanceOf(IllegalArgumentException.class);
   }
 
   @Test
   public void withSniProxyDefault() {
-    System.setProperty("withSniProxy", "");
+    System.setProperty("benchmark.withSniProxy", "");
     config = ClientServerBenchmark.createConfig();
     assertThat(config.getBefore()).contains(startHAProxyStep).doesNotContain(startEnvoyStep);
   }
 
   @Test
   public void withSniProxyHAProxy() {
-    System.setProperty("withSniProxy", "HAProxy");
+    System.setProperty("benchmark.withSniProxy", "HAProxy");
     config = ClientServerBenchmark.createConfig();
     assertThat(config.getBefore()).contains(startHAProxyStep);
   }
 
   @Test
   public void withSniProxyEnvoy() {
-    System.setProperty("withSniProxy", "Envoy");
+    System.setProperty("benchmark.withSniProxy", "Envoy");
     config = ClientServerBenchmark.createConfig();
     assertThat(config.getBefore()).contains(startEnvoyStep);
   }
