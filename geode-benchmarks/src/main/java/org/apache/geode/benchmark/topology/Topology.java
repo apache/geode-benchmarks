@@ -25,14 +25,14 @@ import org.apache.geode.benchmark.parameters.ProfilerParameters;
 import org.apache.geode.perftest.TestConfig;
 
 public abstract class Topology {
-  public static final String WITH_SSL_PROPERTY = "withSsl";
-  static final String WITH_SSL_ARGUMENT = "-DwithSsl=true";
+  public static final String WITH_SSL_PROPERTY = "benchmark.withSsl";
+  static final String WITH_SSL_ARGUMENT = "-Dbenchmark.withSsl=true";
 
-  public static final String WITH_SSL_PROTOCOLS_PROPERTY = "withSslProtocols";
-  public static final String WITH_SSL_CIPHERS_PROPERTY = "withSslCiphers";
+  public static final String WITH_SSL_PROTOCOLS_PROPERTY = "benchmark.withSslProtocols";
+  public static final String WITH_SSL_CIPHERS_PROPERTY = "benchmark.withSslCiphers";
 
-  public static final String WITH_SECURITY_MANAGER_PROPERTY = "withSecurityManager";
-  static final String WITH_SECURITY_MANAGER_ARGUMENT = "-DwithSecurityManager=true";
+  public static final String WITH_SECURITY_MANAGER_PROPERTY = "benchmark.withSecurityManager";
+  static final String WITH_SECURITY_MANAGER_ARGUMENT = "-Dbenchmark.withSecurityManager=true";
 
   static void configureCommon(TestConfig config) {
     JvmParameters.configure(config);

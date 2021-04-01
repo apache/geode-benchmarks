@@ -28,7 +28,7 @@ public class GcParameters {
 
   public static void configure(final TestConfig testConfig) {
     final GcImplementation gcImplementation =
-        GcImplementation.valueOf(System.getProperty("withGc", "CMS"));
+        GcImplementation.valueOf(System.getProperty("benchmark.withGc", "CMS"));
     logger.info("Configuring {} GC.", gcImplementation);
     switch (gcImplementation) {
       case CMS:
