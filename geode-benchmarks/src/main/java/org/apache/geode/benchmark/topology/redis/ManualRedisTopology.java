@@ -21,6 +21,7 @@ import static org.apache.geode.benchmark.Config.before;
 import static org.apache.geode.benchmark.Config.role;
 import static org.apache.geode.benchmark.topology.Ports.REDIS_PORT;
 import static org.apache.geode.benchmark.topology.Roles.CLIENT;
+import static org.apache.geode.benchmark.topology.Roles.SERVER;
 
 import java.net.InetSocketAddress;
 import java.util.List;
@@ -39,6 +40,9 @@ public class ManualRedisTopology extends Topology {
     role(config, CLIENT, NUM_CLIENTS);
 
     configureCommon(config);
+
+    // Elasticache DNS is flaky so don't cache any of it.
+    config.jvmArgs(CLIENT.name(), "-Dsun.net.inetaddr.ttl=0", "-Dsun.net.inetaddr.negative.ttl=0");
 
     final String serversProperty = System.getProperty(WITH_REDIS_SERVERS_PROPERTY);
     if (null == serversProperty) {
