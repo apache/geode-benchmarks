@@ -32,7 +32,7 @@ import org.apache.geode.benchmark.topology.Topology;
 import org.apache.geode.perftest.TestConfig;
 
 public class ManualRedisTopology extends Topology {
-  private static final int NUM_CLIENTS = 4;
+  private static final int NUM_CLIENTS = Integer.getInteger(WITH_CLIENT_COUNT_PROPERTY , 4);
 
   public static final String WITH_REDIS_SERVERS_PROPERTY = "withRedisServers";
 
