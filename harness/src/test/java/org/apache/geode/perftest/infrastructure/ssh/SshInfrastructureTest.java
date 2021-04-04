@@ -30,6 +30,7 @@ import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 import org.apache.sshd.server.SshServer;
+import org.apache.sshd.server.channel.ChannelSession;
 import org.apache.sshd.server.command.Command;
 import org.apache.sshd.server.keyprovider.SimpleGeneratorHostKeyProvider;
 import org.apache.sshd.server.shell.ProcessShellCommandFactory;
@@ -78,8 +79,9 @@ public class SshInfrastructureTest {
 
   private class UnescapingCommandFactory extends ProcessShellCommandFactory {
     @Override
-    public Command createCommand(String command) {
-      return super.createCommand(command.replace("'", ""));
+    public Command createCommand(final ChannelSession channel, final String command)
+        throws IOException {
+      return super.createCommand(channel, command.replace("'", ""));
     }
   }
 

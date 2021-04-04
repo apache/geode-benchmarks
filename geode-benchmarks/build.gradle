@@ -66,7 +66,7 @@ dependencies {
   runtime(group: 'org.eclipse.jetty', name: 'jetty-webapp', version: '9.4.12.v20180830')
 
   testImplementation(group: 'org.junit.jupiter', name: 'junit-jupiter-params', version: project.'junit-jupiter-engine.version')
-  testImplementation(group: 'org.mockito', name: 'mockito-all', version: project.'mockito-all.version')
+  testImplementation(group: 'org.mockito', name: 'mockito-core', version: project.'mockito.version')
   testImplementation(group: 'org.assertj', name: 'assertj-core', version: project.'assertj-core.version')
 }
 
