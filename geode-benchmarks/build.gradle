@@ -52,7 +52,7 @@ dependencies {
   if (VersionNumber.parse(geodeVersion) >= VersionNumber.parse("1.11.0")) {
     runtime(group: 'org.apache.geode', name: 'geode-log4j', version: geodeVersion)
   } else {
-    runtime(group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.13.3')
+    runtime(group: 'org.apache.logging.log4j', name: 'log4j-core', version: project.'log4j.version')
   }
 
   implementation(group: 'redis.clients', name: 'jedis', version: project.'jedis.version')
