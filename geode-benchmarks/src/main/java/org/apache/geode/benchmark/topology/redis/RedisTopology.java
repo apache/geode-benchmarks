@@ -32,7 +32,7 @@ import org.apache.geode.perftest.TestConfig;
 
 public class RedisTopology extends Topology {
   private static final int NUM_SERVERS = Integer.getInteger(WITH_SERVER_COUNT_PROPERTY , 6);
-  private static final int NUM_CLIENTS = Integer.getInteger(WITH_CLIENT_COUNT_PROPERTY , 4);
+  private static final int NUM_CLIENTS = Integer.getInteger(WITH_CLIENT_COUNT_PROPERTY , 1);
 
   public static void configure(TestConfig config) {
     role(config, SERVER, NUM_SERVERS);
