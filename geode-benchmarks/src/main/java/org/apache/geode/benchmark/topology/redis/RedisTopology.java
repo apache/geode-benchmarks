@@ -15,6 +15,8 @@
 
 package org.apache.geode.benchmark.topology.redis;
 
+import static java.lang.Integer.getInteger;
+import static java.lang.String.valueOf;
 import static org.apache.geode.benchmark.Config.after;
 import static org.apache.geode.benchmark.Config.before;
 import static org.apache.geode.benchmark.Config.role;
@@ -39,7 +41,7 @@ public class RedisTopology extends Topology {
     configureCommon(config);
 
     before(config, new StartRedisServer(), SERVER);
-    before(config, new CreateRedisCluster(), CLIENT);
+    before(config, new CreateRedisCluster(getInteger("withReplicas", 1)), CLIENT);
     before(config, new InitRedisServersAttribute(), CLIENT);
 
     after(config, new StopRedisServer(), SERVER);

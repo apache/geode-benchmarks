@@ -40,6 +40,12 @@ public class CreateRedisCluster implements Task {
 
   private static final Logger logger = LoggerFactory.getLogger(CreateRedisCluster.class);
 
+  final int replicas;
+
+  public CreateRedisCluster(final int replicas) {
+    this.replicas = replicas;
+  }
+
   @Override
   public void run(final TestContext context) throws Exception {
     final List<Integer> hostsIDsForRole =
@@ -66,7 +72,7 @@ public class CreateRedisCluster implements Task {
     processBuilder.command().addAll(redisNodes);
 
     processBuilder.command().addAll(asList(
-        "--cluster-replicas", valueOf(getInteger("withReplicas", 1)),
+        "--cluster-replicas", valueOf(replicas),
         "--cluster-yes"));
 
     logger.info("Creating redis cluster. {}", processBuilder.command());
