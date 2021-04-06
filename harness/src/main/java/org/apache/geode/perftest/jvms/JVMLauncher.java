@@ -25,6 +25,7 @@ import static org.apache.geode.distributed.ConfigurationProperties.SSL_TRUSTSTOR
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -53,10 +54,9 @@ class JVMLauncher {
   CompletableFuture<Void> launchWorker(Infrastructure infra, int rmiPort,
       JVMMapping jvmConfig)
       throws UnknownHostException {
-    String[] shellCommand =
-        buildCommand(InetAddress.getLocalHost().getHostAddress(), rmiPort, jvmConfig);
+    final String[] shellCommand = traceCommand(buildCommand(InetAddress.getLocalHost().getHostAddress(), rmiPort, jvmConfig), jvmConfig);
 
-    CompletableFuture<Void> future = new CompletableFuture<Void>();
+    CompletableFuture<Void> future = new CompletableFuture<>();
     Thread thread = new Thread("Worker " + jvmConfig.getNode().getAddress()) {
       public void run() {
 
@@ -80,9 +80,22 @@ class JVMLauncher {
     return future;
   }
 
+  String[] traceCommand(final String[] command, JVMMapping jvmConfig) {
+    List<String> strace = new ArrayList<>();
+    strace.add("strace");
+    strace.add("-o");
+    strace.add(jvmConfig.getOutputDir() + "/java.strace");
+    strace.add("-ttt");
+    strace.add("-T");
+
+    strace.addAll(Arrays.asList(command));
+
+    return strace.toArray(new String[0]);
+  }
+
   String[] buildCommand(String rmiHost, int rmiPort, JVMMapping jvmConfig) {
 
-    List<String> command = new ArrayList<String>();
+    List<String> command = new ArrayList<>();
     command.add(System.getProperty("java.home") + "/bin/java");
     command.add("-classpath");
     command.add(jvmConfig.getLibDir() + "/*");
