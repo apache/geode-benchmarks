@@ -87,6 +87,8 @@ class JVMLauncher {
     strace.add(jvmConfig.getOutputDir() + "/java.strace");
     strace.add("-ttt");
     strace.add("-T");
+    strace.add("-f");
+    strace.add("-ff");
 
     strace.addAll(Arrays.asList(command));
 
