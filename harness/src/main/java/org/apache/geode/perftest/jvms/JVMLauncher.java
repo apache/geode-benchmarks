@@ -101,6 +101,7 @@ class JVMLauncher {
     command.add(System.getProperty("java.home") + "/bin/java");
     command.add("-classpath");
     command.add(jvmConfig.getLibDir() + "/*");
+    command.add("-Djava.library.path=" + System.getProperty("user.home") + "/META-INF/native");
     command.add("-D" + RemoteJVMFactory.RMI_HOST + "=" + rmiHost);
     command.add("-D" + RemoteJVMFactory.RMI_PORT_PROPERTY + "=" + rmiPort);
     command.add("-D" + RemoteJVMFactory.JVM_ID + "=" + jvmConfig.getId());
