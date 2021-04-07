@@ -20,12 +20,11 @@ package org.apache.geode.benchmark.tasks.redis;
 
 import static java.lang.String.valueOf;
 import static org.apache.geode.benchmark.topology.Ports.REDIS_PORT;
-import static org.apache.geode.redis.internal.RegionProvider.REDIS_DATA_REGION;
+
+import io.netty.channel.epoll.Epoll;
 
 import org.apache.geode.benchmark.tasks.StartServer;
 import org.apache.geode.cache.CacheFactory;
-import org.apache.geode.cache.Region;
-import org.apache.geode.cache.partition.PartitionRegionHelper;
 import org.apache.geode.cache.server.CacheServer;
 import org.apache.geode.distributed.ConfigurationProperties;
 import org.apache.geode.internal.cache.InternalCache;
@@ -50,6 +49,9 @@ public class StartGedisServer extends StartServer {
   protected CacheFactory configureCacheFactory(final CacheFactory cacheFactory,
       final TestContext context)
       throws Exception {
+
+    Epoll.ensureAvailability();
+
     return super.configureCacheFactory(cacheFactory, context)
         .set(ConfigurationProperties.REDIS_ENABLED, valueOf(true))
         .set(ConfigurationProperties.REDIS_PORT, valueOf(REDIS_PORT));
