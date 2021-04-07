@@ -19,6 +19,7 @@ import static java.lang.Integer.getInteger;
 import static java.lang.String.format;
 import static org.apache.geode.benchmark.topology.Roles.SERVER;
 
+import io.netty.util.ResourceLeakDetector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,6 +35,7 @@ public class NettyParameters {
     if (null != withNettyThreads) {
       testConfig.jvmArgs(SERVER.name(), format("-Dio.netty.eventLoopThreads=%d", withNettyThreads));
     }
+    testConfig.jvmArgs(SERVER.name(), format("-Dio.netty.leakDetection.level=%s", ResourceLeakDetector.Level.DISABLED));
   }
 
 }
