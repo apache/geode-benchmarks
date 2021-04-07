@@ -35,7 +35,7 @@ public class NettyParameters {
     if (null != withNettyThreads) {
       testConfig.jvmArgs(SERVER.name(), format("-Dio.netty.eventLoopThreads=%d", withNettyThreads));
     }
-    testConfig.jvmArgs(SERVER.name(), format("-Dio.netty.leakDetection.level=%s", ResourceLeakDetector.Level.DISABLED));
+//    testConfig.jvmArgs(SERVER.name(), format("-Dio.netty.leakDetection.level=%s", ResourceLeakDetector.Level.DISABLED));
   }
 
 }
