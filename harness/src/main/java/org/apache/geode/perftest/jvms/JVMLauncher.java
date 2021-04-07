@@ -82,13 +82,16 @@ class JVMLauncher {
 
   String[] traceCommand(final String[] command, JVMMapping jvmConfig) {
     List<String> strace = new ArrayList<>();
-    strace.add("strace");
-    strace.add("-o");
-    strace.add(jvmConfig.getOutputDir() + "/java.strace");
-    strace.add("-ttt");
-    strace.add("-T");
-    strace.add("-f");
-    strace.add("-ff");
+
+    if (Boolean.getBoolean("withStrace")) {
+      strace.add("strace");
+      strace.add("-o");
+      strace.add(jvmConfig.getOutputDir() + "/java.strace");
+      strace.add("-ttt");
+      strace.add("-T");
+      strace.add("-f");
+      strace.add("-ff");
+    }
 
     strace.addAll(Arrays.asList(command));
 
