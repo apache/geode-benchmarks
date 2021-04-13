@@ -43,9 +43,9 @@ public abstract class Topology {
   protected static void configureCommon(TestConfig config) {
     JvmParameters.configure(config);
     HeapParameters.configure(config);
-    GcLoggingParameters.configure(config);
+//    GcLoggingParameters.configure(config);
     GcParameters.configure(config);
-    SafepointLoggingParameters.configure(config);
+//    SafepointLoggingParameters.configure(config);
     ProfilerParameters.configure(config);
 
     addToTestConfig(config, WITH_SSL_PROPERTY, WITH_SSL_ARGUMENT);
