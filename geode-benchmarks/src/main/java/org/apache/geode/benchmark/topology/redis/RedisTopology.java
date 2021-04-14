@@ -21,6 +21,7 @@ import static org.apache.geode.benchmark.Config.after;
 import static org.apache.geode.benchmark.Config.before;
 import static org.apache.geode.benchmark.Config.role;
 import static org.apache.geode.benchmark.topology.Roles.CLIENT;
+import static org.apache.geode.benchmark.topology.Roles.LOCATOR;
 import static org.apache.geode.benchmark.topology.Roles.SERVER;
 
 import org.apache.geode.benchmark.tasks.redis.CreateRedisCluster;
@@ -30,11 +31,18 @@ import org.apache.geode.benchmark.tasks.redis.StopRedisServer;
 import org.apache.geode.benchmark.topology.Topology;
 import org.apache.geode.perftest.TestConfig;
 
+/**
+ * Redis running in containers on the provided servers.
+ *
+ * Locators hosts are wasted so that Redis server placement happens on the same hosts as Geode.
+ */
 public class RedisTopology extends Topology {
+  private static final int NUM_LOCATORS = Integer.getInteger(WITH_LOCATOR_COUNT_PROPERTY , 1);
   private static final int NUM_SERVERS = Integer.getInteger(WITH_SERVER_COUNT_PROPERTY , 6);
   private static final int NUM_CLIENTS = Integer.getInteger(WITH_CLIENT_COUNT_PROPERTY , 1);
 
   public static void configure(TestConfig config) {
+    role(config, LOCATOR, NUM_LOCATORS);
     role(config, SERVER, NUM_SERVERS);
     role(config, CLIENT, NUM_CLIENTS);
 

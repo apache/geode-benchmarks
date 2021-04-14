@@ -37,6 +37,7 @@ public abstract class Topology {
   public static final String WITH_SECURITY_MANAGER_PROPERTY = "benchmark.withSecurityManager";
   static final String WITH_SECURITY_MANAGER_ARGUMENT = "-Dbenchmark.withSecurityManager=true";
 
+  public static final String WITH_LOCATOR_COUNT_PROPERTY  = "withLocatorCount";
   public static final String WITH_SERVER_COUNT_PROPERTY  = "withServerCount";
   public static final String WITH_CLIENT_COUNT_PROPERTY  = "withClientCount";
 

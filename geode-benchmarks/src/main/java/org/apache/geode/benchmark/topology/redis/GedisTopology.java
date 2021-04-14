@@ -36,9 +36,9 @@ import org.apache.geode.benchmark.topology.Topology;
 import org.apache.geode.perftest.TestConfig;
 
 public class GedisTopology extends Topology {
-  private static final int NUM_LOCATORS = 1;
+  private static final int NUM_LOCATORS = Integer.getInteger(WITH_LOCATOR_COUNT_PROPERTY , 1);
   private static final int NUM_SERVERS = Integer.getInteger(WITH_SERVER_COUNT_PROPERTY , 6);
-  private static final int NUM_CLIENTS = Integer.getInteger(WITH_CLIENT_COUNT_PROPERTY , 4);
+  private static final int NUM_CLIENTS = Integer.getInteger(WITH_CLIENT_COUNT_PROPERTY , 1);
 
   public static void configure(TestConfig config) {
     role(config, LOCATOR, NUM_LOCATORS);
