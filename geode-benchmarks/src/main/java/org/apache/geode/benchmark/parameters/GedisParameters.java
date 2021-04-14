@@ -17,6 +17,7 @@ package org.apache.geode.benchmark.parameters;
 
 import static java.lang.Integer.getInteger;
 import static java.lang.String.format;
+import static java.lang.System.getProperty;
 import static org.apache.geode.benchmark.topology.Roles.SERVER;
 
 import org.slf4j.Logger;
@@ -33,6 +34,7 @@ public class GedisParameters {
     testConfig.jvmArgs(SERVER.name(), format("-Dredis.replicas=%d", getInteger("withReplicas", 1)));
     testConfig.jvmArgs(SERVER.name(), format("-Dredis.region.buckets=%d", getInteger("withBuckets", 128)));
     testConfig.jvmArgs(SERVER.name(), format("-Djava.lang.Integer.IntegerCache.high=%d", 1 << 14));
+    testConfig.jvmArgs(SERVER.name(), format("-Dorg.apache.geode.redis.internal.netty.DefaultNettyTransportFactory=%s", getProperty("withNettyTransport", "org.apache.geode.redis.internal.netty.EpollNettyTransportFactory")));
   }
 
 }
