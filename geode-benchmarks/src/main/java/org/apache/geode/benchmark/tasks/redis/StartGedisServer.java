@@ -50,8 +50,6 @@ public class StartGedisServer extends StartServer {
       final TestContext context)
       throws Exception {
 
-    Epoll.ensureAvailability();
-
     return super.configureCacheFactory(cacheFactory, context)
         .set(ConfigurationProperties.REDIS_ENABLED, valueOf(true))
         .set(ConfigurationProperties.REDIS_PORT, valueOf(REDIS_PORT));
