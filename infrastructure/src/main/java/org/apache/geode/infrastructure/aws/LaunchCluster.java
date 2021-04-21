@@ -241,7 +241,6 @@ public class LaunchCluster {
   private static void createMetadata(String benchmarkTag, List<String> publicIps)
       throws IOException {
     UUID instanceId = UUID.randomUUID();
-    // TODO - Filter out only benchmark properties from system properties? Maybe not necessary.
     Properties metadata = new Properties(System.getProperties());
     metadata.setProperty("benchmark.instanceId", instanceId.toString());
     metadata.setProperty("benchmark.publicIps", String.join(",", publicIps));
