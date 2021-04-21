@@ -32,12 +32,20 @@ public interface ProbeResultParser {
   List<ResultData> getProbeResults();
 
   class ResultData {
-    public String description;
-    public double value;
+    public final String description;
+    public final double value;
 
     public ResultData(String description, double value) {
       this.description = description;
       this.value = value;
+    }
+
+    public String getDescription() {
+      return description;
+    }
+
+    public double getValue() {
+      return value;
     }
   }
 }

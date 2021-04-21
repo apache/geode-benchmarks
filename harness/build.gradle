@@ -35,6 +35,12 @@ repositories {
   mavenCentral()
 }
 
+task(dumpRun, dependsOn: 'classes', type: JavaExec) {
+  main = 'org.apache.geode.perftest.analysis.DumpResults'
+  workingDir = project.findProperty("dumpWorkingDir") ?: rootDir
+  classpath = sourceSets.main.runtimeClasspath
+}
+
 task(analyzeRun, dependsOn: 'classes', type: JavaExec) {
   main = 'org.apache.geode.perftest.analysis.Analyzer'
   workingDir = rootDir
