@@ -17,7 +17,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-set -x -e -o pipefail
+set -e -o pipefail
+trap "exit" INT
 
 DEFAULT_BENCHMARK_REPO='https://github.com/apache/geode-benchmarks'
 BENCHMARK_REPO=${DEFAULT_BENCHMARK_REPO}
@@ -28,6 +29,7 @@ DEFAULT_REPO='https://github.com/apache/geode'
 REPO=${DEFAULT_REPO}
 DEFAULT_BRANCH='develop'
 BRANCH=${DEFAULT_BRANCH}
+ITERATIONS=
 
 TAG=
 METADATA=
@@ -87,6 +89,12 @@ while (( "$#" )); do
         shift
       fi
       ;;
+    --iterations )
+      if [ "$2" ]; then
+        ITERATIONS=$2
+        shift
+      fi
+      ;;
     -h|--help|-\? )
       echo "Usage: $(basename "$0") -t tag [options ...] [-- arguments ...]"
       echo "Options:"
@@ -98,6 +106,7 @@ while (( "$#" )); do
       echo "-r|--geode-repo : Geode repo (default: ${DEFAULT_REPO})"
       echo "-b|--geode-branch : Geode branch (default: ${DEFAULT_BRANCH})"
       echo "-m|--metadata : Test metadata to output to file, comma-delimited (optional)"
+      echo "--iterations: number of times the benchmarks should be executed (optional)."
       echo "-- : All subsequent arguments are passed to the benchmark task as arguments."
       echo "-h|--help : This help message"
       exit 1
@@ -216,12 +225,31 @@ BUILD_IDENTIFIER="$(uuidgen)"
 
 METADATA="${METADATA},'source_repo':'${GEODE_REPO}','benchmark_repo':'${BENCHMARK_REPO}','benchmark_branch':'${BENCHMARK_BRANCH}','instance_id':'${instance_id}','benchmark_sha':'${BENCHMARK_SHA}','build_identifier':'${BUILD_IDENTIFIER}'"
 
-remoteShell \
-  cd geode-benchmarks '&&' \
-  ./gradlew -PgeodeVersion="${VERSION}" benchmark "-Phosts=${HOSTS}" "-Pmetadata=${METADATA}" "$@"
+run () {
+  OUTPUT_DIR=$1
+  shift
+  remoteShell \
+    cd geode-benchmarks '&&' \
+    ./gradlew -PgeodeVersion="${VERSION}" benchmark "-Phosts=${HOSTS}" "-Pmetadata=${METADATA}" "$@"
 
-mkdir -p ${OUTPUT}
+  mkdir -p ${OUTPUT_DIR}
 
-scp ${SSH_OPTIONS} -r geode@${FIRST_INSTANCE}:geode-benchmarks/geode-benchmarks/build/reports ${OUTPUT}/reports
-BENCHMARK_DIRECTORY="$(remoteShell ls -l geode-benchmarks/geode-benchmarks/build/ | grep benchmark | awk 'NF>1{print $NF}')"
-scp ${SSH_OPTIONS} -r geode@${FIRST_INSTANCE}:geode-benchmarks/geode-benchmarks/build/${BENCHMARK_DIRECTORY} ${OUTPUT}
+  scp ${SSH_OPTIONS} -r geode@${FIRST_INSTANCE}:geode-benchmarks/geode-benchmarks/build/reports ${OUTPUT_DIR}/reports
+  BENCHMARK_DIRECTORY="$(remoteShell ls -l geode-benchmarks/geode-benchmarks/build/ | grep benchmark | awk 'NF>1{print $NF}')
+  scp ${SSH_OPTIONS} -r geode@${FIRST_INSTANCE}:geode-benchmarks/geode-benchmarks/build/${BENCHMARK_DIRECTORY} ${OUTPUT_DIR}
+  remoteShell rm -rf geode-benchmarks/geode-benchmarks/build/${BENCHMARK_DIRECTORY}
+}
+
+if [ ! -z "${ITERATIONS}" ]; then
+  i=1
+  while [[ ${i} -le "${ITERATIONS}" ]]
+  do
+    run "${OUTPUT}/run_${i}" $@
+    ((i = i + 1))
+    if [ ${i} -le "${ITERATIONS}" ]; then
+      sleep 15
+    fi
+  done
+else
+  run "${OUTPUT}" $@
+fi
