@@ -35,8 +35,8 @@ import org.apache.geode.benchmark.tasks.StopRouter;
 import org.apache.geode.perftest.TestConfig;
 
 public class ClientServerTopologyWithRouterAndSniProxy extends ClientServerTopologyWithSniProxy {
-  public static final String WITH_ROUTER_PROPERTY = "withRouter";
-  public static final String WITH_ROUTER_IMAGE_PROPERTY = "withRouterImage";
+  public static final String WITH_ROUTER_PROPERTY = "benchmark.withRouter";
+  public static final String WITH_ROUTER_IMAGE_PROPERTY = "benchmark.withRouterImage";
 
   private static final int NUM_LOCATORS = 1;
   private static final int NUM_SERVERS = 2;

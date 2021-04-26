@@ -43,17 +43,18 @@ public class ClientServerTopologyTest {
 
   @Test
   public void configWithSsl() {
-    System.setProperty("withSsl", "true");
+    System.setProperty("benchmark.withSsl", "true");
     TestConfig testConfig = new TestConfig();
     ClientServerTopology.configure(testConfig);
-    assertThat(testConfig.getJvmArgs().get(CLIENT.name())).contains("-DwithSsl=true");
+    assertThat(testConfig.getJvmArgs().get(CLIENT.name())).contains("-Dbenchmark.withSsl=true");
   }
 
   @Test
   public void configWithNoSsl() {
     TestConfig testConfig = new TestConfig();
     ClientServerTopology.configure(testConfig);
-    assertThat(testConfig.getJvmArgs().get(CLIENT.name())).doesNotContain("-DwithSsl=true");
+    assertThat(testConfig.getJvmArgs().get(CLIENT.name()))
+        .doesNotContain("-Dbenchmark.withSsl=true");
   }
 
   @Test
@@ -61,27 +62,29 @@ public class ClientServerTopologyTest {
     TestConfig testConfig = new TestConfig();
     ClientServerTopology.configure(testConfig);
     assertThat(testConfig.getJvmArgs().get(CLIENT.name()))
-        .doesNotContain("-DwithSecurityManager=true");
+        .doesNotContain("-Dbenchmark.withSecurityManager=true");
   }
 
   @Test
   public void configWithSecurityManager() {
-    System.setProperty("withSecurityManager", "true");
+    System.setProperty("benchmark.withSecurityManager", "true");
     TestConfig testConfig = new TestConfig();
     ClientServerTopology.configure(testConfig);
-    assertThat(testConfig.getJvmArgs().get(CLIENT.name())).contains("-DwithSecurityManager=true");
+    assertThat(testConfig.getJvmArgs().get(CLIENT.name()))
+        .contains("-Dbenchmark.withSecurityManager=true");
   }
 
   @Test
   public void configWithSecurityManagerAndSslAndJava11() {
-    System.setProperty("withSecurityManager", "true");
+    System.setProperty("benchmark.withSecurityManager", "true");
     System.setProperty("java.runtime.version", "11.0.4+11");
-    System.setProperty("withSsl", "true");
+    System.setProperty("benchmark.withSsl", "true");
     TestConfig testConfig = new TestConfig();
 
     ClientServerTopology.configure(testConfig);
 
-    assertThat(testConfig.getJvmArgs().get(CLIENT.name())).contains("-DwithSecurityManager=true");
-    assertThat(testConfig.getJvmArgs().get(CLIENT.name())).contains("-DwithSsl=true");
+    assertThat(testConfig.getJvmArgs().get(CLIENT.name()))
+        .contains("-Dbenchmark.withSecurityManager=true");
+    assertThat(testConfig.getJvmArgs().get(CLIENT.name())).contains("-Dbenchmark.withSsl=true");
   }
 }

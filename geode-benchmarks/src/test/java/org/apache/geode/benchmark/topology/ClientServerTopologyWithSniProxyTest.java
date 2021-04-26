@@ -51,7 +51,7 @@ public class ClientServerTopologyWithSniProxyTest {
     System.setProperty(WITH_SNI_PROXY_PROPERTY, sniProxyImplementation.name());
     final TestConfig testConfig = new TestConfig();
     ClientServerTopologyWithSniProxy.configure(testConfig);
-    assertThat(testConfig.getJvmArgs().get(CLIENT.name())).contains("-DwithSsl=true");
+    assertThat(testConfig.getJvmArgs().get(CLIENT.name())).contains("-Dbenchmark.withSsl=true");
   }
 
 }
