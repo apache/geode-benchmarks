@@ -102,9 +102,10 @@ task benchmark(type: Test) {
   systemProperty 'org.slf4j.simpleLogger.dateTimeFormat', 'yyyy-MM-dd HH:mm:ss.SSS'
   systemProperty 'org.slf4j.simpleLogger.showThreadName', 'false'
   systemProperty 'org.slf4j.simpleLogger.showShortLogName', 'true'
-  systemProperty 'TEST_HOSTS', project.findProperty('hosts')
-  systemProperty 'TEST_METADATA', project.findProperty('metadata')
+  systemProperty 'benchmark.TEST_HOSTS', project.findProperty('hosts')
+  systemProperty 'benchmark.TEST_METADATA', project.findProperty('metadata')
   systemProperty 'OUTPUT_DIR', outputDir
+  systemProperty 'benchmark.OUTPUT_DIR', outputDir
 
   //Set all project properties starting with "benchmark." as system properties in the test
   //JVM
