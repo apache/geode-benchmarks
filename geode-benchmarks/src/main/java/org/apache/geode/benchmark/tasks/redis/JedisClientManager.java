@@ -16,6 +16,7 @@
 package org.apache.geode.benchmark.tasks.redis;
 
 import static java.lang.Thread.currentThread;
+import static redis.clients.jedis.BinaryJedisCluster.HASHSLOTS;
 
 import java.net.InetSocketAddress;
 import java.util.Collection;
@@ -34,8 +35,6 @@ public final class JedisClientManager implements RedisClientManager {
   private static final Logger logger = LoggerFactory.getLogger(RedisClientManager.class);
 
   private static JedisCluster jedisCluster;
-
-  public static final int MAX_SLOTS = 1 << 14;
 
   private static final RedisClient redisClient = new RedisClient() {
     @Override
@@ -61,11 +60,12 @@ public final class JedisClientManager implements RedisClientManager {
     @Override
     public void flushdb() {
       Set<String> seen = new HashSet<>();
-      for (int i = 0; i < MAX_SLOTS; ++i) {
-        final Jedis connectionFromSlot = jedisCluster.getConnectionFromSlot(i);
-        if (seen.add(connectionFromSlot.getClient().getHost())) {
-          logger.info("Executing flushdb on {}", connectionFromSlot.getClient().getHost());
-          connectionFromSlot.flushDB();
+      for (int i = 0; i < HASHSLOTS; ++i) {
+        try (final Jedis connectionFromSlot = jedisCluster.getConnectionFromSlot(i)) {
+          if (seen.add(connectionFromSlot.getClient().getHost())) {
+            logger.info("Executing flushdb on {}", connectionFromSlot.getClient().getHost());
+            connectionFromSlot.flushDB();
+          }
         }
       }
     }
