@@ -20,7 +20,6 @@ package org.apache.geode.benchmark.tests.redis;
 
 import static org.apache.geode.benchmark.Config.before;
 import static org.apache.geode.benchmark.Config.workload;
-import static org.apache.geode.benchmark.tests.GeodeBenchmark.isValidationEnabled;
 import static org.apache.geode.benchmark.topology.Roles.CLIENT;
 
 import org.junit.jupiter.api.Test;

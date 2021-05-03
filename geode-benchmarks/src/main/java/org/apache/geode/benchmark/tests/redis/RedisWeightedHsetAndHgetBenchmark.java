@@ -25,7 +25,6 @@ import static org.apache.geode.benchmark.topology.Roles.CLIENT;
 import org.junit.jupiter.api.Test;
 
 import org.apache.geode.benchmark.LongRange;
-import org.apache.geode.benchmark.tasks.CompositeTask;
 import org.apache.geode.benchmark.tasks.WeightedTasks;
 import org.apache.geode.benchmark.tasks.WeightedTasks.WeightedTask;
 import org.apache.geode.benchmark.tasks.redis.HgetRedisTask;

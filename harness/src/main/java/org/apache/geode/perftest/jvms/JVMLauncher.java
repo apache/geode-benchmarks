@@ -54,7 +54,8 @@ class JVMLauncher {
   CompletableFuture<Void> launchWorker(Infrastructure infra, int rmiPort,
       JVMMapping jvmConfig)
       throws UnknownHostException {
-    final String[] shellCommand = traceCommand(buildCommand(InetAddress.getLocalHost().getHostAddress(), rmiPort, jvmConfig), jvmConfig);
+    final String[] shellCommand = traceCommand(
+        buildCommand(InetAddress.getLocalHost().getHostAddress(), rmiPort, jvmConfig), jvmConfig);
 
     CompletableFuture<Void> future = new CompletableFuture<>();
     Thread thread = new Thread("Worker " + jvmConfig.getNode().getAddress()) {

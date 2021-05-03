@@ -21,7 +21,6 @@ import static org.apache.geode.benchmark.Config.before;
 import static org.apache.geode.benchmark.Config.role;
 import static org.apache.geode.benchmark.topology.Ports.REDIS_PORT;
 import static org.apache.geode.benchmark.topology.Roles.CLIENT;
-import static org.apache.geode.benchmark.topology.Roles.SERVER;
 
 import java.net.InetSocketAddress;
 import java.util.List;
@@ -32,7 +31,7 @@ import org.apache.geode.benchmark.topology.Topology;
 import org.apache.geode.perftest.TestConfig;
 
 public class ManualRedisTopology extends Topology {
-  private static final int NUM_CLIENTS = Integer.getInteger(WITH_CLIENT_COUNT_PROPERTY , 4);
+  private static final int NUM_CLIENTS = Integer.getInteger(WITH_CLIENT_COUNT_PROPERTY, 4);
 
   public static final String WITH_REDIS_SERVERS_PROPERTY = "withRedisServers";
 

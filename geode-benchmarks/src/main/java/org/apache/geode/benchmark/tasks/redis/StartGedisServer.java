@@ -21,8 +21,6 @@ package org.apache.geode.benchmark.tasks.redis;
 import static java.lang.String.valueOf;
 import static org.apache.geode.benchmark.topology.Ports.REDIS_PORT;
 
-import io.netty.channel.epoll.Epoll;
-
 import org.apache.geode.benchmark.tasks.StartServer;
 import org.apache.geode.cache.CacheFactory;
 import org.apache.geode.cache.server.CacheServer;

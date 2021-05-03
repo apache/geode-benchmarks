@@ -17,7 +17,6 @@
 
 package org.apache.geode.benchmark.tasks.redis;
 
-import static java.lang.Integer.getInteger;
 import static java.lang.String.valueOf;
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
