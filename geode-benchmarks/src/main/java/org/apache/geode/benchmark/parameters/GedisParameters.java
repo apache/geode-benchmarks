@@ -17,7 +17,6 @@ package org.apache.geode.benchmark.parameters;
 
 import static java.lang.Integer.getInteger;
 import static java.lang.String.format;
-import static java.lang.System.getProperty;
 import static org.apache.geode.benchmark.tests.GeodeBenchmark.WITH_BUCKETS;
 import static org.apache.geode.benchmark.tests.GeodeBenchmark.WITH_REPLICAS;
 import static org.apache.geode.benchmark.topology.Roles.SERVER;
@@ -33,10 +32,10 @@ public class GedisParameters {
   public static void configure(final TestConfig testConfig) {
     logger.info("Configuring Gedis parameters.");
 
-    testConfig.jvmArgs(SERVER.name(), "-Denable-unsupported-commands=true"
-        , format("-Dredis.replicas=%d", getInteger(WITH_REPLICAS, 1))
-        , format("-Dredis.region.buckets=%d", getInteger(WITH_BUCKETS, 128))
-        , format("-Djava.lang.Integer.IntegerCache.high=%d", getInteger(WITH_BUCKETS, 128)));
+    testConfig.jvmArgs(SERVER.name(), "-Denable-unsupported-commands=true",
+        format("-Dredis.replicas=%d", getInteger(WITH_REPLICAS, 1)),
+        format("-Dredis.region.buckets=%d", getInteger(WITH_BUCKETS, 128)),
+        format("-Djava.lang.Integer.IntegerCache.high=%d", getInteger(WITH_BUCKETS, 128)));
   }
 
 }

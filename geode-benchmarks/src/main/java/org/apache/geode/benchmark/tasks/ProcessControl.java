@@ -63,7 +63,7 @@ public class ProcessControl {
             format("'%s' command exited with status %d", join(" ", processBuilder.command()),
                 exitStatus, System.getProperty("user.dir"));
         logger.error(msg);
-        if(System.nanoTime() - start > RETRY_TIMEOUT.toNanos()) {
+        if (System.nanoTime() - start > RETRY_TIMEOUT.toNanos()) {
           throw new RuntimeException(msg);
         }
         Thread.sleep(100);
