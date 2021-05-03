@@ -17,11 +17,12 @@
 
 package org.apache.geode.benchmark.tasks.redis;
 
-
-
 import org.apache.geode.perftest.Task;
 import org.apache.geode.perftest.TestContext;
 
+/**
+ * Flushes the contents of the Redis database.
+ */
 public class FlushDbTask implements Task {
 
   private final RedisClientManager redisClientManager;

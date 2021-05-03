@@ -20,8 +20,10 @@ import static org.apache.geode.benchmark.Config.after;
 import static org.apache.geode.benchmark.Config.before;
 import static org.apache.geode.benchmark.tests.redis.RedisBenchmark.RedisClientImplementation.Jedis;
 import static org.apache.geode.benchmark.tests.redis.RedisBenchmark.RedisClusterImplementation.Geode;
+import static org.apache.geode.benchmark.tests.redis.RedisBenchmark.RedisClusterImplementation.Manual;
 import static org.apache.geode.benchmark.topology.Roles.CLIENT;
 
+import org.apache.geode.benchmark.tasks.redis.FlushDbTask;
 import org.apache.geode.benchmark.tasks.redis.JedisClientManager;
 import org.apache.geode.benchmark.tasks.redis.LettuceClientManager;
 import org.apache.geode.benchmark.tasks.redis.RedisClientManager;
@@ -100,7 +102,10 @@ public class RedisBenchmark implements PerformanceTest {
     }
 
     before(config, new StartRedisClient(redisClientManager), CLIENT);
-    // before(config, new FlushDbTask(redisClientManager), CLIENT);
+
+    if (Manual == getRedisClusterImplementation()) {
+       before(config, new FlushDbTask(redisClientManager), CLIENT);
+    }
 
     after(config, new StopRedisClient(redisClientManager), CLIENT);
 
