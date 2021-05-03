@@ -147,25 +147,6 @@ task benchmark(type: Test) {
     systemProperty 'benchmark.withDuration', project.findProperty('withDuration')
   }
 
-  if (project.hasProperty('withMinKey')) {
-    systemProperty 'benchmark.withMinKey', project.findProperty('withMinKey')
-  }
-  if (project.hasProperty('withMaxKey')) {
-    systemProperty 'benchmark.withMaxKey', project.findProperty('withMaxKey')
-  }
-
-  if (project.hasProperty('withLocatorCount')) {
-    systemProperty 'withLocatorCount', project.findProperty('withLocatorCount')
-  }
-
-  if (project.hasProperty('withServerCount')) {
-    systemProperty 'benchmark.withServerCount', project.findProperty('withServerCount')
-  }
-
-  if (project.hasProperty('withClientCount')) {
-    systemProperty 'withClientCount', project.findProperty('withClientCount')
-  }
-
   systemProperty 'benchmark.withSsl', project.hasProperty('withSsl')
   systemProperty 'benchmark.withSslProtocols', project.findProperty('withSslProtocols')
   systemProperty 'benchmark.withSslCiphers', project.findProperty('withSslCiphers')
@@ -181,32 +162,6 @@ task benchmark(type: Test) {
   systemProperty 'benchmark.withRouterImage', project.findProperty('withRouterImage')
 
   systemProperty 'benchmark.withSecurityManager', project.hasProperty('withSecurityManager')
-
-  if (project.hasProperty('withRedisClient')) {
-    systemProperty 'benchmark.withRedisClient', project.findProperty('withRedisClient')
-  }
-
-  if (project.hasProperty('withRedisCluster')) {
-    systemProperty 'benchmark.withRedisCluster', project.findProperty('withRedisCluster')
-  }
-
-  if (project.hasProperty('withRedisServers')) {
-    systemProperty 'benchmark.withRedisServers', project.findProperty('withRedisServers')
-  }
-
-  if (project.hasProperty('withReplicas')) {
-    systemProperty 'withReplicas', project.findProperty('withReplicas')
-  }
-
-  systemProperty 'benchmark.withValidation', project.hasProperty('withValidation')
-
-  systemProperty 'benchmark.withAsyncReplication', project.hasProperty('withAsyncReplication')
-
-  if (project.hasProperty('withNettyThreads')) {
-    systemProperty 'benchmark.withNettyThreads', project.findProperty('withNettyThreads')
-  }
-
-  systemProperty 'benchmark.withStrace', project.hasProperty('withStrace')
 
   doFirst {
     if(!project.hasProperty('hosts')) {
