@@ -21,6 +21,7 @@ import static java.lang.String.valueOf;
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
 import static org.apache.geode.benchmark.tasks.ProcessControl.retryUntilZeroExit;
+import static org.apache.geode.benchmark.topology.Ports.REDIS_PORT;
 import static org.apache.geode.benchmark.topology.Roles.CLIENT;
 import static org.apache.geode.benchmark.topology.Roles.SERVER;
 
@@ -59,7 +60,8 @@ public class CreateRedisCluster implements Task {
     final Set<InetAddress> servers = context.getHostsForRole(SERVER.name());
 
     final List<String> redisNodes =
-        servers.stream().map(i -> i.getHostAddress() + ":6379").collect(Collectors.toList());
+        servers.stream().map(i -> i.getHostAddress() + ":" + REDIS_PORT)
+            .collect(Collectors.toList());
 
     final ProcessBuilder processBuilder =
         new ProcessBuilder().command("docker", "run", "--rm",

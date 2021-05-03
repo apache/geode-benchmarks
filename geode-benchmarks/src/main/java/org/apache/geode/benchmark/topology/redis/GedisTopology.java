@@ -20,6 +20,7 @@ import static org.apache.geode.benchmark.Config.before;
 import static org.apache.geode.benchmark.Config.role;
 import static org.apache.geode.benchmark.topology.Ports.EPHEMERAL_PORT;
 import static org.apache.geode.benchmark.topology.Ports.LOCATOR_PORT;
+import static org.apache.geode.benchmark.topology.Ports.REDIS_PORT;
 import static org.apache.geode.benchmark.topology.Roles.CLIENT;
 import static org.apache.geode.benchmark.topology.Roles.LOCATOR;
 import static org.apache.geode.benchmark.topology.Roles.SERVER;
@@ -51,7 +52,7 @@ public class GedisTopology extends Topology {
     GedisParameters.configure(config);
 
     before(config, new StartLocator(LOCATOR_PORT), LOCATOR);
-    before(config, new StartGedisServer(LOCATOR_PORT, EPHEMERAL_PORT), SERVER);
+    before(config, new StartGedisServer(LOCATOR_PORT, EPHEMERAL_PORT, REDIS_PORT), SERVER);
     before(config, new InitGedisRegion(), SERVER);
     before(config, new InitRedisServersAttribute(), CLIENT);
 

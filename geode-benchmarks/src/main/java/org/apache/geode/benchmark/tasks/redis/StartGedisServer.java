@@ -19,7 +19,6 @@ package org.apache.geode.benchmark.tasks.redis;
 
 
 import static java.lang.String.valueOf;
-import static org.apache.geode.benchmark.topology.Ports.REDIS_PORT;
 
 import org.apache.geode.benchmark.tasks.StartServer;
 import org.apache.geode.cache.CacheFactory;
@@ -29,8 +28,11 @@ import org.apache.geode.perftest.TestContext;
 
 public class StartGedisServer extends StartServer {
 
-  public StartGedisServer(final int locatorPort, final int serverPort) {
+  private final int redisPort;
+
+  public StartGedisServer(final int locatorPort, final int serverPort, final int redisPort) {
     super(locatorPort, serverPort);
+    this.redisPort = redisPort;
   }
 
   @Override
@@ -45,7 +47,7 @@ public class StartGedisServer extends StartServer {
 
     return super.configureCacheFactory(cacheFactory, context)
         .set("compatible-with-redis-enabled", valueOf(true))
-        .set("compatible-with-redis-port", valueOf(REDIS_PORT));
+        .set("compatible-with-redis-port", valueOf(redisPort));
   }
 
   @Override
