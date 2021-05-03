@@ -37,6 +37,7 @@ import org.apache.geode.perftest.jvms.rmi.ChildJVM;
 
 class JVMLauncher {
   private static final Logger logger = LoggerFactory.getLogger(RemoteJVMFactory.class);
+  public static final String WITH_STRACE = "benchmark.withStrace";
 
   JVMLauncher() {}
 
@@ -84,7 +85,7 @@ class JVMLauncher {
   String[] traceCommand(final String[] command, JVMMapping jvmConfig) {
     List<String> strace = new ArrayList<>();
 
-    if (Boolean.getBoolean("withStrace")) {
+    if (Boolean.getBoolean(WITH_STRACE)) {
       strace.add("strace");
       strace.add("-o");
       strace.add(jvmConfig.getOutputDir() + "/java.strace");

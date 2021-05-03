@@ -35,9 +35,10 @@ public abstract class Topology {
   public static final String WITH_SECURITY_MANAGER_PROPERTY = "benchmark.withSecurityManager";
   static final String WITH_SECURITY_MANAGER_ARGUMENT = "-Dbenchmark.withSecurityManager=true";
 
-  public static final String WITH_LOCATOR_COUNT_PROPERTY = "withLocatorCount";
-  public static final String WITH_SERVER_COUNT_PROPERTY = "withServerCount";
-  public static final String WITH_CLIENT_COUNT_PROPERTY = "withClientCount";
+  public static final String WITH_LOCATOR_COUNT_PROPERTY = "benchmark.withLocatorCount";
+  public static final String WITH_SERVER_COUNT_PROPERTY = "benchmark.withServerCount";
+  public static final String WITH_CLIENT_COUNT_PROPERTY = "benchmark.withClientCount";
+  public static final String WITH_ASYNC_REPLICATION = "benchmark.withAsyncReplication";
 
   protected static void configureCommon(TestConfig config) {
     JvmParameters.configure(config);
@@ -52,7 +53,7 @@ public abstract class Topology {
     addToTestConfig(config, WITH_SSL_CIPHERS_PROPERTY);
     addToTestConfig(config, WITH_SECURITY_MANAGER_PROPERTY, WITH_SECURITY_MANAGER_ARGUMENT);
 
-    if (getBoolean("withAsyncReplication")) {
+    if (getBoolean(WITH_ASYNC_REPLICATION)) {
       config.jvmArgs(SERVER.name(), "-Dgemfire.disablePartitionedRegionBucketAck=true");
     }
 

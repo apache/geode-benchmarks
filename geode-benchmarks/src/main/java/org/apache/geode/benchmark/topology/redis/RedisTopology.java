@@ -19,6 +19,7 @@ import static java.lang.Integer.getInteger;
 import static org.apache.geode.benchmark.Config.after;
 import static org.apache.geode.benchmark.Config.before;
 import static org.apache.geode.benchmark.Config.role;
+import static org.apache.geode.benchmark.tests.GeodeBenchmark.WITH_REPLICAS;
 import static org.apache.geode.benchmark.topology.Roles.CLIENT;
 import static org.apache.geode.benchmark.topology.Roles.LOCATOR;
 import static org.apache.geode.benchmark.topology.Roles.SERVER;
@@ -48,7 +49,7 @@ public class RedisTopology extends Topology {
     configureCommon(config);
 
     before(config, new StartRedisServer(), SERVER);
-    before(config, new CreateRedisCluster(getInteger("withReplicas", 1)), CLIENT);
+    before(config, new CreateRedisCluster(getInteger(WITH_REPLICAS, 1)), CLIENT);
     before(config, new InitRedisServersAttribute(), CLIENT);
 
     after(config, new StopRedisServer(), SERVER);

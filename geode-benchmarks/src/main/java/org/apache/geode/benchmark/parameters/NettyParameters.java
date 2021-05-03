@@ -26,16 +26,15 @@ import org.apache.geode.perftest.TestConfig;
 
 public class NettyParameters {
   private static final Logger logger = LoggerFactory.getLogger(NettyParameters.class);
+  public static final String WITH_NETTY_THREADS = "benchmark.withNettyThreads";
 
   public static void configure(final TestConfig testConfig) {
     logger.info("Configuring Netty parameters.");
 
-    final Integer withNettyThreads = getInteger("withNettyThreads", null);
+    final Integer withNettyThreads = getInteger(WITH_NETTY_THREADS, null);
     if (null != withNettyThreads) {
       testConfig.jvmArgs(SERVER.name(), format("-Dio.netty.eventLoopThreads=%d", withNettyThreads));
     }
-    // testConfig.jvmArgs(SERVER.name(), format("-Dio.netty.leakDetection.level=%s",
-    // ResourceLeakDetector.Level.DISABLED));
   }
 
 }

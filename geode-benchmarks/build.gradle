@@ -203,14 +203,10 @@ task benchmark(type: Test) {
   systemProperty 'benchmark.withAsyncReplication', project.hasProperty('withAsyncReplication')
 
   if (project.hasProperty('withNettyThreads')) {
-    systemProperty 'withNettyThreads', project.findProperty('withNettyThreads')
+    systemProperty 'benchmark.withNettyThreads', project.findProperty('withNettyThreads')
   }
 
-  if (project.hasProperty('withNettyTransport')) {
-    systemProperty 'withNettyTransport', project.findProperty('withNettyTransport')
-  }
-
-  systemProperty 'withStrace', project.hasProperty('withStrace')
+  systemProperty 'benchmark.withStrace', project.hasProperty('withStrace')
 
   doFirst {
     if(!project.hasProperty('hosts')) {

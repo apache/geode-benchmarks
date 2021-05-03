@@ -38,9 +38,9 @@ public class ClientServerTopologyWithRouterAndSniProxy extends ClientServerTopol
   public static final String WITH_ROUTER_PROPERTY = "benchmark.withRouter";
   public static final String WITH_ROUTER_IMAGE_PROPERTY = "benchmark.withRouterImage";
 
-  private static final int NUM_LOCATORS = 1;
-  private static final int NUM_SERVERS = 2;
-  private static final int NUM_CLIENTS = 1;
+  private static final int NUM_LOCATORS = Integer.getInteger(WITH_LOCATOR_COUNT_PROPERTY, 1);
+  private static final int NUM_SERVERS = Integer.getInteger(WITH_SERVER_COUNT_PROPERTY, 2);
+  private static final int NUM_CLIENTS = Integer.getInteger(WITH_CLIENT_COUNT_PROPERTY, 1);
   private static final int NUM_PROXIES = 1;
   private static final int NUM_ROUTERS = 1;
 

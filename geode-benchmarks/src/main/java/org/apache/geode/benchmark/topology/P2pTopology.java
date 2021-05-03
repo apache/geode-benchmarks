@@ -31,8 +31,8 @@ import org.apache.geode.benchmark.tasks.StopServer;
 import org.apache.geode.perftest.TestConfig;
 
 public class P2pTopology extends Topology {
-  private static final int NUM_LOCATORS = 1;
-  private static final int NUM_SERVERS = 3;
+  private static final int NUM_LOCATORS = Integer.getInteger(WITH_LOCATOR_COUNT_PROPERTY, 1);
+  private static final int NUM_SERVERS = Integer.getInteger(WITH_SERVER_COUNT_PROPERTY, 3);
 
   public static void configure(TestConfig config) {
     role(config, LOCATOR, NUM_LOCATORS);
