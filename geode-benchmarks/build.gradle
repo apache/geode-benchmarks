@@ -60,7 +60,9 @@ dependencies {
     exclude group: 'io.netty'
   }
 
-  implementation(group: 'org.apache.geode', name: 'geode-redis', version: geodeVersion)
+  if (VersionNumber.parse(geodeVersion) >= VersionNumber.parse("1.15.0")) {
+    runtime(group: 'org.apache.geode', name: 'geode-apis-compatible-with-redis', version: geodeVersion)
+  }
 
   implementation(group: 'io.netty', name: 'netty-all')
 

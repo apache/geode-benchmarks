@@ -36,6 +36,8 @@ import org.apache.geode.perftest.TestContext;
  */
 public class StartServer implements Task {
 
+  public static final String SERVER_CACHE = "SERVER_CACHE";
+  
   private final int locatorPort;
   private final int serverPort;
 
@@ -60,7 +62,7 @@ public class StartServer implements Task {
 
     configureCache(cache, context);
 
-    context.setAttribute("SERVER_CACHE", cache);
+    context.setAttribute(SERVER_CACHE, cache);
   }
 
   protected void configureCache(final InternalCache cache, final TestContext context) {}

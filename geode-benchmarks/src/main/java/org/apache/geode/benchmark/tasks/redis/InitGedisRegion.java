@@ -18,7 +18,7 @@
 package org.apache.geode.benchmark.tasks.redis;
 
 
-import static org.apache.geode.redis.internal.RegionProvider.REDIS_DATA_REGION;
+import static org.apache.geode.benchmark.tasks.StartServer.SERVER_CACHE;
 
 import org.apache.geode.cache.Cache;
 import org.apache.geode.cache.Region;
@@ -28,9 +28,11 @@ import org.apache.geode.perftest.TestContext;
 
 public class InitGedisRegion implements Task {
 
+  public static final String REDIS_DATA_REGION = "__REDIS_DATA";
+
   @Override
   public void run(final TestContext context) throws Exception {
-    final Cache cache = (Cache) context.getAttribute("SERVER_CACHE");
+    final Cache cache = (Cache) context.getAttribute(SERVER_CACHE);
     final Region<?, ?> region = cache.getRegion(REDIS_DATA_REGION);
     PartitionRegionHelper.assignBucketsToPartitions(region);
   }

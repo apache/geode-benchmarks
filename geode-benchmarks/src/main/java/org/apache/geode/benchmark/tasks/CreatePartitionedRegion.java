@@ -15,6 +15,8 @@
 package org.apache.geode.benchmark.tasks;
 
 
+import static org.apache.geode.benchmark.tasks.StartServer.SERVER_CACHE;
+
 import org.apache.geode.cache.Cache;
 import org.apache.geode.cache.PartitionAttributes;
 import org.apache.geode.cache.PartitionAttributesFactory;
@@ -31,7 +33,7 @@ public class CreatePartitionedRegion implements Task {
 
   @Override
   public void run(TestContext context) throws Exception {
-    final Cache cache = (Cache) context.getAttribute("SERVER_CACHE");
+    final Cache cache = (Cache) context.getAttribute(SERVER_CACHE);
     final PartitionAttributes<?, ?> partitionAttributes = new PartitionAttributesFactory<>()
         .setTotalNumBuckets(1 << 8)
         .setRedundantCopies(1)
