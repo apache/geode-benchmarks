@@ -49,58 +49,66 @@ For example:
 ### Options
 The benchmarks can take configuration options. Some using Gradle's `-P` flag and other, which adjust
 benchmark behavior, via Java system properties using `-D`.
-```
-    -Phosts               : Hosts used by benchmarks on the order of client,locator,server,server (-Phosts=localhost,localhost,localhost,localhost)
-    -PoutputDir           : Results output directory (-PoutputDir=/tmp/results)
-    -PtestJVM             : Path to an alternative JVM for running the client, locator, and servers. If not specified JAVA_HOME will be used. Note all compilation tasks will still use JAVA_HOME.
-    -Dbenchmark.X         : Where X is a benchmark configuration, defined below.
-    --tests               : Specific benchmarks to run (--tests=PartitionedPutBenchmark)
-    -d                    : Debug
-    -i                    : Info
-```
+
+| Option                | Description |
+| --------------------- | ----------- |
+| `-Phosts`               | Hosts used by benchmarks on the order of client,locator,server,server (-Phosts=localhost,localhost,localhost,localhost) |
+| `-PoutputDir`           | Results output directory (-PoutputDir=/tmp/results) |
+| `-PtestJVM`             | Path to an alternative JVM for running the client, locator, and servers. If not specified JAVA_HOME will be used. Note all compilation tasks will still use JAVA_HOME. |
+| `-Dbenchmark.X`         | Where X is a benchmark configuration, defined below. |
+| `--tests`               | Specific benchmarks to run (--tests=PartitionedPutBenchmark) |
+| `-d`                    | Debug |
+| `-i`                    | Info |
 
 #### Benchmark Configuration
 ##### Common
 These options may apply to all benchmarks.
-```
-    withGc                : Select which GC to use. Valid values CMS (default), G1, Z.
-    withHeap              : Specify how large a heap the benchmark VMs should use, default "8g". Accepts any `-Xmx` value, like "32g".
-    withThreads           : Specify how many threads to use when executing the benchmark. Default varies by benchmark.
-    withWarmup            : Specify how long to warm up the benchmark in seconds. Default is 60 seconds.
-    withMinKey            : The minimum key value in the key range. Default is 0.
-    withMaxKey            : The minimum key value in the key range. Default varies by benchmark.
-    withLocatorCount      : Number of locators a topology should use. Typically defaults to 1.
-    withServerCount       : Number of servers a topology should use. Typically defaults to 2.
-    withClientCount       : Number of clients a topology should use. Typically defaults to 1.
-    withReplicas          : Number of region replicas.
-    withAsyncReplication  : Enable asynch region replication.
-    withNettyThreads      : Number of threads Netty IO Services should have.
-```
+
+| Option                | Description |
+| --------------------- | ----------- |
+| withGc                | Select which GC to use. Valid values CMS (default), G1, Z. |
+| withHeap              | Specify how large a heap the benchmark VMs should use, default "8g". Accepts any `-Xmx` value, like "32g". |
+| withThreads           | Specify how many threads to use when executing the benchmark. Default varies by benchmark. |
+| withWarmup            | Specify how long to warm up the benchmark in seconds. Default is 60 seconds. |
+| withMinKey            | The minimum key value in the key range. Default is 0. |
+| withMaxKey            | The minimum key value in the key range. Default varies by benchmark. |
+| withLocatorCount      | Number of locators a topology should use. Typically defaults to 1. |
+| withServerCount       | Number of servers a topology should use. Typically defaults to 2. |
+| withClientCount       | Number of clients a topology should use. Typically defaults to 1. |
+| withReplicas          | Number of region replicas. |
+| withAsyncReplication  | Enable asynch region replication. |
+| withNettyThreads      | Number of threads Netty IO Services should have. |
+
 ##### Geode Benchmarks
 These options only apply to Geode benchmarks.
-```
-    withSsl               : Flag to run geode with SSL. A self-signed certificate will be generated at runtime.
-    withSslProtocols      : Specifies enabled SSL protocols. See Geode property `ssl-protocols`
-    withSslCiphers        : Specifies enabled SSL chipher suites. See Geode property `ssl-ciphers`
-    withSecurityManager   : Flag to start Geode with the example implementation of SecurityManager
-    withSniProxy          : Use SNI proxy topology.
-    withSniProxyImage     : Provide an alternative Docker image coordinate for SNI proxy.
-    withRouter            : Use router with SNI proxy topology.
-    withRouterImage       : Provide an alternative Docker image coordinate for router.
-```
+
+| Option                | Description |
+| --------------------- | ----------- |
+| withSsl               | Flag to run geode with SSL. A self-signed certificate will be generated at runtime. |
+| withSslProtocols      | Specifies enabled SSL protocols. See Geode property `ssl-protocols` |
+| withSslCiphers        | Specifies enabled SSL chipher suites. See Geode property `ssl-ciphers` |
+| withSecurityManager   | Flag to start Geode with the example implementation of SecurityManager |
+| withSniProxy          | Use SNI proxy topology. |
+| withSniProxyImage     | Provide an alternative Docker image coordinate for SNI proxy. |
+| withRouter            | Use router with SNI proxy topology. |
+| withRouterImage       | Provide an alternative Docker image coordinate for router. |
+
 ##### Redis Benchmarks
 These options only apply to Redis benchmarks.
-```
-    withRedisClient     : Redis client to use. May be 'jedis' (default) or 'lettuce'. 
-    withRedisCluster    : Redis cluster implementation. May be 'geode' (default), 'redis', 'manual'.
-    withRedisServers    : A semicolon delimited list of Redis host:port pairs for manual cluster mode.
-```    
+
+| Option                | Description |
+| --------------------- | ----------- |
+| withRedisClient       | Redis client to use. May be 'jedis' (default) or 'lettuce'. |
+| withRedisCluster      | Redis cluster implementation. May be 'geode' (default), 'redis', 'manual'. |
+| withRedisServers      | A semicolon delimited list of Redis host:port pairs for manual cluster mode. |
+
 ##### Debugging
 These options should not be used when measuring benchmarks.
-```
-    withValidation        : Enable validation of operations.
-    withStrace            : Launch remote JVM via strace for tracing system calls.
-```
+
+| Option                | Description |
+| --------------------- | ----------- |
+| withValidation        | Enable validation of operations. |
+| withStrace            | Launch remote JVM via strace for tracing system calls. |
 
 
 ### Scripts for running in aws and analyzing results
