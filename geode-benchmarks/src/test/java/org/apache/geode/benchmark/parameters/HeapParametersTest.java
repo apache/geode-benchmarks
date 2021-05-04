@@ -30,7 +30,7 @@ import org.apache.geode.perftest.TestConfig;
 
 class HeapParametersTest {
 
-  private static final String WITH_HEAP = "withHeap";
+  private static final String WITH_HEAP = "benchmark.withHeap";
 
   private Properties systemProperties;
 

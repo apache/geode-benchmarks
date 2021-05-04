@@ -102,41 +102,55 @@ task benchmark(type: Test) {
   systemProperty 'org.slf4j.simpleLogger.dateTimeFormat', 'yyyy-MM-dd HH:mm:ss.SSS'
   systemProperty 'org.slf4j.simpleLogger.showThreadName', 'false'
   systemProperty 'org.slf4j.simpleLogger.showShortLogName', 'true'
-  systemProperty 'TEST_HOSTS', project.findProperty('hosts')
-  systemProperty 'TEST_METADATA', project.findProperty('metadata')
+  systemProperty 'benchmark.TEST_HOSTS', project.findProperty('hosts')
+  systemProperty 'benchmark.TEST_METADATA', project.findProperty('metadata')
   systemProperty 'OUTPUT_DIR', outputDir
+  systemProperty 'benchmark.OUTPUT_DIR', outputDir
+
+  //Set all project properties starting with "benchmark." as system properties in the test
+  //JVM
+  project.properties.findAll {
+    it.key.startsWith("benchmark.")
+  }.each {
+    systemProperty(it.getKey(), it.getValue())
+  }
+
+  //------------------------------------------------------------
+  //Legacy properties - these properties were added before the benchmark.
+  //prefix convention. They will be passed on to the JVM for now to not break
+  //CI or peoples scripts. Remove these soon!
+  //------------------------------------------------------------
   if (project.hasProperty('withGc')) {
-    systemProperty 'withGc', project.findProperty('withGc')
+    systemProperty 'benchmark.withGc', project.findProperty('withGc')
   }
   if (project.hasProperty('withHeap')) {
-    systemProperty 'withHeap', project.findProperty('withHeap')
+    systemProperty 'benchmark.withHeap', project.findProperty('withHeap')
   }
   if (project.hasProperty('withThreads')) {
-    systemProperty 'withThreads', project.findProperty('withThreads')
+    systemProperty 'benchmark.withThreads', project.findProperty('withThreads')
   }
   if (project.hasProperty('withWarmup')) {
-    systemProperty 'withWarmup', project.findProperty('withWarmup')
+    systemProperty 'benchmark.withWarmup', project.findProperty('withWarmup')
   }
   if (project.hasProperty('withDuration')) {
-    systemProperty 'withDuration', project.findProperty('withDuration')
+    systemProperty 'benchmark.withDuration', project.findProperty('withDuration')
   }
 
-  systemProperty 'withSsl', project.hasProperty('withSsl')
-  systemProperty 'withSslProtocols', project.findProperty('withSslProtocols')
-  systemProperty 'withSslCiphers', project.findProperty('withSslCiphers')
+  systemProperty 'benchmark.withSsl', project.hasProperty('withSsl')
+  systemProperty 'benchmark.withSslProtocols', project.findProperty('withSslProtocols')
+  systemProperty 'benchmark.withSslCiphers', project.findProperty('withSslCiphers')
 
   if (project.hasProperty('withSniProxy')) {
-    systemProperty 'withSniProxy', project.findProperty('withSniProxy')
+    systemProperty 'benchmark.withSniProxy', project.findProperty('withSniProxy')
   }
-  systemProperty 'withSniProxyImage', project.findProperty('withSniProxyImage')
+  systemProperty 'benchmark.withSniProxyImage', project.findProperty('withSniProxyImage')
 
   if (project.hasProperty('withRouter')) {
-    systemProperty 'withRouter', project.findProperty('withRouter')
+    systemProperty 'benchmark.withRouter', project.findProperty('withRouter')
   }
-  systemProperty 'withRouterImage', project.findProperty('withRouterImage')
+  systemProperty 'benchmark.withRouterImage', project.findProperty('withRouterImage')
 
-  systemProperty 'withSecurityManager', project.hasProperty('withSecurityManager')
-  systemProperty 'benchmark.profiler.argument', project.findProperty('benchmark.profiler.argument')
+  systemProperty 'benchmark.withSecurityManager', project.hasProperty('withSecurityManager')
 
 
   doFirst {
