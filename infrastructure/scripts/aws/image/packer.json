@@ -67,7 +67,7 @@
         "sudo add-apt-repository \"deb [arch=amd64] https://apt.bell-sw.com/ stable main\"",
         "sudo apt update",
         "sudo apt-get -o Dpkg::Options::=\"--force-confnew\" upgrade -y",
-        "sudo apt install -y java-common bellsoft-java8 bellsoft-java11 openjdk-8-jdk openjdk-11-jdk unzip dstat",
+        "sudo apt install -y java-common bellsoft-java8 bellsoft-java11 unzip dstat",
         "sudo update-java-alternatives -s bellsoft-java8-amd64",
         "sudo mv /tmp/defaults.cfg /etc/cloud/cloud.cfg.d/defaults.cfg",
         "sudo sh -c \"echo 'StrictHostKeyChecking no' >> /etc/ssh/ssh_config\"",
