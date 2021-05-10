@@ -30,14 +30,13 @@ import org.apache.geode.benchmark.tasks.CreateClientProxyRegion;
 import org.apache.geode.benchmark.tasks.CreateReplicatedRegion;
 import org.apache.geode.benchmark.tasks.GetTask;
 import org.apache.geode.benchmark.tasks.PrePopulateRegion;
-import org.apache.geode.perftest.PerformanceTest;
 import org.apache.geode.perftest.TestConfig;
 import org.apache.geode.perftest.TestRunners;
 
 /**
  * Benchmark of gets on a replicated region.
  */
-public class ReplicatedGetBenchmark implements PerformanceTest {
+public class ReplicatedGetBenchmark extends AbstractPerformanceTest {
 
   private LongRange keyRange = new LongRange(0, 1000000);
 
@@ -58,7 +57,7 @@ public class ReplicatedGetBenchmark implements PerformanceTest {
     before(config, new CreateReplicatedRegion(), SERVER);
     before(config, new CreateClientProxyRegion(), CLIENT);
     before(config, new PrePopulateRegion(keyRange), CLIENT);
-    workload(config, new GetTask(keyRange), CLIENT);
+    workload(config, new GetTask(keyRange, isValidationEnabled()), CLIENT);
     return config;
 
   }

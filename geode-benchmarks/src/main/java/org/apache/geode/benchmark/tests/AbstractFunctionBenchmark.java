@@ -25,10 +25,9 @@ import org.apache.geode.benchmark.LongRange;
 import org.apache.geode.benchmark.tasks.CreateClientProxyRegion;
 import org.apache.geode.benchmark.tasks.PrePopulateRegion;
 import org.apache.geode.benchmark.tasks.RegisterFunction;
-import org.apache.geode.perftest.PerformanceTest;
 import org.apache.geode.perftest.TestConfig;
 
-abstract class AbstractFunctionBenchmark implements PerformanceTest {
+abstract class AbstractFunctionBenchmark extends AbstractPerformanceTest {
   private LongRange keyRange = new LongRange(0, 1000000);
 
   public final void setKeyRange(LongRange keyRange) {

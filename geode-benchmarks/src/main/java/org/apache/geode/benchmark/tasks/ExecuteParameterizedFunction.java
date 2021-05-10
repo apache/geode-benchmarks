@@ -14,10 +14,14 @@
  */
 package org.apache.geode.benchmark.tasks;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.Serializable;
 import java.util.Map;
 
 import benchmark.geode.data.FunctionWithArguments;
+import benchmark.geode.data.Portfolio;
 import org.yardstickframework.BenchmarkConfiguration;
 import org.yardstickframework.BenchmarkDriverAdapter;
 
@@ -27,17 +31,18 @@ import org.apache.geode.cache.client.ClientCache;
 import org.apache.geode.cache.client.ClientCacheFactory;
 import org.apache.geode.cache.execute.Function;
 import org.apache.geode.cache.execute.FunctionService;
-import org.apache.geode.cache.execute.ResultCollector;
 
 public class ExecuteParameterizedFunction extends BenchmarkDriverAdapter implements Serializable {
 
   private final LongRange keyRange;
-  private final Function function;
+  private final boolean isValidationEnabled;
+  private final Function<Long> function;
 
-  private Region region;
+  private Region<Long, Portfolio> region;
 
-  public ExecuteParameterizedFunction(final LongRange keyRange) {
+  public ExecuteParameterizedFunction(final LongRange keyRange, final boolean isValidationEnabled) {
     this.keyRange = keyRange;
+    this.isValidationEnabled = isValidationEnabled;
     function = new FunctionWithArguments();
   }
 
@@ -52,11 +57,17 @@ public class ExecuteParameterizedFunction extends BenchmarkDriverAdapter impleme
   @Override
   public boolean test(Map<Object, Object> ctx) {
     @SuppressWarnings("unchecked")
-    ResultCollector<?, ?> resultCollector = FunctionService
+    final Object result = FunctionService
         .onRegion(region)
         .setArguments(keyRange.random())
-        .execute(function);
-    resultCollector.getResult();
+        .execute(function)
+        .getResult();
+
+    if (isValidationEnabled) {
+      assertNotNull(result);
+      assertTrue(result instanceof Portfolio);
+    }
+
     return true;
   }
 }

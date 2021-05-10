@@ -137,7 +137,7 @@ reported by the yardstick framework.
 * Benchmark configuration class, which defines the topology of the test and
 * the initialization tasks and workload tasks for the test.
 */
-public class PartitionedPutBenchmark implements PerformanceTest {
+public class PartitionedPutBenchmark extends AbstractPerformanceTest {
 
   @Test
   public void run() throws Exception {

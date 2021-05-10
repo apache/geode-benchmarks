@@ -31,6 +31,7 @@ public class PartitionedNonIndexedQueryBenchmarkTest {
     PartitionedNonIndexedQueryBenchmark test = new PartitionedNonIndexedQueryBenchmark();
     test.setKeyRange(new LongRange(0, 100));
     test.setQueryRange(10);
+    test.setValidationEnabled(true);
     TestRunners.minimalRunner(folder).runTest(test);
   }
 

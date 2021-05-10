@@ -12,28 +12,19 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
+
 package org.apache.geode.benchmark.tests;
 
-import java.io.File;
+import org.apache.geode.perftest.PerformanceTest;
 
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
+public abstract class AbstractPerformanceTest implements PerformanceTest {
+  private boolean validationEnabled = GeodeBenchmark.isValidationEnabled();
 
-import org.apache.geode.benchmark.LongRange;
-import org.apache.geode.perftest.TestRunners;
-
-public class ReplicatedIndexedQueryBenchmarkTest {
-
-  @TempDir
-  File folder;
-
-  @Test
-  public void benchmarkRunsSuccessfully() throws Exception {
-    ReplicatedIndexedQueryBenchmark test = new ReplicatedIndexedQueryBenchmark();
-    test.setKeyRange(new LongRange(0, 100));
-    test.setQueryRange(10);
-    test.setValidationEnabled(true);
-    TestRunners.minimalRunner(folder).runTest(test);
+  public void setValidationEnabled(final boolean validationEnabled) {
+    this.validationEnabled = validationEnabled;
   }
 
+  public boolean isValidationEnabled() {
+    return validationEnabled;
+  }
 }

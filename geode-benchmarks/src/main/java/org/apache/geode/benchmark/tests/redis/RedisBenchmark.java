@@ -29,14 +29,14 @@ import org.apache.geode.benchmark.tasks.redis.LettuceClientManager;
 import org.apache.geode.benchmark.tasks.redis.RedisClientManager;
 import org.apache.geode.benchmark.tasks.redis.StartRedisClient;
 import org.apache.geode.benchmark.tasks.redis.StopRedisClient;
+import org.apache.geode.benchmark.tests.AbstractPerformanceTest;
 import org.apache.geode.benchmark.tests.GeodeBenchmark;
 import org.apache.geode.benchmark.topology.redis.GedisTopology;
 import org.apache.geode.benchmark.topology.redis.ManualRedisTopology;
 import org.apache.geode.benchmark.topology.redis.RedisTopology;
-import org.apache.geode.perftest.PerformanceTest;
 import org.apache.geode.perftest.TestConfig;
 
-public class RedisBenchmark implements PerformanceTest {
+public class RedisBenchmark extends AbstractPerformanceTest {
 
   public static final String WITH_REDIS_CLIENT_PROPERTY = "benchmark.withRedisClient";
   public static final String WITH_REDIS_CLUSTER_PROPERTY = "benchmark.withRedisCluster";

@@ -36,7 +36,8 @@ public class PartitionedFunctionExecutionWithArgumentsBenchmark
   public TestConfig configure() {
     TestConfig config = super.configure();
     config.threads(Runtime.getRuntime().availableProcessors() * 4);
-    workload(config, new ExecuteParameterizedFunction(getKeyRange()), CLIENT);
+    workload(config, new ExecuteParameterizedFunction(getKeyRange(), isValidationEnabled()),
+        CLIENT);
     return config;
 
   }

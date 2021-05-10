@@ -24,14 +24,13 @@ import static org.apache.geode.benchmark.topology.Roles.CLIENT;
 import org.junit.jupiter.api.Test;
 
 import org.apache.geode.benchmark.tasks.NoopTask;
-import org.apache.geode.perftest.PerformanceTest;
 import org.apache.geode.perftest.TestConfig;
 import org.apache.geode.perftest.TestRunners;
 
 /**
  * Benchmark of gets on a partitioned region.
  */
-public class NoopBenchmark implements PerformanceTest {
+public class NoopBenchmark extends AbstractPerformanceTest {
 
   @Test
   public void run() throws Exception {

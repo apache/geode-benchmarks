@@ -35,7 +35,7 @@ public class ReplicatedFunctionExecutionWithFiltersBenchmark
   public TestConfig configure() {
     TestConfig config = super.configure();
     config.threads(Runtime.getRuntime().availableProcessors() * 10);
-    workload(config, new ExecuteFilteredFunction(getKeyRange()), CLIENT);
+    workload(config, new ExecuteFilteredFunction(getKeyRange(), isValidationEnabled()), CLIENT);
     return config;
   }
 }

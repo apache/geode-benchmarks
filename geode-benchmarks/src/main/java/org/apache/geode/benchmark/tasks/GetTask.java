@@ -17,6 +17,8 @@
 
 package org.apache.geode.benchmark.tasks;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.io.Serializable;
 import java.util.Map;
 
@@ -35,11 +37,13 @@ import org.apache.geode.cache.Region;
 public class GetTask extends BenchmarkDriverAdapter implements Serializable {
 
   private final LongRange keyRange;
+  private final boolean isValidationEnabled;
 
-  private Region<Object, Object> region;
+  private Region<Long, Object> region;
 
-  public GetTask(LongRange keyRange) {
+  public GetTask(LongRange keyRange, final boolean isValidationEnabled) {
     this.keyRange = keyRange;
+    this.isValidationEnabled = isValidationEnabled;
   }
 
   @Override
@@ -53,7 +57,13 @@ public class GetTask extends BenchmarkDriverAdapter implements Serializable {
   @Override
   public boolean test(Map<Object, Object> ctx) throws Exception {
     final long key = keyRange.random();
-    region.get(key);
+    final Object result = region.get(key);
+
+    if (isValidationEnabled) {
+      assertNotNull(result);
+    }
+
+
     return true;
   }
 }
