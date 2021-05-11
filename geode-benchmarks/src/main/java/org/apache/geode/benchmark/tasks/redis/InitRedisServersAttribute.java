@@ -46,6 +46,10 @@ public class InitRedisServersAttribute implements Task {
     this.servers = servers;
   }
 
+  public Collection<InetSocketAddress> getServers() {
+    return servers;
+  }
+
   @Override
   public void run(final TestContext context) throws Exception {
     if (null == servers) {

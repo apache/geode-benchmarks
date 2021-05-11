@@ -44,7 +44,7 @@ public class ManualRedisTopology extends Topology {
     config.jvmArgs(CLIENT.name(), "-Dsun.net.inetaddr.ttl=0", "-Dsun.net.inetaddr.negative.ttl=0");
 
     final String serversProperty = System.getProperty(WITH_REDIS_SERVERS_PROPERTY);
-    if (null == serversProperty) {
+    if (null == serversProperty || serversProperty.trim().isEmpty()) {
       throw new IllegalArgumentException(
           WITH_REDIS_SERVERS_PROPERTY + " must be set to server address(es).");
     }

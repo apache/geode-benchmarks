@@ -46,6 +46,10 @@ public class CreateRedisCluster implements Task {
     this.replicas = replicas;
   }
 
+  public int getReplicas() {
+    return replicas;
+  }
+
   @Override
   public void run(final TestContext context) throws Exception {
     final List<Integer> hostsIDsForRole =
