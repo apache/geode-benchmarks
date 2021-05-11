@@ -37,7 +37,7 @@ import org.apache.geode.benchmark.tasks.redis.StartRedisClient;
 import org.apache.geode.benchmark.tasks.redis.StopRedisClient;
 import org.apache.geode.benchmark.tests.AbstractPerformanceTest;
 import org.apache.geode.benchmark.tests.GeodeBenchmark;
-import org.apache.geode.benchmark.topology.redis.GedisTopology;
+import org.apache.geode.benchmark.topology.redis.GeodeTopology;
 import org.apache.geode.benchmark.topology.redis.ManualRedisTopology;
 import org.apache.geode.benchmark.topology.redis.RedisTopology;
 import org.apache.geode.perftest.TestConfig;
@@ -104,7 +104,7 @@ public class RedisBenchmark extends AbstractPerformanceTest {
         RedisTopology.configure(config);
         break;
       case Geode:
-        GedisTopology.configure(config);
+        GeodeTopology.configure(config);
         break;
       case Manual:
         ManualRedisTopology.configure(config);

@@ -26,11 +26,11 @@ import org.apache.geode.cache.server.CacheServer;
 import org.apache.geode.internal.cache.InternalCache;
 import org.apache.geode.perftest.TestContext;
 
-public class StartGedisServer extends StartServer {
+public class StartGeodeServer extends StartServer {
 
   private final int redisPort;
 
-  public StartGedisServer(final int locatorPort, final int serverPort, final int redisPort) {
+  public StartGeodeServer(final int locatorPort, final int serverPort, final int redisPort) {
     super(locatorPort, serverPort);
     this.redisPort = redisPort;
   }

@@ -25,18 +25,18 @@ import static org.apache.geode.benchmark.topology.Roles.CLIENT;
 import static org.apache.geode.benchmark.topology.Roles.LOCATOR;
 import static org.apache.geode.benchmark.topology.Roles.SERVER;
 
-import org.apache.geode.benchmark.parameters.GedisParameters;
-import org.apache.geode.benchmark.parameters.NettyParameters;
+import org.apache.geode.benchmark.parameters.redis.GeodeParameters;
+import org.apache.geode.benchmark.parameters.redis.NettyParameters;
 import org.apache.geode.benchmark.tasks.StartLocator;
 import org.apache.geode.benchmark.tasks.StopLocator;
 import org.apache.geode.benchmark.tasks.StopServer;
-import org.apache.geode.benchmark.tasks.redis.InitGedisRegion;
 import org.apache.geode.benchmark.tasks.redis.InitRedisServersAttribute;
-import org.apache.geode.benchmark.tasks.redis.StartGedisServer;
+import org.apache.geode.benchmark.tasks.redis.InitRegionRegion;
+import org.apache.geode.benchmark.tasks.redis.StartGeodeServer;
 import org.apache.geode.benchmark.topology.Topology;
 import org.apache.geode.perftest.TestConfig;
 
-public class GedisTopology extends Topology {
+public class GeodeTopology extends Topology {
   private static final int NUM_LOCATORS = Integer.getInteger(WITH_LOCATOR_COUNT_PROPERTY, 1);
   private static final int NUM_SERVERS = Integer.getInteger(WITH_SERVER_COUNT_PROPERTY, 6);
   private static final int NUM_CLIENTS = Integer.getInteger(WITH_CLIENT_COUNT_PROPERTY, 1);
@@ -49,11 +49,11 @@ public class GedisTopology extends Topology {
     configureCommon(config);
 
     NettyParameters.configure(config);
-    GedisParameters.configure(config);
+    GeodeParameters.configure(config);
 
     before(config, new StartLocator(LOCATOR_PORT), LOCATOR);
-    before(config, new StartGedisServer(LOCATOR_PORT, EPHEMERAL_PORT, REDIS_PORT), SERVER);
-    before(config, new InitGedisRegion(), SERVER);
+    before(config, new StartGeodeServer(LOCATOR_PORT, EPHEMERAL_PORT, REDIS_PORT), SERVER);
+    before(config, new InitRegionRegion(), SERVER);
     before(config, new InitRedisServersAttribute(), CLIENT);
 
     after(config, new StopServer(), SERVER);

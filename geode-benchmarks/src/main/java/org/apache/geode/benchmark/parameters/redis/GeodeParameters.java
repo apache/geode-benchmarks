@@ -13,7 +13,7 @@
  * the License.
  */
 
-package org.apache.geode.benchmark.parameters;
+package org.apache.geode.benchmark.parameters.redis;
 
 import static java.lang.Integer.getInteger;
 import static java.lang.String.format;
@@ -26,11 +26,11 @@ import org.slf4j.LoggerFactory;
 
 import org.apache.geode.perftest.TestConfig;
 
-public class GedisParameters {
-  private static final Logger logger = LoggerFactory.getLogger(GedisParameters.class);
+public class GeodeParameters {
+  private static final Logger logger = LoggerFactory.getLogger(GeodeParameters.class);
 
   public static void configure(final TestConfig testConfig) {
-    logger.info("Configuring Gedis parameters.");
+    logger.info("Configuring Geode APIs compatible with Redis parameters.");
 
     testConfig.jvmArgs(SERVER.name(), "-Denable-unsupported-commands=true",
         format("-Dredis.replicas=%d", getInteger(WITH_REPLICAS, 1)),

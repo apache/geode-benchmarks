@@ -13,7 +13,7 @@
  * the License.
  */
 
-package org.apache.geode.benchmark.parameters;
+package org.apache.geode.benchmark.parameters.redis;
 
 import static java.lang.Integer.getInteger;
 import static java.lang.String.format;
