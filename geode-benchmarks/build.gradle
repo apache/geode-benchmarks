@@ -17,7 +17,7 @@
 
 import org.gradle.util.VersionNumber
 
-plugins { id 'java' }
+plugins { id 'java-library' }
 
 group 'org.apache.geode-benchmark'
 version '1.0-SNAPSHOT'
@@ -35,24 +35,44 @@ repositories {
    This is used in CI to benchmark various new/old versions of Geode.
    Also useful in dev where you can clone geode and publishToMavenLocal
    */
-  mavenLocal()
+  mavenLocal() {
+    metadataSources {
+      mavenPom()
+      ignoreGradleMetadataRedirection()
+    }
+  }
   // fall back to mavenCentral, which has lots of released versions of Geode
-  mavenCentral()
+  mavenCentral() {
+    metadataSources {
+      mavenPom()
+      ignoreGradleMetadataRedirection()
+    }
+  }
+}
+
+configurations {
+  geodeVersionResolver
 }
 
 dependencies {
+  geodeVersionResolver(group: 'org.apache.geode', name: 'geode-core', version: geodeVersion)
+  geodeVersion = configurations.geodeVersionResolver.resolvedConfiguration.resolvedArtifacts.find {it.name == 'geode-core'}.moduleVersion.id.version
+  println "Building with Geode ${geodeVersion}."
+
   implementation platform("org.apache.geode:geode-all-bom:${geodeVersion}")
 
-  implementation(group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: project.'junit-jupiter-engine.version')
-  implementation(group: 'org.junit-pioneer', name: 'junit-pioneer', version: project.'junit-pioneer.version')
-  implementation(group: 'org.slf4j', name: 'slf4j-simple', version: project.'slf4j-simple.version')
   implementation(project(':harness'))
 
-  implementation(group: 'org.apache.geode', name: 'geode-core', version: geodeVersion)
-  if (VersionNumber.parse(geodeVersion) >= VersionNumber.parse("1.11.0")) {
-    runtime(group: 'org.apache.geode', name: 'geode-log4j', version: geodeVersion)
+  implementation(group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: project.'junit-jupiter.version')
+  implementation(group: 'org.junit-pioneer', name: 'junit-pioneer', version: project.'junit-pioneer.version')
+
+  implementation(group: 'org.slf4j', name: 'slf4j-simple', version: project.'slf4j-simple.version')
+
+  implementation(group: 'org.apache.geode', name: 'geode-core')
+  if (VersionNumber.parse(geodeVersion) >= VersionNumber.parse("1.11.0.+")) {
+    runtimeOnly(group: 'org.apache.geode', name: 'geode-log4j')
   } else {
-    runtime(group: 'org.apache.logging.log4j', name: 'log4j-core', version: project.'log4j.version')
+    runtimeOnly(group: 'org.apache.logging.log4j', name: 'log4j-core')
   }
 
   implementation(group: 'redis.clients', name: 'jedis', version: project.'jedis.version')
@@ -60,16 +80,14 @@ dependencies {
     exclude group: 'io.netty'
   }
 
-  if (VersionNumber.parse(geodeVersion) >= VersionNumber.parse("1.15.0")) {
-    runtime(group: 'org.apache.geode', name: 'geode-apis-compatible-with-redis', version: geodeVersion)
+  if (VersionNumber.parse(geodeVersion) >= VersionNumber.parse("1.15.0.+")) {
+    runtimeOnly(group: 'org.apache.geode', name: 'geode-apis-compatible-with-redis')
   }
 
-  implementation(group: 'io.netty', name: 'netty-all')
-
   // Required for missing dependency on geode-core.
-  runtime(group: 'org.eclipse.jetty', name: 'jetty-webapp', version: '9.4.12.v20180830')
+  runtimeOnly(group: 'org.eclipse.jetty', name: 'jetty-webapp')
 
-  testImplementation(group: 'org.junit.jupiter', name: 'junit-jupiter-params', version: project.'junit-jupiter-engine.version')
+  testImplementation(group: 'org.junit.jupiter', name: 'junit-jupiter-params', version: project.'junit-jupiter.version')
   testImplementation(group: 'org.mockito', name: 'mockito-core', version: project.'mockito.version')
   testImplementation(group: 'org.assertj', name: 'assertj-core', version: project.'assertj-core.version')
   testImplementation(group: 'io.github.classgraph', name: 'classgraph', version: project.'classgraph.version')

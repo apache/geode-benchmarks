@@ -29,9 +29,11 @@ import org.junitpioneer.jupiter.SetSystemProperty;
 
 import org.apache.geode.benchmark.LongRange;
 import org.apache.geode.benchmark.junit.CartesianSubclassSource;
+import org.apache.geode.benchmark.junit.EnableIfClassExists;
 import org.apache.geode.benchmark.tests.redis.RedisBenchmark.RedisClientImplementation;
 import org.apache.geode.perftest.TestRunners;
 
+@EnableIfClassExists("org.apache.geode.redis.internal.GeodeRedisServer")
 public class RedisBenchmarkTest {
 
   @TempDir()
