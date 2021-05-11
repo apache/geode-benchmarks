@@ -16,13 +16,19 @@
 package org.apache.geode.benchmark.tests.redis;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
+import static java.lang.Long.getLong;
 import static org.apache.geode.benchmark.Config.after;
 import static org.apache.geode.benchmark.Config.before;
+import static org.apache.geode.benchmark.tests.GeodeBenchmark.WITH_MAX_KEY;
+import static org.apache.geode.benchmark.tests.GeodeBenchmark.WITH_MIN_KEY;
 import static org.apache.geode.benchmark.tests.redis.RedisBenchmark.RedisClientImplementation.Jedis;
 import static org.apache.geode.benchmark.tests.redis.RedisBenchmark.RedisClusterImplementation.Geode;
 import static org.apache.geode.benchmark.tests.redis.RedisBenchmark.RedisClusterImplementation.Manual;
 import static org.apache.geode.benchmark.topology.Roles.CLIENT;
 
+import org.junit.jupiter.api.Test;
+
+import org.apache.geode.benchmark.LongRange;
 import org.apache.geode.benchmark.tasks.redis.FlushDbTask;
 import org.apache.geode.benchmark.tasks.redis.JedisClientManager;
 import org.apache.geode.benchmark.tasks.redis.LettuceClientManager;
@@ -35,6 +41,7 @@ import org.apache.geode.benchmark.topology.redis.GedisTopology;
 import org.apache.geode.benchmark.topology.redis.ManualRedisTopology;
 import org.apache.geode.benchmark.topology.redis.RedisTopology;
 import org.apache.geode.perftest.TestConfig;
+import org.apache.geode.perftest.TestRunners;
 
 public class RedisBenchmark extends AbstractPerformanceTest {
 
@@ -75,6 +82,18 @@ public class RedisBenchmark extends AbstractPerformanceTest {
   }
 
   protected transient RedisClientManager redisClientManager;
+
+  protected LongRange keyRange =
+      new LongRange(getLong(WITH_MIN_KEY, 0), getLong(WITH_MAX_KEY, 1000000));
+
+  public void setKeyRange(final LongRange keyRange) {
+    this.keyRange = keyRange;
+  }
+
+  @Test
+  public void run() throws Exception {
+    TestRunners.defaultRunner().runTest(this);
+  }
 
   @Override
   public TestConfig configure() {

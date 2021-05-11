@@ -53,7 +53,7 @@ public class StartServer implements Task {
 
     final CacheFactory cacheFactory = new CacheFactory(properties);
     configureCacheFactory(cacheFactory, context);
-    InternalCache cache = (InternalCache) cacheFactory.create();
+    final InternalCache cache = (InternalCache) cacheFactory.create();
 
     final CacheServer cacheServer = configureCacheServer(cache.addCacheServer(), context);
     if (null != cacheServer) {

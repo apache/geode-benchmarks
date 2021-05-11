@@ -17,40 +17,15 @@
 
 package org.apache.geode.benchmark.tests.redis;
 
-
-import static java.lang.Long.getLong;
 import static org.apache.geode.benchmark.Config.before;
 import static org.apache.geode.benchmark.Config.workload;
-import static org.apache.geode.benchmark.tests.GeodeBenchmark.WITH_MAX_KEY;
-import static org.apache.geode.benchmark.tests.GeodeBenchmark.WITH_MIN_KEY;
 import static org.apache.geode.benchmark.topology.Roles.CLIENT;
 
-import org.junit.jupiter.api.Test;
-
-import org.apache.geode.benchmark.LongRange;
 import org.apache.geode.benchmark.tasks.redis.HsetRedisTask;
 import org.apache.geode.benchmark.tasks.redis.PrePopulateRedisHash;
 import org.apache.geode.perftest.TestConfig;
-import org.apache.geode.perftest.TestRunners;
 
-/**
- * Benchmark of gets on a partitioned region.
- */
 public class RedisHsetBenchmark extends RedisBenchmark {
-
-  private LongRange keyRange =
-      new LongRange(getLong(WITH_MIN_KEY, 0), getLong(WITH_MAX_KEY, 1000000));
-
-  @Test
-  public void run() throws Exception {
-    TestRunners.defaultRunner().runTest(this);
-  }
-
-  public RedisHsetBenchmark() {}
-
-  public void setKeyRange(final LongRange keyRange) {
-    this.keyRange = keyRange;
-  }
 
   @Override
   public TestConfig configure() {

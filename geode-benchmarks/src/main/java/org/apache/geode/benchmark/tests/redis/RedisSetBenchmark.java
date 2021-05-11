@@ -22,31 +22,11 @@ import static org.apache.geode.benchmark.Config.before;
 import static org.apache.geode.benchmark.Config.workload;
 import static org.apache.geode.benchmark.topology.Roles.CLIENT;
 
-import org.junit.jupiter.api.Test;
-
-import org.apache.geode.benchmark.LongRange;
 import org.apache.geode.benchmark.tasks.redis.PrePopulateRedis;
 import org.apache.geode.benchmark.tasks.redis.SetRedisTask;
 import org.apache.geode.perftest.TestConfig;
-import org.apache.geode.perftest.TestRunners;
 
-/**
- * Benchmark of gets on a partitioned region.
- */
-public class RedisPutBenchmark extends RedisBenchmark {
-
-  private LongRange keyRange = new LongRange(0, 1000000);
-
-  @Test
-  public void run() throws Exception {
-    TestRunners.defaultRunner().runTest(this);
-  }
-
-  public RedisPutBenchmark() {}
-
-  public void setKeyRange(final LongRange keyRange) {
-    this.keyRange = keyRange;
-  }
+public class RedisSetBenchmark extends RedisBenchmark {
 
   @Override
   public TestConfig configure() {
