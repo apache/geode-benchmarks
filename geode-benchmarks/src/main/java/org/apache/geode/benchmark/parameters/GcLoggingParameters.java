@@ -15,6 +15,7 @@
 
 package org.apache.geode.benchmark.parameters;
 
+import static java.lang.Boolean.getBoolean;
 import static org.apache.geode.benchmark.parameters.JavaVersion.v11;
 import static org.apache.geode.benchmark.parameters.Utils.configureGeodeProductJvms;
 
@@ -26,23 +27,26 @@ import org.apache.geode.perftest.TestConfig;
 public class GcLoggingParameters {
   private static final Logger logger = LoggerFactory.getLogger(GcLoggingParameters.class);
 
+  public static final String WITH_GC_LOGGING = "benchmark.withGcLogging";
+
   public static void configure(final TestConfig testConfig) {
-    final JavaVersion javaVersion = JavaVersion.current();
-    logger.info("Configuring GC logging parameters for Java {}.", javaVersion);
-    if (javaVersion.atLeast(v11)) {
-      configureGeodeProductJvms(testConfig, "-Xlog:gc*:OUTPUT_DIR/gc.log");
-    } else {
-      configureGeodeProductJvms(testConfig,
-          "-XX:+PrintGCDetails",
-          "-XX:+PrintGCTimeStamps",
-          "-XX:+PrintGCDateStamps",
-          "-XX:+PrintGCApplicationStoppedTime",
-          "-XX:+PrintGCApplicationConcurrentTime",
-          "-XX:+UseGCLogFileRotation",
-          "-XX:NumberOfGCLogFiles=20",
-          "-XX:GCLogFileSize=1M",
-          "-Xloggc:OUTPUT_DIR/gc.log");
+    if (getBoolean(WITH_GC_LOGGING)) {
+      final JavaVersion javaVersion = JavaVersion.current();
+      logger.info("Configuring GC logging parameters for Java {}.", javaVersion);
+      if (javaVersion.atLeast(v11)) {
+        configureGeodeProductJvms(testConfig, "-Xlog:gc*:OUTPUT_DIR/gc.log");
+      } else {
+        configureGeodeProductJvms(testConfig,
+            "-XX:+PrintGCDetails",
+            "-XX:+PrintGCTimeStamps",
+            "-XX:+PrintGCDateStamps",
+            "-XX:+PrintGCApplicationStoppedTime",
+            "-XX:+PrintGCApplicationConcurrentTime",
+            "-XX:+UseGCLogFileRotation",
+            "-XX:NumberOfGCLogFiles=20",
+            "-XX:GCLogFileSize=1M",
+            "-Xloggc:OUTPUT_DIR/gc.log");
+      }
     }
   }
-
 }

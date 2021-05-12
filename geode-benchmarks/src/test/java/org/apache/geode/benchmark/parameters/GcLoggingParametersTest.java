@@ -15,89 +15,85 @@
 
 package org.apache.geode.benchmark.parameters;
 
-import static org.apache.geode.benchmark.topology.Roles.CLIENT;
-import static org.apache.geode.benchmark.topology.Roles.LOCATOR;
-import static org.apache.geode.benchmark.topology.Roles.SERVER;
+import static org.apache.geode.benchmark.Constants.JAVA_RUNTIME_VERSION;
+import static org.apache.geode.benchmark.Constants.JAVA_VERSION_11;
+import static org.apache.geode.benchmark.Constants.JAVA_VERSION_12;
+import static org.apache.geode.benchmark.Constants.JAVA_VERSION_13;
+import static org.apache.geode.benchmark.Constants.JAVA_VERSION_8;
+import static org.apache.geode.benchmark.parameters.GcLoggingParameters.WITH_GC_LOGGING;
+import static org.apache.geode.benchmark.topology.RoleKinds.GEODE_PRODUCT;
+import static org.apache.geode.benchmark.topology.Roles.rolesFor;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.Properties;
-
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junitpioneer.jupiter.ClearSystemProperty;
+import org.junitpioneer.jupiter.SetSystemProperty;
 
 import org.apache.geode.perftest.TestConfig;
 
 class GcLoggingParametersTest {
 
-  private static final String JAVA_RUNTIME_VERSION = "java.runtime.version";
+  @Test
+  @ClearSystemProperty(key = WITH_GC_LOGGING)
+  public void withDefault() {
+    final TestConfig testConfig = new TestConfig();
+    Utils.configureGeodeProductJvms(testConfig, "-mockArg");
+    GcLoggingParameters.configure(testConfig);
 
-  private Properties systemProperties;
-
-  @BeforeEach
-  public void beforeEach() {
-    systemProperties = (Properties) System.getProperties().clone();
-  }
-
-  @AfterEach
-  public void afterEach() {
-    System.setProperties(systemProperties);
+    rolesFor(GEODE_PRODUCT).forEach(role -> {
+      assertThat(testConfig.getJvmArgs().get(role.name())).doesNotContainSubsequence("-Xlog:gc");
+      assertThat(testConfig.getJvmArgs().get(role.name())).doesNotContainSubsequence("-Xloggc");
+    });
   }
 
   @Test
+  @SetSystemProperty(key = WITH_GC_LOGGING, value = "true")
+  @SetSystemProperty(key = JAVA_RUNTIME_VERSION, value = JAVA_VERSION_8)
   public void withJava8() {
-    System.setProperty(JAVA_RUNTIME_VERSION, "1.8.0_212-b03");
     final TestConfig testConfig = new TestConfig();
     GcLoggingParameters.configure(testConfig);
     assertThatJava8GcLog(testConfig);
   }
 
   @Test
+  @SetSystemProperty(key = WITH_GC_LOGGING, value = "true")
+  @SetSystemProperty(key = JAVA_RUNTIME_VERSION, value = JAVA_VERSION_11)
   public void withJava11() {
-    System.setProperty(JAVA_RUNTIME_VERSION, "11.0.4+11");
     final TestConfig testConfig = new TestConfig();
     GcLoggingParameters.configure(testConfig);
     assertThatJava9GcLog(testConfig);
   }
 
   @Test
+  @SetSystemProperty(key = WITH_GC_LOGGING, value = "true")
+  @SetSystemProperty(key = JAVA_RUNTIME_VERSION, value = JAVA_VERSION_12)
   public void withJava12() {
-    System.setProperty(JAVA_RUNTIME_VERSION, "12.0.2+10");
     final TestConfig testConfig = new TestConfig();
     GcLoggingParameters.configure(testConfig);
     assertThatJava9GcLog(testConfig);
   }
 
   @Test
+  @SetSystemProperty(key = WITH_GC_LOGGING, value = "true")
+  @SetSystemProperty(key = JAVA_RUNTIME_VERSION, value = JAVA_VERSION_13)
   public void withJava13() {
-    System.setProperty(JAVA_RUNTIME_VERSION, "13+33");
     final TestConfig testConfig = new TestConfig();
     GcLoggingParameters.configure(testConfig);
     assertThatJava9GcLog(testConfig);
   }
 
   private void assertThatJava8GcLog(TestConfig testConfig) {
-    assertThat(testConfig.getJvmArgs().get(CLIENT.name())).contains("-Xloggc:OUTPUT_DIR/gc.log");
-    assertThat(testConfig.getJvmArgs().get(SERVER.name())).contains("-Xloggc:OUTPUT_DIR/gc.log");
-    assertThat(testConfig.getJvmArgs().get(LOCATOR.name())).contains("-Xloggc:OUTPUT_DIR/gc.log");
-    assertThat(testConfig.getJvmArgs().get(CLIENT.name()))
-        .doesNotContain("-Xlog:gc:OUTPUT_DIR/gc.log");
-    assertThat(testConfig.getJvmArgs().get(SERVER.name()))
-        .doesNotContain("-Xlog:gc:OUTPUT_DIR/gc.log");
-    assertThat(testConfig.getJvmArgs().get(LOCATOR.name()))
-        .doesNotContain("-Xlog:gc:OUTPUT_DIR/gc.log");
+    rolesFor(GEODE_PRODUCT).forEach(role -> {
+      assertThat(testConfig.getJvmArgs().get(role.name())).contains("-Xloggc:OUTPUT_DIR/gc.log");
+      assertThat(testConfig.getJvmArgs().get(role.name())).doesNotContainSubsequence("-Xlog:gc");
+    });
   }
 
   private void assertThatJava9GcLog(TestConfig testConfig) {
-    assertThat(testConfig.getJvmArgs().get(CLIENT.name())).contains("-Xlog:gc*:OUTPUT_DIR/gc.log");
-    assertThat(testConfig.getJvmArgs().get(SERVER.name())).contains("-Xlog:gc*:OUTPUT_DIR/gc.log");
-    assertThat(testConfig.getJvmArgs().get(LOCATOR.name())).contains("-Xlog:gc*:OUTPUT_DIR/gc.log");
-    assertThat(testConfig.getJvmArgs().get(CLIENT.name()))
-        .doesNotContain("-Xloggc:OUTPUT_DIR/gc.log");
-    assertThat(testConfig.getJvmArgs().get(SERVER.name()))
-        .doesNotContain("-Xloggc:OUTPUT_DIR/gc.log");
-    assertThat(testConfig.getJvmArgs().get(LOCATOR.name()))
-        .doesNotContain("-Xloggc:OUTPUT_DIR/gc.log");
+    rolesFor(GEODE_PRODUCT).forEach(role -> {
+      assertThat(testConfig.getJvmArgs().get(role.name())).contains("-Xlog:gc*:OUTPUT_DIR/gc.log");
+      assertThat(testConfig.getJvmArgs().get(role.name())).doesNotContainSubsequence("-Xloggc");
+    });
   }
 
 }

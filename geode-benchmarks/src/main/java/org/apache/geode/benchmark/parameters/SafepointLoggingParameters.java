@@ -15,6 +15,7 @@
 
 package org.apache.geode.benchmark.parameters;
 
+import static java.lang.Boolean.getBoolean;
 import static org.apache.geode.benchmark.parameters.JavaVersion.v11;
 import static org.apache.geode.benchmark.parameters.Utils.configureGeodeProductJvms;
 
@@ -26,11 +27,16 @@ import org.apache.geode.perftest.TestConfig;
 public class SafepointLoggingParameters {
   private static final Logger logger = LoggerFactory.getLogger(SafepointLoggingParameters.class);
 
+  public static final String WITH_SAFEPOINT_LOGGING = "benchmark.withSafepointLogging";
+  public static final String XLOG_SAFEPOINT = "-Xlog:safepoint*:OUTPUT_DIR/safepoint.log";
+
   public static void configure(final TestConfig testConfig) {
-    final JavaVersion javaVersion = JavaVersion.current();
-    if (javaVersion.atLeast(v11)) {
-      logger.info("Configuring safepoint logging parameters for Java {}.", javaVersion);
-      configureGeodeProductJvms(testConfig, "-Xlog:safepoint*:OUTPUT_DIR/safepoint.log");
+    if (getBoolean(WITH_SAFEPOINT_LOGGING)) {
+      final JavaVersion javaVersion = JavaVersion.current();
+      if (javaVersion.atLeast(v11)) {
+        logger.info("Configuring safepoint logging parameters for Java {}.", javaVersion);
+        configureGeodeProductJvms(testConfig, XLOG_SAFEPOINT);
+      }
     }
   }
 

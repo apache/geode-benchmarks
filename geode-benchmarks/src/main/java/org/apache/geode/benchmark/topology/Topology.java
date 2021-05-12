@@ -19,10 +19,12 @@ import static java.lang.Boolean.getBoolean;
 import static org.apache.geode.benchmark.parameters.Utils.addToTestConfig;
 import static org.apache.geode.benchmark.topology.Roles.SERVER;
 
+import org.apache.geode.benchmark.parameters.GcLoggingParameters;
 import org.apache.geode.benchmark.parameters.GcParameters;
 import org.apache.geode.benchmark.parameters.HeapParameters;
 import org.apache.geode.benchmark.parameters.JvmParameters;
 import org.apache.geode.benchmark.parameters.ProfilerParameters;
+import org.apache.geode.benchmark.parameters.SafepointLoggingParameters;
 import org.apache.geode.perftest.TestConfig;
 
 public abstract class Topology {
@@ -43,9 +45,9 @@ public abstract class Topology {
   protected static void configureCommon(TestConfig config) {
     JvmParameters.configure(config);
     HeapParameters.configure(config);
-    // GcLoggingParameters.configure(config);
+    GcLoggingParameters.configure(config);
     GcParameters.configure(config);
-    // SafepointLoggingParameters.configure(config);
+    SafepointLoggingParameters.configure(config);
     ProfilerParameters.configure(config);
 
     addToTestConfig(config, WITH_SSL_PROPERTY, WITH_SSL_ARGUMENT);
