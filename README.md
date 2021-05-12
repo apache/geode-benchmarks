@@ -108,6 +108,8 @@ These options should not be used when measuring benchmarks.
 | Option                | Description |
 | --------------------- | ----------- |
 | withValidation        | Enable validation of operations. |
+| withGcLogging         | Enable GC logging. |
+| withSafepointLogging  | Enable Safepoint logging. |
 | withStrace            | Launch remote JVM via strace for tracing system calls. |
 
 
