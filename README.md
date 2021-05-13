@@ -55,7 +55,7 @@ benchmark behavior, via Java system properties using `-D`.
 | `-Phosts`               | Hosts used by benchmarks on the order of client,locator,server,server (-Phosts=localhost,localhost,localhost,localhost) |
 | `-PoutputDir`           | Results output directory (-PoutputDir=/tmp/results) |
 | `-PtestJVM`             | Path to an alternative JVM for running the client, locator, and servers. If not specified JAVA_HOME will be used. Note all compilation tasks will still use JAVA_HOME. |
-| `-Dbenchmark.X`         | Where X is a benchmark configuration, defined below. |
+| `-Pbenchmark.X`         | Where X is a benchmark configuration, defined below. |
 | `--tests`               | Specific benchmarks to run (--tests=PartitionedPutBenchmark) |
 | `-d`                    | Debug |
 | `-i`                    | Info |
@@ -214,16 +214,16 @@ supported proxy implementations. The value should be set to a valid Docker image
  
 To run a test, e.g. `PartitionedGetBenchmark`, with default SNI Proxy:
 ```console
-./run_tests.sh -t anytagname -- -Dbenchmark.withSniProxy --tests=PartitionedGetBenchmark
+./run_tests.sh -t anytagname -- -Pbenchmark.withSniProxy --tests=PartitionedGetBenchmark
 ```
 
-Since SNI is a feature of TLS, running with the SNI topology incurs TLS overheads with implied `-Dbenchmark.withSsl`.
+Since SNI is a feature of TLS, running with the SNI topology incurs TLS overheads with implied `-Pbenchmark.withSsl`.
 
 ### Router
 An alternative topology uses a router sitting in front of the SNI proxy to simulate off network access
-to the cluster, enabled with `-Dbenchmark.withRouter`.
+to the cluster, enabled with `-Pbenchmark.withRouter`.
 
-Enabling the router implies `-Dbenchmark.withSniProxy`.
+Enabling the router implies `-Pbenchmark.withSniProxy`.
 
 The `withRouter` property accepts:
  * `HAProxy` for HAProxy based router (default).
@@ -231,7 +231,7 @@ The `withRouter` property accepts:
 
 Example:
 ```console
-./run_tests.sh -t anytagname -- -Dbenchmark.withRouter --tests=PartitionedGetBenchmark
+./run_tests.sh -t anytagname -- -Pbenchmark.withRouter --tests=PartitionedGetBenchmark
 ```
 
 ## Redis Benchmarking
@@ -261,14 +261,14 @@ Examples:
     ```
 * Runs the `RedisGetBenchmark` against a Geode cluster using the Lettuce client.
     ```console
-    ./run_tests.sh -t anytagname -- -Dbenchmark.withRedisClient=lettuce --tests=RedisGetBenchmark
+    ./run_tests.sh -t anytagname -- -Pbenchmark.withRedisClient=lettuce --tests=RedisGetBenchmark
     ```
 * Runs the `RedisGetBenchmark` against a Redis cluster using the Jedis client.
     ```console
-    ./run_tests.sh -t anytagname -- -Dbenchmark.withRedisCluster=redis --tests=RedisGetBenchmark
+    ./run_tests.sh -t anytagname -- -Pbenchmark.withRedisCluster=redis --tests=RedisGetBenchmark
     ```
 * Runs the `RedisGetBenchmark` against an Elasticache cluster using the Jedis client.
     ```console
-    ./run_tests.sh -t anytagname -- -Dbenchmark.withRedisCluster=manual -Dbenchmark.withRedisServers=my-cluster...clustercfg.usw2.cache.amazonaws.com:6379 --tests=RedisGetBenchmark
+    ./run_tests.sh -t anytagname -- -Pbenchmark.withRedisCluster=manual -Pbenchmark.withRedisServers=my-cluster...clustercfg.usw2.cache.amazonaws.com:6379 --tests=RedisGetBenchmark
     ```
   
