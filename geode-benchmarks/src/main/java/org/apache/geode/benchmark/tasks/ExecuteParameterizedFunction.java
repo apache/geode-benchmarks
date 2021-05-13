@@ -14,8 +14,7 @@
  */
 package org.apache.geode.benchmark.tasks;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.Serializable;
 import java.util.Map;
@@ -64,8 +63,7 @@ public class ExecuteParameterizedFunction extends BenchmarkDriverAdapter impleme
         .getResult();
 
     if (isValidationEnabled) {
-      assertNotNull(result);
-      assertTrue(result instanceof Portfolio);
+      assertThat(result).isInstanceOf(Portfolio.class);
     }
 
     return true;

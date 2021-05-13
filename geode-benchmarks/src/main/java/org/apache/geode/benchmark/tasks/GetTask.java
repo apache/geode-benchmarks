@@ -17,7 +17,7 @@
 
 package org.apache.geode.benchmark.tasks;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.Serializable;
 import java.util.Map;
@@ -60,9 +60,8 @@ public class GetTask extends BenchmarkDriverAdapter implements Serializable {
     final Object result = region.get(key);
 
     if (isValidationEnabled) {
-      assertNotNull(result);
+      assertThat(result).isNotNull();
     }
-
 
     return true;
   }

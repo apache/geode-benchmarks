@@ -18,7 +18,7 @@
 package org.apache.geode.benchmark.tasks;
 
 import static java.lang.String.valueOf;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.Serializable;
 import java.util.Map;
@@ -66,7 +66,7 @@ public class GetStringTask extends BenchmarkDriverAdapter implements Serializabl
     final String key = keys[(int) (keyRange.random() - offset)];
     final String value = region.get(key);
     if (validate) {
-      assertEquals(key, value);
+      assertThat(value).isEqualTo(key);
     }
     return true;
   }

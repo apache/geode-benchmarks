@@ -17,7 +17,7 @@
 
 package org.apache.geode.benchmark.tasks.redis;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.Serializable;
 import java.util.Map;
@@ -61,7 +61,7 @@ public class SetRedisTask extends BenchmarkDriverAdapter implements Serializable
     final String key = keyCache.valueOf(keyRange.random());
     final String response = redisClient.set(key, key);
     if (validate) {
-      assertEquals("OK", response);
+      assertThat(response).isEqualTo("OK");
     }
     return true;
   }
