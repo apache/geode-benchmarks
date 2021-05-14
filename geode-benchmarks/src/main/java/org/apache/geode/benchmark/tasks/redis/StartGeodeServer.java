@@ -23,7 +23,6 @@ import static java.lang.String.valueOf;
 import org.apache.geode.benchmark.tasks.StartServer;
 import org.apache.geode.cache.CacheFactory;
 import org.apache.geode.cache.server.CacheServer;
-import org.apache.geode.internal.cache.InternalCache;
 import org.apache.geode.perftest.TestContext;
 
 public class StartGeodeServer extends StartServer {
@@ -33,11 +32,6 @@ public class StartGeodeServer extends StartServer {
   public StartGeodeServer(final int locatorPort, final int serverPort, final int redisPort) {
     super(locatorPort, serverPort);
     this.redisPort = redisPort;
-  }
-
-  @Override
-  protected void configureCache(final InternalCache cache, final TestContext context) {
-    super.configureCache(cache, context);
   }
 
   @Override

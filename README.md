@@ -72,7 +72,7 @@ These options may apply to all benchmarks.
 | withWarmup            | Specify how long to warm up the benchmark in seconds. Default is 60 seconds. |
 | withWarmup            | Specify how long to run the benchmark in seconds. Default is 300 seconds. |
 | withMinKey            | The minimum key value in the key range. Default is 0. |
-| withMaxKey            | The minimum key value in the key range. Default varies by benchmark. |
+| withMaxKey            | The maximum key value in the key range. Default varies by benchmark. |
 | withLocatorCount      | Number of locators a topology should use. Typically defaults to 1. |
 | withServerCount       | Number of servers a topology should use. Typically defaults to 2. |
 | withClientCount       | Number of clients a topology should use. Typically defaults to 1. |
@@ -108,10 +108,10 @@ These options should not be used when measuring benchmarks.
 
 | Option                | Description |
 | --------------------- | ----------- |
-| withValidation        | Enable validation of operations. |
-| withGcLogging         | Enable GC logging. |
-| withSafepointLogging  | Enable Safepoint logging. |
-| withStrace            | Launch remote JVM via strace for tracing system calls. |
+| withValidation        | Enable validation of operations. Default disabled.|
+| withGcLogging         | Enable GC logging. Default disabled.|
+| withSafepointLogging  | Enable Safepoint logging. Default disabled.|
+| withStrace            | Launch remote JVM via strace for tracing system calls. Default disabled.|
 
 
 ### Scripts for running in aws and analyzing results
@@ -250,8 +250,8 @@ The `withRedisCluster` property accepts:
   cluster utilizing 7 hosts, 1 locator and 6 servers.
 * `Redis` for using the [Redis](https://redis.io) server backend. Builds a Redis cluster utilizing
   6 hosts and the [Bitnami Redis image](https://hub.docker.com/r/bitnami/redis/).
-* `Manual` for using the a manually configured Redis server backend, like [Elasticache](https://aws.amazon.com/elasticache/).
-  Use `withRedisServers` to specify the address(es) to of the Redis server endpoints.
+* `Manual` for using a manually configured Redis server backend, like [Elasticache](https://aws.amazon.com/elasticache/).
+  Use `withRedisServers` to specify the address(es) to the Redis server endpoints.
   
 Examples:
 

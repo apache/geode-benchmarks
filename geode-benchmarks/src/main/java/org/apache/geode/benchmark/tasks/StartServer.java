@@ -60,12 +60,8 @@ public class StartServer implements Task {
       cacheServer.start();
     }
 
-    configureCache(cache, context);
-
     context.setAttribute(SERVER_CACHE, cache);
   }
-
-  protected void configureCache(final InternalCache cache, final TestContext context) {}
 
   /**
    * Configure the {@link CacheFactory}

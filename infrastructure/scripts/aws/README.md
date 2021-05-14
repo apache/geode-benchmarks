@@ -53,6 +53,8 @@ Options:
     -t|--tag             : Cluster tag to identify the cluster for use with other utilities
     -c|--count           : Number of AWS instances to start (recommended: 4)
     -i|--instance-type   : AWS instance type to start (default: c5.18xlarge)
+    --tenancy            : AWS tenancy. (default: host)
+    --availability-zone  : AWS availability zone. (default: us-west-2a)
     --ci                 : (Optional) Set when the instances are being started for use in Continuous Integration
     -h|-?|--help         : Help message
 
