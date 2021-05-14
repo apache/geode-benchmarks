@@ -96,6 +96,11 @@ public final class LettuceClientManager implements RedisClientManager {
         if (System.nanoTime() - start > CONNECT_TIMEOUT.toNanos()) {
           throw e;
         }
+        try {
+          Thread.sleep(50);
+        } catch (InterruptedException interruptedException) {
+          throw new RuntimeException(e);
+        }
         logger.info("Failed connecting.", e);
       }
     }

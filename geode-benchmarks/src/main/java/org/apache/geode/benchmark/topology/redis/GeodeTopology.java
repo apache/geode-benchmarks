@@ -31,7 +31,7 @@ import org.apache.geode.benchmark.tasks.StartLocator;
 import org.apache.geode.benchmark.tasks.StopLocator;
 import org.apache.geode.benchmark.tasks.StopServer;
 import org.apache.geode.benchmark.tasks.redis.InitRedisServersAttribute;
-import org.apache.geode.benchmark.tasks.redis.InitRegionRegion;
+import org.apache.geode.benchmark.tasks.redis.InitRegion;
 import org.apache.geode.benchmark.tasks.redis.StartGeodeServer;
 import org.apache.geode.benchmark.topology.Topology;
 import org.apache.geode.perftest.TestConfig;
@@ -53,7 +53,7 @@ public class GeodeTopology extends Topology {
 
     before(config, new StartLocator(LOCATOR_PORT), LOCATOR);
     before(config, new StartGeodeServer(LOCATOR_PORT, EPHEMERAL_PORT, REDIS_PORT), SERVER);
-    before(config, new InitRegionRegion(), SERVER);
+    before(config, new InitRegion(), SERVER);
     before(config, new InitRedisServersAttribute(), CLIENT);
 
     after(config, new StopServer(), SERVER);

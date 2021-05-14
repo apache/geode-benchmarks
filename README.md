@@ -66,11 +66,11 @@ These options may apply to all benchmarks.
 
 | Option                | Description |
 | --------------------- | ----------- |
-| withGc                | Select which GC to use. Valid values CMS (default), G1, Z. |
+| withGc                | Select which GC to use. Valid values CMS (default), G1, Z, Shenandoah, Epsilon. |
 | withHeap              | Specify how large a heap the benchmark VMs should use, default "8g". Accepts any `-Xmx` value, like "32g". |
 | withThreads           | Specify how many threads to use when executing the benchmark. Default varies by benchmark. |
 | withWarmup            | Specify how long to warm up the benchmark in seconds. Default is 60 seconds. |
-| withWarmup            | Specify how long to run the benchmark in seconds. Default is 300 seconds. |
+| withDuration          | Specify how long to run the benchmark in seconds. Default is 300 seconds. |
 | withMinKey            | The minimum key value in the key range. Default is 0. |
 | withMaxKey            | The maximum key value in the key range. Default varies by benchmark. |
 | withLocatorCount      | Number of locators a topology should use. Typically defaults to 1. |

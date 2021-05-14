@@ -72,7 +72,7 @@ public final class JedisClientManager implements RedisClientManager {
   };
 
   @Override
-  public void connect(final Collection<InetSocketAddress> servers) throws InterruptedException {
+  public void connect(final Collection<InetSocketAddress> servers) {
     logger.info("Connect RedisClient on thread {}.", currentThread());
 
     final Set<HostAndPort> nodes = servers.stream()
@@ -97,7 +97,11 @@ public final class JedisClientManager implements RedisClientManager {
         if (System.nanoTime() - start > CONNECT_TIMEOUT.toNanos()) {
           throw e;
         }
-        Thread.sleep(50);
+        try {
+          Thread.sleep(50);
+        } catch (InterruptedException interruptedException) {
+          throw new RuntimeException(e);
+        }
         logger.info("Failed connecting.", e);
       }
     }

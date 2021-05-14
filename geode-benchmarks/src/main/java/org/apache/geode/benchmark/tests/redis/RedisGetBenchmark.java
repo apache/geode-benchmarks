@@ -17,7 +17,6 @@
 
 package org.apache.geode.benchmark.tests.redis;
 
-
 import static org.apache.geode.benchmark.Config.before;
 import static org.apache.geode.benchmark.Config.workload;
 import static org.apache.geode.benchmark.tests.GeodeBenchmark.isValidationEnabled;
@@ -27,9 +26,6 @@ import org.apache.geode.benchmark.tasks.redis.GetRedisTask;
 import org.apache.geode.benchmark.tasks.redis.PrePopulateRedis;
 import org.apache.geode.perftest.TestConfig;
 
-/**
- * Benchmark of gets on a partitioned region.
- */
 public class RedisGetBenchmark extends RedisBenchmark {
 
   @Override

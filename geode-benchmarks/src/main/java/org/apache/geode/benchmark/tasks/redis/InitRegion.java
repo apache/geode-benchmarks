@@ -26,7 +26,7 @@ import org.apache.geode.cache.partition.PartitionRegionHelper;
 import org.apache.geode.perftest.Task;
 import org.apache.geode.perftest.TestContext;
 
-public class InitRegionRegion implements Task {
+public class InitRegion implements Task {
 
   public static final String REDIS_DATA_REGION = "__REDIS_DATA";
 

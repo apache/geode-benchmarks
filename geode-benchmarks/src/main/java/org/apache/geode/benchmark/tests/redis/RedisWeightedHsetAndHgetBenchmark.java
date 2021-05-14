@@ -17,7 +17,6 @@
 
 package org.apache.geode.benchmark.tests.redis;
 
-
 import static org.apache.geode.benchmark.Config.before;
 import static org.apache.geode.benchmark.Config.workload;
 import static org.apache.geode.benchmark.topology.Roles.CLIENT;
@@ -29,9 +28,6 @@ import org.apache.geode.benchmark.tasks.redis.HsetRedisTask;
 import org.apache.geode.benchmark.tasks.redis.PrePopulateRedisHash;
 import org.apache.geode.perftest.TestConfig;
 
-/**
- * Benchmark of gets on a partitioned region.
- */
 public class RedisWeightedHsetAndHgetBenchmark extends RedisBenchmark {
 
   @Override
