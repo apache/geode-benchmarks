@@ -16,40 +16,31 @@
 package org.apache.geode.benchmark.topology;
 
 
+import static org.apache.geode.benchmark.Constants.JAVA_RUNTIME_VERSION;
+import static org.apache.geode.benchmark.Constants.JAVA_VERSION_11;
 import static org.apache.geode.benchmark.topology.Roles.CLIENT;
+import static org.apache.geode.benchmark.topology.Topology.WITH_SECURITY_MANAGER_PROPERTY;
+import static org.apache.geode.benchmark.topology.Topology.WITH_SSL_PROPERTY;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.Properties;
-
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junitpioneer.jupiter.ClearSystemProperty;
+import org.junitpioneer.jupiter.SetSystemProperty;
 
 import org.apache.geode.perftest.TestConfig;
 
 public class ClientServerTopologyTest {
 
-  private Properties systemProperties;
-
-  @BeforeEach
-  public void beforeEach() {
-    systemProperties = (Properties) System.getProperties().clone();
-  }
-
-  @AfterEach
-  public void afterEach() {
-    System.setProperties(systemProperties);
-  }
-
   @Test
+  @SetSystemProperty(key = WITH_SSL_PROPERTY, value = "true")
   public void configWithSsl() {
-    System.setProperty("benchmark.withSsl", "true");
     TestConfig testConfig = new TestConfig();
     ClientServerTopology.configure(testConfig);
     assertThat(testConfig.getJvmArgs().get(CLIENT.name())).contains("-Dbenchmark.withSsl=true");
   }
 
   @Test
+  @ClearSystemProperty(key = WITH_SSL_PROPERTY)
   public void configWithNoSsl() {
     TestConfig testConfig = new TestConfig();
     ClientServerTopology.configure(testConfig);
@@ -58,6 +49,7 @@ public class ClientServerTopologyTest {
   }
 
   @Test
+  @ClearSystemProperty(key = WITH_SECURITY_MANAGER_PROPERTY)
   public void configWithoutSecurityManager() {
     TestConfig testConfig = new TestConfig();
     ClientServerTopology.configure(testConfig);
@@ -66,8 +58,8 @@ public class ClientServerTopologyTest {
   }
 
   @Test
+  @SetSystemProperty(key = WITH_SECURITY_MANAGER_PROPERTY, value = "true")
   public void configWithSecurityManager() {
-    System.setProperty("benchmark.withSecurityManager", "true");
     TestConfig testConfig = new TestConfig();
     ClientServerTopology.configure(testConfig);
     assertThat(testConfig.getJvmArgs().get(CLIENT.name()))
@@ -75,10 +67,10 @@ public class ClientServerTopologyTest {
   }
 
   @Test
+  @SetSystemProperty(key = WITH_SECURITY_MANAGER_PROPERTY, value = "true")
+  @SetSystemProperty(key = WITH_SSL_PROPERTY, value = "true")
+  @SetSystemProperty(key = JAVA_RUNTIME_VERSION, value = JAVA_VERSION_11)
   public void configWithSecurityManagerAndSslAndJava11() {
-    System.setProperty("benchmark.withSecurityManager", "true");
-    System.setProperty("java.runtime.version", "11.0.4+11");
-    System.setProperty("benchmark.withSsl", "true");
     TestConfig testConfig = new TestConfig();
 
     ClientServerTopology.configure(testConfig);
