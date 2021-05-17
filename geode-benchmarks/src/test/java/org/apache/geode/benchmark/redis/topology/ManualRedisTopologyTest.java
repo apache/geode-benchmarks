@@ -69,7 +69,6 @@ public class ManualRedisTopologyTest {
         createUnresolved("c", 3)));
   }
 
-
   @Test
   @ClearSystemProperty(key = WITH_REDIS_SERVERS_PROPERTY)
   public void configureWithNoServersThrows() {
