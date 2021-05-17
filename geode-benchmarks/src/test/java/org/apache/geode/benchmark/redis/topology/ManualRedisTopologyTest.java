@@ -45,7 +45,7 @@ public class ManualRedisTopologyTest {
 
   @Test
   @SetSystemProperty(key = WITH_REDIS_SERVERS_PROPERTY, value = "a;b;c")
-  public void configureWithMultipleServer() {
+  public void configureWithMultipleServers() {
     final TestConfig testConfig = new TestConfig();
     ManualRedisTopology.configure(testConfig);
     assertThat(testConfig.getBefore().stream().map(TestStep::getTask)
@@ -55,6 +55,20 @@ public class ManualRedisTopologyTest {
             createUnresolved("a", REDIS_PORT), createUnresolved("b", REDIS_PORT),
             createUnresolved("c", REDIS_PORT)));
   }
+
+  @Test
+  @SetSystemProperty(key = WITH_REDIS_SERVERS_PROPERTY, value = "a:1;b:2;c:3")
+  public void configureWithMultipleServersAndPorts() {
+    final TestConfig testConfig = new TestConfig();
+    ManualRedisTopology.configure(testConfig);
+    assertThat(testConfig.getBefore().stream().map(TestStep::getTask)
+                   .filter(InitRedisServersAttribute.class::isInstance)
+                   .map(InitRedisServersAttribute.class::cast)
+                   .findFirst()).hasValueSatisfying(t -> assertThat(t.getServers()).containsExactly(
+        createUnresolved("a", 1), createUnresolved("b", 2),
+        createUnresolved("c", 3)));
+  }
+
 
   @Test
   @ClearSystemProperty(key = WITH_REDIS_SERVERS_PROPERTY)
