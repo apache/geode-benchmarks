@@ -62,11 +62,11 @@ public class ManualRedisTopologyTest {
     final TestConfig testConfig = new TestConfig();
     ManualRedisTopology.configure(testConfig);
     assertThat(testConfig.getBefore().stream().map(TestStep::getTask)
-                   .filter(InitRedisServersAttribute.class::isInstance)
-                   .map(InitRedisServersAttribute.class::cast)
-                   .findFirst()).hasValueSatisfying(t -> assertThat(t.getServers()).containsExactly(
-        createUnresolved("a", 1), createUnresolved("b", 2),
-        createUnresolved("c", 3)));
+        .filter(InitRedisServersAttribute.class::isInstance)
+        .map(InitRedisServersAttribute.class::cast)
+        .findFirst()).hasValueSatisfying(t -> assertThat(t.getServers()).containsExactly(
+            createUnresolved("a", 1), createUnresolved("b", 2),
+            createUnresolved("c", 3)));
   }
 
   @Test
