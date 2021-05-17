@@ -27,14 +27,13 @@ import org.apache.geode.benchmark.LongRange;
 import org.apache.geode.benchmark.tasks.CreatePartitionedRegion;
 import org.apache.geode.benchmark.tasks.PrePopulateRegion;
 import org.apache.geode.benchmark.tasks.PutTask;
-import org.apache.geode.perftest.PerformanceTest;
 import org.apache.geode.perftest.TestConfig;
 import org.apache.geode.perftest.TestRunners;
 
 /**
  * Benchmark of puts on a partitioned region.
  */
-public class P2pPartitionedPutBenchmark implements PerformanceTest {
+public class P2pPartitionedPutBenchmark extends AbstractPerformanceTest {
 
   private LongRange keyRange = new LongRange(0, 1_000_000);
 

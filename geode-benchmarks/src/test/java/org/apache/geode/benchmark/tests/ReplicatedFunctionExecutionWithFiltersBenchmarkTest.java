@@ -31,6 +31,7 @@ public class ReplicatedFunctionExecutionWithFiltersBenchmarkTest {
     ReplicatedFunctionExecutionWithFiltersBenchmark test =
         new ReplicatedFunctionExecutionWithFiltersBenchmark();
     test.setKeyRange(new LongRange(0, 100));
+    test.setValidationEnabled(true);
     TestRunners.minimalRunner(folder).runTest(test);
   }
 }

@@ -22,7 +22,7 @@ import benchmark.geode.data.Portfolio;
 import org.apache.geode.benchmark.LongRange;
 import org.apache.geode.benchmark.topology.Roles;
 
-public class PrePopulateRegion extends AbstractPrePopulateRegion<Portfolio> {
+public class PrePopulateRegion extends AbstractPrePopulateRegion<Long, Portfolio> {
 
   public PrePopulateRegion() {}
 
@@ -36,7 +36,12 @@ public class PrePopulateRegion extends AbstractPrePopulateRegion<Portfolio> {
   }
 
   @Override
-  protected Portfolio getValue(long i) {
+  protected Long getKey(final long i) {
+    return i;
+  }
+
+  @Override
+  protected Portfolio getValue(final long i) {
     return new Portfolio(i);
   }
 

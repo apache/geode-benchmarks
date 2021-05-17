@@ -43,7 +43,17 @@ public class GcParameters {
       case Shenandoah:
         configureShenandoah(testConfig);
         break;
+      case Epsilon:
+        configureEpsilon(testConfig);
+        break;
     }
+  }
+
+  private static void configureEpsilon(final TestConfig testConfig) {
+    configureGeodeProductJvms(testConfig,
+        "-XX:+UnlockExperimentalVMOptions",
+        "-XX:+UseEpsilonGC",
+        "-XX:+UseNUMA");
   }
 
   private static void configureShenandoah(final TestConfig testConfig) {

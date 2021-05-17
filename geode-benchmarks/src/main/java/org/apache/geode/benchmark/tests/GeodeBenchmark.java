@@ -36,6 +36,11 @@ public class GeodeBenchmark {
    */
   private static final int THREADS = Runtime.getRuntime().availableProcessors() * 10;
 
+  public static final String WITH_MIN_KEY = "benchmark.withMinKey";
+  public static final String WITH_MAX_KEY = "benchmark.withMaxKey";
+  public static final String WITH_VALIDATION_PROPERTY = "benchmark.withValidation";
+  public static final String WITH_REPLICAS = "benchmark.withReplicas";
+  public static final String WITH_BUCKETS = "benchmark.withBuckets";
 
   public static TestConfig createConfig() {
     TestConfig config = new TestConfig();
@@ -45,4 +50,7 @@ public class GeodeBenchmark {
     return config;
   }
 
+  public static boolean isValidationEnabled() {
+    return Boolean.getBoolean(WITH_VALIDATION_PROPERTY);
+  }
 }

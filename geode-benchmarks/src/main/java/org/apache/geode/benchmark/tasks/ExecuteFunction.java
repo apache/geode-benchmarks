@@ -14,10 +14,13 @@
  */
 package org.apache.geode.benchmark.tasks;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.io.Serializable;
 import java.util.Map;
 
 import benchmark.geode.data.BenchmarkFunction;
+import benchmark.geode.data.Portfolio;
 import org.yardstickframework.BenchmarkConfiguration;
 import org.yardstickframework.BenchmarkDriverAdapter;
 
@@ -28,9 +31,13 @@ import org.apache.geode.cache.execute.FunctionService;
 
 public class ExecuteFunction extends BenchmarkDriverAdapter implements Serializable {
 
-  private Region region;
+  private final boolean isValidationEnabled;
 
-  public ExecuteFunction() {}
+  private Region<Long, Portfolio> region;
+
+  public ExecuteFunction(final boolean isValidationEnabled) {
+    this.isValidationEnabled = isValidationEnabled;
+  }
 
   @Override
   public void setUp(BenchmarkConfiguration cfg) throws Exception {
@@ -41,7 +48,13 @@ public class ExecuteFunction extends BenchmarkDriverAdapter implements Serializa
 
   @Override
   public boolean test(final Map<Object, Object> ctx) {
-    FunctionService.onRegion(region).execute(BenchmarkFunction.class.getName()).getResult();
+    final Object result =
+        FunctionService.onRegion(region).execute(BenchmarkFunction.class.getName()).getResult();
+
+    if (isValidationEnabled) {
+      assertThat(result).isInstanceOf(Portfolio.class);
+    }
+
     return true;
   }
 

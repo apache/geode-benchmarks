@@ -15,121 +15,124 @@
 
 package org.apache.geode.benchmark.parameters;
 
-import static org.apache.geode.benchmark.topology.Roles.CLIENT;
-import static org.apache.geode.benchmark.topology.Roles.LOCATOR;
-import static org.apache.geode.benchmark.topology.Roles.SERVER;
+import static org.apache.geode.benchmark.Constants.JAVA_RUNTIME_VERSION;
+import static org.apache.geode.benchmark.Constants.JAVA_VERSION_11;
+import static org.apache.geode.benchmark.Constants.JAVA_VERSION_8;
+import static org.apache.geode.benchmark.topology.RoleKinds.GEODE_PRODUCT;
+import static org.apache.geode.benchmark.topology.Roles.rolesFor;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import java.util.Properties;
-
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junitpioneer.jupiter.ClearSystemProperty;
+import org.junitpioneer.jupiter.SetSystemProperty;
 
 import org.apache.geode.perftest.TestConfig;
 
 class GcParametersTest {
   private static final String WITH_GC = "benchmark.withGc";
-  private static final String JAVA_RUNTIME_VERSION = "java.runtime.version";
-  private static final String XX_USE_ZGC = "-XX:+UseZGC";
-  private static final String XX_USE_G_1_GC = "-XX:+UseG1GC";
-  private static final String XX_USE_CONC_MARK_SWEEP_GC = "-XX:+UseConcMarkSweepGC";
-
-  private Properties systemProperties;
-
-  @BeforeEach
-  public void beforeEach() {
-    systemProperties = (Properties) System.getProperties().clone();
-  }
-
-  @AfterEach
-  public void afterEach() {
-    System.setProperties(systemProperties);
-  }
+  private static final String XX_UseZGC = "-XX:+UseZGC";
+  private static final String XX_UseG1GC = "-XX:+UseG1GC";
+  private static final String XX_UseConcMarkSweepGC = "-XX:+UseConcMarkSweepGC";
+  private static final String XX_UseShenandoahGC = "-XX:+UseShenandoahGC";
+  private static final String XX_UseEpsilonGC = "-XX:+UseEpsilonGC";
 
   @Test
+  @ClearSystemProperty(key = WITH_GC)
   public void withDefault() {
-    System.clearProperty(WITH_GC);
     final TestConfig testConfig = new TestConfig();
     GcParameters.configure(testConfig);
     assertCms(testConfig);
   }
 
   @Test
+  @SetSystemProperty(key = WITH_GC, value = "CMS")
   public void withCms() {
-    System.setProperty(WITH_GC, "CMS");
     final TestConfig testConfig = new TestConfig();
     GcParameters.configure(testConfig);
     assertCms(testConfig);
   }
 
   @Test
+  @SetSystemProperty(key = WITH_GC, value = "G1")
   public void withG1() {
-    System.setProperty(WITH_GC, "G1");
     final TestConfig testConfig = new TestConfig();
     GcParameters.configure(testConfig);
     assertG1(testConfig);
   }
 
   @Test
+  @SetSystemProperty(key = WITH_GC, value = "Z")
+  @SetSystemProperty(key = JAVA_RUNTIME_VERSION, value = JAVA_VERSION_11)
   public void withZ() {
-    System.setProperty(WITH_GC, "Z");
-    System.setProperty(JAVA_RUNTIME_VERSION, "11.0.4+11");
     final TestConfig testConfig = new TestConfig();
     GcParameters.configure(testConfig);
     assertZ(testConfig);
   }
 
   @Test
+  @SetSystemProperty(key = WITH_GC, value = "Z")
+  @SetSystemProperty(key = JAVA_RUNTIME_VERSION, value = JAVA_VERSION_8)
   public void withZinJava8() {
-    System.setProperty(WITH_GC, "Z");
-    System.setProperty(JAVA_RUNTIME_VERSION, "1.8.0_212-b03");
     final TestConfig testConfig = new TestConfig();
     assertThatThrownBy(() -> GcParameters.configure(testConfig))
         .isInstanceOf(IllegalArgumentException.class);
   }
 
+  @Test
+  @SetSystemProperty(key = WITH_GC, value = "Shenandoah")
+  public void withShenandoah() {
+    final TestConfig testConfig = new TestConfig();
+    GcParameters.configure(testConfig);
+    assertShenandoah(testConfig);
+  }
+
+  @Test
+  @SetSystemProperty(key = WITH_GC, value = "Epsilon")
+  public void withEpsilon() {
+    final TestConfig testConfig = new TestConfig();
+    GcParameters.configure(testConfig);
+    assertEpsilon(testConfig);
+  }
+
   private void assertCms(TestConfig testConfig) {
-    assertThat(testConfig.getJvmArgs().get(CLIENT.name())).contains(XX_USE_CONC_MARK_SWEEP_GC);
-    assertThat(testConfig.getJvmArgs().get(SERVER.name())).contains(XX_USE_CONC_MARK_SWEEP_GC);
-    assertThat(testConfig.getJvmArgs().get(LOCATOR.name())).contains(XX_USE_CONC_MARK_SWEEP_GC);
-    assertThat(testConfig.getJvmArgs().get(CLIENT.name())).doesNotContain(XX_USE_G_1_GC);
-    assertThat(testConfig.getJvmArgs().get(SERVER.name())).doesNotContain(XX_USE_G_1_GC);
-    assertThat(testConfig.getJvmArgs().get(LOCATOR.name())).doesNotContain(XX_USE_G_1_GC);
-    assertThat(testConfig.getJvmArgs().get(CLIENT.name())).doesNotContain(XX_USE_ZGC);
-    assertThat(testConfig.getJvmArgs().get(SERVER.name())).doesNotContain(XX_USE_ZGC);
-    assertThat(testConfig.getJvmArgs().get(LOCATOR.name())).doesNotContain(XX_USE_ZGC);
+    rolesFor(GEODE_PRODUCT).forEach(role -> {
+      assertThat(testConfig.getJvmArgs().get(role.name())).contains(XX_UseConcMarkSweepGC);
+      assertThat(testConfig.getJvmArgs().get(role.name())).doesNotContain(XX_UseG1GC);
+      assertThat(testConfig.getJvmArgs().get(role.name())).doesNotContain(XX_UseZGC);
+    });
   }
 
   private void assertG1(TestConfig testConfig) {
-    assertThat(testConfig.getJvmArgs().get(CLIENT.name())).contains(XX_USE_G_1_GC);
-    assertThat(testConfig.getJvmArgs().get(SERVER.name())).contains(XX_USE_G_1_GC);
-    assertThat(testConfig.getJvmArgs().get(LOCATOR.name())).contains(XX_USE_G_1_GC);
-    assertThat(testConfig.getJvmArgs().get(CLIENT.name()))
-        .doesNotContain(XX_USE_CONC_MARK_SWEEP_GC);
-    assertThat(testConfig.getJvmArgs().get(SERVER.name()))
-        .doesNotContain(XX_USE_CONC_MARK_SWEEP_GC);
-    assertThat(testConfig.getJvmArgs().get(LOCATOR.name()))
-        .doesNotContain(XX_USE_CONC_MARK_SWEEP_GC);
-    assertThat(testConfig.getJvmArgs().get(CLIENT.name())).doesNotContain(XX_USE_ZGC);
-    assertThat(testConfig.getJvmArgs().get(SERVER.name())).doesNotContain(XX_USE_ZGC);
-    assertThat(testConfig.getJvmArgs().get(LOCATOR.name())).doesNotContain(XX_USE_ZGC);
+    rolesFor(GEODE_PRODUCT).forEach(role -> {
+      assertThat(testConfig.getJvmArgs().get(role.name())).contains(XX_UseG1GC);
+      assertThat(testConfig.getJvmArgs().get(role.name())).doesNotContain(XX_UseConcMarkSweepGC);
+      assertThat(testConfig.getJvmArgs().get(role.name())).doesNotContain(XX_UseZGC);
+    });
   }
 
   private void assertZ(TestConfig testConfig) {
-    assertThat(testConfig.getJvmArgs().get(CLIENT.name())).contains(XX_USE_ZGC);
-    assertThat(testConfig.getJvmArgs().get(SERVER.name())).contains(XX_USE_ZGC);
-    assertThat(testConfig.getJvmArgs().get(LOCATOR.name())).contains(XX_USE_ZGC);
-    assertThat(testConfig.getJvmArgs().get(CLIENT.name()))
-        .doesNotContain(XX_USE_CONC_MARK_SWEEP_GC);
-    assertThat(testConfig.getJvmArgs().get(SERVER.name()))
-        .doesNotContain(XX_USE_CONC_MARK_SWEEP_GC);
-    assertThat(testConfig.getJvmArgs().get(LOCATOR.name()))
-        .doesNotContain(XX_USE_CONC_MARK_SWEEP_GC);
-    assertThat(testConfig.getJvmArgs().get(CLIENT.name())).doesNotContain(XX_USE_G_1_GC);
-    assertThat(testConfig.getJvmArgs().get(SERVER.name())).doesNotContain(XX_USE_G_1_GC);
-    assertThat(testConfig.getJvmArgs().get(LOCATOR.name())).doesNotContain(XX_USE_G_1_GC);
+    rolesFor(GEODE_PRODUCT).forEach(role -> {
+      assertThat(testConfig.getJvmArgs().get(role.name())).contains(XX_UseZGC);
+      assertThat(testConfig.getJvmArgs().get(role.name())).doesNotContain(XX_UseConcMarkSweepGC);
+      assertThat(testConfig.getJvmArgs().get(role.name())).doesNotContain(XX_UseG1GC);
+    });
+  }
+
+  private void assertShenandoah(TestConfig testConfig) {
+    rolesFor(GEODE_PRODUCT).forEach(role -> {
+      assertThat(testConfig.getJvmArgs().get(role.name())).contains(XX_UseShenandoahGC);
+      assertThat(testConfig.getJvmArgs().get(role.name())).doesNotContain(XX_UseConcMarkSweepGC);
+      assertThat(testConfig.getJvmArgs().get(role.name())).doesNotContain(XX_UseG1GC);
+    });
+  }
+
+  private void assertEpsilon(TestConfig testConfig) {
+    rolesFor(GEODE_PRODUCT).forEach(role -> {
+      assertThat(testConfig.getJvmArgs().get(role.name())).contains(XX_UseEpsilonGC);
+      assertThat(testConfig.getJvmArgs().get(role.name())).doesNotContain(XX_UseConcMarkSweepGC);
+      assertThat(testConfig.getJvmArgs().get(role.name())).doesNotContain(XX_UseG1GC);
+    });
   }
 
 }

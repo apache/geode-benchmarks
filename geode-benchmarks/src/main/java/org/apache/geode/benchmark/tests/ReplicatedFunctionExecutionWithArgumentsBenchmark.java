@@ -35,7 +35,8 @@ public class ReplicatedFunctionExecutionWithArgumentsBenchmark
   public TestConfig configure() {
     TestConfig config = super.configure();
     config.threads(Runtime.getRuntime().availableProcessors() * 16);
-    workload(config, new ExecuteParameterizedFunction(getKeyRange()), CLIENT);
+    workload(config, new ExecuteParameterizedFunction(getKeyRange(), isValidationEnabled()),
+        CLIENT);
     return config;
   }
 }

@@ -20,7 +20,7 @@ package org.apache.geode.benchmark.tasks;
 import org.apache.geode.benchmark.LongRange;
 import org.apache.geode.benchmark.topology.Roles;
 
-public class PrePopulateRegionLong extends AbstractPrePopulateRegion<Long> {
+public class PrePopulateRegionLong extends AbstractPrePopulateRegion<Long, Long> {
 
   public PrePopulateRegionLong() {}
 
@@ -34,7 +34,12 @@ public class PrePopulateRegionLong extends AbstractPrePopulateRegion<Long> {
   }
 
   @Override
-  protected Long getValue(long i) {
+  protected Long getKey(final long i) {
+    return i;
+  }
+
+  @Override
+  protected Long getValue(final long i) {
     return i;
   }
 

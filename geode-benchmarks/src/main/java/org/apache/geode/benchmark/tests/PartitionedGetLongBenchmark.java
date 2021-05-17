@@ -30,14 +30,13 @@ import org.apache.geode.benchmark.tasks.CreateClientProxyRegion;
 import org.apache.geode.benchmark.tasks.CreatePartitionedRegion;
 import org.apache.geode.benchmark.tasks.GetTask;
 import org.apache.geode.benchmark.tasks.PrePopulateRegionLong;
-import org.apache.geode.perftest.PerformanceTest;
 import org.apache.geode.perftest.TestConfig;
 import org.apache.geode.perftest.TestRunners;
 
 /**
  * Benchmark of gets on a partitioned region.
  */
-public class PartitionedGetLongBenchmark implements PerformanceTest {
+public class PartitionedGetLongBenchmark extends AbstractPerformanceTest {
 
   private LongRange keyRange = new LongRange(0, 1000000);
 
@@ -58,7 +57,7 @@ public class PartitionedGetLongBenchmark implements PerformanceTest {
     before(config, new CreatePartitionedRegion(), SERVER);
     before(config, new CreateClientProxyRegion(), CLIENT);
     before(config, new PrePopulateRegionLong(keyRange), CLIENT);
-    workload(config, new GetTask(keyRange), CLIENT);
+    workload(config, new GetTask(keyRange, isValidationEnabled()), CLIENT);
     return config;
 
   }

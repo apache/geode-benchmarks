@@ -32,7 +32,7 @@ public class PartitionedFunctionExecutionWithFiltersBenchmarkTest {
     PartitionedFunctionExecutionWithFiltersBenchmark test =
         new PartitionedFunctionExecutionWithFiltersBenchmark();
     test.setKeyRange(new LongRange(0, 100));
-    TestRunners.minimalRunner(folder)
-        .runTest(test);
+    test.setValidationEnabled(true);
+    TestRunners.minimalRunner(folder).runTest(test);
   }
 }

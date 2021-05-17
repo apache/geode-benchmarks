@@ -14,23 +14,62 @@
  */
 package org.apache.geode.benchmark.tasks;
 
+import static java.lang.String.format;
+import static java.lang.String.join;
+
 import java.io.IOException;
+import java.time.Duration;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ProcessControl {
+  private static final Duration RETRY_TIMEOUT = Duration.ofMinutes(1);
 
   private static final Logger logger = LoggerFactory.getLogger(ProcessControl.class);
 
-  void runCommand(final String command) throws IOException, InterruptedException {
+  public static void runCommand(final String command) throws IOException, InterruptedException {
     final Process startDaemon = Runtime.getRuntime().exec(command);
     final int exitStatus = startDaemon.waitFor();
     if (exitStatus != 0) {
-      final String msg = String.format("'%s' command exited with status %d\npwd is: %s", command,
+      final String msg = format("'%s' command exited with status %d\npwd is: %s", command,
           exitStatus, System.getProperty("user.dir"));
       logger.error(msg);
       throw new IllegalStateException(msg);
+    }
+  }
+
+  public static void runAndExpectZeroExit(final ProcessBuilder processBuilder)
+      throws IOException, InterruptedException {
+    final Process process = processBuilder.start();
+    final int exitStatus = process.waitFor();
+    if (exitStatus != 0) {
+      final String msg =
+          format("'%s' command exited with status %d", join(" ", processBuilder.command()),
+              exitStatus, System.getProperty("user.dir"));
+      logger.error(msg);
+      throw new IllegalStateException(msg);
+    }
+  }
+
+  public static void retryUntilZeroExit(final ProcessBuilder processBuilder)
+      throws IOException, InterruptedException {
+    long start = System.nanoTime();
+    while (true) {
+      final Process process = processBuilder.start();
+      final int exitStatus = process.waitFor();
+      if (exitStatus != 0) {
+        final String msg =
+            format("'%s' command exited with status %d", join(" ", processBuilder.command()),
+                exitStatus, System.getProperty("user.dir"));
+        logger.error(msg);
+        if (System.nanoTime() - start > RETRY_TIMEOUT.toNanos()) {
+          throw new RuntimeException(msg);
+        }
+        Thread.sleep(100);
+        continue;
+      }
+      break;
     }
   }
 

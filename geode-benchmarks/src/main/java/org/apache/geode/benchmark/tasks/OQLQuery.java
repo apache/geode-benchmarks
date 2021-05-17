@@ -14,6 +14,8 @@
  */
 package org.apache.geode.benchmark.tasks;
 
+import static org.apache.geode.util.internal.UncheckedUtils.uncheckedCast;
+
 import java.io.Serializable;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
@@ -25,7 +27,6 @@ import org.yardstickframework.BenchmarkConfiguration;
 import org.yardstickframework.BenchmarkDriverAdapter;
 
 import org.apache.geode.benchmark.LongRange;
-import org.apache.geode.cache.Region;
 import org.apache.geode.cache.client.ClientCache;
 import org.apache.geode.cache.client.ClientCacheFactory;
 import org.apache.geode.cache.query.Query;
@@ -34,42 +35,48 @@ import org.apache.geode.perftest.jvms.RemoteJVMFactory;
 
 public class OQLQuery extends BenchmarkDriverAdapter implements Serializable {
   private static final Logger logger = LoggerFactory.getLogger(RemoteJVMFactory.class);
-  private Region<Object, Object> region;
-  private LongRange keyRange;
-  private long queryRange;
-  private ClientCache cache;
+
+  private final LongRange keyRange;
+  private final long queryRange;
+  private final boolean isValidationEnabled;
+
   private Query query;
 
 
-  public OQLQuery(LongRange keyRange, long queryRange) {
+  public OQLQuery(final LongRange keyRange, final long queryRange,
+      final boolean isValidationEnabled) {
     this.keyRange = keyRange;
     this.queryRange = queryRange;
+    this.isValidationEnabled = isValidationEnabled;
   }
 
   @Override
   public void setUp(BenchmarkConfiguration cfg) throws Exception {
     super.setUp(cfg);
-    cache = ClientCacheFactory.getAnyInstance();
-    region = cache.getRegion("region");
+    final ClientCache cache = ClientCacheFactory.getAnyInstance();
     query =
         cache.getQueryService().newQuery("SELECT * FROM /region r WHERE r.ID >= $1 AND r.ID < $2");
   }
 
   @Override
-  public boolean test(Map<Object, Object> ctx) throws Exception {
-    long minId =
+  public boolean test(final Map<Object, Object> ctx) throws Exception {
+    final long minId =
         ThreadLocalRandom.current().nextLong(keyRange.getMin(), keyRange.getMax() - queryRange);
-    long maxId = minId + queryRange;
+    final long maxId = minId + queryRange;
 
-    SelectResults results = executeQuery(minId, maxId);
-    verifyResults(results, minId, maxId);
+    final Object result = query.execute(minId, maxId);
+
+    if (isValidationEnabled) {
+      verifyResults(uncheckedCast(result), minId, maxId);
+    }
 
     return true;
   }
 
-  private void verifyResults(SelectResults results, long minId, long maxId) throws Exception {
-    for (Object result : results) {
-      long id = ((Portfolio) result).getID();
+  private void verifyResults(final SelectResults<Portfolio> results, final long minId,
+      final long maxId) throws Exception {
+    for (final Portfolio result : results) {
+      final long id = result.getID();
       if (id < minId || id > maxId) {
         throw new Exception("Invalid Portfolio object retrieved [min =" + minId + " max =" + maxId
             + ") Portfolio retrieved =" + result);
@@ -77,7 +84,4 @@ public class OQLQuery extends BenchmarkDriverAdapter implements Serializable {
     }
   }
 
-  private SelectResults executeQuery(long minId, long maxId) throws Exception {
-    return (SelectResults) query.execute(minId, maxId);
-  }
 }

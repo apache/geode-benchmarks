@@ -43,9 +43,9 @@ public class ClientServerTopologyWithSniProxy extends Topology {
   public static final String WITH_SNI_PROXY_PROPERTY = "benchmark.withSniProxy";
   public static final String WITH_SNI_PROXY_IMAGE_PROPERTY = "benchmark.withSniProxyImage";
 
-  private static final int NUM_LOCATORS = 1;
-  private static final int NUM_SERVERS = 2;
-  private static final int NUM_CLIENTS = 1;
+  private static final int NUM_LOCATORS = Integer.getInteger(WITH_LOCATOR_COUNT_PROPERTY, 1);
+  private static final int NUM_SERVERS = Integer.getInteger(WITH_SERVER_COUNT_PROPERTY, 2);
+  private static final int NUM_CLIENTS = Integer.getInteger(WITH_CLIENT_COUNT_PROPERTY, 1);
   private static final int NUM_PROXIES = 1;
 
   public enum SniProxyImplementation {
@@ -53,10 +53,9 @@ public class ClientServerTopologyWithSniProxy extends Topology {
     HAProxy,
     Envoy;
 
-    public static SniProxyImplementation valueOfIgnoreCase(String name) {
-      name = name.toLowerCase();
+    public static SniProxyImplementation valueOfIgnoreCase(final String name) {
       for (SniProxyImplementation sniProxyImplementation : SniProxyImplementation.values()) {
-        if (sniProxyImplementation.name().toLowerCase().equals(name)) {
+        if (sniProxyImplementation.name().equalsIgnoreCase(name)) {
           return sniProxyImplementation;
         }
       }

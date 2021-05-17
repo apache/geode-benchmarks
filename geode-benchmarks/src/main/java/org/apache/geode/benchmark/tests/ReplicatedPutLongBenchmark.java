@@ -29,14 +29,13 @@ import org.apache.geode.benchmark.tasks.CreateClientProxyRegion;
 import org.apache.geode.benchmark.tasks.CreateReplicatedRegion;
 import org.apache.geode.benchmark.tasks.PrePopulateRegionLong;
 import org.apache.geode.benchmark.tasks.PutTask;
-import org.apache.geode.perftest.PerformanceTest;
 import org.apache.geode.perftest.TestConfig;
 import org.apache.geode.perftest.TestRunners;
 
 /**
  * Benchmark of puts on a replicated region.
  */
-public class ReplicatedPutLongBenchmark implements PerformanceTest {
+public class ReplicatedPutLongBenchmark extends AbstractPerformanceTest {
 
   private LongRange keyRange = new LongRange(0, 1000000);
 

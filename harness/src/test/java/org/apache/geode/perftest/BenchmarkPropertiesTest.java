@@ -22,14 +22,14 @@ import java.util.Map;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junitpioneer.jupiter.SetSystemProperty;
 
 class BenchmarkPropertiesTest {
 
   @Test
+  @SetSystemProperty(key = "benchmark.system.role1.p1", value = "v1")
+  @SetSystemProperty(key = "benchmark.system.role1.p2", value = "v2")
   public void canParsePropertiesForRoles() {
-    System.setProperty("benchmark.system.role1.p1", "v1");
-    System.setProperty("benchmark.system.role1.p2", "v2");
-
     Map<String, List<String>> defaultArgs =
         BenchmarkProperties.getDefaultJVMArgs();
 

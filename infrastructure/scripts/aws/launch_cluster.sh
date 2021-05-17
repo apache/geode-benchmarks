@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+    #!/usr/bin/env bash
 
 #
 # Licensed to the Apache Software Foundation (ASF) under one
@@ -43,6 +43,33 @@ while (( "$#" )); do
         exit 1
       fi
       ;;
+    -i|--instance-type )
+      if [ "$2" ]; then
+        INSTANCE_TYPE=$2
+        shift
+      else
+        echo 'ERROR: "--instance-type" requires a non-empty argument.'
+        exit 1
+      fi
+      ;;
+    --tenancy )
+      if [ "$2" ]; then
+        TENANCY=$2
+        shift
+      else
+        echo 'ERROR: "--tenancy" requires a non-empty argument.'
+        exit 1
+      fi
+      ;;
+    --availability-zone )
+      if [ "$2" ]; then
+        AVAILABILITY_ZONE=$2
+        shift
+      else
+        echo 'ERROR: "--availability-zone" requires a non-empty argument.'
+        exit 1
+      fi
+      ;;
     --ci )
       CI=1
       ;;
@@ -60,6 +87,9 @@ while (( "$#" )); do
       echo "Options:"
       echo "-t|--tag : Cluster tag"
       echo "-c|--count : The number of instances to start"
+      echo "-i|--instance-type : The instance type to start"
+      echo "--tenancy : Optionally 'host' or 'dedicated' (default)"
+      echo "--availability-zone : Optionally AWS AZ, default 'us-west-2a'"
       echo "--ci : Set if starting instances for Continuous Integration"
       echo "-p|--purpose : Purpose (Purpose tag to use for base AMI)"
       echo "-- : All subsequent arguments are passed to the benchmark task as arguments."
@@ -82,9 +112,16 @@ if [[ -z "${AWS_ACCESS_KEY_ID}" ]]; then
   export AWS_PROFILE="geode-benchmarks"
 fi
 
+INSTANCE_TYPE=${INSTANCE_TYPE:-"c5.18xlarge"}
+AVAILABILITY_ZONE=${AVAILABILITY_ZONE:-"us-west-2a"}
+TENANCY=${TENANCY:-"host"}
 CI=${CI:-0}
 PURPOSE=${PURPOSE:-"geode-benchmarks"}
 
 pushd ../../../
-./gradlew launchCluster -Pci=${CI} -Ppurpose=${PURPOSE} --args "${TAG} ${COUNT}"
+./gradlew launchCluster -Pci=${CI} -Ppurpose=${PURPOSE} \
+      -PinstanceType=${INSTANCE_TYPE} \
+      -Ptenancy=${TENANCY} \
+      -PavailabilityZone=${AVAILABILITY_ZONE} \
+      --args "${TAG} ${COUNT}"
 popd

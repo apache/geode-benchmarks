@@ -1,3 +1,5 @@
+import org.gradle.internal.jvm.Jvm
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,8 +21,6 @@ plugins { id 'java' }
 
 group 'org.apache.geode-benchmark'
 version '1.0-SNAPSHOT'
-
-sourceCompatibility = 1.8
 
 def geodeVersion = project.hasProperty('geodeVersion') ? project.findProperty('geodeVersion') : '1.+'
 def isCI = project.hasProperty('ci') ? project.findProperty('ci') : 0
@@ -49,14 +49,14 @@ task(analyzeRun, dependsOn: 'classes', type: JavaExec) {
 }
 
 dependencies {
-  compile(group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: project.'junit-jupiter-engine.version')
+  compile(group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: project.'junit-jupiter.version')
   compile(group: 'org.junit-pioneer', name: 'junit-pioneer', version: project.'junit-pioneer.version')
   compile(group: 'com.hierynomus', name: 'sshj', version: project.'sshj.version')
   compile(group: 'commons-io', name: 'commons-io', version: project.'commons-io.version')
   compile(group: 'org.yardstickframework', name: 'yardstick', version: project.'yardstick.version')
   compile(group: 'org.hdrhistogram', name: 'HdrHistogram', version: project.'HdrHistogram.version')
   compile(group: 'org.apache.geode', name: 'geode-core', version: geodeVersion)
-  testCompile(group: 'org.mockito', name: 'mockito-all', version: project.'mockito-all.version')
+  testCompile(group: 'org.mockito', name: 'mockito-core', version: project.'mockito.version')
   testCompile(group: 'org.awaitility', name: 'awaitility', version: project.'awaitility.version')
   testCompile(group: 'org.slf4j', name: 'slf4j-simple', version: project.'slf4j-simple.version')
   testCompile(group: 'org.apache.sshd', name: 'sshd-core', version: project.'sshd-core.version')

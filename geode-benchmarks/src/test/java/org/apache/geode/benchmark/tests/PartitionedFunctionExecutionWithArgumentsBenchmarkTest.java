@@ -32,6 +32,7 @@ public class PartitionedFunctionExecutionWithArgumentsBenchmarkTest {
     PartitionedFunctionExecutionWithArgumentsBenchmark test =
         new PartitionedFunctionExecutionWithArgumentsBenchmark();
     test.setKeyRange(new LongRange(0, 100));
+    test.setValidationEnabled(true);
     TestRunners.minimalRunner(folder).runTest(test);
   }
 }

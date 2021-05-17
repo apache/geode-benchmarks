@@ -42,32 +42,8 @@ public class TestRunners {
   public static final String OUTPUT_DIR = "benchmark.OUTPUT_DIR";
 
   public static final String[] JVM_ARGS_SMALL_SIZE = new String[] {
-      "-XX:CMSInitiatingOccupancyFraction=60",
-      "-XX:+PrintGCDetails",
-      "-XX:+PrintGCTimeStamps",
-      "-XX:+PrintGCDateStamps",
-      "-XX:+PrintGCApplicationStoppedTime",
-      "-XX:+PrintGCApplicationConcurrentTime",
-      "-XX:+UseGCLogFileRotation",
-      "-XX:NumberOfGCLogFiles=20",
-      "-XX:GCLogFileSize=1M",
-      "-XX:+UnlockDiagnosticVMOptions",
-      "-XX:ParGCCardsPerStrideChunk=32768",
-      "-XX:+UseNUMA",
-      "-XX:+UseConcMarkSweepGC",
-      "-XX:+UseCMSInitiatingOccupancyOnly",
-      "-XX:+CMSClassUnloadingEnabled",
-      "-XX:+DisableExplicitGC",
-      "-XX:+ScavengeBeforeFullGC",
-      "-XX:+CMSScavengeBeforeRemark",
-      "-server",
-      "-Djava.awt.headless=true",
-      "-Dsun.rmi.dgc.server.gcInterval=9223372036854775806",
-      "-Dgemfire.OSProcess.ENABLE_OUTPUT_REDIRECTION=true",
-      "-Dgemfire.launcher.registerSignalHandlers=true",
       "-Xmx4g",
       "-Xms4g"
-
   };
 
   public static TestRunner defaultRunner(String username, File outputDir, String... hosts) {

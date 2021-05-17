@@ -33,7 +33,7 @@ public class PartitionedFunctionExecutionBenchmark extends AbstractPartitionedFu
   @Override
   public TestConfig configure() {
     TestConfig config = super.configure();
-    workload(config, new ExecuteFunction(), CLIENT);
+    workload(config, new ExecuteFunction(isValidationEnabled()), CLIENT);
     return config;
   }
 }

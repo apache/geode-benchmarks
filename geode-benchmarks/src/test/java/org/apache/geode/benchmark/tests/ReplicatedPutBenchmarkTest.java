@@ -35,7 +35,7 @@ public class ReplicatedPutBenchmarkTest {
       throws Exception {
     ReplicatedPutBenchmark test = new ReplicatedPutBenchmark();
     test.setKeyRange(new LongRange(0, 100));
-    TestRunners.minimalRunner(folder)
-        .runTest(test);
+    test.setValidationEnabled(true);
+    TestRunners.minimalRunner(folder).runTest(test);
   }
 }

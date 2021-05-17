@@ -31,6 +31,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.junitpioneer.jupiter.SetSystemProperty;
 
 import org.apache.geode.perftest.benchmarks.EmptyBenchmark;
 import org.apache.geode.perftest.infrastructure.local.LocalInfrastructureFactory;
@@ -45,8 +46,6 @@ public class TestRunnerIntegrationTest {
 
   @TempDir
   File outputDir;
-
-  public static final String SAMPLE_BENCHMARK = "SampleBenchmark";
 
   @BeforeEach
   void beforeEach() {
@@ -100,8 +99,8 @@ public class TestRunnerIntegrationTest {
   }
 
   @Test
+  @SetSystemProperty(key = TEST_PROPERTY, value = "p3")
   public void configuresJVMOptions() throws Exception {
-    System.setProperty(TEST_PROPERTY, "p3");
     runner.runTest(() -> {
       TestConfig testConfig = new TestConfig();
       testConfig.role("all", 1);

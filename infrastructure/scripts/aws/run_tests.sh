@@ -167,9 +167,10 @@ if [[ -z "${VERSION}" ]]; then
     rm -f "${FILES}"
     popd
   else
-    remoteShell rm -rf geode '&&' git clone "${REPO}" geode
+    remoteShell "cd geode && [ \"${REPO}\" == \"\$(git remote get-url origin)\" ] && git fetch origin" \
+      || remoteShell rm -rf geode '&&' git clone "${REPO}" geode
   fi
-  remoteShell cd geode '&&' git checkout "${BRANCH}"
+  remoteShell "cd geode && git checkout \"${BRANCH}\" && [ \"\$(git rev-parse --abbrev-ref --symbolic-full-name HEAD)\" == \"HEAD\" ] || git reset --hard \"origin/${BRANCH}\""
 
   set +e
   for i in {1..5}; do
@@ -202,11 +203,10 @@ set -e
 
 instance_id=$(remoteShell cat .geode-benchmarks-identifier)
 
+remoteShell "cd geode-benchmarks && [ \"${BENCHMARK_REPO}\" == \"\$(git remote get-url origin)\" ] && git fetch origin" \
+  || remoteShell rm -rf geode-benchmarks '&&' git clone "${BENCHMARK_REPO}"
 
-remoteShell \
-  rm -rf geode-benchmarks '&&' \
-  git clone "${BENCHMARK_REPO}" '&&' \
-  cd geode-benchmarks '&&' git checkout "${BENCHMARK_BRANCH}"
+remoteShell cd geode-benchmarks '&&' git checkout "${BENCHMARK_BRANCH}" '&&' git reset --hard "origin/${BENCHMARK_BRANCH}"
 
 BENCHMARK_SHA=$(remoteShell \
   cd geode-benchmarks '&&' \
@@ -215,6 +215,8 @@ BENCHMARK_SHA=$(remoteShell \
 BUILD_IDENTIFIER="$(uuidgen)"
 
 METADATA="${METADATA},'source_repo':'${GEODE_REPO}','benchmark_repo':'${BENCHMARK_REPO}','benchmark_branch':'${BENCHMARK_BRANCH}','instance_id':'${instance_id}','benchmark_sha':'${BENCHMARK_SHA}','build_identifier':'${BUILD_IDENTIFIER}'"
+
+remoteShell rm -rf 'geode-benchmarks/geode-benchmarks/build/reports' 'geode-benchmarks/geode-benchmarks/build/benchmarks_*'
 
 remoteShell \
   cd geode-benchmarks '&&' \

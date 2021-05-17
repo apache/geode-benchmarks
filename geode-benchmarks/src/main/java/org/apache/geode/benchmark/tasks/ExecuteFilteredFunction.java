@@ -14,12 +14,15 @@
  */
 package org.apache.geode.benchmark.tasks;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
 import benchmark.geode.data.FunctionWithFilter;
+import benchmark.geode.data.Portfolio;
 import org.yardstickframework.BenchmarkConfiguration;
 import org.yardstickframework.BenchmarkDriverAdapter;
 
@@ -29,17 +32,18 @@ import org.apache.geode.cache.client.ClientCache;
 import org.apache.geode.cache.client.ClientCacheFactory;
 import org.apache.geode.cache.execute.Function;
 import org.apache.geode.cache.execute.FunctionService;
-import org.apache.geode.cache.execute.ResultCollector;
 
 public class ExecuteFilteredFunction extends BenchmarkDriverAdapter implements Serializable {
 
   private final LongRange keyRange;
-  private final Function function;
+  private final boolean isValidationEnabled;
+  private final Function<Long> function;
 
-  private Region region;
+  private Region<Long, Portfolio> region;
 
-  public ExecuteFilteredFunction(final LongRange keyRange) {
+  public ExecuteFilteredFunction(final LongRange keyRange, final boolean isValidationEnabled) {
     this.keyRange = keyRange;
+    this.isValidationEnabled = isValidationEnabled;
     this.function = new FunctionWithFilter();
   }
 
@@ -55,13 +59,17 @@ public class ExecuteFilteredFunction extends BenchmarkDriverAdapter implements S
   public boolean test(Map<Object, Object> ctx) {
     final Set<Long> filterSet = Collections.singleton(keyRange.random());
     @SuppressWarnings("unchecked")
-    final ResultCollector<?, ?> resultCollector = FunctionService
+    final Object result = FunctionService
         .onRegion(region)
         .withFilter(filterSet)
-        .execute(function);
-    resultCollector.getResult();
-    return true;
+        .execute(function)
+        .getResult();
 
+    if (isValidationEnabled) {
+      assertThat(result).isInstanceOf(Portfolio.class);
+    }
+
+    return true;
   }
 
 }

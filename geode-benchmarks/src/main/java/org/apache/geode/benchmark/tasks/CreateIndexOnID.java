@@ -15,6 +15,8 @@
 package org.apache.geode.benchmark.tasks;
 
 
+import static org.apache.geode.benchmark.tasks.StartServer.SERVER_CACHE;
+
 import org.apache.geode.cache.Cache;
 import org.apache.geode.cache.query.IndexNameConflictException;
 import org.apache.geode.perftest.Task;
@@ -24,7 +26,7 @@ public class CreateIndexOnID implements Task {
 
   @Override
   public void run(TestContext context) throws Exception {
-    Cache serverCache = (Cache) context.getAttribute("SERVER_CACHE");
+    Cache serverCache = (Cache) context.getAttribute(SERVER_CACHE);
     try {
       serverCache.getQueryService().createIndex("IDIndex", "r.ID", "/region r");
     } catch (IndexNameConflictException ex) {

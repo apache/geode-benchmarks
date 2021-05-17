@@ -41,7 +41,7 @@ import org.apache.geode.perftest.Task;
 import org.apache.geode.perftest.TestContext;
 
 
-public abstract class AbstractPrePopulateRegion<V> implements Task {
+public abstract class AbstractPrePopulateRegion<K, V> implements Task {
   private static final Logger logger = LoggerFactory.getLogger(AbstractPrePopulateRegion.class);
 
   private final LongRange keyRangeToPrepopulate;
@@ -68,7 +68,7 @@ public abstract class AbstractPrePopulateRegion<V> implements Task {
   @Override
   public void run(TestContext context) throws InterruptedException {
     final Cache cache = CacheFactory.getAnyInstance();
-    final Region<Long, V> region = cache.getRegion("region");
+    final Region<K, V> region = cache.getRegion("region");
     final ArrayList<Integer> hostIds =
         new ArrayList<>(context.getHostsIDsForRole(targetRole.name()));
 
@@ -76,7 +76,7 @@ public abstract class AbstractPrePopulateRegion<V> implements Task {
         keyRangeToPrepopulate.sliceFor(hostIds.size(), hostIds.indexOf(context.getJvmID())));
   }
 
-  void run(final Map<Long, V> region, final LongRange range) throws InterruptedException {
+  void run(final Map<K, V> region, final LongRange range) throws InterruptedException {
     logger.info("*******************************************");
     logger.info("      Prepopulating the region ");
     logger.info("*******************************************");
@@ -102,13 +102,15 @@ public abstract class AbstractPrePopulateRegion<V> implements Task {
     threadPool.awaitTermination(5, TimeUnit.MINUTES);
   }
 
-  private void doPuts(final Map<Long, V> region, final LongRange range) {
+  private void doPuts(final Map<K, V> region, final LongRange range) {
     for (final LongRange slice : range.slicesOfSize(batchSize)) {
-      final Map<Long, V> valueMap = new HashMap<>();
-      slice.forEach(i -> valueMap.put(i, getValue(i)));
+      final Map<K, V> valueMap = new HashMap<>();
+      slice.forEach(i -> valueMap.put(getKey(i), getValue(i)));
       region.putAll(valueMap);
     }
   }
+
+  protected abstract K getKey(long i);
 
   protected abstract V getValue(long i);
 

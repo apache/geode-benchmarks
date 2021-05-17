@@ -14,6 +14,7 @@
  */
 package org.apache.geode.benchmark.parameters;
 
+import static java.lang.String.valueOf;
 import static org.apache.geode.benchmark.topology.Topology.WITH_SECURITY_MANAGER_PROPERTY;
 import static org.apache.geode.benchmark.topology.Topology.WITH_SSL_CIPHERS_PROPERTY;
 import static org.apache.geode.benchmark.topology.Topology.WITH_SSL_PROPERTY;
@@ -24,7 +25,6 @@ import static org.apache.geode.distributed.ConfigurationProperties.CONSERVE_SOCK
 import static org.apache.geode.distributed.ConfigurationProperties.DISTRIBUTED_SYSTEM_ID;
 import static org.apache.geode.distributed.ConfigurationProperties.ENABLE_CLUSTER_CONFIGURATION;
 import static org.apache.geode.distributed.ConfigurationProperties.ENABLE_TIME_STATISTICS;
-import static org.apache.geode.distributed.ConfigurationProperties.LOCATOR_WAIT_TIME;
 import static org.apache.geode.distributed.ConfigurationProperties.LOG_DISK_SPACE_LIMIT;
 import static org.apache.geode.distributed.ConfigurationProperties.LOG_FILE_SIZE_LIMIT;
 import static org.apache.geode.distributed.ConfigurationProperties.LOG_LEVEL;
@@ -42,42 +42,45 @@ import static org.apache.geode.security.SecurableCommunicationChannels.ALL;
 import java.util.Properties;
 
 import org.apache.geode.benchmark.security.ExampleAuthInit;
+import org.apache.geode.distributed.ConfigurationProperties;
 
 public class GeodeProperties {
 
   public static Properties serverProperties() {
-    Properties properties = new Properties();
+    final Properties properties = new Properties();
 
-    properties.setProperty(CONSERVE_SOCKETS, "false");
-    properties.setProperty(ENABLE_TIME_STATISTICS, "true");
-    properties.setProperty(LOCATOR_WAIT_TIME, "120");
-    properties.setProperty(LOG_DISK_SPACE_LIMIT, "100");
-    properties.setProperty(LOG_FILE_SIZE_LIMIT, "10");
+    properties.setProperty(CONSERVE_SOCKETS, valueOf(false));
+    properties.setProperty(ENABLE_TIME_STATISTICS, valueOf(true));
+    properties.setProperty(LOG_DISK_SPACE_LIMIT, valueOf(100));
+    properties.setProperty(LOG_FILE_SIZE_LIMIT, valueOf(10));
     properties.setProperty(LOG_LEVEL, "config");
-    properties.setProperty(REMOVE_UNRESPONSIVE_CLIENT, "true");
-    properties.setProperty(STATISTIC_SAMPLING_ENABLED, "true");
-    properties.setProperty(ARCHIVE_DISK_SPACE_LIMIT, "150");
-    properties.setProperty(ARCHIVE_FILE_SIZE_LIMIT, "10");
-    properties.setProperty(DISTRIBUTED_SYSTEM_ID, "0");
-    properties.setProperty(ENABLE_CLUSTER_CONFIGURATION, "false");
-    properties.setProperty(USE_CLUSTER_CONFIGURATION, "false");
+    properties.setProperty(REMOVE_UNRESPONSIVE_CLIENT, valueOf(true));
+    properties.setProperty(STATISTIC_SAMPLING_ENABLED, valueOf(true));
+    properties.setProperty(ARCHIVE_DISK_SPACE_LIMIT, valueOf(150));
+    properties.setProperty(ARCHIVE_FILE_SIZE_LIMIT, valueOf(10));
+    properties.setProperty(DISTRIBUTED_SYSTEM_ID, valueOf(0));
+    properties.setProperty(ENABLE_CLUSTER_CONFIGURATION, valueOf(false));
+    properties.setProperty(USE_CLUSTER_CONFIGURATION, valueOf(false));
     properties.setProperty(SERIALIZABLE_OBJECT_FILTER, "benchmark.geode.data.**");
+    properties.setProperty(MEMBER_TIMEOUT, valueOf(600000));
 
     return withOptions(properties);
   }
 
   public static Properties locatorProperties() {
-    // Locator properties are the same as the server properties right now
+    final Properties properties = serverProperties();
+    properties.setProperty(ConfigurationProperties.LOCATOR_WAIT_TIME, valueOf(0));
+
     return withOptions(serverProperties());
   }
 
   public static Properties clientProperties() {
-    Properties properties = new Properties();
+    final Properties properties = new Properties();
 
-    properties.setProperty(ENABLE_TIME_STATISTICS, "true");
+    properties.setProperty(ENABLE_TIME_STATISTICS, valueOf(true));
     properties.setProperty(LOG_LEVEL, "config");
-    properties.setProperty(STATISTIC_SAMPLING_ENABLED, "true");
-    properties.setProperty(MEMBER_TIMEOUT, "8000");
+    properties.setProperty(STATISTIC_SAMPLING_ENABLED, valueOf(true));
+    properties.setProperty(MEMBER_TIMEOUT, valueOf(8000));
 
     properties.setProperty("security-username", "superUser");
     properties.setProperty("security-password", "123");
@@ -86,7 +89,7 @@ public class GeodeProperties {
     return withOptions(properties);
   }
 
-  public static Properties withSecurityManager(Properties properties) {
+  public static Properties withSecurityManager(final Properties properties) {
     properties.setProperty(SECURITY_MANAGER,
         "org.apache.geode.examples.security.ExampleSecurityManager");
     properties.setProperty("security-username", "superUser");
@@ -94,7 +97,7 @@ public class GeodeProperties {
     return properties;
   }
 
-  public static Properties withSsl(Properties properties) {
+  public static Properties withSsl(final Properties properties) {
     properties.setProperty(SSL_ENABLED_COMPONENTS, ALL);
     final String withSslProtocols = System.getProperty(WITH_SSL_PROTOCOLS_PROPERTY);
     if (!isBlank(withSslProtocols)) {
@@ -121,7 +124,7 @@ public class GeodeProperties {
 
   private static boolean isPropertySet(final String propertyName) {
     final String propertyValue = System.getProperty(propertyName);
-    return propertyValue != null && propertyValue.equals("true");
+    return propertyValue != null && propertyValue.equals(valueOf(true));
   }
 
   private static Properties withOptions(Properties properties) {

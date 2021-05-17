@@ -32,7 +32,7 @@ public class ReplicatedGetLongBenchmarkTest {
       throws Exception {
     ReplicatedGetLongBenchmark test = new ReplicatedGetLongBenchmark();
     test.setKeyRange(new LongRange(0, 100));
-    TestRunners.minimalRunner(folder)
-        .runTest(test);
+    test.setValidationEnabled(true);
+    TestRunners.minimalRunner(folder).runTest(test);
   }
 }

@@ -16,6 +16,7 @@ package org.apache.geode.benchmark.tests;
 
 import java.io.File;
 
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import org.apache.geode.benchmark.LongRange;
@@ -26,9 +27,11 @@ public class PartitionedFunctionExecutionBenchmarkTest {
   @TempDir
   File folder;
 
+  @Test
   public void benchmarkRunsSuccessfully() throws Exception {
     PartitionedFunctionExecutionBenchmark test = new PartitionedFunctionExecutionBenchmark();
     test.setKeyRange(new LongRange(0, 100));
+    test.setValidationEnabled(true);
     TestRunners.minimalRunner(folder).runTest(test);
   }
 }

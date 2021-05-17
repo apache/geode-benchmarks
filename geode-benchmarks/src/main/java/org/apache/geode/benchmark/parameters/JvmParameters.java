@@ -35,6 +35,14 @@ public class JvmParameters {
         "-Dgemfire.OSProcess.ENABLE_OUTPUT_REDIRECTION=true",
         "-Dgemfire.launcher.registerSignalHandlers=true",
         "-XX:+DisableExplicitGC");
+
+    final JavaVersion javaVersion = JavaVersion.current();
+    if (javaVersion.atLeast(JavaVersion.v11)) {
+      configureGeodeProductJvms(testConfig,
+          "-XX:-ThreadLocalHandshakes",
+          "-XX:+UnlockExperimentalVMOptions",
+          "-XX:MonitorUsedDeflationThreshold=0");
+    }
   }
 
 }

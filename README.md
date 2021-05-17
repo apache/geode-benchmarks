@@ -46,28 +46,74 @@ For example:
 ./gradlew benchmark -Phosts=localhost,localhost,localhost,localhost
 ```
 
-Options:
-```
-    -Phosts               : Hosts used by benchmarks on the order of client,locator,server,server (-Phosts=localhost,localhost,localhost,localhost)
-    -PoutputDir           : Results output directory (-PoutputDir=/tmp/results)
-    -PtestJVM             : Path to an alternative JVM for running the client, locator, and servers. If not specified JAVA_HOME will be used. Note all compilation tasks will still use JAVA_HOME.
-    -PwithSsl             : Flag to run geode with SSL. A self-signed certificate will be generated at runtime.
-    -PwithSslProtocols    : Specifies enabled SSL protocols. See Geode property `ssl-protocols`
-    -PwithSslCiphers      : Specifies enabled SSL chipher suites. See Geode property `ssl-ciphers`
-    -PwithSecurityManager : Flag to start Geode with the example implementation of SecurityManager
-    -PwithSniProxy        : Use SNI proxy topology.
-    -PwithSniProxyImage   : Provide an alternative Docker image coordinate for SNI proxy.
-    -PwithRouter          : Use router with SNI proxy topology.
-    -PwithRouterImage     : Provide an alternative Docker image coordinate for router.
-    -PwithGc              : Select which GC to use. Valid values CMS (default), G1, Z.
-    -PwithHeap            : Specify how large a heap the benchmark VMs should use, default "8g". Accepts any `-Xmx` value, like "32g".
-    -PwithThreads         : Specify how many threads to use when executing the benchmark. Default varies by benchmark.
-    -PwithWarmup          : Specify how long to warm up the benchmark in seconds. Default is 60 seconds.
-    -PwithDuration        : Specify how long to measure the benchmark in seconds. Default is 300 seconds.
-    --tests               : Specific benchmarks to run (--tests=PartitionedPutBenchmark)
-    -d                    : Debug
-    -i                    : Info
-```    
+### Options
+The benchmarks can take configuration options. Some using Gradle's `-P` flag and other, which adjust
+benchmark behavior, via Java system properties using `-D`.
+
+| Option                | Description |
+| --------------------- | ----------- |
+| `-Phosts`               | Hosts used by benchmarks on the order of client,locator,server,server (-Phosts=localhost,localhost,localhost,localhost) |
+| `-PoutputDir`           | Results output directory (-PoutputDir=/tmp/results) |
+| `-PtestJVM`             | Path to an alternative JVM for running the client, locator, and servers. If not specified JAVA_HOME will be used. Note all compilation tasks will still use JAVA_HOME. |
+| `-Pbenchmark.X`         | Where X is a benchmark configuration, defined below. |
+| `--tests`               | Specific benchmarks to run (--tests=PartitionedPutBenchmark) |
+| `-d`                    | Debug |
+| `-i`                    | Info |
+
+#### Benchmark Configuration
+##### Common
+These options may apply to all benchmarks.
+
+| Option                | Description |
+| --------------------- | ----------- |
+| withGc                | Select which GC to use. Valid values CMS (default), G1, Z, Shenandoah, Epsilon. |
+| withHeap              | Specify how large a heap the benchmark VMs should use, default "8g". Accepts any `-Xmx` value, like "32g". |
+| withThreads           | Specify how many threads to use when executing the benchmark. Default varies by benchmark. |
+| withWarmup            | Specify how long to warm up the benchmark in seconds. Default is 60 seconds. |
+| withDuration          | Specify how long to run the benchmark in seconds. Default is 300 seconds. |
+| withMinKey            | The minimum key value in the key range. Default is 0. |
+| withMaxKey            | The maximum key value in the key range. Default varies by benchmark. |
+| withLocatorCount      | Number of locators a topology should use. Typically defaults to 1. |
+| withServerCount       | Number of servers a topology should use. Typically defaults to 2. |
+| withClientCount       | Number of clients a topology should use. Typically defaults to 1. |
+| withReplicas          | Number of region replicas. |
+| withAsyncReplication  | Enable asynch region replication. |
+| withNettyThreads      | Number of threads Netty IO Services should have. |
+
+##### Geode Benchmarks
+These options only apply to Geode benchmarks.
+
+| Option                | Description |
+| --------------------- | ----------- |
+| withSsl               | Flag to run geode with SSL. A self-signed certificate will be generated at runtime. |
+| withSslProtocols      | Specifies enabled SSL protocols. See Geode property `ssl-protocols` |
+| withSslCiphers        | Specifies enabled SSL chipher suites. See Geode property `ssl-ciphers` |
+| withSecurityManager   | Flag to start Geode with the example implementation of SecurityManager |
+| withSniProxy          | Use SNI proxy topology. |
+| withSniProxyImage     | Provide an alternative Docker image coordinate for SNI proxy. |
+| withRouter            | Use router with SNI proxy topology. |
+| withRouterImage       | Provide an alternative Docker image coordinate for router. |
+
+##### Redis Benchmarks
+These options only apply to Redis benchmarks.
+
+| Option                | Description |
+| --------------------- | ----------- |
+| withRedisClient       | Redis client to use. May be 'jedis' (default) or 'lettuce'. |
+| withRedisCluster      | Redis cluster implementation. May be 'geode' (default), 'redis', 'manual'. |
+| withRedisServers      | A semicolon delimited list of Redis host:port pairs for manual cluster mode. |
+
+##### Debugging
+These options should not be used when measuring benchmarks.
+
+| Option                | Description |
+| --------------------- | ----------- |
+| withValidation        | Enable validation of operations. Default disabled.|
+| withGcLogging         | Enable GC logging. Default disabled.|
+| withSafepointLogging  | Enable Safepoint logging. Default disabled.|
+| withStrace            | Launch remote JVM via strace for tracing system calls. Default disabled.|
+
+
 ### Scripts for running in aws and analyzing results
 
 This project includes some scripts to automate running benchmarks in AWS and analyzing the results produced (as well as the results produced from running locally). See the 
@@ -94,7 +140,7 @@ reported by the yardstick framework.
 * Benchmark configuration class, which defines the topology of the test and
 * the initialization tasks and workload tasks for the test.
 */
-public class PartitionedPutBenchmark implements PerformanceTest {
+public class PartitionedPutBenchmark extends AbstractPerformanceTest {
 
   @Test
   public void run() throws Exception {
@@ -168,16 +214,16 @@ supported proxy implementations. The value should be set to a valid Docker image
  
 To run a test, e.g. `PartitionedGetBenchmark`, with default SNI Proxy:
 ```console
-./run_tests.sh -t anytagname -- -PwithSniProxy --tests=PartitionedGetBenchmark
+./run_tests.sh -t anytagname -- -Pbenchmark.withSniProxy --tests=PartitionedGetBenchmark
 ```
 
-Since SNI is a feature of TLS, running with the SNI topology incurs TLS overheads with implied `-PwithSsl`.
+Since SNI is a feature of TLS, running with the SNI topology incurs TLS overheads with implied `-Pbenchmark.withSsl`.
 
 ### Router
 An alternative topology uses a router sitting in front of the SNI proxy to simulate off network access
-to the cluster, enabled with `-PwithRouter`.
+to the cluster, enabled with `-Pbenchmark.withRouter`.
 
-Enabling the router implies `-PwithSniProxy`.
+Enabling the router implies `-Pbenchmark.withSniProxy`.
 
 The `withRouter` property accepts:
  * `HAProxy` for HAProxy based router (default).
@@ -185,5 +231,44 @@ The `withRouter` property accepts:
 
 Example:
 ```console
-./run_tests.sh -t anytagname -- -PwithRouter --tests=PartitionedGetBenchmark
+./run_tests.sh -t anytagname -- -Pbenchmark.withRouter --tests=PartitionedGetBenchmark
 ```
+
+## Redis Benchmarking
+
+You can run benchmarks utilizing the Redis protocol with various clients and backends. All Redis
+benchmarks take the pattern `Redis*Benchmark`. They expect 3 shards with 1 replica per shard, which
+when combined with 1 Geode locator and the benchmarking client needs a total of 8 hosts 
+(`./launch_cluster ... -c 8`).
+
+The `withRedisClient` property accepts:
+* `Jedis` for using the [Jedis](https://github.com/redis/jedis) library (default).
+* `Lettuce` for using the [Lettuce](https://lettuce.io) library.
+
+The `withRedisCluster` property accepts:
+* `Geode` for using the [Geode](https://geode.apache.org) server backend (default). Builds a Geode
+  cluster utilizing 7 hosts, 1 locator and 6 servers.
+* `Redis` for using the [Redis](https://redis.io) server backend. Builds a Redis cluster utilizing
+  6 hosts and the [Bitnami Redis image](https://hub.docker.com/r/bitnami/redis/).
+* `Manual` for using a manually configured Redis server backend, like [Elasticache](https://aws.amazon.com/elasticache/).
+  Use `withRedisServers` to specify the address(es) to the Redis server endpoints.
+  
+Examples:
+
+* Runs the `RedisGetBenchmark` against a Geode cluster using the Jedis client.
+    ```console
+    ./run_tests.sh -t anytagname -- --tests=RedisGetBenchmark
+    ```
+* Runs the `RedisGetBenchmark` against a Geode cluster using the Lettuce client.
+    ```console
+    ./run_tests.sh -t anytagname -- -Pbenchmark.withRedisClient=lettuce --tests=RedisGetBenchmark
+    ```
+* Runs the `RedisGetBenchmark` against a Redis cluster using the Jedis client.
+    ```console
+    ./run_tests.sh -t anytagname -- -Pbenchmark.withRedisCluster=redis --tests=RedisGetBenchmark
+    ```
+* Runs the `RedisGetBenchmark` against an Elasticache cluster using the Jedis client.
+    ```console
+    ./run_tests.sh -t anytagname -- -Pbenchmark.withRedisCluster=manual -Pbenchmark.withRedisServers=my-cluster...clustercfg.usw2.cache.amazonaws.com:6379 --tests=RedisGetBenchmark
+    ```
+  

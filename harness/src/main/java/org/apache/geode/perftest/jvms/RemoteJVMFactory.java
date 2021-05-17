@@ -129,7 +129,7 @@ public class RemoteJVMFactory {
     CompletableFuture<Void> processesExited = jvmLauncher.launchProcesses(infra, RMI_PORT, mapping);
 
     if (!controller.waitForWorkers(5, TimeUnit.MINUTES)) {
-      throw new IllegalStateException("Workers failed to start in 1 minute");
+      throw new IllegalStateException("Workers failed to start in 5 minute");
     }
 
     return new RemoteJVMs(infra, mapping, controller, processesExited);

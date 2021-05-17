@@ -26,11 +26,10 @@ import org.apache.geode.benchmark.tasks.CreateClientProxyRegion;
 import org.apache.geode.benchmark.tasks.CreatePartitionedRegion;
 import org.apache.geode.benchmark.tasks.OQLQuery;
 import org.apache.geode.benchmark.tasks.PrePopulateRegion;
-import org.apache.geode.perftest.PerformanceTest;
 import org.apache.geode.perftest.TestConfig;
 import org.apache.geode.perftest.TestRunners;
 
-public class PartitionedNonIndexedQueryBenchmark implements PerformanceTest {
+public class PartitionedNonIndexedQueryBenchmark extends AbstractPerformanceTest {
   private LongRange keyRange = new LongRange(0, 500000);
   private long queryRange = 100;
 
@@ -56,7 +55,7 @@ public class PartitionedNonIndexedQueryBenchmark implements PerformanceTest {
     before(config, new CreatePartitionedRegion(), SERVER);
     before(config, new CreateClientProxyRegion(), CLIENT);
     before(config, new PrePopulateRegion(keyRange), CLIENT);
-    workload(config, new OQLQuery(keyRange, queryRange), CLIENT);
+    workload(config, new OQLQuery(keyRange, queryRange, isValidationEnabled()), CLIENT);
     return config;
   }
 }

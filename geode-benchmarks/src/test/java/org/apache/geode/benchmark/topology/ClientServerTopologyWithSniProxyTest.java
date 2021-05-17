@@ -15,14 +15,11 @@
 
 package org.apache.geode.benchmark.topology;
 
+import static java.lang.System.setProperty;
 import static org.apache.geode.benchmark.topology.ClientServerTopologyWithSniProxy.WITH_SNI_PROXY_PROPERTY;
 import static org.apache.geode.benchmark.topology.Roles.CLIENT;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.Properties;
-
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junitpioneer.jupiter.ClearSystemProperty;
@@ -32,23 +29,11 @@ import org.apache.geode.perftest.TestConfig;
 
 public class ClientServerTopologyWithSniProxyTest {
 
-  private Properties systemProperties;
-
-  @BeforeEach
-  public void beforeEach() {
-    systemProperties = (Properties) System.getProperties().clone();
-  }
-
-  @AfterEach
-  public void afterEach() {
-    System.setProperties(systemProperties);
-  }
-
   @ParameterizedTest
   @EnumSource(SniProxyImplementation.class)
   @ClearSystemProperty(key = WITH_SNI_PROXY_PROPERTY)
   public void configWithNoSsl(final SniProxyImplementation sniProxyImplementation) {
-    System.setProperty(WITH_SNI_PROXY_PROPERTY, sniProxyImplementation.name());
+    setProperty(WITH_SNI_PROXY_PROPERTY, sniProxyImplementation.name());
     final TestConfig testConfig = new TestConfig();
     ClientServerTopologyWithSniProxy.configure(testConfig);
     assertThat(testConfig.getJvmArgs().get(CLIENT.name())).contains("-Dbenchmark.withSsl=true");

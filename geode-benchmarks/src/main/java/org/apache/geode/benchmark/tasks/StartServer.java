@@ -23,10 +23,10 @@ import java.io.File;
 import java.net.InetAddress;
 import java.util.Properties;
 
-import org.apache.geode.cache.Cache;
 import org.apache.geode.cache.CacheFactory;
 import org.apache.geode.cache.server.CacheServer;
 import org.apache.geode.distributed.ConfigurationProperties;
+import org.apache.geode.internal.cache.InternalCache;
 import org.apache.geode.pdx.ReflectionBasedAutoSerializer;
 import org.apache.geode.perftest.Task;
 import org.apache.geode.perftest.TestContext;
@@ -35,6 +35,8 @@ import org.apache.geode.perftest.TestContext;
  * Task to create the server cache and start the cache server.
  */
 public class StartServer implements Task {
+
+  public static final String SERVER_CACHE = "SERVER_CACHE";
 
   private final int locatorPort;
   private final int serverPort;
@@ -49,20 +51,37 @@ public class StartServer implements Task {
 
     Properties properties = serverProperties();
 
+    final CacheFactory cacheFactory = new CacheFactory(properties);
+    configureCacheFactory(cacheFactory, context);
+    final InternalCache cache = (InternalCache) cacheFactory.create();
+
+    final CacheServer cacheServer = configureCacheServer(cache.addCacheServer(), context);
+    if (null != cacheServer) {
+      cacheServer.start();
+    }
+
+    context.setAttribute(SERVER_CACHE, cache);
+  }
+
+  /**
+   * Configure the {@link CacheFactory}
+   *
+   * Subclasses can override this. Call super first to inherit settings.
+   *
+   * @param cacheFactory is modified by this method!
+   */
+  protected CacheFactory configureCacheFactory(final CacheFactory cacheFactory,
+      final TestContext context)
+      throws Exception {
     String locatorString = LocatorUtil.getLocatorString(context, locatorPort);
     String statsFile = new File(context.getOutputDir(), "stats.gfs").getAbsolutePath();
-    Cache cache = new CacheFactory(properties)
+
+    return cacheFactory
         .setPdxSerializer(new ReflectionBasedAutoSerializer("benchmark.geode.data.*"))
         .set(ConfigurationProperties.LOCATORS, locatorString)
         .set(ConfigurationProperties.NAME,
             "server-" + context.getJvmID() + "-" + InetAddress.getLocalHost())
-        .set(ConfigurationProperties.STATISTIC_ARCHIVE_FILE, statsFile)
-        .create();
-    CacheServer cacheServer = cache.addCacheServer();
-    configureCacheServer(cacheServer, context);
-    cacheServer.start();
-    context.setAttribute("SERVER_CACHE", cache);
-
+        .set(ConfigurationProperties.STATISTIC_ARCHIVE_FILE, statsFile);
   }
 
   /**
@@ -72,9 +91,11 @@ public class StartServer implements Task {
    *
    * @param cacheServer is modified by this method!
    */
-  protected void configureCacheServer(final CacheServer cacheServer, final TestContext context) {
+  protected CacheServer configureCacheServer(final CacheServer cacheServer,
+      final TestContext context) {
     cacheServer.setMaxConnections(Integer.MAX_VALUE);
     cacheServer.setPort(serverPort);
+    return cacheServer;
   }
 
 }

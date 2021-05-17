@@ -28,14 +28,13 @@ import org.apache.geode.benchmark.LongRange;
 import org.apache.geode.benchmark.tasks.CreatePartitionedRegion;
 import org.apache.geode.benchmark.tasks.GetTask;
 import org.apache.geode.benchmark.tasks.PrePopulateRegion;
-import org.apache.geode.perftest.PerformanceTest;
 import org.apache.geode.perftest.TestConfig;
 import org.apache.geode.perftest.TestRunners;
 
 /**
  * Benchmark of gets on a partitioned region.
  */
-public class P2pPartitionedGetBenchmark implements PerformanceTest {
+public class P2pPartitionedGetBenchmark extends AbstractPerformanceTest {
 
   private LongRange keyRange = new LongRange(0, 1000000);
 
@@ -55,7 +54,7 @@ public class P2pPartitionedGetBenchmark implements PerformanceTest {
     final TestConfig config = P2pBenchmark.createConfig();
     before(config, new CreatePartitionedRegion(), SERVER);
     before(config, new PrePopulateRegion(keyRange, SERVER), SERVER);
-    workload(config, new GetTask(keyRange), SERVER);
+    workload(config, new GetTask(keyRange, isValidationEnabled()), SERVER);
     return config;
 
   }

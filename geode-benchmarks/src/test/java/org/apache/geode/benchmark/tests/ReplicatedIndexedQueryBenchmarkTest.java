@@ -32,6 +32,7 @@ public class ReplicatedIndexedQueryBenchmarkTest {
     ReplicatedIndexedQueryBenchmark test = new ReplicatedIndexedQueryBenchmark();
     test.setKeyRange(new LongRange(0, 100));
     test.setQueryRange(10);
+    test.setValidationEnabled(true);
     TestRunners.minimalRunner(folder).runTest(test);
   }
 

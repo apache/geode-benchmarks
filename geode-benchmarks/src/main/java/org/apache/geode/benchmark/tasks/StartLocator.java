@@ -47,6 +47,7 @@ public class StartLocator implements Task {
     properties.setProperty(ConfigurationProperties.STATISTIC_ARCHIVE_FILE, statsFile);
 
     properties.setProperty(ConfigurationProperties.NAME, "locator-" + InetAddress.getLocalHost());
+
     startLocator(properties, locatorPort, context);
   }
 

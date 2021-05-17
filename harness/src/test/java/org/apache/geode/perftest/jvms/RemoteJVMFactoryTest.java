@@ -17,6 +17,7 @@
 
 package org.apache.geode.perftest.jvms;
 
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.eq;
@@ -72,7 +73,7 @@ public class RemoteJVMFactoryTest {
     Set<Infrastructure.Node> nodes = Stream.of(node1, node2).collect(Collectors.toSet());
     when(infra.getNodes()).thenReturn(nodes);
 
-    when(controller.waitForWorkers(anyInt(), any())).thenReturn(true);
+    when(controller.waitForWorkers(anyLong(), any())).thenReturn(true);
 
     factory.launch(roles, Collections.emptyMap());
 
@@ -80,7 +81,7 @@ public class RemoteJVMFactoryTest {
 
     inOrder.verify(controllerFactory).createController(any(), eq(2));
     inOrder.verify(jvmLauncher).launchProcesses(eq(infra), anyInt(), any());
-    inOrder.verify(controller).waitForWorkers(anyInt(), any());
+    inOrder.verify(controller).waitForWorkers(anyLong(), any());
 
 
 

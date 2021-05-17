@@ -35,7 +35,7 @@ public class PartitionedPutAllLongBenchmarkTest {
       throws Exception {
     PartitionedPutAllLongBenchmark test = new PartitionedPutAllLongBenchmark();
     test.setKeyRange(new LongRange(0, 100));
-    TestRunners.minimalRunner(folder)
-        .runTest(test);
+    test.setValidationEnabled(true);
+    TestRunners.minimalRunner(folder).runTest(test);
   }
 }

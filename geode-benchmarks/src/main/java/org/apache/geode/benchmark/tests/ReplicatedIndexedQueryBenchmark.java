@@ -27,11 +27,10 @@ import org.apache.geode.benchmark.tasks.CreateIndexOnID;
 import org.apache.geode.benchmark.tasks.CreateReplicatedRegion;
 import org.apache.geode.benchmark.tasks.OQLQuery;
 import org.apache.geode.benchmark.tasks.PrePopulateRegion;
-import org.apache.geode.perftest.PerformanceTest;
 import org.apache.geode.perftest.TestConfig;
 import org.apache.geode.perftest.TestRunners;
 
-public class ReplicatedIndexedQueryBenchmark implements PerformanceTest {
+public class ReplicatedIndexedQueryBenchmark extends AbstractPerformanceTest {
   private LongRange keyRange = new LongRange(0, 500000);
   private long queryRange = 100;
 
@@ -58,7 +57,7 @@ public class ReplicatedIndexedQueryBenchmark implements PerformanceTest {
     before(config, new CreateClientProxyRegion(), CLIENT);
     before(config, new CreateIndexOnID(), SERVER);
     before(config, new PrePopulateRegion(keyRange), CLIENT);
-    workload(config, new OQLQuery(keyRange, queryRange), CLIENT);
+    workload(config, new OQLQuery(keyRange, queryRange, isValidationEnabled()), CLIENT);
     return config;
   }
 }

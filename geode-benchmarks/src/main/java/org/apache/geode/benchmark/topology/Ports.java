@@ -34,4 +34,10 @@ public class Ports {
    * The SNI proxy port.
    */
   public static final int SNI_PROXY_PORT = 15443;
+
+  /**
+   * Default Redis port.
+   */
+  public static final int REDIS_PORT = 6379;
+
 }

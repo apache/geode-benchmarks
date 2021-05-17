@@ -29,14 +29,13 @@ import org.apache.geode.benchmark.tasks.CreateClientProxyRegion;
 import org.apache.geode.benchmark.tasks.CreatePartitionedRegion;
 import org.apache.geode.benchmark.tasks.PrePopulateRegionLong;
 import org.apache.geode.benchmark.tasks.PutAllTask;
-import org.apache.geode.perftest.PerformanceTest;
 import org.apache.geode.perftest.TestConfig;
 import org.apache.geode.perftest.TestRunners;
 
 /**
  * Benchmark of putAlls on a partitioned region.
  */
-public class PartitionedPutAllLongBenchmark implements PerformanceTest {
+public class PartitionedPutAllLongBenchmark extends AbstractPerformanceTest {
 
   private LongRange keyRange = new LongRange(0, 1000000);
 
