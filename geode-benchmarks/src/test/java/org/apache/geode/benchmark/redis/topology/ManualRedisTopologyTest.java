@@ -58,7 +58,7 @@ public class ManualRedisTopologyTest {
 
   @Test
   @SetSystemProperty(key = WITH_REDIS_SERVERS_PROPERTY, value = "a:1;b:2;c:3")
-  public void configureWithMultipleServersAndPorts() {
+  public void configureWithMultipleServersWithHostsAndPorts() {
     final TestConfig testConfig = new TestConfig();
     ManualRedisTopology.configure(testConfig);
     assertThat(testConfig.getBefore().stream().map(TestStep::getTask)
