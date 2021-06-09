@@ -59,7 +59,9 @@ dependencies {
   geodeVersion = configurations.geodeVersionResolver.resolvedConfiguration.resolvedArtifacts.find {it.name == 'geode-core'}.moduleVersion.id.version
   println "Building with Geode ${geodeVersion}."
 
-  implementation platform("org.apache.geode:geode-all-bom:${geodeVersion}")
+  if (VersionNumber.parse(geodeVersion) >= VersionNumber.parse("1.9.0.+")) {
+    implementation platform("org.apache.geode:geode-all-bom:${geodeVersion}")
+  }
 
   implementation(project(':harness'))
 
@@ -86,7 +88,9 @@ dependencies {
   }
 
   // Required for missing dependency on geode-core.
-  runtimeOnly(group: 'org.eclipse.jetty', name: 'jetty-webapp')
+  if (VersionNumber.parse(geodeVersion) >= VersionNumber.parse("1.9.0.+")) {
+    runtimeOnly(group: 'org.eclipse.jetty', name: 'jetty-webapp')
+  }
 
   testImplementation(group: 'org.junit.jupiter', name: 'junit-jupiter-params', version: project.'junit-jupiter.version')
   testImplementation(group: 'org.mockito', name: 'mockito-core', version: project.'mockito.version')
