@@ -67,6 +67,7 @@ public class RemoteJVMFactory {
   public static final String RMI_PORT_PROPERTY = "RMI_PORT";
   public static final String CONTROLLER = "CONTROLLER";
   public static final String OUTPUT_DIR = "OUTPUT_DIR";
+  public static final String ROLE = "ROLE";
   public static final String JVM_ID = "JVM_ID";
   public static final int RMI_PORT = 33333;
   private static final String CLASSPATH = System.getProperty("java.class.path");
@@ -161,7 +162,7 @@ public class RemoteJVMFactory {
     X509Certificate[] chain = new X509Certificate[1];
     chain[0] = keyGen.getSelfCertificate(new X500Name("CN=ROOT"), DAYS.toSeconds(365));
 
-    logger.info("Certificate : {}", chain[0]);
+    logger.debug("Certificate : {}", chain[0]);
 
     KeyStore ks = KeyStore.getInstance(KeyStore.getDefaultType());
     ks.load(null, null);

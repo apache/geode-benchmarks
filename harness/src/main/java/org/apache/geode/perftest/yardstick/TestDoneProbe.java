@@ -20,6 +20,7 @@ package org.apache.geode.perftest.yardstick;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import org.yardstickframework.BenchmarkConfiguration;
 import org.yardstickframework.BenchmarkDriver;
@@ -30,8 +31,8 @@ class TestDoneProbe implements BenchmarkProbe {
 
   CountDownLatch done = new CountDownLatch(1);
 
-  public void await() throws InterruptedException {
-    done.await();
+  public boolean await(long time, TimeUnit unit) throws InterruptedException {
+    return done.await(time, unit);
   }
 
   @Override

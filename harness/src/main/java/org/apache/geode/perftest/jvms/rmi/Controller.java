@@ -29,6 +29,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.apache.geode.perftest.Task;
 import org.apache.geode.perftest.runner.SharedContext;
 
@@ -36,6 +39,7 @@ import org.apache.geode.perftest.runner.SharedContext;
  * RMI object that lives on the main controller JVM
  */
 public class Controller extends UnicastRemoteObject implements ControllerRemote {
+  Logger logger = LoggerFactory.getLogger(Controller.class);
   private final Registry registry;
   private final SharedContext context;
   private final Map<Integer, WorkerRemote> workers = new ConcurrentHashMap<>();
@@ -69,6 +73,11 @@ public class Controller extends UnicastRemoteObject implements ControllerRemote 
   @Override
   public boolean ping() throws RemoteException {
     return !isClosed;
+  }
+
+  @Override
+  public void logProgress(String progress) throws RemoteException {
+    logger.info(progress);
   }
 
   @Override

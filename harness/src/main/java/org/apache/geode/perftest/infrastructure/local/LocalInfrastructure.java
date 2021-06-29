@@ -34,6 +34,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Function;
 
 import org.apache.commons.io.FileUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.apache.geode.perftest.infrastructure.Infrastructure;
 
@@ -42,6 +44,7 @@ import org.apache.geode.perftest.infrastructure.Infrastructure;
  * on the local computer, in their own working directories.
  */
 public class LocalInfrastructure implements Infrastructure {
+  private static final Logger logger = LoggerFactory.getLogger(LocalInfrastructure.class);
 
   private final Set<LocalNode> nodes = new LinkedHashSet<>();
   private final List<Process> processList = new CopyOnWriteArrayList<>();
@@ -66,7 +69,7 @@ public class LocalInfrastructure implements Infrastructure {
     builder.inheritIO();
     builder.directory(((LocalNode) node).getWorkingDir());
 
-    System.out.println(String.format("Launching %s>%s", ((LocalNode) node).getWorkingDir(),
+    logger.debug(String.format("Launching %s>%s", ((LocalNode) node).getWorkingDir(),
         String.join(" ", shellCommand)));
     Process process = builder.start();
     processList.add(process);
