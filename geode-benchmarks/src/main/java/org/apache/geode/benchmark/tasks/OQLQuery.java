@@ -14,7 +14,7 @@
  */
 package org.apache.geode.benchmark.tasks;
 
-import static org.apache.geode.util.internal.UncheckedUtils.uncheckedCast;
+import static org.apache.geode.benchmark.utils.UncheckedUtils.uncheckedCast;
 
 import java.io.Serializable;
 import java.util.Map;
