@@ -170,7 +170,6 @@ public class SshInfrastructure implements Infrastructure {
           }
 
           for (File file : files) {
-            logger.info("Copying " + file + " to " + address);
             client.newSCPFileTransfer().upload(new FileSystemFile(file), destDir);
           }
         } catch (IOException e) {
