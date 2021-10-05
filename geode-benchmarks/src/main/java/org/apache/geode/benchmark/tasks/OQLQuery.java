@@ -14,8 +14,6 @@
  */
 package org.apache.geode.benchmark.tasks;
 
-import static org.apache.geode.util.internal.UncheckedUtils.uncheckedCast;
-
 import java.io.Serializable;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
@@ -59,6 +57,7 @@ public class OQLQuery extends BenchmarkDriverAdapter implements Serializable {
   }
 
   @Override
+  @SuppressWarnings("unchecked")
   public boolean test(final Map<Object, Object> ctx) throws Exception {
     final long minId =
         ThreadLocalRandom.current().nextLong(keyRange.getMin(), keyRange.getMax() - queryRange);
@@ -67,7 +66,7 @@ public class OQLQuery extends BenchmarkDriverAdapter implements Serializable {
     final Object result = query.execute(minId, maxId);
 
     if (isValidationEnabled) {
-      verifyResults(uncheckedCast(result), minId, maxId);
+      verifyResults((SelectResults<Portfolio>) result, minId, maxId);
     }
 
     return true;
