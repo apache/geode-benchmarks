@@ -23,9 +23,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.geode.internal.Assert;
-
-
 public class Portfolio {
 
   public enum Day {
@@ -88,7 +85,6 @@ public class Portfolio {
     collectionHolderMap.put("3", new CollectionHolder());
 
     unicodeṤtring = i % 2 == 0 ? "ṤṶẐ" : "ṤẐṶ";
-    Assert.assertTrue(unicodeṤtring.length() == 3);
   }
 
   public Portfolio(int i, int j) {

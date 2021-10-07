@@ -23,10 +23,10 @@ import java.io.File;
 import java.net.InetAddress;
 import java.util.Properties;
 
+import org.apache.geode.cache.Cache;
 import org.apache.geode.cache.CacheFactory;
 import org.apache.geode.cache.server.CacheServer;
 import org.apache.geode.distributed.ConfigurationProperties;
-import org.apache.geode.internal.cache.InternalCache;
 import org.apache.geode.pdx.ReflectionBasedAutoSerializer;
 import org.apache.geode.perftest.Task;
 import org.apache.geode.perftest.TestContext;
@@ -53,7 +53,7 @@ public class StartServer implements Task {
 
     final CacheFactory cacheFactory = new CacheFactory(properties);
     configureCacheFactory(cacheFactory, context);
-    final InternalCache cache = (InternalCache) cacheFactory.create();
+    final Cache cache = cacheFactory.create();
 
     final CacheServer cacheServer = configureCacheServer(cache.addCacheServer(), context);
     if (null != cacheServer) {
