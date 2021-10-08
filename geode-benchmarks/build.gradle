@@ -82,7 +82,7 @@ dependencies {
   }
 
   if (VersionNumber.parse(geodeVersion) >= VersionNumber.parse("1.15.0.+")) {
-    runtimeOnly(group: 'org.apache.geode', name: 'geode-apis-compatible-with-redis')
+    runtimeOnly(group: 'org.apache.geode', name: 'geode-for-redis')
   }
 
   // Required for missing dependency on geode-core.
