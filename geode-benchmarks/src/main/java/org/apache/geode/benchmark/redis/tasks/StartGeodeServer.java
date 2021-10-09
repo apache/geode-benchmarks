@@ -40,8 +40,8 @@ public class StartGeodeServer extends StartServer {
       throws Exception {
 
     return super.configureCacheFactory(cacheFactory, context)
-        .set("compatible-with-redis-enabled", valueOf(true))
-        .set("compatible-with-redis-port", valueOf(redisPort));
+        .set("geode-for-redis-enabled", valueOf(true))
+        .set("geode-for-redis-port", valueOf(redisPort));
   }
 
   @Override
