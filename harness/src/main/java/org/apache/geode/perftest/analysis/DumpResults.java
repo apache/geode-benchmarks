@@ -37,7 +37,7 @@ public class DumpResults {
 
     BenchmarkReader reader = new BenchmarkReader();
     reader.addProbe(new YardstickHdrHistogramParser());
-    System.out.printf("%-40s %-30s %-16s %-16s %-16s\n", "Directory", "Benchmark", "ops/sec",
+    System.out.printf("%-30s %-55s %-16s %-16s %-16s\n", "Directory", "Benchmark", "ops/sec",
         "avg latency(ms)", "99%% latency(ms)");
 
     Arrays.sort(args);
@@ -58,11 +58,9 @@ public class DumpResults {
             benchmarkResult.getValue().get(YardstickHdrHistogramParser.PERCENTILE_LATENCY_99).value
                 / 1_000_000.0;
 
-        System.out.printf("%-40s %-30s %-16.2f %-16.4f %-16.4f\n", benchmarkDir.getName(), name,
+        System.out.printf("%-30s %-55s %-16.2f %-16.4f %-16.4f\n", benchmarkDir.getName(), name,
             opsPerSec, latency, latency_99);
       }
-
-
     }
   }
 }
