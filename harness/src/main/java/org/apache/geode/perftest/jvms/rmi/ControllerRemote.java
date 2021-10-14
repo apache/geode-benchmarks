@@ -28,5 +28,7 @@ public interface ControllerRemote extends Remote {
 
   boolean ping() throws RemoteException;
 
+  void logProgress(String progress) throws RemoteException;
+
   SharedContext getsharedContext() throws RemoteException;
 }
