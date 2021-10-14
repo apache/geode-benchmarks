@@ -20,6 +20,6 @@ set -e
 TOP_DIR=$(git rev-parse --show-toplevel)
 
 WORKING_DIR=$(pwd)
-pushd ${TOP_DIR}
-./gradlew dumpRun -PdumpWorkingDir="${WORKING_DIR}" --args "$*"
-popd
+pushd ${TOP_DIR} > /dev/null
+./gradlew -q dumpRun -PdumpWorkingDir="${WORKING_DIR}" --args "$*"
+popd > /dev/null

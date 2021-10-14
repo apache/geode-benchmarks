@@ -57,7 +57,7 @@ configurations {
 dependencies {
   geodeVersionResolver(group: 'org.apache.geode', name: 'geode-core', version: geodeVersion)
   geodeVersion = configurations.geodeVersionResolver.resolvedConfiguration.resolvedArtifacts.find {it.name == 'geode-core'}.moduleVersion.id.version
-  println "Building with Geode ${geodeVersion}."
+  logger.info("Building with Geode ${geodeVersion}.")
 
   implementation platform("org.apache.geode:geode-all-bom:${geodeVersion}")
 
