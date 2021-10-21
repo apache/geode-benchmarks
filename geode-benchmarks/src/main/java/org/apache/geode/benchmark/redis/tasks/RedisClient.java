@@ -25,4 +25,6 @@ public interface RedisClient {
   boolean hset(String key, String field, String value);
 
   void flushdb();
+
+  long zadd(String key, double score, String value);
 }

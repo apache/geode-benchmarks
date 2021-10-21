@@ -68,6 +68,11 @@ public final class LettuceClientManager implements RedisClientManager {
     }
 
     @Override
+    public long zadd(String key, double score, String value) {
+      return redisAdvancedClusterCommands.get().zadd(key, score, value);
+    }
+
+    @Override
     public void flushdb() {
       redisAdvancedClusterCommands.get().flushdb();
     }
