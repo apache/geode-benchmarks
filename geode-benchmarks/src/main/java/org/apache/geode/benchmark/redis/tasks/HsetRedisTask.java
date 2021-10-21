@@ -18,8 +18,8 @@
 package org.apache.geode.benchmark.redis.tasks;
 
 
-import static org.apache.geode.benchmark.redis.tasks.RedisHash.toField;
-import static org.apache.geode.benchmark.redis.tasks.RedisHash.toKey;
+import static org.apache.geode.benchmark.redis.tasks.RedisSubpart.toPart;
+import static org.apache.geode.benchmark.redis.tasks.RedisSubpart.toKey;
 
 import java.io.Serializable;
 import java.util.Map;
@@ -58,7 +58,7 @@ public class HsetRedisTask extends BenchmarkDriverAdapter implements Serializabl
   public boolean test(final Map<Object, Object> ctx) throws Exception {
     final long k = keyRange.random();
     final String key = keyCache.valueOf(toKey(k));
-    final String field = keyCache.valueOf(toField(k));
+    final String field = keyCache.valueOf(toPart(k));
     final String value = keyCache.valueOf(k);
     redisClient.hset(key, field, value);
     return true;

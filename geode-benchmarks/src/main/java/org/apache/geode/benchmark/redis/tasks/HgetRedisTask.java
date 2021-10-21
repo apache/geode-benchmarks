@@ -17,8 +17,8 @@
 
 package org.apache.geode.benchmark.redis.tasks;
 
-import static org.apache.geode.benchmark.redis.tasks.RedisHash.toField;
-import static org.apache.geode.benchmark.redis.tasks.RedisHash.toKey;
+import static org.apache.geode.benchmark.redis.tasks.RedisSubpart.toPart;
+import static org.apache.geode.benchmark.redis.tasks.RedisSubpart.toKey;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.Serializable;
@@ -62,7 +62,7 @@ public class HgetRedisTask extends BenchmarkDriverAdapter implements Serializabl
     final long k = keyRange.random();
 
     final String key = keyCache.valueOf(toKey(k));
-    final String field = keyCache.valueOf(toField(k));
+    final String field = keyCache.valueOf(toPart(k));
     final String value = redisClient.hget(key, field);
     if (validate) {
       assertThat(value).isEqualTo(field);

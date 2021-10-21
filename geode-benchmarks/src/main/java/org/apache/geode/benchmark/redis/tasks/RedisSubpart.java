@@ -18,13 +18,15 @@ package org.apache.geode.benchmark.redis.tasks;
 /**
  * Split keyspace into Redis hash key and field parts.
  */
-public class RedisHash {
+public class RedisSubpart {
+
+  public static long NUM_SUBPARTS_PER_KEY = 1000;
 
   public static long toKey(final long key) {
-    return key / 1000;
+    return key / NUM_SUBPARTS_PER_KEY;
   }
 
-  public static long toField(final long key) {
-    return key % 1000;
+  public static long toPart(final long key) {
+    return key % NUM_SUBPARTS_PER_KEY;
   }
 }
