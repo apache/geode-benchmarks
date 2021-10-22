@@ -18,8 +18,8 @@
 package org.apache.geode.benchmark.redis.tasks;
 
 
-import static org.apache.geode.benchmark.redis.tasks.RedisSubpart.toPart;
-import static org.apache.geode.benchmark.redis.tasks.RedisSubpart.toKey;
+import static org.apache.geode.benchmark.redis.tasks.RedisSplitKey.toPart;
+import static org.apache.geode.benchmark.redis.tasks.RedisSplitKey.toKey;
 
 import java.io.Serializable;
 import java.util.Map;

@@ -17,8 +17,7 @@
 
 package org.apache.geode.benchmark.redis.tasks;
 
-import static org.apache.geode.benchmark.redis.tasks.RedisSubpart.toPart;
-import static org.apache.geode.benchmark.redis.tasks.RedisSubpart.toKey;
+import static org.apache.geode.benchmark.redis.tasks.RedisSplitKey.toKey;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.Serializable;
@@ -68,9 +67,9 @@ public class ZrangeRedisTask extends BenchmarkDriverAdapter implements Serializa
     final String key = keyCache.valueOf(toKey(k));
 
     final long start = ThreadLocalRandom.current()
-        .nextLong(0, RedisSubpart.NUM_SUBPARTS_PER_KEY);
+        .nextLong(0, RedisSplitKey.NUM_PARTS_PER_KEY);
     final long len = ThreadLocalRandom.current()
-        .nextLong(0, RedisSubpart.NUM_SUBPARTS_PER_KEY - start);
+        .nextLong(0, RedisSplitKey.NUM_PARTS_PER_KEY - start);
     final long stop = start + len;
 
     final Set<String> values = redisClient.zrange(key, start, stop);
