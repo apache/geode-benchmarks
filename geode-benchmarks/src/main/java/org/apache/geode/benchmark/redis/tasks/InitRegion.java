@@ -28,7 +28,7 @@ import org.apache.geode.perftest.TestContext;
 
 public class InitRegion implements Task {
 
-  public static final String REDIS_DATA_REGION = "REDIS_DATA";
+  public static final String REDIS_DATA_REGION = "GEODE_FOR_REDIS";
 
   @Override
   public void run(final TestContext context) throws Exception {
