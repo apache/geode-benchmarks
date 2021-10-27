@@ -68,6 +68,11 @@ public final class JedisClientManager implements RedisClientManager {
     }
 
     @Override
+    public Set<String> zrangeByScore(String key, long start, long stop) {
+      return jedisCluster.zrangeByScore(key, start, stop);
+    }
+
+    @Override
     public void flushdb() {
       Set<String> seen = new HashSet<>();
       for (int i = 0; i < HASHSLOTS; ++i) {

@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import io.lettuce.core.Range;
 import io.lettuce.core.ReadFrom;
 import io.lettuce.core.RedisURI;
 import io.lettuce.core.cluster.RedisClusterClient;
@@ -77,6 +78,12 @@ public final class LettuceClientManager implements RedisClientManager {
     @Override
     public Set<String> zrange(String key, long start, long stop) {
       return new HashSet<>(redisAdvancedClusterCommands.get().zrange(key, start, stop));
+    }
+
+    @Override
+    public Set<String> zrangeByScore(String key, long start, long stop) {
+      return new HashSet<>(
+          redisAdvancedClusterCommands.get().zrangebyscore(key, Range.create(start, stop)));
     }
 
     @Override
