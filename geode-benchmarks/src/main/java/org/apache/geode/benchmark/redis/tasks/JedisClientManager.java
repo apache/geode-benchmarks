@@ -63,6 +63,11 @@ public final class JedisClientManager implements RedisClientManager {
     }
 
     @Override
+    public long zrem(String key, String value) {
+      return jedisCluster.zrem(key, value);
+    }
+
+    @Override
     public Set<String> zrange(String key, long start, long stop) {
       return jedisCluster.zrange(key, start, stop);
     }
