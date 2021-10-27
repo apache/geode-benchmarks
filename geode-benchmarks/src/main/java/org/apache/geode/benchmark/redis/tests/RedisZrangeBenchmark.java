@@ -15,25 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.geode.benchmark.redis.tasks;
+package org.apache.geode.benchmark.redis.tests;
 
-import static java.lang.String.valueOf;
-import static org.apache.geode.benchmark.redis.tasks.RedisSplitKey.toPart;
-import static org.apache.geode.benchmark.redis.tasks.RedisSplitKey.toKey;
+import static org.apache.geode.benchmark.Config.before;
+import static org.apache.geode.benchmark.Config.workload;
+import static org.apache.geode.benchmark.topology.Roles.CLIENT;
 
-import org.apache.geode.benchmark.LongRange;
+import org.apache.geode.benchmark.redis.tasks.PrePopulateRedisSortedSet;
+import org.apache.geode.benchmark.redis.tasks.ZrangeRedisTask;
+import org.apache.geode.perftest.TestConfig;
 
-public class PrePopulateRedisHash extends AbstractPrePopulate {
-
-  public PrePopulateRedisHash(
-      final RedisClientManager redisClientManager,
-      final LongRange keyRangeToPrepopulate) {
-    super(redisClientManager, keyRangeToPrepopulate);
-  }
+public class RedisZrangeBenchmark extends RedisBenchmark {
 
   @Override
-  protected void prepopulate(final RedisClient redisClient, final long key) {
-    final String value = valueOf(toPart(key));
-    redisClient.hset(valueOf(toKey(key)), value, value);
+  public TestConfig configure() {
+    final TestConfig config = super.configure();
+
+    before(config, new PrePopulateRedisSortedSet(redisClientManager, keyRange), CLIENT);
+    workload(config, new ZrangeRedisTask(redisClientManager, keyRange, isValidationEnabled()),
+        CLIENT);
+    return config;
   }
 }

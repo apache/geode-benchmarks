@@ -23,9 +23,9 @@ import static org.apache.geode.benchmark.redis.tasks.RedisSplitKey.toKey;
 
 import org.apache.geode.benchmark.LongRange;
 
-public class PrePopulateRedisHash extends AbstractPrePopulate {
+public class PrePopulateRedisSortedSet extends AbstractPrePopulate {
 
-  public PrePopulateRedisHash(
+  public PrePopulateRedisSortedSet(
       final RedisClientManager redisClientManager,
       final LongRange keyRangeToPrepopulate) {
     super(redisClientManager, keyRangeToPrepopulate);
@@ -33,7 +33,8 @@ public class PrePopulateRedisHash extends AbstractPrePopulate {
 
   @Override
   protected void prepopulate(final RedisClient redisClient, final long key) {
-    final String value = valueOf(toPart(key));
-    redisClient.hset(valueOf(toKey(key)), value, value);
+    final long score = toPart(key);
+    final String value = valueOf(score);
+    redisClient.zadd(valueOf(toKey(key)), score, value);
   }
 }

@@ -17,12 +17,15 @@
 
 package org.apache.geode.benchmark.redis.tasks;
 
-import static org.apache.geode.benchmark.redis.tasks.RedisSplitKey.toPart;
 import static org.apache.geode.benchmark.redis.tasks.RedisSplitKey.toKey;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.Serializable;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Collectors;
+import java.util.stream.LongStream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,8 +34,8 @@ import org.yardstickframework.BenchmarkDriverAdapter;
 
 import org.apache.geode.benchmark.LongRange;
 
-public class HgetRedisTask extends BenchmarkDriverAdapter implements Serializable {
-  private static final Logger logger = LoggerFactory.getLogger(HgetRedisTask.class);
+public class ZrangeRedisTask extends BenchmarkDriverAdapter implements Serializable {
+  private static final Logger logger = LoggerFactory.getLogger(ZrangeRedisTask.class);
 
   private final RedisClientManager redisClientManager;
   private final LongRange keyRange;
@@ -41,8 +44,8 @@ public class HgetRedisTask extends BenchmarkDriverAdapter implements Serializabl
   private transient LongStringCache keyCache;
   private transient RedisClient redisClient;
 
-  public HgetRedisTask(final RedisClientManager redisClientManager, final LongRange keyRange,
-      final boolean validate) {
+  public ZrangeRedisTask(final RedisClientManager redisClientManager, final LongRange keyRange,
+                         final boolean validate) {
     logger.info("Initialized: keyRange={}, validate={}", keyRange, validate);
     this.redisClientManager = redisClientManager;
     this.keyRange = keyRange;
@@ -62,10 +65,25 @@ public class HgetRedisTask extends BenchmarkDriverAdapter implements Serializabl
     final long k = keyRange.random();
 
     final String key = keyCache.valueOf(toKey(k));
-    final String field = keyCache.valueOf(toPart(k));
-    final String value = redisClient.hget(key, field);
+
+    final long start = ThreadLocalRandom.current()
+        .nextLong(0, RedisSplitKey.NUM_PARTS_PER_KEY);
+    final long len = ThreadLocalRandom.current()
+        .nextLong(0, RedisSplitKey.NUM_PARTS_PER_KEY - start);
+    final long stop = start + len;
+
+    final Set<String> values = redisClient.zrange(key, start, stop);
     if (validate) {
-      assertThat(value).isEqualTo(field);
+      final LongRange range =
+          new LongRange(start, stop);
+
+      final Set<String> expectedValues =
+          LongStream.range(range.getMin(), range.getMax())
+              .boxed()
+              .map(keyCache::valueOf)
+              .collect(Collectors.toSet());
+
+      assertThat(values).isEqualTo(expectedValues);
     }
     return true;
   }

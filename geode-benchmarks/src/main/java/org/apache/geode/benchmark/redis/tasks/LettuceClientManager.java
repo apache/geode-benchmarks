@@ -19,7 +19,9 @@ import static java.lang.Thread.currentThread;
 
 import java.net.InetSocketAddress;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import io.lettuce.core.ReadFrom;
@@ -65,6 +67,16 @@ public final class LettuceClientManager implements RedisClientManager {
     @Override
     public boolean hset(final String key, final String field, final String value) {
       return redisAdvancedClusterCommands.get().hset(key, field, value);
+    }
+
+    @Override
+    public long zadd(String key, double score, String value) {
+      return redisAdvancedClusterCommands.get().zadd(key, score, value);
+    }
+
+    @Override
+    public Set<String> zrange(String key, long start, long stop) {
+      return new HashSet<>(redisAdvancedClusterCommands.get().zrange(key, start, stop));
     }
 
     @Override

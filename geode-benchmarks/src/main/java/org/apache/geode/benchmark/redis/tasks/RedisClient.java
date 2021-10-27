@@ -15,6 +15,8 @@
 
 package org.apache.geode.benchmark.redis.tasks;
 
+import java.util.Set;
+
 public interface RedisClient {
   String get(String key);
 
@@ -25,4 +27,8 @@ public interface RedisClient {
   boolean hset(String key, String field, String value);
 
   void flushdb();
+
+  long zadd(String key, double score, String value);
+
+  Set<String> zrange(String key, long start, long stop);
 }

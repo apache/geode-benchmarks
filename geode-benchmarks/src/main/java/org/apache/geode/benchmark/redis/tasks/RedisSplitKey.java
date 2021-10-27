@@ -16,15 +16,17 @@
 package org.apache.geode.benchmark.redis.tasks;
 
 /**
- * Split keyspace into Redis hash key and field parts.
+ * Split keyspace into a sublevel of keys.
  */
-public class RedisHash {
+public class RedisSplitKey {
+
+  public static long NUM_PARTS_PER_KEY = 1000;
 
   public static long toKey(final long key) {
-    return key / 1000;
+    return key / NUM_PARTS_PER_KEY;
   }
 
-  public static long toField(final long key) {
-    return key % 1000;
+  public static long toPart(final long key) {
+    return key % NUM_PARTS_PER_KEY;
   }
 }

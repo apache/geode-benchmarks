@@ -17,9 +17,9 @@
 
 package org.apache.geode.benchmark.redis.tasks;
 
+
 import static org.apache.geode.benchmark.redis.tasks.RedisSplitKey.toPart;
 import static org.apache.geode.benchmark.redis.tasks.RedisSplitKey.toKey;
-import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.Serializable;
 import java.util.Map;
@@ -31,22 +31,19 @@ import org.yardstickframework.BenchmarkDriverAdapter;
 
 import org.apache.geode.benchmark.LongRange;
 
-public class HgetRedisTask extends BenchmarkDriverAdapter implements Serializable {
-  private static final Logger logger = LoggerFactory.getLogger(HgetRedisTask.class);
+public class ZaddRedisTask extends BenchmarkDriverAdapter implements Serializable {
+  private static final Logger logger = LoggerFactory.getLogger(ZaddRedisTask.class);
 
   private final RedisClientManager redisClientManager;
   private final LongRange keyRange;
-  private final boolean validate;
 
   private transient LongStringCache keyCache;
   private transient RedisClient redisClient;
 
-  public HgetRedisTask(final RedisClientManager redisClientManager, final LongRange keyRange,
-      final boolean validate) {
-    logger.info("Initialized: keyRange={}, validate={}", keyRange, validate);
+  public ZaddRedisTask(final RedisClientManager redisClientManager, final LongRange keyRange) {
+    logger.info("Initialized: keyRange={}", keyRange);
     this.redisClientManager = redisClientManager;
     this.keyRange = keyRange;
-    this.validate = validate;
   }
 
   @Override
@@ -62,11 +59,9 @@ public class HgetRedisTask extends BenchmarkDriverAdapter implements Serializabl
     final long k = keyRange.random();
 
     final String key = keyCache.valueOf(toKey(k));
-    final String field = keyCache.valueOf(toPart(k));
-    final String value = redisClient.hget(key, field);
-    if (validate) {
-      assertThat(value).isEqualTo(field);
-    }
+    final long score = toPart(k);
+    final String value = keyCache.valueOf(score);
+    redisClient.zadd(key, score, value);
     return true;
   }
 
