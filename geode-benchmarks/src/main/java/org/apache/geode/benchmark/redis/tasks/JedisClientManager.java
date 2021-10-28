@@ -58,7 +58,7 @@ public final class JedisClientManager implements RedisClientManager {
     }
 
     @Override
-    public long zadd(String key, double score,  String value) {
+    public long zadd(String key, double score, String value) {
       return jedisCluster.zadd(key, score, value);
     }
 

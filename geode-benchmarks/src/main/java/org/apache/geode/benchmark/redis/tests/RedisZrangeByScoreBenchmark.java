@@ -23,7 +23,6 @@ import static org.apache.geode.benchmark.topology.Roles.CLIENT;
 
 import org.apache.geode.benchmark.redis.tasks.PrePopulateRedisSortedSet;
 import org.apache.geode.benchmark.redis.tasks.ZrangeByScoreRedisTask;
-import org.apache.geode.benchmark.redis.tasks.ZrangeRedisTask;
 import org.apache.geode.perftest.TestConfig;
 
 public class RedisZrangeByScoreBenchmark extends RedisBenchmark {
@@ -33,7 +32,8 @@ public class RedisZrangeByScoreBenchmark extends RedisBenchmark {
     final TestConfig config = super.configure();
 
     before(config, new PrePopulateRedisSortedSet(redisClientManager, keyRange), CLIENT);
-    workload(config, new ZrangeByScoreRedisTask(redisClientManager, keyRange, isValidationEnabled()),
+    workload(config,
+        new ZrangeByScoreRedisTask(redisClientManager, keyRange, isValidationEnabled()),
         CLIENT);
     return config;
   }

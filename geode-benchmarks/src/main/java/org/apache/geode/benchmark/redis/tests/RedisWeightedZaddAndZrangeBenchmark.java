@@ -21,8 +21,6 @@ import static org.apache.geode.benchmark.Config.before;
 import static org.apache.geode.benchmark.Config.workload;
 import static org.apache.geode.benchmark.topology.Roles.CLIENT;
 
-import org.apache.geode.benchmark.redis.tasks.HgetRedisTask;
-import org.apache.geode.benchmark.redis.tasks.HsetRedisTask;
 import org.apache.geode.benchmark.redis.tasks.PrePopulateRedisHash;
 import org.apache.geode.benchmark.redis.tasks.ZaddRedisTask;
 import org.apache.geode.benchmark.redis.tasks.ZrangeRedisTask;

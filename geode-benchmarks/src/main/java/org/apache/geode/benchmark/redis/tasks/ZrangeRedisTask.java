@@ -45,7 +45,7 @@ public class ZrangeRedisTask extends BenchmarkDriverAdapter implements Serializa
   private transient RedisClient redisClient;
 
   public ZrangeRedisTask(final RedisClientManager redisClientManager, final LongRange keyRange,
-                         final boolean validate) {
+      final boolean validate) {
     logger.info("Initialized: keyRange={}, validate={}", keyRange, validate);
     this.redisClientManager = redisClientManager;
     this.keyRange = keyRange;

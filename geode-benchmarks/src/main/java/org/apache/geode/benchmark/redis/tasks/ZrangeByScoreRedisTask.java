@@ -44,8 +44,9 @@ public class ZrangeByScoreRedisTask extends BenchmarkDriverAdapter implements Se
   private transient LongStringCache keyCache;
   private transient RedisClient redisClient;
 
-  public ZrangeByScoreRedisTask(final RedisClientManager redisClientManager, final LongRange keyRange,
-                                final boolean validate) {
+  public ZrangeByScoreRedisTask(final RedisClientManager redisClientManager,
+      final LongRange keyRange,
+      final boolean validate) {
     logger.info("Initialized: keyRange={}, validate={}", keyRange, validate);
     this.redisClientManager = redisClientManager;
     this.keyRange = keyRange;
