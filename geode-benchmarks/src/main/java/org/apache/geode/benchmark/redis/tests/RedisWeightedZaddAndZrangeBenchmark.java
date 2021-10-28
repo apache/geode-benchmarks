@@ -22,6 +22,7 @@ import static org.apache.geode.benchmark.Config.workload;
 import static org.apache.geode.benchmark.topology.Roles.CLIENT;
 
 import org.apache.geode.benchmark.redis.tasks.PrePopulateRedisHash;
+import org.apache.geode.benchmark.redis.tasks.PrePopulateRedisSortedSet;
 import org.apache.geode.benchmark.redis.tasks.ZaddRedisTask;
 import org.apache.geode.benchmark.redis.tasks.ZrangeRedisTask;
 import org.apache.geode.benchmark.tasks.WeightedTasks;
@@ -34,7 +35,7 @@ public class RedisWeightedZaddAndZrangeBenchmark extends RedisBenchmark {
   public TestConfig configure() {
     final TestConfig config = super.configure();
 
-    before(config, new PrePopulateRedisHash(redisClientManager, keyRange), CLIENT);
+    before(config, new PrePopulateRedisSortedSet(redisClientManager, keyRange), CLIENT);
 
     workload(config, new WeightedTasks(
         new WeightedTask(20, new ZaddRedisTask(redisClientManager, keyRange)),
