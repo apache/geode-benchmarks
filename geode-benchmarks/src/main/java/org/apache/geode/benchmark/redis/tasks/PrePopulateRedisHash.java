@@ -18,8 +18,8 @@
 package org.apache.geode.benchmark.redis.tasks;
 
 import static java.lang.String.valueOf;
-import static org.apache.geode.benchmark.redis.tasks.RedisSplitKey.toPart;
 import static org.apache.geode.benchmark.redis.tasks.RedisSplitKey.toKey;
+import static org.apache.geode.benchmark.redis.tasks.RedisSplitKey.toPart;
 
 import org.apache.geode.benchmark.LongRange;
 
