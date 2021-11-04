@@ -23,7 +23,6 @@ import static org.apache.geode.benchmark.redis.tasks.RedisSplitKey.toPart;
 
 import java.io.Serializable;
 import java.util.Map;
-import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,7 +40,8 @@ public class ZaddAndZremRedisTask extends BenchmarkDriverAdapter implements Seri
   private transient LongStringCache keyCache;
   private transient RedisClient redisClient;
 
-  public ZaddAndZremRedisTask(final RedisClientManager redisClientManager, final LongRange keyRange) {
+  public ZaddAndZremRedisTask(final RedisClientManager redisClientManager,
+      final LongRange keyRange) {
     logger.info("Initialized: keyRange={}", keyRange);
     this.redisClientManager = redisClientManager;
     this.keyRange = keyRange;
