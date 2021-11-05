@@ -76,6 +76,11 @@ public final class LettuceClientManager implements RedisClientManager {
     }
 
     @Override
+    public long zrem(String key, String value) {
+      return redisAdvancedClusterCommands.get().zrem(key, value);
+    }
+
+    @Override
     public Set<String> zrange(String key, long start, long stop) {
       return new HashSet<>(redisAdvancedClusterCommands.get().zrange(key, start, stop));
     }

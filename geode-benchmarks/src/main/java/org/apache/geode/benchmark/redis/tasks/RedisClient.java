@@ -30,6 +30,8 @@ public interface RedisClient {
 
   long zadd(String key, double score, String value);
 
+  long zrem(String key, String value);
+
   Set<String> zrange(String key, long start, long stop);
 
   Set<String> zrangeByScore(String key, long start, long stop);
