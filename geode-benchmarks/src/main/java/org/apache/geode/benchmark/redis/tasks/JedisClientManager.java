@@ -22,6 +22,7 @@ import java.net.InetSocketAddress;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -30,6 +31,7 @@ import redis.clients.jedis.HostAndPort;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisCluster;
 import redis.clients.jedis.JedisPoolConfig;
+import redis.clients.jedis.JedisPubSub;
 
 public final class JedisClientManager implements RedisClientManager {
   private static final Logger logger = LoggerFactory.getLogger(RedisClientManager.class);
@@ -75,6 +77,28 @@ public final class JedisClientManager implements RedisClientManager {
     @Override
     public Set<String> zrangeByScore(String key, long start, long stop) {
       return jedisCluster.zrangeByScore(key, start, stop);
+    }
+
+    @Override
+    public SubscriptionListener createSubscriptionListener(
+        BiConsumer<String, String> channelMessageConsumer) {
+      return new JedisSubscriptionListener(new JedisPubSub() {
+        @Override
+        public void onMessage(String channel, String message) {
+          super.onMessage(channel, message);
+          channelMessageConsumer.accept(channel, message);
+        }
+      });
+    }
+
+    @Override
+    public void subscribe(SubscriptionListener control, String... channels) {
+      jedisCluster.subscribe(((JedisSubscriptionListener)control).getJedisPubSub(), channels);
+    }
+
+    @Override
+    public void publish(String channel, String message) {
+      jedisCluster.publish(channel, message);
     }
 
     @Override
@@ -142,4 +166,22 @@ public final class JedisClientManager implements RedisClientManager {
 
     return redisClient;
   }
+
+  public static class JedisSubscriptionListener implements RedisClient.SubscriptionListener {
+    private final JedisPubSub jedisPubSub;
+
+    public JedisSubscriptionListener(JedisPubSub jedisPubSub) {
+      this.jedisPubSub = jedisPubSub;
+    }
+
+    JedisPubSub getJedisPubSub() {
+      return jedisPubSub;
+    }
+
+    @Override
+    public void unsubscribeAllChannels() {
+      jedisPubSub.unsubscribe();
+    }
+  }
+
 }

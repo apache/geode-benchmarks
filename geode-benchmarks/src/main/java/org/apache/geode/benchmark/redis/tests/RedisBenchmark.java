@@ -97,6 +97,7 @@ public class RedisBenchmark extends AbstractPerformanceTest {
 
   @Override
   public TestConfig configure() {
+
     TestConfig config = GeodeBenchmark.createConfig();
 
     switch (getRedisClusterImplementation()) {
@@ -131,7 +132,7 @@ public class RedisBenchmark extends AbstractPerformanceTest {
     return config;
   }
 
-  private RedisClientImplementation getRedisClientImplementation() {
+  protected RedisClientImplementation getRedisClientImplementation() {
     final String sniProp = System.getProperty(WITH_REDIS_CLIENT_PROPERTY);
     if (isNullOrEmpty(sniProp)) {
       return Jedis;

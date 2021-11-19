@@ -16,6 +16,7 @@
 package org.apache.geode.benchmark.redis.tasks;
 
 import java.util.Set;
+import java.util.function.BiConsumer;
 
 public interface RedisClient {
   String get(String key);
@@ -35,4 +36,14 @@ public interface RedisClient {
   Set<String> zrange(String key, long start, long stop);
 
   Set<String> zrangeByScore(String key, long start, long stop);
+
+  SubscriptionListener createSubscriptionListener(BiConsumer<String, String> channelMessageConsumer);
+
+  void subscribe(SubscriptionListener control, String... channels);
+
+  void publish(String channel, String message);
+
+  interface SubscriptionListener {
+    void unsubscribeAllChannels();
+  }
 }

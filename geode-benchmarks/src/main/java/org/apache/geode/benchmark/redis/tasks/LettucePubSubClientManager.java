@@ -26,81 +26,93 @@ import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
 import io.lettuce.core.Range;
-import io.lettuce.core.ReadFrom;
 import io.lettuce.core.RedisURI;
 import io.lettuce.core.cluster.RedisClusterClient;
 import io.lettuce.core.cluster.api.StatefulRedisClusterConnection;
 import io.lettuce.core.cluster.api.sync.RedisAdvancedClusterCommands;
 import io.lettuce.core.cluster.api.sync.RedisClusterCommands;
+import io.lettuce.core.cluster.pubsub.StatefulRedisClusterPubSubConnection;
+import io.lettuce.core.cluster.pubsub.api.sync.RedisClusterPubSubCommands;
+import io.lettuce.core.pubsub.RedisPubSubAdapter;
 import io.lettuce.core.pubsub.RedisPubSubListener;
+import io.lettuce.core.pubsub.StatefulRedisPubSubConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public final class LettuceClientManager implements RedisClientManager {
-  private static final Logger logger = LoggerFactory.getLogger(LettuceClientManager.class);
+public final class LettucePubSubClientManager implements RedisClientManager {
+  private static final Logger logger = LoggerFactory.getLogger(LettucePubSubClientManager.class);
 
   private static RedisClusterClient redisClusterClient;
 
-  private static final ThreadLocal<RedisAdvancedClusterCommands<String, String>> redisAdvancedClusterCommands =
+  private static final ThreadLocal<RedisClusterPubSubCommands<String, String>> redisClusterCommands =
       ThreadLocal.withInitial(() -> {
         logger.info("Setup for thread {}", Thread.currentThread().getId());
 
-        final StatefulRedisClusterConnection<String, String> redisClusterConnection =
-            redisClusterClient.connect();
-        redisClusterConnection.setReadFrom(ReadFrom.ANY);
-        return redisClusterConnection.sync();
+        final StatefulRedisClusterPubSubConnection<String, String> redisClusterPubSubConnection =
+            redisClusterClient.connectPubSub();
+        return redisClusterPubSubConnection.sync();
       });
 
   private static final RedisClient redisClient = new RedisClient() {
     @Override
     public String get(final String key) {
-      return redisAdvancedClusterCommands.get().get(key);
+      return LettucePubSubClientManager.redisClusterCommands.get().get(key);
     }
 
     @Override
     public String set(final String key, final String value) {
-      return redisAdvancedClusterCommands.get().set(key, value);
+      return LettucePubSubClientManager.redisClusterCommands.get().set(key, value);
     }
 
     @Override
     public String hget(final String key, final String field) {
-      return redisAdvancedClusterCommands.get().hget(key, field);
+      return LettucePubSubClientManager.redisClusterCommands.get().hget(key, field);
     }
 
     @Override
     public boolean hset(final String key, final String field, final String value) {
-      return redisAdvancedClusterCommands.get().hset(key, field, value);
+      return LettucePubSubClientManager.redisClusterCommands.get().hset(key, field, value);
     }
 
     @Override
     public long zadd(String key, double score, String value) {
-      return redisAdvancedClusterCommands.get().zadd(key, score, value);
+      return LettucePubSubClientManager.redisClusterCommands.get().zadd(key, score, value);
     }
 
     @Override
     public long zrem(String key, String value) {
-      return redisAdvancedClusterCommands.get().zrem(key, value);
+      return LettucePubSubClientManager.redisClusterCommands.get().zrem(key, value);
     }
 
     @Override
     public Set<String> zrange(String key, long start, long stop) {
-      return new HashSet<>(redisAdvancedClusterCommands.get().zrange(key, start, stop));
+      return new HashSet<>(LettucePubSubClientManager.redisClusterCommands.get().zrange(key, start, stop));
     }
 
     @Override
     public Set<String> zrangeByScore(String key, long start, long stop) {
       return new HashSet<>(
-          redisAdvancedClusterCommands.get().zrangebyscore(key, Range.create(start, stop)));
+          LettucePubSubClientManager.redisClusterCommands.get().zrangebyscore(key, Range.create(start, stop)));
     }
 
     @Override
     public void subscribe(BiConsumer<String, String> channelMessageConsumer, String... channels) {
-      throw new UnsupportedOperationException("not a pubsub client");
+      StatefulRedisPubSubConnection<String, String>
+          connection = LettucePubSubClientManager.redisClusterCommands.get().getStatefulConnection();
+
+      connection.addListener(new RedisPubSubAdapter<String, String>() {
+        @Override
+        public void message(String channel, String message) {
+          channelMessageConsumer.accept(channel, message);
+        }
+      });
+
+      LettucePubSubClientManager.redisClusterCommands.get().subscribe(channels);
     }
 
     @Override
     public void flushdb() {
-      redisAdvancedClusterCommands.get().flushdb();
+      redisClusterCommands.get().flushdb();
     }
   };
 
@@ -115,8 +127,8 @@ public final class LettuceClientManager implements RedisClientManager {
 
     long start = System.nanoTime();
     while (true) {
-      try (final StatefulRedisClusterConnection<String, String> connection =
-               redisClusterClient.connect()) {
+      try (final StatefulRedisClusterPubSubConnection<String, String> connection =
+          redisClusterClient.connectPubSub()) {
         logger.info("Waiting for cluster to come up.");
         final String clusterInfo = connection.sync().clusterInfo();
         if (clusterInfo.contains("cluster_state:ok")) {
@@ -138,7 +150,7 @@ public final class LettuceClientManager implements RedisClientManager {
 
     redisClusterClient.refreshPartitions();
 
-    LettuceClientManager.redisClusterClient = redisClusterClient;
+    LettucePubSubClientManager.redisClusterClient = redisClusterClient;
   }
 
   @Override
