@@ -31,8 +31,6 @@ import io.lettuce.core.RedisURI;
 import io.lettuce.core.cluster.RedisClusterClient;
 import io.lettuce.core.cluster.api.StatefulRedisClusterConnection;
 import io.lettuce.core.cluster.api.sync.RedisAdvancedClusterCommands;
-import io.lettuce.core.cluster.api.sync.RedisClusterCommands;
-import io.lettuce.core.pubsub.RedisPubSubListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -94,7 +92,18 @@ public final class LettuceClientManager implements RedisClientManager {
     }
 
     @Override
-    public void subscribe(BiConsumer<String, String> channelMessageConsumer, String... channels) {
+    public SubscriptionListener createSubscriptionListener(
+        BiConsumer<String, String> channelMessageConsumer) {
+      throw new UnsupportedOperationException("not a pubsub client");
+    }
+
+    @Override
+    public void subscribe(SubscriptionListener listener, String... channels) {
+      throw new UnsupportedOperationException("not a pubsub client");
+    }
+
+    @Override
+    public void publish(String channel, String message) {
       throw new UnsupportedOperationException("not a pubsub client");
     }
 

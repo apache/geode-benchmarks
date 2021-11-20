@@ -44,6 +44,6 @@ public interface RedisClient {
   void publish(String channel, String message);
 
   interface SubscriptionListener {
-    void unsubscribeAllChannels();
+    void unsubscribe(String... channels);
   }
 }

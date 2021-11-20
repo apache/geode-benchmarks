@@ -30,11 +30,11 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import org.apache.geode.benchmark.redis.tasks.JedisClientManager;
-import org.apache.geode.benchmark.redis.tasks.LettuceClientManager;
+import org.apache.geode.benchmark.redis.tasks.LettucePubSubClientManager;
 import org.apache.geode.benchmark.redis.tasks.PublishSubscribeRedisTask;
 import org.apache.geode.benchmark.redis.tasks.RedisClientManager;
 import org.apache.geode.benchmark.redis.tasks.StopRedisClient;
-import org.apache.geode.benchmark.redis.tasks.SubscriptionsTask;
+import org.apache.geode.benchmark.redis.tasks.SubscribeTask;
 import org.apache.geode.perftest.TestConfig;
 
 public class RedisPublishSubscribeBenchmark extends RedisBenchmark {
@@ -42,7 +42,7 @@ public class RedisPublishSubscribeBenchmark extends RedisBenchmark {
   private static final int NUM_CHANNELS = 1;
   private static final int NUM_SUBSCRIBERS = 1;
   private static final int NUM_MESSAGES_PER_CHANNEL_PER_OPERATION = 1;
-  private static final int MESSAGE_LENGTH_IN_BYTES = 1;
+  private static final int MESSAGE_LENGTH = 1;
 
   @Override
   public TestConfig configure() {
@@ -57,7 +57,7 @@ public class RedisPublishSubscribeBenchmark extends RedisBenchmark {
         clientManagerSupplier = JedisClientManager::new;
         break;
       case Lettuce:
-        clientManagerSupplier = LettuceClientManager::new;
+        clientManagerSupplier = LettucePubSubClientManager::new;
         break;
       default:
         throw new AssertionError("unexpected RedisClientImplementation");
@@ -71,17 +71,16 @@ public class RedisPublishSubscribeBenchmark extends RedisBenchmark {
     // each operation
     final CyclicBarrier barrier = new CyclicBarrier(NUM_SUBSCRIBERS + 1);
 
+    SubscribeTask subscribeTask = new SubscribeTask(subscriberClients, channels,
+        NUM_MESSAGES_PER_CHANNEL_PER_OPERATION, MESSAGE_LENGTH, barrier, isValidationEnabled());
+    final List<SubscribeTask.Subscriber> subscribers = subscribeTask.getSubscribers();
 
-    SubscriptionsTask subscriptionsTask = new SubscriptionsTask(subscriberClients, channels,
-        NUM_MESSAGES_PER_CHANNEL_PER_OPERATION, MESSAGE_LENGTH_IN_BYTES, barrier);
-    final List<SubscriptionsTask.Subscriber> subscribers = subscriptionsTask.getSubscribers();
-
-    before(config, subscriptionsTask, CLIENT);
+    before(config, subscribeTask, CLIENT);
     workload(config,
         new PublishSubscribeRedisTask(redisClientManager, subscribers,
-            channels, NUM_MESSAGES_PER_CHANNEL_PER_OPERATION, isValidationEnabled(), barrier),
+            channels, NUM_MESSAGES_PER_CHANNEL_PER_OPERATION, MESSAGE_LENGTH, barrier),
         CLIENT);
-    after(config, new PubSubEndTask("control", redisClientManager, subscriptionsTask), CLIENT);
+    after(config, new PubSubEndTask("control", redisClientManager, subscribeTask), CLIENT);
     subscriberClients.forEach(c -> after(config, new StopRedisClient(c), CLIENT));
 
     return config;

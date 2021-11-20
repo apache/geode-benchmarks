@@ -16,30 +16,25 @@
  */
 package org.apache.geode.benchmark.redis.tests;
 
-import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.TimeUnit;
-
 import org.apache.geode.benchmark.redis.tasks.RedisClientManager;
-import org.apache.geode.benchmark.redis.tasks.SubscriptionsTask;
+import org.apache.geode.benchmark.redis.tasks.SubscribeTask;
 import org.apache.geode.perftest.Task;
 import org.apache.geode.perftest.TestContext;
 
 public class PubSubEndTask implements Task {
   private final String controlChannel;
   private final RedisClientManager publisherClientManager;
-  private final SubscriptionsTask subscriptionsTask;
+  private final SubscribeTask subscribeTask;
 
   public PubSubEndTask(String controlChannel, RedisClientManager publisherClientManager,
-                       SubscriptionsTask subscriptionsTask) {
+                       SubscribeTask subscribeTask) {
     this.controlChannel = controlChannel;
     this.publisherClientManager = publisherClientManager;
-    this.subscriptionsTask = subscriptionsTask;
+    this.subscribeTask = subscribeTask;
   }
 
   @Override
   public void run(TestContext context) throws Exception {
-    publisherClientManager.get().publish(controlChannel, "unsubscribe");
-    subscriptionsTask.shutdown();
+    subscribeTask.shutdown();
   }
 }

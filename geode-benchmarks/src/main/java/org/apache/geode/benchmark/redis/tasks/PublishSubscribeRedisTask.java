@@ -22,46 +22,38 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CyclicBarrier;
 
+import com.google.common.base.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.yardstickframework.BenchmarkConfiguration;
 import org.yardstickframework.BenchmarkDriverAdapter;
 
 public class PublishSubscribeRedisTask extends BenchmarkDriverAdapter implements Serializable {
   private static final Logger logger = LoggerFactory.getLogger(PublishSubscribeRedisTask.class);
-
-  private final RedisClientManager publisherClientManager;
-  private final boolean validate;
   private final int numMessages;
+  private final int messageLength;
 
   private transient RedisClient redisClient;
-  private transient List<SubscriptionsTask.Subscriber> subscribers;
+  private transient List<SubscribeTask.Subscriber> subscribers;
   private transient List<String> channels;
   private final transient CyclicBarrier barrier;
 
   public PublishSubscribeRedisTask(final RedisClientManager publisherClientManager,
-      List<SubscriptionsTask.Subscriber> subscribers, List<String> channels,
-      int numMessages, boolean validate, CyclicBarrier barrier) {
-    logger.info("Initialized: validate={}", validate);
-    this.publisherClientManager = publisherClientManager;
+                                   List<SubscribeTask.Subscriber> subscribers, List<String> channels,
+                                   int numMessages, int messageLength, CyclicBarrier barrier) {
+    this.messageLength = messageLength;
+    logger.info("Initialized: PublishSubscribeRedisTask");
     this.subscribers = subscribers;
     this.numMessages = numMessages;
     this.channels = channels;
-    this.validate = validate;
     this.barrier = barrier;
-  }
-
-  @Override
-  public void setUp(final BenchmarkConfiguration cfg) throws Exception {
-    super.setUp(cfg);
     redisClient = publisherClientManager.get();
   }
 
   @Override
   public boolean test(final Map<Object, Object> ctx) throws Exception {
     for (String channel : channels) {
-      List<String> messages;
-      for (String message : messages) {
+      for (int i = 0; i < numMessages; i++) {
+        String message = Strings.repeat(String.valueOf((char)('A' + i)), messageLength);
         redisClient.publish(channel, message);
       }
     }
@@ -69,8 +61,6 @@ public class PublishSubscribeRedisTask extends BenchmarkDriverAdapter implements
     // waits for all subscribers to receive all messages, then barrier is reset automatically
     // for the next test iteration
     barrier.await();
-
     return true;
   }
-
 }

@@ -92,8 +92,8 @@ public final class JedisClientManager implements RedisClientManager {
     }
 
     @Override
-    public void subscribe(SubscriptionListener control, String... channels) {
-      jedisCluster.subscribe(((JedisSubscriptionListener)control).getJedisPubSub(), channels);
+    public void subscribe(SubscriptionListener listener, String... channels) {
+      jedisCluster.subscribe(((JedisSubscriptionListener)listener).getJedisPubSub(), channels);
     }
 
     @Override
@@ -167,20 +167,20 @@ public final class JedisClientManager implements RedisClientManager {
     return redisClient;
   }
 
-  public static class JedisSubscriptionListener implements RedisClient.SubscriptionListener {
+  static class JedisSubscriptionListener implements RedisClient.SubscriptionListener {
     private final JedisPubSub jedisPubSub;
 
     public JedisSubscriptionListener(JedisPubSub jedisPubSub) {
       this.jedisPubSub = jedisPubSub;
     }
 
-    JedisPubSub getJedisPubSub() {
-      return jedisPubSub;
+    @Override
+    public void unsubscribe(String... channels) {
+      jedisPubSub.unsubscribe(channels);
     }
 
-    @Override
-    public void unsubscribeAllChannels() {
-      jedisPubSub.unsubscribe();
+    JedisPubSub getJedisPubSub() {
+      return jedisPubSub;
     }
   }
 

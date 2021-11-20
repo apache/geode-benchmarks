@@ -28,9 +28,6 @@ import java.util.stream.Collectors;
 import io.lettuce.core.Range;
 import io.lettuce.core.RedisURI;
 import io.lettuce.core.cluster.RedisClusterClient;
-import io.lettuce.core.cluster.api.StatefulRedisClusterConnection;
-import io.lettuce.core.cluster.api.sync.RedisAdvancedClusterCommands;
-import io.lettuce.core.cluster.api.sync.RedisClusterCommands;
 import io.lettuce.core.cluster.pubsub.StatefulRedisClusterPubSubConnection;
 import io.lettuce.core.cluster.pubsub.api.sync.RedisClusterPubSubCommands;
 import io.lettuce.core.pubsub.RedisPubSubAdapter;
@@ -96,18 +93,28 @@ public final class LettucePubSubClientManager implements RedisClientManager {
     }
 
     @Override
-    public void subscribe(BiConsumer<String, String> channelMessageConsumer, String... channels) {
-      StatefulRedisPubSubConnection<String, String>
-          connection = LettucePubSubClientManager.redisClusterCommands.get().getStatefulConnection();
-
-      connection.addListener(new RedisPubSubAdapter<String, String>() {
+    public SubscriptionListener createSubscriptionListener(
+        BiConsumer<String, String> channelMessageConsumer) {
+      return new LettuceSubscriptionListener(new RedisPubSubAdapter<String, String>() {
         @Override
         public void message(String channel, String message) {
           channelMessageConsumer.accept(channel, message);
         }
       });
+    }
 
+    @Override
+    public void subscribe(SubscriptionListener listener, String... channels) {
+      StatefulRedisPubSubConnection<String, String>
+          connection = LettucePubSubClientManager.redisClusterCommands.get().getStatefulConnection();
+
+      connection.addListener(((LettuceSubscriptionListener)listener).getListener());
       LettucePubSubClientManager.redisClusterCommands.get().subscribe(channels);
+    }
+
+    @Override
+    public void publish(String channel, String message) {
+      LettucePubSubClientManager.redisClusterCommands.get().publish(channel, message);
     }
 
     @Override
@@ -165,5 +172,22 @@ public final class LettucePubSubClientManager implements RedisClientManager {
     logger.info("Getting RedisClient on thread {}.", currentThread());
 
     return redisClient;
+  }
+
+  static class LettuceSubscriptionListener implements RedisClient.SubscriptionListener {
+    private final RedisPubSubListener<String, String> listener;
+
+    public LettuceSubscriptionListener(
+        RedisPubSubListener<String, String> listener) {
+      this.listener = listener;
+    }
+
+    public void unsubscribe(String... channels) {
+      LettucePubSubClientManager.redisClusterCommands.get().unsubscribe(channels);
+    }
+
+    RedisPubSubListener<String, String> getListener() {
+      return listener;
+    }
   }
 }
