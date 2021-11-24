@@ -16,20 +16,14 @@
  */
 package org.apache.geode.benchmark.redis.tests;
 
-import org.apache.geode.benchmark.redis.tasks.RedisClientManager;
 import org.apache.geode.benchmark.redis.tasks.SubscribeTask;
 import org.apache.geode.perftest.Task;
 import org.apache.geode.perftest.TestContext;
 
 public class PubSubEndTask implements Task {
-  private final String controlChannel;
-  private final RedisClientManager publisherClientManager;
   private final SubscribeTask subscribeTask;
 
-  public PubSubEndTask(String controlChannel, RedisClientManager publisherClientManager,
-                       SubscribeTask subscribeTask) {
-    this.controlChannel = controlChannel;
-    this.publisherClientManager = publisherClientManager;
+  public PubSubEndTask(SubscribeTask subscribeTask) {
     this.subscribeTask = subscribeTask;
   }
 

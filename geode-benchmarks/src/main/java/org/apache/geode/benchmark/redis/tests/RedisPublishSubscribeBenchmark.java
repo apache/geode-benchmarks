@@ -80,7 +80,7 @@ public class RedisPublishSubscribeBenchmark extends RedisBenchmark {
         new PublishSubscribeRedisTask(redisClientManager, subscribers,
             channels, NUM_MESSAGES_PER_CHANNEL_PER_OPERATION, MESSAGE_LENGTH, barrier),
         CLIENT);
-    after(config, new PubSubEndTask("control", redisClientManager, subscribeTask), CLIENT);
+    after(config, new PubSubEndTask(subscribeTask), CLIENT);
     subscriberClients.forEach(c -> after(config, new StopRedisClient(c), CLIENT));
 
     return config;
