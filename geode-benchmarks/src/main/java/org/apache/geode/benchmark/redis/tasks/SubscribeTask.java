@@ -29,48 +29,69 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.apache.geode.benchmark.redis.tests.RedisPublishSubscribeBenchmark;
 import org.apache.geode.perftest.Task;
 import org.apache.geode.perftest.TestContext;
 
 public class SubscribeTask implements Task {
   private static final Logger logger = LoggerFactory.getLogger(SubscribeTask.class);
 
+  // TextContext keys for shared objects between the SubscribeTask (before) and
+  // the PubSubEndTask (after)
+  private static final String SUBSCRIBERS_CONTEXT_KEY = "subscribers";
+  private static final String SUBSCRIBERS_THREAD_POOL = "threadPool";
+
+  private final List<RedisClientManager> subscriberClientManagers;
+  private final List<String> channels;
+  private final int numMessagesPerChannelPerOperation;
   private final int messageLength;
   private final boolean validate;
 
-  private transient List<Subscriber> subscribers;
-  private transient ExecutorService threadPool;
-
   public SubscribeTask(List<RedisClientManager> subscriberClientManagers,
                        List<String> channels, int numMessagesPerChannelPerOperation,
-                       int messageLength, CyclicBarrier barrier, boolean validate) {
-
+                       int messageLength, boolean validate) {
+    this.subscriberClientManagers = subscriberClientManagers;
+    this.channels = channels;
+    this.numMessagesPerChannelPerOperation = numMessagesPerChannelPerOperation;
     this.messageLength = messageLength;
     this.validate = validate;
-
-    threadPool = Executors.newFixedThreadPool(subscriberClientManagers.size());
-    int numMessagesExpected = channels.size() * numMessagesPerChannelPerOperation;
-    subscribers = subscriberClientManagers.stream().map( cm ->
-            new Subscriber(cm.get(), channels, numMessagesExpected, barrier))
-        .collect(Collectors.toList());
   }
 
   @Override
   public void run(TestContext context) throws Exception {
+    int numMessagesExpected = channels.size() * numMessagesPerChannelPerOperation;
+
+    CyclicBarrier barrier = RedisPublishSubscribeBenchmark.getCyclicBarrier();
+
+    // save subscribers in the TestContext, as this will be shared with
+    // the after tasks which will call shutdown()
+    List<Subscriber> subscribers = subscriberClientManagers.stream().map( cm ->
+            new Subscriber(cm.get(), channels, numMessagesExpected, barrier))
+        .collect(Collectors.toList());
+    context.setAttribute(SUBSCRIBERS_CONTEXT_KEY, subscribers);
+
+    // save thread pool in TestContext so it can be shutdown cleanly after
+    ExecutorService subscriberThreadPool =
+        Executors.newFixedThreadPool(subscriberClientManagers.size());
+    context.setAttribute(SUBSCRIBERS_THREAD_POOL, subscriberThreadPool);
+
     for (Subscriber subscriber : subscribers) {
-      subscriber.subscribeAsync();
+      subscriber.subscribeAsync(subscriberThreadPool);
     }
   }
 
-  public List<Subscriber> getSubscribers() {
-    return subscribers;
-  }
+  public static void shutdown(TestContext cxt) throws InterruptedException {
+    // precondition: method run has been previously executed in this Worker
+    // and therefore subscribers and threadPool are available
+    @SuppressWarnings("unchecked")
+    List<Subscriber> subscribers = (List<Subscriber>)cxt.getAttribute(SUBSCRIBERS_CONTEXT_KEY);
 
-  public void shutdown() throws InterruptedException {
     for (SubscribeTask.Subscriber subscriber : subscribers) {
       subscriber.unsubscribeAllChannels();
       subscriber.waitForCompletion();
     }
+
+    ExecutorService threadPool = (ExecutorService)cxt.getAttribute(SUBSCRIBERS_THREAD_POOL);
     threadPool.shutdownNow();
     threadPool.awaitTermination(5, TimeUnit.MINUTES);
   }
@@ -108,7 +129,7 @@ public class SubscribeTask implements Task {
       });
     }
 
-    public void subscribeAsync() {
+    public void subscribeAsync(ExecutorService threadPool) {
       future = CompletableFuture.runAsync(() ->
           client.subscribe(listener, channels.toArray(new String[] {})), threadPool);
     }

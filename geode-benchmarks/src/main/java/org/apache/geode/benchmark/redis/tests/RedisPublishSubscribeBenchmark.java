@@ -31,7 +31,7 @@ import java.util.stream.Stream;
 
 import org.apache.geode.benchmark.redis.tasks.JedisClientManager;
 import org.apache.geode.benchmark.redis.tasks.LettucePubSubClientManager;
-import org.apache.geode.benchmark.redis.tasks.PublishSubscribeRedisTask;
+import org.apache.geode.benchmark.redis.tasks.PublishRedisTask;
 import org.apache.geode.benchmark.redis.tasks.RedisClientManager;
 import org.apache.geode.benchmark.redis.tasks.StopRedisClient;
 import org.apache.geode.benchmark.redis.tasks.SubscribeTask;
@@ -43,6 +43,21 @@ public class RedisPublishSubscribeBenchmark extends RedisBenchmark {
   private static final int NUM_SUBSCRIBERS = 1;
   private static final int NUM_MESSAGES_PER_CHANNEL_PER_OPERATION = 1;
   private static final int MESSAGE_LENGTH = 1;
+
+  // This static is used for coordinating between subscribers and publisher for the
+  // benchmark within a single worker JVM, and for a clean shutdown.
+  // This is a transient (non-serializable) object in worker JVM.
+  // All subscribers plus one publisher will wait on the barrier at completion of
+  // each operation
+  // WARNING: This relies on the assumption that there is only one Worker per ChildJVM
+  // and also that the publisher and subscribers run in the same JVM
+  // TODO: Try to find a safer way to share the barrier object between the before and workload tasks
+  private static final CyclicBarrier barrier = new CyclicBarrier(NUM_SUBSCRIBERS + 1);
+
+  // These static "getter" methods are only here for refactoring flexibility
+  public static CyclicBarrier getCyclicBarrier() {
+    return barrier;
+  }
 
   @Override
   public TestConfig configure() {
@@ -67,20 +82,15 @@ public class RedisPublishSubscribeBenchmark extends RedisBenchmark {
         Stream.generate(clientManagerSupplier).limit(NUM_SUBSCRIBERS)
             .collect(Collectors.toList());
 
-    // all subscribers plus one publisher will wait on the barrier at completion of
-    // each operation
-    final CyclicBarrier barrier = new CyclicBarrier(NUM_SUBSCRIBERS + 1);
-
-    SubscribeTask subscribeTask = new SubscribeTask(subscriberClients, channels,
-        NUM_MESSAGES_PER_CHANNEL_PER_OPERATION, MESSAGE_LENGTH, barrier, isValidationEnabled());
-    final List<SubscribeTask.Subscriber> subscribers = subscribeTask.getSubscribers();
-
-    before(config, subscribeTask, CLIENT);
-    workload(config,
-        new PublishSubscribeRedisTask(redisClientManager, subscribers,
-            channels, NUM_MESSAGES_PER_CHANNEL_PER_OPERATION, MESSAGE_LENGTH, barrier),
+    before(config,
+        new SubscribeTask(subscriberClients,
+            channels, NUM_MESSAGES_PER_CHANNEL_PER_OPERATION, MESSAGE_LENGTH, isValidationEnabled()),
         CLIENT);
-    after(config, new PubSubEndTask(subscribeTask), CLIENT);
+    workload(config,
+        new PublishRedisTask(redisClientManager,
+            channels, NUM_MESSAGES_PER_CHANNEL_PER_OPERATION, MESSAGE_LENGTH),
+        CLIENT);
+    after(config, new PubSubEndTask(), CLIENT);
     subscriberClients.forEach(c -> after(config, new StopRedisClient(c), CLIENT));
 
     return config;

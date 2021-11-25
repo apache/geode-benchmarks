@@ -27,30 +27,29 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.yardstickframework.BenchmarkDriverAdapter;
 
-public class PublishSubscribeRedisTask extends BenchmarkDriverAdapter implements Serializable {
-  private static final Logger logger = LoggerFactory.getLogger(PublishSubscribeRedisTask.class);
+import org.apache.geode.benchmark.redis.tests.RedisPublishSubscribeBenchmark;
+
+public class PublishRedisTask extends BenchmarkDriverAdapter implements Serializable {
+  private static final Logger logger = LoggerFactory.getLogger(PublishRedisTask.class);
   private final int numMessages;
   private final int messageLength;
+  private final RedisClientManager publisherClientManager;
+  private final List<String> channels;
 
-  private transient RedisClient redisClient;
-  private transient List<SubscribeTask.Subscriber> subscribers;
-  private transient List<String> channels;
-  private final transient CyclicBarrier barrier;
-
-  public PublishSubscribeRedisTask(final RedisClientManager publisherClientManager,
-                                   List<SubscribeTask.Subscriber> subscribers, List<String> channels,
-                                   int numMessages, int messageLength, CyclicBarrier barrier) {
-    this.messageLength = messageLength;
+  public PublishRedisTask(final RedisClientManager publisherClientManager,
+                          List<String> channels, int numMessages, int messageLength) {
+    this.publisherClientManager = publisherClientManager;
     logger.info("Initialized: PublishSubscribeRedisTask");
-    this.subscribers = subscribers;
+    this.messageLength = messageLength;
     this.numMessages = numMessages;
     this.channels = channels;
-    this.barrier = barrier;
-    redisClient = publisherClientManager.get();
   }
 
   @Override
   public boolean test(final Map<Object, Object> ctx) throws Exception {
+    CyclicBarrier barrier = RedisPublishSubscribeBenchmark.getCyclicBarrier();
+    RedisClient redisClient = publisherClientManager.get();
+
     for (String channel : channels) {
       for (int i = 0; i < numMessages; i++) {
         String message = Strings.repeat(String.valueOf((char)('A' + i)), messageLength);

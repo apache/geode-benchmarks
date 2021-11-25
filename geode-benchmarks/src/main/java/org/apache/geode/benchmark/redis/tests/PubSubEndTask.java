@@ -21,14 +21,12 @@ import org.apache.geode.perftest.Task;
 import org.apache.geode.perftest.TestContext;
 
 public class PubSubEndTask implements Task {
-  private final SubscribeTask subscribeTask;
 
-  public PubSubEndTask(SubscribeTask subscribeTask) {
-    this.subscribeTask = subscribeTask;
+  public PubSubEndTask() {
   }
 
   @Override
   public void run(TestContext context) throws Exception {
-    subscribeTask.shutdown();
+    SubscribeTask.shutdown(context);
   }
 }
