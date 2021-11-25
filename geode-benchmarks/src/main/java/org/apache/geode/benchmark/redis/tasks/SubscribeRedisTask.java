@@ -33,8 +33,8 @@ import org.apache.geode.benchmark.redis.tests.RedisPublishSubscribeBenchmark;
 import org.apache.geode.perftest.Task;
 import org.apache.geode.perftest.TestContext;
 
-public class SubscribeTask implements Task {
-  private static final Logger logger = LoggerFactory.getLogger(SubscribeTask.class);
+public class SubscribeRedisTask implements Task {
+  private static final Logger logger = LoggerFactory.getLogger(SubscribeRedisTask.class);
 
   // TextContext keys for shared objects between the SubscribeTask (before) and
   // the PubSubEndTask (after)
@@ -47,9 +47,12 @@ public class SubscribeTask implements Task {
   private final int messageLength;
   private final boolean validate;
 
-  public SubscribeTask(List<RedisClientManager> subscriberClientManagers,
-                       List<String> channels, int numMessagesPerChannelPerOperation,
-                       int messageLength, boolean validate) {
+  public SubscribeRedisTask(List<RedisClientManager> subscriberClientManagers,
+                            List<String> channels, int numMessagesPerChannelPerOperation,
+                            int messageLength, boolean validate) {
+    logger.info(
+        "Initialized: SubscribeRedisTask numChannels={}, numMessagesPerChannel={}, messageLength={}, validate={}",
+        channels.size(), numMessagesPerChannelPerOperation, messageLength, validate);
     this.subscriberClientManagers = subscriberClientManagers;
     this.channels = channels;
     this.numMessagesPerChannelPerOperation = numMessagesPerChannelPerOperation;
@@ -86,7 +89,7 @@ public class SubscribeTask implements Task {
     @SuppressWarnings("unchecked")
     List<Subscriber> subscribers = (List<Subscriber>)cxt.getAttribute(SUBSCRIBERS_CONTEXT_KEY);
 
-    for (SubscribeTask.Subscriber subscriber : subscribers) {
+    for (SubscribeRedisTask.Subscriber subscriber : subscribers) {
       subscriber.unsubscribeAllChannels();
       subscriber.waitForCompletion();
     }

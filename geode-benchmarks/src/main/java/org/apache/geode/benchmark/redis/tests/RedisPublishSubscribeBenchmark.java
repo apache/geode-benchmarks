@@ -31,10 +31,11 @@ import java.util.stream.Stream;
 
 import org.apache.geode.benchmark.redis.tasks.JedisClientManager;
 import org.apache.geode.benchmark.redis.tasks.LettucePubSubClientManager;
+import org.apache.geode.benchmark.redis.tasks.PubSubEndRedisTask;
 import org.apache.geode.benchmark.redis.tasks.PublishRedisTask;
 import org.apache.geode.benchmark.redis.tasks.RedisClientManager;
 import org.apache.geode.benchmark.redis.tasks.StopRedisClient;
-import org.apache.geode.benchmark.redis.tasks.SubscribeTask;
+import org.apache.geode.benchmark.redis.tasks.SubscribeRedisTask;
 import org.apache.geode.perftest.TestConfig;
 
 public class RedisPublishSubscribeBenchmark extends RedisBenchmark {
@@ -83,14 +84,14 @@ public class RedisPublishSubscribeBenchmark extends RedisBenchmark {
             .collect(Collectors.toList());
 
     before(config,
-        new SubscribeTask(subscriberClients,
+        new SubscribeRedisTask(subscriberClients,
             channels, NUM_MESSAGES_PER_CHANNEL_PER_OPERATION, MESSAGE_LENGTH, isValidationEnabled()),
         CLIENT);
     workload(config,
         new PublishRedisTask(redisClientManager,
             channels, NUM_MESSAGES_PER_CHANNEL_PER_OPERATION, MESSAGE_LENGTH),
         CLIENT);
-    after(config, new PubSubEndTask(), CLIENT);
+    after(config, new PubSubEndRedisTask(), CLIENT);
     subscriberClients.forEach(c -> after(config, new StopRedisClient(c), CLIENT));
 
     return config;

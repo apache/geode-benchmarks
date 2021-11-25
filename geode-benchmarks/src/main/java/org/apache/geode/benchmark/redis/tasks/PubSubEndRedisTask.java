@@ -14,19 +14,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.geode.benchmark.redis.tests;
+package org.apache.geode.benchmark.redis.tasks;
 
-import org.apache.geode.benchmark.redis.tasks.SubscribeTask;
 import org.apache.geode.perftest.Task;
 import org.apache.geode.perftest.TestContext;
 
-public class PubSubEndTask implements Task {
+public class PubSubEndRedisTask implements Task {
 
-  public PubSubEndTask() {
+  public PubSubEndRedisTask() {
   }
 
   @Override
   public void run(TestContext context) throws Exception {
-    SubscribeTask.shutdown(context);
+    SubscribeRedisTask.shutdown(context);
   }
 }

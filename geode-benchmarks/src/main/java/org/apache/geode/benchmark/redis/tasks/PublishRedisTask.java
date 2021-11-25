@@ -39,7 +39,7 @@ public class PublishRedisTask extends BenchmarkDriverAdapter implements Serializ
   public PublishRedisTask(final RedisClientManager publisherClientManager,
                           List<String> channels, int numMessages, int messageLength) {
     this.publisherClientManager = publisherClientManager;
-    logger.info("Initialized: PublishSubscribeRedisTask");
+    logger.info("Initialized: PublishRedisTask");
     this.messageLength = messageLength;
     this.numMessages = numMessages;
     this.channels = channels;
