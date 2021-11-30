@@ -171,6 +171,7 @@ if [[ -z "${VERSION}" ]]; then
       || remoteShell rm -rf geode '&&' git clone "${REPO}" geode
   fi
   remoteShell "cd geode && git checkout \"${BRANCH}\" && [ \"\$(git rev-parse --abbrev-ref --symbolic-full-name HEAD)\" == \"HEAD\" ] || git reset --hard \"origin/${BRANCH}\""
+  remoteShell "cd geode && echo \"dependencies { runtimeOnly('org.eclipse.jgit:org.eclipse.jgit:5.13.0.202109080827-r') }\" >> ./buildSrc/build.gradle"
 
   set +e
   for i in {1..5}; do
