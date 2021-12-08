@@ -91,6 +91,8 @@ public class SubscribeRedisTask implements Task {
     @SuppressWarnings("unchecked")
     List<Subscriber> subscribers = (List<Subscriber>) cxt.getAttribute(SUBSCRIBERS_CONTEXT_KEY);
 
+    cxt.logProgress("Shutting down subscribers");
+
     for (SubscribeRedisTask.Subscriber subscriber : subscribers) {
       subscriber.unsubscribeAllChannels(cxt);
       subscriber.waitForCompletion(cxt);
