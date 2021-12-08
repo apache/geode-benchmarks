@@ -53,16 +53,13 @@ public class PublishRedisTask extends BenchmarkDriverAdapter implements Serializ
     for (String channel : channels) {
       for (int i = 0; i < numMessages; i++) {
         String message = Strings.repeat(String.valueOf((char) ('A' + i)), messageLength);
-        logger.info("On channel " + channel + " publishing message " + message);
         redisClient.publish(channel, message);
       }
     }
 
     // waits for all subscribers to receive all messages, then barrier is reset automatically
     // for the next test iteration
-    logger.info("Publisher waiting on barrier...");
     barrier.await();
-    logger.info("Publisher continuing...");
     return true;
   }
 }

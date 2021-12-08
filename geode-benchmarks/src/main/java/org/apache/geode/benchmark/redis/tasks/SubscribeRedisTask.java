@@ -85,15 +85,15 @@ public class SubscribeRedisTask implements Task {
     }
   }
 
-  public static void shutdown(TestContext cxt) throws InterruptedException {
+  public static void shutdown(TestContext cxt) throws Exception {
     // precondition: method run has been previously executed in this Worker
     // and therefore subscribers and threadPool are available
     @SuppressWarnings("unchecked")
     List<Subscriber> subscribers = (List<Subscriber>) cxt.getAttribute(SUBSCRIBERS_CONTEXT_KEY);
 
     for (SubscribeRedisTask.Subscriber subscriber : subscribers) {
-      subscriber.unsubscribeAllChannels();
-      subscriber.waitForCompletion();
+      subscriber.unsubscribeAllChannels(cxt);
+      subscriber.waitForCompletion(cxt);
     }
 
     ExecutorService threadPool = (ExecutorService) cxt.getAttribute(SUBSCRIBERS_THREAD_POOL);
@@ -139,30 +139,42 @@ public class SubscribeRedisTask implements Task {
     public void subscribeAsync(ExecutorService threadPool, TestContext context) {
       future = CompletableFuture.runAsync(
           () -> {
-            context.logProgress("Subscribing to channels " + channels);
+            if (validate) {
+              context.logProgress("Subscribing to channels " + channels);
+            }
             client.subscribe(listener, channels.toArray(new String[] {}));
-            context.logProgress("Subscribed to channels " + channels);
+            if (validate) {
+              context.logProgress("Subscribed to channels " + channels);
+            }
           }, threadPool);
     }
 
-    public void unsubscribeAllChannels() {
+    public void unsubscribeAllChannels(TestContext ctx) {
       if (future == null) {
         return;
       }
+      ctx.logProgress("Unsubscribing to channels " + channels);
       listener.unsubscribe(channels.toArray(new String[] {}));
+      ctx.logProgress("Unsubscribed to channels " + channels);
     }
 
-    public void waitForCompletion() {
+    public void waitForCompletion(TestContext ctx) throws Exception {
       if (future == null) {
         return;
       }
-      future.join();
+      ctx.logProgress("Waiting for completion");
+      if (validate) {
+        assertThat(future.get(2, TimeUnit.SECONDS)).isNull();
+      }
+      ctx.logProgress("Joined with subscriber thread");
     }
 
     // Receive a message and return true if all messages have been received
-    private boolean receiveMessageAndIsComplete(String channel, String message, TestContext context) {
+    private boolean receiveMessageAndIsComplete(String channel, String message,
+        TestContext context) {
       if (validate) {
-        context.logProgress(String.format("Received message %s of length %d on channel %s; messagesReceived=%d; messagesExpected=%d",
+        context.logProgress(String.format(
+            "Received message %s of length %d on channel %s; messagesReceived=%d; messagesExpected=%d",
             message, message.length(), channel, messagesReceived.get() + 1, numMessagesExpected));
         assertThat(message.length()).isEqualTo(messageLength);
       }
