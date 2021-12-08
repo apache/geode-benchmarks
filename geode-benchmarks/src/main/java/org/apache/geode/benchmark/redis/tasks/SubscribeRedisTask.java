@@ -25,6 +25,7 @@ import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -129,7 +130,9 @@ public class SubscribeRedisTask implements Task {
         if (receiveMessageAndIsComplete(channel, message, context)) {
           try {
             reset();
-            barrier.await();
+            barrier.await(2, TimeUnit.SECONDS);
+          } catch (TimeoutException e) {
+            throw new RuntimeException("Subscriber timed out while waiting on barrier");
           } catch (InterruptedException | BrokenBarrierException ignored) {
           }
         }
@@ -148,8 +151,8 @@ public class SubscribeRedisTask implements Task {
         return;
       }
       ctx.logProgress("Unsubscribing to channels " + channels);
-      listener.unsubscribe(channels.toArray(new String[] {}));
-      ctx.logProgress("Unsubscribed to channels " + channels);
+      // TODO unsubscribe is not working, get connection exception
+      // listener.unsubscribe(channels.toArray(new String[] {}));
     }
 
     public void waitForCompletion(TestContext ctx) throws Exception {

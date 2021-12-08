@@ -21,6 +21,7 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CyclicBarrier;
+import java.util.concurrent.TimeUnit;
 
 import com.google.common.base.Strings;
 import org.slf4j.Logger;
@@ -58,8 +59,8 @@ public class PublishRedisTask extends BenchmarkDriverAdapter implements Serializ
     }
 
     // waits for all subscribers to receive all messages, then barrier is reset automatically
-    // for the next test iteration
-    barrier.await();
+    // for the next test iteration; fails test if times out
+    barrier.await(2, TimeUnit.SECONDS);
     return true;
   }
 }
