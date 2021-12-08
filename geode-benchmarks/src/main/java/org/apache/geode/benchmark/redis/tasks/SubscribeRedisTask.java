@@ -124,7 +124,7 @@ public class SubscribeRedisTask implements Task {
       this.client = client;
 
       listener = client.createSubscriptionListener((channel, message) -> {
-        if (receiveMessageAndIsComplete(channel, message)) {
+        if (receiveMessageAndIsComplete(channel, message, context)) {
           try {
             reset();
             context.logProgress("Subscriber waiting on barrier...");
@@ -160,10 +160,10 @@ public class SubscribeRedisTask implements Task {
     }
 
     // Receive a message and return true if all messages have been received
-    private boolean receiveMessageAndIsComplete(String channel, String message) {
+    private boolean receiveMessageAndIsComplete(String channel, String message, TestContext context) {
       if (validate) {
-        logger.info(String.format("Received message %s of length %d on channel %s",
-            message, message.length(), channel));
+        context.logProgress(String.format("Received message %s of length %d on channel %s; messagesReceived=%d; messagesExpected=%d",
+            message, message.length(), channel, messagesReceived.get() + 1, numMessagesExpected));
         assertThat(message.length()).isEqualTo(messageLength);
       }
       return messagesReceived.incrementAndGet() >= numMessagesExpected;
