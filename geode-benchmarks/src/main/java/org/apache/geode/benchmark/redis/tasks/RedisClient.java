@@ -37,7 +37,8 @@ public interface RedisClient {
 
   Set<String> zrangeByScore(String key, long start, long stop);
 
-  SubscriptionListener createSubscriptionListener(BiConsumer<String, String> channelMessageConsumer);
+  SubscriptionListener createSubscriptionListener(
+      BiConsumer<String, String> channelMessageConsumer);
 
   void subscribe(SubscriptionListener control, String... channels);
 

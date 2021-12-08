@@ -65,7 +65,7 @@ public class RedisPublishSubscribeBenchmark extends RedisBenchmark {
     final TestConfig config = super.configure();
 
     final List<String> channels = IntStream.range(0, NUM_CHANNELS).mapToObj(n -> "channel" + n)
-            .collect(Collectors.toList());
+        .collect(Collectors.toList());
 
     Supplier<RedisClientManager> clientManagerSupplier;
     switch (getRedisClientImplementation()) {
@@ -85,7 +85,8 @@ public class RedisPublishSubscribeBenchmark extends RedisBenchmark {
 
     before(config,
         new SubscribeRedisTask(subscriberClients,
-            channels, NUM_MESSAGES_PER_CHANNEL_PER_OPERATION, MESSAGE_LENGTH, isValidationEnabled()),
+            channels, NUM_MESSAGES_PER_CHANNEL_PER_OPERATION, MESSAGE_LENGTH,
+            isValidationEnabled()),
         CLIENT);
     workload(config,
         new PublishRedisTask(redisClientManager,

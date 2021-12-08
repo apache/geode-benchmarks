@@ -125,7 +125,7 @@ public final class LettuceClientManager implements RedisClientManager {
     long start = System.nanoTime();
     while (true) {
       try (final StatefulRedisClusterConnection<String, String> connection =
-               redisClusterClient.connect()) {
+          redisClusterClient.connect()) {
         logger.info("Waiting for cluster to come up.");
         final String clusterInfo = connection.sync().clusterInfo();
         if (clusterInfo.contains("cluster_state:ok")) {

@@ -48,8 +48,8 @@ public class SubscribeRedisTask implements Task {
   private final boolean validate;
 
   public SubscribeRedisTask(List<RedisClientManager> subscriberClientManagers,
-                            List<String> channels, int numMessagesPerChannelPerOperation,
-                            int messageLength, boolean validate) {
+      List<String> channels, int numMessagesPerChannelPerOperation,
+      int messageLength, boolean validate) {
     logger.info(
         "Initialized: SubscribeRedisTask numChannels={}, numMessagesPerChannel={}, messageLength={}, validate={}",
         channels.size(), numMessagesPerChannelPerOperation, messageLength, validate);
@@ -68,8 +68,8 @@ public class SubscribeRedisTask implements Task {
 
     // save subscribers in the TestContext, as this will be shared with
     // the after tasks which will call shutdown()
-    List<Subscriber> subscribers = subscriberClientManagers.stream().map( cm ->
-            new Subscriber(cm.get(), channels, numMessagesExpected, barrier))
+    List<Subscriber> subscribers = subscriberClientManagers.stream()
+        .map(cm -> new Subscriber(cm.get(), channels, numMessagesExpected, barrier))
         .collect(Collectors.toList());
     context.setAttribute(SUBSCRIBERS_CONTEXT_KEY, subscribers);
 
@@ -87,14 +87,14 @@ public class SubscribeRedisTask implements Task {
     // precondition: method run has been previously executed in this Worker
     // and therefore subscribers and threadPool are available
     @SuppressWarnings("unchecked")
-    List<Subscriber> subscribers = (List<Subscriber>)cxt.getAttribute(SUBSCRIBERS_CONTEXT_KEY);
+    List<Subscriber> subscribers = (List<Subscriber>) cxt.getAttribute(SUBSCRIBERS_CONTEXT_KEY);
 
     for (SubscribeRedisTask.Subscriber subscriber : subscribers) {
       subscriber.unsubscribeAllChannels();
       subscriber.waitForCompletion();
     }
 
-    ExecutorService threadPool = (ExecutorService)cxt.getAttribute(SUBSCRIBERS_THREAD_POOL);
+    ExecutorService threadPool = (ExecutorService) cxt.getAttribute(SUBSCRIBERS_THREAD_POOL);
     threadPool.shutdownNow();
     threadPool.awaitTermination(5, TimeUnit.MINUTES);
   }
@@ -126,15 +126,15 @@ public class SubscribeRedisTask implements Task {
           try {
             reset();
             barrier.await();
+          } catch (InterruptedException | BrokenBarrierException ignored) {
           }
-          catch (InterruptedException | BrokenBarrierException ignored) { }
         }
       });
     }
 
     public void subscribeAsync(ExecutorService threadPool) {
-      future = CompletableFuture.runAsync(() ->
-          client.subscribe(listener, channels.toArray(new String[] {})), threadPool);
+      future = CompletableFuture.runAsync(
+          () -> client.subscribe(listener, channels.toArray(new String[] {})), threadPool);
     }
 
     public void unsubscribeAllChannels() {

@@ -93,7 +93,7 @@ public final class JedisClientManager implements RedisClientManager {
 
     @Override
     public void subscribe(SubscriptionListener listener, String... channels) {
-      jedisCluster.subscribe(((JedisSubscriptionListener)listener).getJedisPubSub(), channels);
+      jedisCluster.subscribe(((JedisSubscriptionListener) listener).getJedisPubSub(), channels);
     }
 
     @Override

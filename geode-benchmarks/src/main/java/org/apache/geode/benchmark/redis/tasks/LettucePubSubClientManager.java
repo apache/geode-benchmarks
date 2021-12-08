@@ -83,13 +83,15 @@ public final class LettucePubSubClientManager implements RedisClientManager {
 
     @Override
     public Set<String> zrange(String key, long start, long stop) {
-      return new HashSet<>(LettucePubSubClientManager.redisClusterCommands.get().zrange(key, start, stop));
+      return new HashSet<>(
+          LettucePubSubClientManager.redisClusterCommands.get().zrange(key, start, stop));
     }
 
     @Override
     public Set<String> zrangeByScore(String key, long start, long stop) {
       return new HashSet<>(
-          LettucePubSubClientManager.redisClusterCommands.get().zrangebyscore(key, Range.create(start, stop)));
+          LettucePubSubClientManager.redisClusterCommands.get().zrangebyscore(key,
+              Range.create(start, stop)));
     }
 
     @Override
@@ -105,10 +107,10 @@ public final class LettucePubSubClientManager implements RedisClientManager {
 
     @Override
     public void subscribe(SubscriptionListener listener, String... channels) {
-      StatefulRedisPubSubConnection<String, String>
-          connection = LettucePubSubClientManager.redisClusterCommands.get().getStatefulConnection();
+      StatefulRedisPubSubConnection<String, String> connection =
+          LettucePubSubClientManager.redisClusterCommands.get().getStatefulConnection();
 
-      connection.addListener(((LettuceSubscriptionListener)listener).getListener());
+      connection.addListener(((LettuceSubscriptionListener) listener).getListener());
       LettucePubSubClientManager.redisClusterCommands.get().subscribe(channels);
     }
 

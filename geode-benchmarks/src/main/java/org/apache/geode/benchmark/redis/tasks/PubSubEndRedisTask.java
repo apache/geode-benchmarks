@@ -21,9 +21,6 @@ import org.apache.geode.perftest.TestContext;
 
 public class PubSubEndRedisTask implements Task {
 
-  public PubSubEndRedisTask() {
-  }
-
   @Override
   public void run(TestContext context) throws Exception {
     SubscribeRedisTask.shutdown(context);
