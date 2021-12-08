@@ -71,7 +71,7 @@ public class SubscribeRedisTask implements Task {
     // save subscribers in the TestContext, as this will be shared with
     // the after tasks which will call shutdown()
     List<Subscriber> subscribers = subscriberClientManagers.stream()
-        .map(cm -> new Subscriber(cm.get(), channels, numMessagesExpected, barrier))
+        .map(cm -> new Subscriber(cm.get(), channels, numMessagesExpected, barrier, context))
         .collect(Collectors.toList());
     context.setAttribute(SUBSCRIBERS_CONTEXT_KEY, subscribers);
 
@@ -81,7 +81,7 @@ public class SubscribeRedisTask implements Task {
     context.setAttribute(SUBSCRIBERS_THREAD_POOL, subscriberThreadPool);
 
     for (Subscriber subscriber : subscribers) {
-      subscriber.subscribeAsync(subscriberThreadPool);
+      subscriber.subscribeAsync(subscriberThreadPool, context);
     }
   }
 
@@ -117,7 +117,7 @@ public class SubscribeRedisTask implements Task {
      * @param barrier Wait on this when received all messages
      */
     Subscriber(RedisClient client, final List<String> channels,
-        int numMessagesExpected, final CyclicBarrier barrier) {
+        int numMessagesExpected, final CyclicBarrier barrier, TestContext context) {
       this.channels = channels;
       this.messagesReceived = new AtomicInteger(0);
       this.numMessagesExpected = numMessagesExpected;
@@ -127,21 +127,21 @@ public class SubscribeRedisTask implements Task {
         if (receiveMessageAndIsComplete(channel, message)) {
           try {
             reset();
-            logger.info("Subscriber waiting on barrier...");
+            context.logProgress("Subscriber waiting on barrier...");
             barrier.await();
-            logger.info("Subscriber continuing...");
+            context.logProgress("Subscriber continuing...");
           } catch (InterruptedException | BrokenBarrierException ignored) {
           }
         }
       });
     }
 
-    public void subscribeAsync(ExecutorService threadPool) {
+    public void subscribeAsync(ExecutorService threadPool, TestContext context) {
       future = CompletableFuture.runAsync(
           () -> {
-            assertThat(validate).as("Validate: Subscribing to channels " + channels).isFalse();
+            context.logProgress("Subscribing to channels " + channels);
             client.subscribe(listener, channels.toArray(new String[] {}));
-            assertThat(validate).as("Validate: Subscribed channels " + channels).isFalse();
+            context.logProgress("Subscribed to channels " + channels);
           }, threadPool);
     }
 
@@ -162,12 +162,9 @@ public class SubscribeRedisTask implements Task {
     // Receive a message and return true if all messages have been received
     private boolean receiveMessageAndIsComplete(String channel, String message) {
       if (validate) {
-        assertThat(validate).as(String.format("Validate: Received message %s of length %d on channel %s",
-            message, message.length(), channel)).isFalse();
-        if (message.length() != messageLength) {
-          logger.error(String.format("Received message of length %d but expected length %d",
-              message.length(), messageLength));
-        }
+        logger.info(String.format("Received message %s of length %d on channel %s",
+            message, message.length(), channel));
+        assertThat(message.length()).isEqualTo(messageLength);
       }
       return messagesReceived.incrementAndGet() >= numMessagesExpected;
     }
