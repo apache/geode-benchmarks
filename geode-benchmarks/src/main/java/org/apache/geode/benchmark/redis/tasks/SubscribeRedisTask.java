@@ -125,7 +125,9 @@ public class SubscribeRedisTask implements Task {
         if (receiveMessageAndIsComplete(channel, message)) {
           try {
             reset();
+            logger.info("Subscriber waiting on barrier...");
             barrier.await();
+            logger.info("Subscriber continuing...");
           } catch (InterruptedException | BrokenBarrierException ignored) {
           }
         }
@@ -134,7 +136,10 @@ public class SubscribeRedisTask implements Task {
 
     public void subscribeAsync(ExecutorService threadPool) {
       future = CompletableFuture.runAsync(
-          () -> client.subscribe(listener, channels.toArray(new String[] {})), threadPool);
+          () -> {
+            logger.info("Subscribing to channels " + channels);
+            client.subscribe(listener, channels.toArray(new String[] {}));
+          }, threadPool);
     }
 
     public void unsubscribeAllChannels() {
