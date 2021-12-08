@@ -53,6 +53,7 @@ public class PublishRedisTask extends BenchmarkDriverAdapter implements Serializ
     for (String channel : channels) {
       for (int i = 0; i < numMessages; i++) {
         String message = Strings.repeat(String.valueOf((char) ('A' + i)), messageLength);
+        logger.info("On channel " + channel + " publishing message " + message);
         redisClient.publish(channel, message);
       }
     }
