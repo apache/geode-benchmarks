@@ -16,6 +16,8 @@
  */
 package org.apache.geode.benchmark.redis.tasks;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.List;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CompletableFuture;
@@ -137,8 +139,9 @@ public class SubscribeRedisTask implements Task {
     public void subscribeAsync(ExecutorService threadPool) {
       future = CompletableFuture.runAsync(
           () -> {
-            logger.info("Subscribing to channels " + channels);
+            assertThat(validate).as("Validate: Subscribing to channels " + channels).isFalse();
             client.subscribe(listener, channels.toArray(new String[] {}));
+            assertThat(validate).as("Validate: Subscribed channels " + channels).isFalse();
           }, threadPool);
     }
 
@@ -159,8 +162,8 @@ public class SubscribeRedisTask implements Task {
     // Receive a message and return true if all messages have been received
     private boolean receiveMessageAndIsComplete(String channel, String message) {
       if (validate) {
-        logger.info(String.format("Received message %s of length %d on channel %s",
-            message, message.length(), channel));
+        assertThat(validate).as(String.format("Validate: Received message %s of length %d on channel %s",
+            message, message.length(), channel)).isFalse();
         if (message.length() != messageLength) {
           logger.error(String.format("Received message of length %d but expected length %d",
               message.length(), messageLength));
