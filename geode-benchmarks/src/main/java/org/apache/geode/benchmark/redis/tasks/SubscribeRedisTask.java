@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.apache.geode.benchmark.redis.tests.PubSubBenchmarkHelper;
+import org.apache.geode.benchmark.redis.tests.PubSubBenchmarkConfiguration;
 import org.apache.geode.perftest.Task;
 import org.apache.geode.perftest.TestContext;
 
@@ -45,66 +45,63 @@ public class SubscribeRedisTask implements Task {
   private static final String SUBSCRIBERS_THREAD_POOL = "threadPool";
 
   private final List<RedisClientManager> subscriberClientManagers;
-  private final List<String> channels;
-  private final int numMessagesPerChannelPerOperation;
-  private final int messageLength;
   private final boolean validate;
-  private final PubSubBenchmarkHelper helper;
+  private final PubSubBenchmarkConfiguration pubSubConfig;
 
-  public SubscribeRedisTask(PubSubBenchmarkHelper helper,
-      List<RedisClientManager> subscriberClientManagers,
-      List<String> channels, int numMessagesPerChannelPerOperation,
-      int messageLength, boolean validate) {
-    this.helper = helper;
+  public SubscribeRedisTask(final PubSubBenchmarkConfiguration pubSubConfig,
+      final List<RedisClientManager> subscriberClientManagers,
+      final boolean validate) {
+    this.pubSubConfig = pubSubConfig;
     logger.info(
         "Initialized: SubscribeRedisTask numChannels={}, numMessagesPerChannel={}, messageLength={}, validate={}",
-        channels.size(), numMessagesPerChannelPerOperation, messageLength, validate);
+        pubSubConfig.getNumChannels(), pubSubConfig.getNumMessagesPerChannelOperation(),
+        pubSubConfig.getMessageLength(), validate);
     this.subscriberClientManagers = subscriberClientManagers;
-    this.channels = channels;
-    this.numMessagesPerChannelPerOperation = numMessagesPerChannelPerOperation;
-    this.messageLength = messageLength;
     this.validate = validate;
   }
 
   @Override
-  public void run(TestContext context) throws Exception {
-    int numMessagesExpected = channels.size() * numMessagesPerChannelPerOperation;
+  public void run(final TestContext context) throws Exception {
+    final int numMessagesExpected =
+        pubSubConfig.getNumChannels() * pubSubConfig.getNumMessagesPerChannelOperation();
 
-    CyclicBarrier barrier = helper.getCyclicBarrier();
+    final CyclicBarrier barrier = pubSubConfig.getCyclicBarrier();
 
     // save subscribers in the TestContext, as this will be shared with
     // the after tasks which will call shutdown()
-    List<Subscriber> subscribers = subscriberClientManagers.stream()
-        .map(cm -> new Subscriber(cm.get(), channels, numMessagesExpected, barrier, context))
+    final List<Subscriber> subscribers = subscriberClientManagers.stream()
+        .map(cm -> new Subscriber(cm.get(), pubSubConfig.getChannels(),
+            numMessagesExpected, barrier, context))
         .collect(Collectors.toList());
     context.setAttribute(SUBSCRIBERS_CONTEXT_KEY, subscribers);
 
-    // save thread pool in TestContext so it can be shutdown cleanly after
-    ExecutorService subscriberThreadPool =
+    // save thread pool in TestContext, so it can be shutdown cleanly after
+    final ExecutorService subscriberThreadPool =
         Executors.newFixedThreadPool(subscriberClientManagers.size());
     context.setAttribute(SUBSCRIBERS_THREAD_POOL, subscriberThreadPool);
 
-    for (Subscriber subscriber : subscribers) {
+    for (final Subscriber subscriber : subscribers) {
       subscriber.subscribeAsync(subscriberThreadPool, context);
     }
   }
 
-  public static void shutdown(TestContext cxt) throws Exception {
+  public static void shutdown(final TestContext cxt) throws Exception {
     // precondition: method run has been previously executed in this Worker
     // and therefore subscribers and threadPool are available
     @SuppressWarnings("unchecked")
-    List<Subscriber> subscribers = (List<Subscriber>) cxt.getAttribute(SUBSCRIBERS_CONTEXT_KEY);
+    final List<Subscriber> subscribers =
+        (List<Subscriber>) cxt.getAttribute(SUBSCRIBERS_CONTEXT_KEY);
 
     cxt.logProgress("Shutting down subscribers");
 
-    for (SubscribeRedisTask.Subscriber subscriber : subscribers) {
+    for (final SubscribeRedisTask.Subscriber subscriber : subscribers) {
       subscriber.unsubscribeAllChannels(cxt);
       subscriber.waitForCompletion(cxt);
     }
 
     cxt.logProgress("Shutting down thread pool…");
 
-    ExecutorService threadPool = (ExecutorService) cxt.getAttribute(SUBSCRIBERS_THREAD_POOL);
+    final ExecutorService threadPool = (ExecutorService) cxt.getAttribute(SUBSCRIBERS_THREAD_POOL);
     threadPool.shutdownNow();
     threadPool.awaitTermination(5, TimeUnit.MINUTES);
 
@@ -126,8 +123,8 @@ public class SubscribeRedisTask implements Task {
      * @param numMessagesExpected total number of messages expected
      * @param barrier Wait on this when received all messages
      */
-    Subscriber(RedisClient client, final List<String> channels,
-        int numMessagesExpected, final CyclicBarrier barrier, TestContext context) {
+    Subscriber(final RedisClient client, final List<String> channels,
+        final int numMessagesExpected, final CyclicBarrier barrier, final TestContext context) {
       this.channels = channels;
       this.messagesReceived = new AtomicInteger(0);
       this.numMessagesExpected = numMessagesExpected;
@@ -138,20 +135,20 @@ public class SubscribeRedisTask implements Task {
           try {
             reset();
             barrier.await(2, TimeUnit.SECONDS);
-          } catch (TimeoutException e) {
+          } catch (final TimeoutException e) {
             throw new RuntimeException("Subscriber timed out while waiting on barrier");
-          } catch (InterruptedException | BrokenBarrierException ignored) {
+          } catch (final InterruptedException | BrokenBarrierException ignored) {
           }
         }
       });
     }
 
-    public void subscribeAsync(ExecutorService threadPool, TestContext context) {
+    public void subscribeAsync(final ExecutorService threadPool, final TestContext context) {
       future = CompletableFuture.runAsync(
           () -> client.subscribe(listener, channels.toArray(new String[] {})), threadPool);
     }
 
-    public void unsubscribeAllChannels(TestContext ctx) {
+    public void unsubscribeAllChannels(final TestContext ctx) {
       if (future == null) {
         return;
       }
@@ -162,8 +159,10 @@ public class SubscribeRedisTask implements Task {
       ctx.logProgress("(Unsubscribe was no-opped out)");
     }
 
-    public void waitForCompletion(TestContext ctx) throws Exception {
+    public void waitForCompletion(final TestContext ctx) throws Exception {
       // TODO Getting an unexpected end of stream error from the subscriber thread
+      // I believe the problem is that pubsub is not thread-safe, so requires
+      // the subscriber thread to (somehow) unsubscribe itself.
       /*
        * if (future == null) {
        * return;
@@ -175,13 +174,13 @@ public class SubscribeRedisTask implements Task {
     }
 
     // Receive a message and return true if all messages have been received
-    private boolean receiveMessageAndIsComplete(String channel, String message,
-        TestContext context) {
+    private boolean receiveMessageAndIsComplete(final String channel, final String message,
+        final TestContext context) {
       if (validate) {
         context.logProgress(String.format(
             "Received message %s of length %d on channel %s; messagesReceived=%d; messagesExpected=%d",
             message, message.length(), channel, messagesReceived.get() + 1, numMessagesExpected));
-        assertThat(message.length()).isEqualTo(messageLength);
+        assertThat(message.length()).isEqualTo(pubSubConfig.getMessageLength());
       }
       return messagesReceived.incrementAndGet() >= numMessagesExpected;
     }

@@ -14,30 +14,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.apache.geode.benchmark.redis.tests;
-
-import java.util.concurrent.CyclicBarrier;
 
 import org.apache.geode.perftest.TestConfig;
 
 public class RedisPubSubLargeBenchmark extends RedisBenchmark {
 
-  private static final int NUM_SUBSCRIBERS = 10;
-  private static final int NUM_CHANNELS = 5;
-  private static final int NUM_MESSAGES_PER_CHANNEL_OPERATION = 100;
-  private static final int MESSAGE_LENGTH = 1000;
-
-  // barrier must be a singleton in each JVM for each test
-  // add one party for the publisher
-  static final CyclicBarrier BARRIER = new CyclicBarrier(NUM_SUBSCRIBERS + 1);
-
   @Override
   public TestConfig configure() {
-    final TestConfig config = super.configure();
-    PubSubBenchmarkHelper helper = new PubSubBenchmarkHelper(this);
-    helper.configurePubSubTest(this, config, NUM_SUBSCRIBERS, NUM_CHANNELS,
-        NUM_MESSAGES_PER_CHANNEL_OPERATION, MESSAGE_LENGTH);
-    return config;
+    final TestConfig testConfig = super.configure();
+    final PubSubBenchmarkConfiguration pubSubConfig = new PubSubLargeBenchmarkConfiguration();
+    pubSubConfig.configurePubSubTest(this, testConfig);
+    return testConfig;
   }
+
 }

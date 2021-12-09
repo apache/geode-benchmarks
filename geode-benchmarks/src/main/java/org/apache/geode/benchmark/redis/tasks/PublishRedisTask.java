@@ -18,7 +18,6 @@
 package org.apache.geode.benchmark.redis.tasks;
 
 import java.io.Serializable;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.TimeUnit;
@@ -28,35 +27,29 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.yardstickframework.BenchmarkDriverAdapter;
 
-import org.apache.geode.benchmark.redis.tests.PubSubBenchmarkHelper;
+import org.apache.geode.benchmark.redis.tests.PubSubBenchmarkConfiguration;
 
 public class PublishRedisTask extends BenchmarkDriverAdapter implements Serializable {
   private static final Logger logger = LoggerFactory.getLogger(PublishRedisTask.class);
-  private final int numMessages;
-  private final int messageLength;
-  private final PubSubBenchmarkHelper helper;
+  private final PubSubBenchmarkConfiguration pubSubConfig;
   private final RedisClientManager publisherClientManager;
-  private final List<String> channels;
 
-  public PublishRedisTask(PubSubBenchmarkHelper helper,
-      final RedisClientManager publisherClientManager,
-      List<String> channels, int numMessages, int messageLength) {
-    this.helper = helper;
+  public PublishRedisTask(final PubSubBenchmarkConfiguration pubSubConfig,
+      final RedisClientManager publisherClientManager) {
+    this.pubSubConfig = pubSubConfig;
     this.publisherClientManager = publisherClientManager;
     logger.info("Initialized: PublishRedisTask");
-    this.messageLength = messageLength;
-    this.numMessages = numMessages;
-    this.channels = channels;
   }
 
   @Override
   public boolean test(final Map<Object, Object> ctx) throws Exception {
-    CyclicBarrier barrier = helper.getCyclicBarrier();
-    RedisClient redisClient = publisherClientManager.get();
+    final CyclicBarrier barrier = pubSubConfig.getCyclicBarrier();
+    final RedisClient redisClient = publisherClientManager.get();
 
-    for (String channel : channels) {
-      for (int i = 0; i < numMessages; i++) {
-        String message = Strings.repeat(String.valueOf((char) ('A' + i)), messageLength);
+    for (final String channel : pubSubConfig.getChannels()) {
+      for (int i = 0; i < pubSubConfig.getNumMessagesPerChannelOperation(); i++) {
+        final String message = Strings.repeat(String.valueOf((char) ('A' + i)),
+            pubSubConfig.getMessageLength());
         redisClient.publish(channel, message);
       }
     }
