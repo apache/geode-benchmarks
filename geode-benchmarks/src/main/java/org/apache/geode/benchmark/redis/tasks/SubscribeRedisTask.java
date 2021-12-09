@@ -51,9 +51,10 @@ public class SubscribeRedisTask implements Task {
   private final boolean validate;
   private final PubSubBenchmarkHelper helper;
 
-  public SubscribeRedisTask(PubSubBenchmarkHelper helper, List<RedisClientManager> subscriberClientManagers,
-                            List<String> channels, int numMessagesPerChannelPerOperation,
-                            int messageLength, boolean validate) {
+  public SubscribeRedisTask(PubSubBenchmarkHelper helper,
+      List<RedisClientManager> subscriberClientManagers,
+      List<String> channels, int numMessagesPerChannelPerOperation,
+      int messageLength, boolean validate) {
     this.helper = helper;
     logger.info(
         "Initialized: SubscribeRedisTask numChannels={}, numMessagesPerChannel={}, messageLength={}, validate={}",
@@ -69,7 +70,7 @@ public class SubscribeRedisTask implements Task {
   public void run(TestContext context) throws Exception {
     int numMessagesExpected = channels.size() * numMessagesPerChannelPerOperation;
 
-    CyclicBarrier barrier = helper.BARRIER; //getCyclicBarrier();
+    CyclicBarrier barrier = helper.getCyclicBarrier();
 
     // save subscribers in the TestContext, as this will be shared with
     // the after tasks which will call shutdown()

@@ -38,8 +38,9 @@ public class PublishRedisTask extends BenchmarkDriverAdapter implements Serializ
   private final RedisClientManager publisherClientManager;
   private final List<String> channels;
 
-  public PublishRedisTask(PubSubBenchmarkHelper helper, final RedisClientManager publisherClientManager,
-                          List<String> channels, int numMessages, int messageLength) {
+  public PublishRedisTask(PubSubBenchmarkHelper helper,
+      final RedisClientManager publisherClientManager,
+      List<String> channels, int numMessages, int messageLength) {
     this.helper = helper;
     this.publisherClientManager = publisherClientManager;
     logger.info("Initialized: PublishRedisTask");
@@ -50,7 +51,7 @@ public class PublishRedisTask extends BenchmarkDriverAdapter implements Serializ
 
   @Override
   public boolean test(final Map<Object, Object> ctx) throws Exception {
-    CyclicBarrier barrier = helper.BARRIER; ///getCyclicBarrier();
+    CyclicBarrier barrier = helper.getCyclicBarrier();
     RedisClient redisClient = publisherClientManager.get();
 
     for (String channel : channels) {
