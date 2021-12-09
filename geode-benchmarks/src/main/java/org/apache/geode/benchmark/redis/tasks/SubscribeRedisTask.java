@@ -157,15 +157,14 @@ public class SubscribeRedisTask implements Task {
     }
 
     public void waitForCompletion(TestContext ctx) throws Exception {
+/*
       if (future == null) {
         return;
       }
-      // if not validating, then don't wait for completion, ignoring any errors in subscriber thread
-      if (validate) {
-        ctx.logProgress("Waiting for completion");
-        assertThat(future.get(2, TimeUnit.SECONDS)).isNull();
-        ctx.logProgress("Joined with subscriber thread");
-      }
+      ctx.logProgress("Waiting for completion");
+      assertThat(future.get(2, TimeUnit.SECONDS)).isNull();
+      ctx.logProgress("Joined with subscriber thread");
+*/
     }
 
     // Receive a message and return true if all messages have been received
