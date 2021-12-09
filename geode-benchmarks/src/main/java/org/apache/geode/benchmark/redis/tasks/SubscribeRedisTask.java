@@ -153,17 +153,19 @@ public class SubscribeRedisTask implements Task {
       ctx.logProgress("Unsubscribing to channels " + channels);
       // TODO unsubscribe is not working, get connection exception
       // listener.unsubscribe(channels.toArray(new String[] {}));
+      ctx.logProgress("(Unsubscribe was no-opped out)");
     }
 
     public void waitForCompletion(TestContext ctx) throws Exception {
       if (future == null) {
         return;
       }
-      ctx.logProgress("Waiting for completion");
+      // if not validating, then don't wait for completion, ignoring any errors in subscriber thread
       if (validate) {
+        ctx.logProgress("Waiting for completion");
         assertThat(future.get(2, TimeUnit.SECONDS)).isNull();
+        ctx.logProgress("Joined with subscriber thread");
       }
-      ctx.logProgress("Joined with subscriber thread");
     }
 
     // Receive a message and return true if all messages have been received
