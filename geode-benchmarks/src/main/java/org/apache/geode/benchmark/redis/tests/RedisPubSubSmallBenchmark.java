@@ -29,12 +29,12 @@ public class RedisPubSubSmallBenchmark extends RedisBenchmark {
   private static final int MESSAGE_LENGTH = 1;
 
   // barrier must be a singleton in each JVM for each test
-  private static final CyclicBarrier BARRIER = new CyclicBarrier(NUM_SUBSCRIBERS + 1);
+  static final CyclicBarrier BARRIER = new CyclicBarrier(NUM_SUBSCRIBERS + 1);
 
   @Override
   public TestConfig configure() {
     final TestConfig config = super.configure();
-    PubSubBenchmarkHelper helper = new PubSubBenchmarkHelper(BARRIER);
+    PubSubBenchmarkHelper helper = new PubSubBenchmarkHelper(this);
     helper.configurePubSubTest(this, config, NUM_SUBSCRIBERS, NUM_CHANNELS,
         NUM_MESSAGES_PER_CHANNEL_OPERATION, MESSAGE_LENGTH);
     return config;

@@ -38,14 +38,23 @@ import org.apache.geode.perftest.TestConfig;
 
 public class PubSubBenchmarkHelper {
 
-  private final CyclicBarrier barrier;
+  private final RedisBenchmark benchmark;
 
-  public PubSubBenchmarkHelper(CyclicBarrier barrier) {
-    this.barrier = barrier;
+  public PubSubBenchmarkHelper(RedisBenchmark benchmark) {
+    this.benchmark = benchmark;
   }
 
   public CyclicBarrier getCyclicBarrier() {
-    return barrier;
+    // Attempted safe lazy initialization of a static (with synchronized)
+    // but it caused weird serialization problems
+    // TODO clean this up
+    if (benchmark.getClass() == RedisPubSubSmallBenchmark.class) {
+      return RedisPubSubSmallBenchmark.BARRIER;
+    }
+    if (benchmark.getClass() == RedisPubSubLargeBenchmark.class) {
+      return RedisPubSubLargeBenchmark.BARRIER;
+    }
+    throw new AssertionError("unsupported benchmark");
   }
 
   public void configurePubSubTest(RedisBenchmark benchmark,
