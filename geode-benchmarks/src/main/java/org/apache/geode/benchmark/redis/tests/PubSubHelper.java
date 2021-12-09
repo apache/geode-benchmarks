@@ -45,8 +45,8 @@ public class PubSubHelper implements Serializable {
   private final int numSubscribers;
 
   public CyclicBarrier getCyclicBarrier() {
-    // only create one CyclicBarrier in each JVM so it can be shared
-    // between the publisher and subscribers
+    // only create one CyclicBarrier in each JVM per benchmark test
+    // for synchronization between the publisher and subscribers
     return lazyCyclicBarrier.get(() -> new CyclicBarrier(numSubscribers + 1));
   }
 
