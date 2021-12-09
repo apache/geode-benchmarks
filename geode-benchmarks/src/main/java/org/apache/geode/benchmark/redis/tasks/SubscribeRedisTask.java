@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.apache.geode.benchmark.redis.tests.PubSubHelper;
+import org.apache.geode.benchmark.redis.tests.PubSubBenchmarkHelper;
 import org.apache.geode.perftest.Task;
 import org.apache.geode.perftest.TestContext;
 
@@ -49,11 +49,11 @@ public class SubscribeRedisTask implements Task {
   private final int numMessagesPerChannelPerOperation;
   private final int messageLength;
   private final boolean validate;
-  private final PubSubHelper helper;
+  private final PubSubBenchmarkHelper helper;
 
-  public SubscribeRedisTask(PubSubHelper helper, List<RedisClientManager> subscriberClientManagers,
-      List<String> channels, int numMessagesPerChannelPerOperation,
-      int messageLength, boolean validate) {
+  public SubscribeRedisTask(PubSubBenchmarkHelper helper, List<RedisClientManager> subscriberClientManagers,
+                            List<String> channels, int numMessagesPerChannelPerOperation,
+                            int messageLength, boolean validate) {
     this.helper = helper;
     logger.info(
         "Initialized: SubscribeRedisTask numChannels={}, numMessagesPerChannel={}, messageLength={}, validate={}",
@@ -69,7 +69,7 @@ public class SubscribeRedisTask implements Task {
   public void run(TestContext context) throws Exception {
     int numMessagesExpected = channels.size() * numMessagesPerChannelPerOperation;
 
-    CyclicBarrier barrier = helper.getCyclicBarrier();
+    CyclicBarrier barrier = helper.BARRIER; //getCyclicBarrier();
 
     // save subscribers in the TestContext, as this will be shared with
     // the after tasks which will call shutdown()
@@ -147,9 +147,7 @@ public class SubscribeRedisTask implements Task {
 
     public void subscribeAsync(ExecutorService threadPool, TestContext context) {
       future = CompletableFuture.runAsync(
-          () -> {
-            client.subscribe(listener, channels.toArray(new String[] {}));
-          }, threadPool);
+          () -> client.subscribe(listener, channels.toArray(new String[] {})), threadPool);
     }
 
     public void unsubscribeAllChannels(TestContext ctx) {

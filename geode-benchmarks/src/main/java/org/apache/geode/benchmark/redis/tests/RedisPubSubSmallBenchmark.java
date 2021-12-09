@@ -24,7 +24,7 @@ public class RedisPubSubSmallBenchmark extends RedisBenchmark {
   @Override
   public TestConfig configure() {
     final TestConfig config = super.configure();
-    PubSubHelper helper = new PubSubHelper(1);
+    PubSubBenchmarkHelper helper = new PubSubBenchmarkHelper(1);
     helper.configurePubSubTest(this, config, 1,
         1, 1);
     return config;

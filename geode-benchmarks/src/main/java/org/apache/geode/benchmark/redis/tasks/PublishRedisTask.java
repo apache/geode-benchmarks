@@ -28,18 +28,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.yardstickframework.BenchmarkDriverAdapter;
 
-import org.apache.geode.benchmark.redis.tests.PubSubHelper;
+import org.apache.geode.benchmark.redis.tests.PubSubBenchmarkHelper;
 
 public class PublishRedisTask extends BenchmarkDriverAdapter implements Serializable {
   private static final Logger logger = LoggerFactory.getLogger(PublishRedisTask.class);
   private final int numMessages;
   private final int messageLength;
-  private final PubSubHelper helper;
+  private final PubSubBenchmarkHelper helper;
   private final RedisClientManager publisherClientManager;
   private final List<String> channels;
 
-  public PublishRedisTask(PubSubHelper helper, final RedisClientManager publisherClientManager,
-      List<String> channels, int numMessages, int messageLength) {
+  public PublishRedisTask(PubSubBenchmarkHelper helper, final RedisClientManager publisherClientManager,
+                          List<String> channels, int numMessages, int messageLength) {
     this.helper = helper;
     this.publisherClientManager = publisherClientManager;
     logger.info("Initialized: PublishRedisTask");
@@ -50,7 +50,7 @@ public class PublishRedisTask extends BenchmarkDriverAdapter implements Serializ
 
   @Override
   public boolean test(final Map<Object, Object> ctx) throws Exception {
-    CyclicBarrier barrier = helper.getCyclicBarrier();
+    CyclicBarrier barrier = helper.BARRIER; ///getCyclicBarrier();
     RedisClient redisClient = publisherClientManager.get();
 
     for (String channel : channels) {

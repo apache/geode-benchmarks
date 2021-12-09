@@ -38,7 +38,7 @@ import org.apache.geode.benchmark.redis.tasks.SubscribeRedisTask;
 import org.apache.geode.benchmark.redis.utils.Lazy;
 import org.apache.geode.perftest.TestConfig;
 
-public class PubSubHelper implements Serializable {
+public class PubSubBenchmarkHelper implements Serializable {
 
   private Lazy<CyclicBarrier> lazyCyclicBarrier = new Lazy<>();
 
@@ -46,11 +46,16 @@ public class PubSubHelper implements Serializable {
 
   public CyclicBarrier getCyclicBarrier() {
     // only create one CyclicBarrier in each JVM per benchmark test
-    // for synchronization between the publisher and subscribers
+    // for synchronization between the publisher and subscribers.
+    // Will create a new CyclicBarrier once after being serialized, using
+    // the numSubscribers parameter.
     return lazyCyclicBarrier.get(() -> new CyclicBarrier(numSubscribers + 1));
   }
 
-  public PubSubHelper(int numSubscribers) {
+  private static final int NUM_SUBSCRIBERS = 1;
+  public static final CyclicBarrier BARRIER = new CyclicBarrier(NUM_SUBSCRIBERS + 1);
+
+  public PubSubBenchmarkHelper(int numSubscribers) {
     this.numSubscribers = numSubscribers;
   }
 
