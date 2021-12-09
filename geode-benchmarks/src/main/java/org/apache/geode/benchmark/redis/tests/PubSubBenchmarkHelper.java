@@ -41,18 +41,20 @@ public class PubSubBenchmarkHelper implements Serializable {
 
   private final int numSubscribers;
 
-  private transient CyclicBarrier lazyCyclicBarrier = null;
-
+  private static CyclicBarrier BARRIER2 = new CyclicBarrier(2);
+  private static CyclicBarrier BARRIER51 = new CyclicBarrier(51);
 
   public synchronized CyclicBarrier getCyclicBarrier() {
     // only create one CyclicBarrier in each JVM per benchmark test
     // for synchronization between the publisher and subscribers.
-    // Will create a new CyclicBarrier once after being serialized, using
-    // the numSubscribers parameter.
-    if (lazyCyclicBarrier == null) {
-      lazyCyclicBarrier = new CyclicBarrier(numSubscribers + 1);
+    switch (numSubscribers) {
+      case 1:
+        return BARRIER2;
+      case 50:
+        return BARRIER51;
+      default:
+        throw new AssertionError("unsupported number of subscribers: " + numSubscribers);
     }
-    return lazyCyclicBarrier;
   }
 
   public PubSubBenchmarkHelper(int numSubscribers) {
