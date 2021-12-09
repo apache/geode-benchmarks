@@ -22,7 +22,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import io.lettuce.core.Range;
@@ -33,6 +33,7 @@ import io.lettuce.core.cluster.pubsub.api.sync.RedisClusterPubSubCommands;
 import io.lettuce.core.pubsub.RedisPubSubAdapter;
 import io.lettuce.core.pubsub.RedisPubSubListener;
 import io.lettuce.core.pubsub.StatefulRedisPubSubConnection;
+import io.vavr.Function3;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -96,11 +97,13 @@ public final class LettucePubSubClientManager implements RedisClientManager {
 
     @Override
     public SubscriptionListener createSubscriptionListener(
-        BiConsumer<String, String> channelMessageConsumer) {
+        Function3<String, String, Consumer<List<String>>, Void> channelMessageConsumer) {
       return new LettuceSubscriptionListener(new RedisPubSubAdapter<String, String>() {
         @Override
         public void message(String channel, String message) {
-          channelMessageConsumer.accept(channel, message);
+          channelMessageConsumer.apply(channel, message,
+              (List<String> channels) -> LettucePubSubClientManager.redisClusterCommands.get()
+                  .unsubscribe(channels.toArray(new String[] {})));
         }
       });
     }
@@ -182,10 +185,6 @@ public final class LettucePubSubClientManager implements RedisClientManager {
     public LettuceSubscriptionListener(
         RedisPubSubListener<String, String> listener) {
       this.listener = listener;
-    }
-
-    public void unsubscribe(String... channels) {
-      LettucePubSubClientManager.redisClusterCommands.get().unsubscribe(channels);
     }
 
     RedisPubSubListener<String, String> getListener() {

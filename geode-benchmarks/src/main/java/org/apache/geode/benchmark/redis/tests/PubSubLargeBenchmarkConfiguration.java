@@ -22,6 +22,7 @@ public class PubSubLargeBenchmarkConfiguration extends PubSubBenchmarkConfigurat
   private static final int NUM_CHANNELS = 5;
   private static final int NUM_MESSAGES_PER_CHANNEL_OPERATION = 100;
   private static final int MESSAGE_LENGTH = 1000;
+  private static final String CONTROL_CHANNEL = "__control__";
 
   private static final CyclicBarrier BARRIER = new CyclicBarrier(NUM_SUBSCRIBERS + 1);
 
@@ -49,4 +50,8 @@ public class PubSubLargeBenchmarkConfiguration extends PubSubBenchmarkConfigurat
     return MESSAGE_LENGTH;
   }
 
+  @Override
+  public String getControlChannel() {
+    return CONTROL_CHANNEL;
+  }
 }

@@ -27,10 +27,12 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import sun.jvm.hotspot.utilities.AssertionFailure;
 
 import org.apache.geode.benchmark.redis.tests.PubSubBenchmarkConfiguration;
 import org.apache.geode.perftest.Task;
@@ -70,7 +72,7 @@ public class SubscribeRedisTask implements Task {
     // save subscribers in the TestContext, as this will be shared with
     // the after tasks which will call shutdown()
     final List<Subscriber> subscribers = subscriberClientManagers.stream()
-        .map(cm -> new Subscriber(cm.get(), pubSubConfig.getChannels(),
+        .map(cm -> new Subscriber(cm.get(), pubSubConfig.getAllChannels(),
             numMessagesExpected, barrier, context))
         .collect(Collectors.toList());
     context.setAttribute(SUBSCRIBERS_CONTEXT_KEY, subscribers);
@@ -103,6 +105,7 @@ public class SubscribeRedisTask implements Task {
 
     final ExecutorService threadPool = (ExecutorService) cxt.getAttribute(SUBSCRIBERS_THREAD_POOL);
     threadPool.shutdownNow();
+    // noinspection ResultOfMethodCallIgnored
     threadPool.awaitTermination(5, TimeUnit.MINUTES);
 
     cxt.logProgress("Thread pool terminated");
@@ -130,17 +133,25 @@ public class SubscribeRedisTask implements Task {
       this.numMessagesExpected = numMessagesExpected;
       this.client = client;
 
-      listener = client.createSubscriptionListener((channel, message) -> {
-        if (receiveMessageAndIsComplete(channel, message, context)) {
-          try {
-            reset();
-            barrier.await(2, TimeUnit.SECONDS);
-          } catch (final TimeoutException e) {
-            throw new RuntimeException("Subscriber timed out while waiting on barrier");
-          } catch (final InterruptedException | BrokenBarrierException ignored) {
-          }
-        }
-      });
+      listener = client.createSubscriptionListener(
+          (String channel, String message, Consumer<List<String>> unsubscriber) -> {
+            if (channel.equals(pubSubConfig.getControlChannel())) {
+              if (message.equals("END")) {
+                unsubscriber.accept(pubSubConfig.getAllChannels());
+              } else {
+                throw new AssertionError("Unrecognized control message: " + message);
+              }
+            } else if (receiveMessageAndIsComplete(channel, message, context)) {
+              try {
+                reset();
+                barrier.await(2, TimeUnit.SECONDS);
+              } catch (final TimeoutException e) {
+                throw new RuntimeException("Subscriber timed out while waiting on barrier");
+              } catch (final InterruptedException | BrokenBarrierException ignored) {
+              }
+            }
+            return null;
+          });
     }
 
     public void subscribeAsync(final ExecutorService threadPool, final TestContext context) {

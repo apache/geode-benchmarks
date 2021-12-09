@@ -22,7 +22,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import io.lettuce.core.Range;
@@ -31,6 +31,7 @@ import io.lettuce.core.RedisURI;
 import io.lettuce.core.cluster.RedisClusterClient;
 import io.lettuce.core.cluster.api.StatefulRedisClusterConnection;
 import io.lettuce.core.cluster.api.sync.RedisAdvancedClusterCommands;
+import io.vavr.Function3;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -93,7 +94,7 @@ public final class LettuceClientManager implements RedisClientManager {
 
     @Override
     public SubscriptionListener createSubscriptionListener(
-        BiConsumer<String, String> channelMessageConsumer) {
+        Function3<String, String, Consumer<List<String>>, Void> channelMessageConsumer) {
       throw new UnsupportedOperationException("not a pubsub client");
     }
 

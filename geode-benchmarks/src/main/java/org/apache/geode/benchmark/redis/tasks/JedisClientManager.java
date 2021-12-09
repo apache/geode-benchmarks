@@ -21,10 +21,12 @@ import static redis.clients.jedis.BinaryJedisCluster.HASHSLOTS;
 import java.net.InetSocketAddress;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
-import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import io.vavr.Function3;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import redis.clients.jedis.HostAndPort;
@@ -81,12 +83,13 @@ public final class JedisClientManager implements RedisClientManager {
 
     @Override
     public SubscriptionListener createSubscriptionListener(
-        BiConsumer<String, String> channelMessageConsumer) {
+        Function3<String, String, Consumer<List<String>>, Void> channelMessageConsumer) {
       return new JedisSubscriptionListener(new JedisPubSub() {
         @Override
         public void onMessage(String channel, String message) {
           super.onMessage(channel, message);
-          channelMessageConsumer.accept(channel, message);
+          channelMessageConsumer.apply(channel, message,
+              (List<String> channels) -> this.unsubscribe(channels.toArray(new String[] {})));
         }
       });
     }
@@ -172,11 +175,6 @@ public final class JedisClientManager implements RedisClientManager {
 
     public JedisSubscriptionListener(JedisPubSub jedisPubSub) {
       this.jedisPubSub = jedisPubSub;
-    }
-
-    @Override
-    public void unsubscribe(String... channels) {
-      jedisPubSub.unsubscribe(channels);
     }
 
     JedisPubSub getJedisPubSub() {

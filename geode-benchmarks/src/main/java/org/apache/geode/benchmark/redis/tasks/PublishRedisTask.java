@@ -59,4 +59,12 @@ public class PublishRedisTask extends BenchmarkDriverAdapter implements Serializ
     barrier.await(2, TimeUnit.SECONDS);
     return true;
   }
+
+  @Override
+  public void tearDown() throws Exception {
+    super.tearDown();
+    // notify subscribers to unsubscribe
+    final RedisClient redisClient = publisherClientManager.get();
+    redisClient.publish(pubSubConfig.getControlChannel(), "END");
+  }
 }
