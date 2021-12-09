@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.apache.geode.benchmark.redis.tests.RedisPublishSubscribeBenchmark;
+import org.apache.geode.benchmark.redis.tests.PubSubHelper;
 import org.apache.geode.perftest.Task;
 import org.apache.geode.perftest.TestContext;
 
@@ -49,10 +49,12 @@ public class SubscribeRedisTask implements Task {
   private final int numMessagesPerChannelPerOperation;
   private final int messageLength;
   private final boolean validate;
+  private final PubSubHelper helper;
 
-  public SubscribeRedisTask(List<RedisClientManager> subscriberClientManagers,
+  public SubscribeRedisTask(PubSubHelper helper, List<RedisClientManager> subscriberClientManagers,
       List<String> channels, int numMessagesPerChannelPerOperation,
       int messageLength, boolean validate) {
+    this.helper = helper;
     logger.info(
         "Initialized: SubscribeRedisTask numChannels={}, numMessagesPerChannel={}, messageLength={}, validate={}",
         channels.size(), numMessagesPerChannelPerOperation, messageLength, validate);
@@ -67,7 +69,7 @@ public class SubscribeRedisTask implements Task {
   public void run(TestContext context) throws Exception {
     int numMessagesExpected = channels.size() * numMessagesPerChannelPerOperation;
 
-    CyclicBarrier barrier = RedisPublishSubscribeBenchmark.getCyclicBarrier();
+    CyclicBarrier barrier = helper.getCyclicBarrier();
 
     // save subscribers in the TestContext, as this will be shared with
     // the after tasks which will call shutdown()
@@ -99,9 +101,13 @@ public class SubscribeRedisTask implements Task {
       subscriber.waitForCompletion(cxt);
     }
 
+    cxt.logProgress("Shutting down thread pool…");
+
     ExecutorService threadPool = (ExecutorService) cxt.getAttribute(SUBSCRIBERS_THREAD_POOL);
     threadPool.shutdownNow();
     threadPool.awaitTermination(5, TimeUnit.MINUTES);
+
+    cxt.logProgress("Thread pool terminated");
   }
 
   public class Subscriber {
@@ -151,20 +157,23 @@ public class SubscribeRedisTask implements Task {
         return;
       }
       ctx.logProgress("Unsubscribing to channels " + channels);
-      // TODO unsubscribe is not working, get connection exception
+
+      // TODO unsubscribe is not working, getting connection exception
       // listener.unsubscribe(channels.toArray(new String[] {}));
       ctx.logProgress("(Unsubscribe was no-opped out)");
     }
 
     public void waitForCompletion(TestContext ctx) throws Exception {
-/*
-      if (future == null) {
-        return;
-      }
-      ctx.logProgress("Waiting for completion");
-      assertThat(future.get(2, TimeUnit.SECONDS)).isNull();
-      ctx.logProgress("Joined with subscriber thread");
-*/
+      // TODO Getting an unexpected end of stream error from
+      // TODO the subscriber thread
+      /*
+       * if (future == null) {
+       * return;
+       * }
+       * ctx.logProgress("Waiting for completion");
+       * assertThat(future.get(2, TimeUnit.SECONDS)).isNull();
+       * ctx.logProgress("Joined with subscriber thread");
+       */
     }
 
     // Receive a message and return true if all messages have been received
