@@ -41,7 +41,7 @@ public class PubSubBenchmarkHelper implements Serializable {
 
   private final int numSubscribers;
 
-  private transient volatile CyclicBarrier lazyCyclicBarrier;
+  private transient CyclicBarrier lazyCyclicBarrier = null;
 
 
   public synchronized CyclicBarrier getCyclicBarrier() {
