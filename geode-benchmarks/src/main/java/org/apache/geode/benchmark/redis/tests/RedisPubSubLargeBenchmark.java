@@ -21,14 +21,15 @@ import java.util.concurrent.CyclicBarrier;
 
 import org.apache.geode.perftest.TestConfig;
 
-public class RedisPubSubSmallBenchmark extends RedisBenchmark {
+public class RedisPubSubLargeBenchmark extends RedisBenchmark {
 
-  private static final int NUM_SUBSCRIBERS = 1;
-  private static final int NUM_CHANNELS = 1;
-  private static final int NUM_MESSAGES_PER_CHANNEL_OPERATION = 1;
-  private static final int MESSAGE_LENGTH = 1;
+  private static final int NUM_SUBSCRIBERS = 10;
+  private static final int NUM_CHANNELS = 5;
+  private static final int NUM_MESSAGES_PER_CHANNEL_OPERATION = 100;
+  private static final int MESSAGE_LENGTH = 1000;
 
   // barrier must be a singleton in each JVM for each test
+  // add one party for the publisher
   private static final CyclicBarrier BARRIER = new CyclicBarrier(NUM_SUBSCRIBERS + 1);
 
   @Override

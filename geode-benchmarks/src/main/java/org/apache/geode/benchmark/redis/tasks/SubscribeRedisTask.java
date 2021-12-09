@@ -163,8 +163,7 @@ public class SubscribeRedisTask implements Task {
     }
 
     public void waitForCompletion(TestContext ctx) throws Exception {
-      // TODO Getting an unexpected end of stream error from
-      // TODO the subscriber thread
+      // TODO Getting an unexpected end of stream error from the subscriber thread
       /*
        * if (future == null) {
        * return;

@@ -20,7 +20,6 @@ import static org.apache.geode.benchmark.Config.before;
 import static org.apache.geode.benchmark.Config.workload;
 import static org.apache.geode.benchmark.topology.Roles.CLIENT;
 
-import java.io.Serializable;
 import java.util.List;
 import java.util.concurrent.CyclicBarrier;
 import java.util.function.Supplier;
@@ -37,32 +36,21 @@ import org.apache.geode.benchmark.redis.tasks.StopRedisClient;
 import org.apache.geode.benchmark.redis.tasks.SubscribeRedisTask;
 import org.apache.geode.perftest.TestConfig;
 
-public class PubSubBenchmarkHelper implements Serializable {
+public class PubSubBenchmarkHelper {
 
-  private final int numSubscribers;
+  private final CyclicBarrier barrier;
 
-  private static CyclicBarrier BARRIER2 = new CyclicBarrier(2);
-  private static CyclicBarrier BARRIER51 = new CyclicBarrier(51);
-
-  public synchronized CyclicBarrier getCyclicBarrier() {
-    // only create one CyclicBarrier in each JVM per benchmark test
-    // for synchronization between the publisher and subscribers.
-    switch (numSubscribers) {
-      case 1:
-        return BARRIER2;
-      case 50:
-        return BARRIER51;
-      default:
-        throw new AssertionError("unsupported number of subscribers: " + numSubscribers);
-    }
+  public PubSubBenchmarkHelper(CyclicBarrier barrier) {
+    this.barrier = barrier;
   }
 
-  public PubSubBenchmarkHelper(int numSubscribers) {
-    this.numSubscribers = numSubscribers;
+  public CyclicBarrier getCyclicBarrier() {
+    return barrier;
   }
 
   public void configurePubSubTest(RedisBenchmark benchmark,
       TestConfig config,
+      int numSubscribers,
       int numChannels,
       int numMessagesPerChannelPerOperation,
       int messageLength) {
