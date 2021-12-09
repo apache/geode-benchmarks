@@ -83,13 +83,13 @@ public final class JedisClientManager implements RedisClientManager {
 
     @Override
     public SubscriptionListener createSubscriptionListener(
-        Function3<String, String, Consumer<List<String>>, Void> channelMessageConsumer) {
+        final Function3<String, String, Consumer<List<String>>, Void> channelMessageConsumer) {
       return new JedisSubscriptionListener(new JedisPubSub() {
         @Override
-        public void onMessage(String channel, String message) {
+        public void onMessage(final String channel, final String message) {
           super.onMessage(channel, message);
           channelMessageConsumer.apply(channel, message,
-              (List<String> channels) -> this.unsubscribe(channels.toArray(new String[] {})));
+              channels -> unsubscribe(channels.toArray(new String[] {})));
         }
       });
     }

@@ -32,7 +32,6 @@ import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sun.jvm.hotspot.utilities.AssertionFailure;
 
 import org.apache.geode.benchmark.redis.tests.PubSubBenchmarkConfiguration;
 import org.apache.geode.perftest.Task;

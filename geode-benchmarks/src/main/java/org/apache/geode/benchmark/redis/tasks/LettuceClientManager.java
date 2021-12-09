@@ -94,7 +94,7 @@ public final class LettuceClientManager implements RedisClientManager {
 
     @Override
     public SubscriptionListener createSubscriptionListener(
-        Function3<String, String, Consumer<List<String>>, Void> channelMessageConsumer) {
+        final Function3<String, String, Consumer<List<String>>, Void> channelMessageConsumer) {
       throw new UnsupportedOperationException("not a pubsub client");
     }
 
