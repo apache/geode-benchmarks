@@ -38,9 +38,6 @@ public class PubSubEndRedisTask implements Task {
 
   @Override
   public void run(final TestContext context) throws Exception {
-    logger.info("PublishRedisTask: Sending END message");
-    redisClientManager.get().publish(pubSubConfig.getControlChannel(),
-        pubSubConfig.getEndMessage());
     SubscribeRedisTask.shutdown(context);
   }
 }

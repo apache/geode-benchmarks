@@ -139,6 +139,7 @@ public class SubscribeRedisTask implements Task {
               } catch (final InterruptedException | BrokenBarrierException ignored) {
               }
             }
+            context.logProgress("Subscriber thread finished.");
             return null;
           });
     }

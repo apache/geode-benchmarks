@@ -30,7 +30,6 @@ import java.util.stream.Stream;
 
 import org.apache.geode.benchmark.redis.tasks.JedisClientManager;
 import org.apache.geode.benchmark.redis.tasks.LettucePubSubClientManager;
-import org.apache.geode.benchmark.redis.tasks.PubSubEndRedisTask;
 import org.apache.geode.benchmark.redis.tasks.PublishRedisTask;
 import org.apache.geode.benchmark.redis.tasks.RedisClientManager;
 import org.apache.geode.benchmark.redis.tasks.StopRedisClient;
@@ -89,7 +88,10 @@ public abstract class PubSubBenchmarkConfiguration implements Serializable {
     workload(config,
         new PublishRedisTask(this, benchmark.redisClientManager),
         CLIENT);
-    after(config, new PubSubEndRedisTask(this, benchmark.redisClientManager), CLIENT);
+
+    // it's no use trying to shutdown the thread pool, the StopRedisClient after task
+    // runs in parallel with other after tasks introducing a race condition
+    // after(config, new PubSubEndRedisTask(this, benchmark.redisClientManager), CLIENT);
     subscriberClients.forEach(c -> after(config, new StopRedisClient(c), CLIENT));
   }
 
