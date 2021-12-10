@@ -100,17 +100,7 @@ public class RedisBenchmark extends AbstractPerformanceTest {
 
     TestConfig config = GeodeBenchmark.createConfig();
 
-    switch (getRedisClusterImplementation()) {
-      case Redis:
-        RedisTopology.configure(config);
-        break;
-      case Geode:
-        GeodeTopology.configure(config);
-        break;
-      case Manual:
-        ManualRedisTopology.configure(config);
-        break;
-    }
+    configureClusterTopology(config);
 
     switch (getRedisClientImplementation()) {
       case Jedis:
@@ -132,7 +122,21 @@ public class RedisBenchmark extends AbstractPerformanceTest {
     return config;
   }
 
-  protected RedisClientImplementation getRedisClientImplementation() {
+  void configureClusterTopology(final TestConfig config) {
+    switch (getRedisClusterImplementation()) {
+      case Redis:
+        RedisTopology.configure(config);
+        break;
+      case Geode:
+        GeodeTopology.configure(config);
+        break;
+      case Manual:
+        ManualRedisTopology.configure(config);
+        break;
+    }
+  }
+
+  RedisClientImplementation getRedisClientImplementation() {
     final String sniProp = System.getProperty(WITH_REDIS_CLIENT_PROPERTY);
     if (isNullOrEmpty(sniProp)) {
       return Jedis;
@@ -141,7 +145,7 @@ public class RedisBenchmark extends AbstractPerformanceTest {
     return RedisClientImplementation.valueOfIgnoreCase(sniProp);
   }
 
-  private RedisClusterImplementation getRedisClusterImplementation() {
+  RedisClusterImplementation getRedisClusterImplementation() {
     final String sniProp = System.getProperty(WITH_REDIS_CLUSTER_PROPERTY);
     if (isNullOrEmpty(sniProp)) {
       return Geode;

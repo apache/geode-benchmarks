@@ -154,7 +154,7 @@ public class SubscribeRedisTask implements Task {
         logger.info("Subscriber thread completed");
         if (ex != null) {
           ex.printStackTrace();
-          context.logProgress(String.format("Subscriber completed with exception '%s')",ex));
+          context.logProgress(String.format("Subscriber completed with exception '%s')", ex));
         }
       });
     }

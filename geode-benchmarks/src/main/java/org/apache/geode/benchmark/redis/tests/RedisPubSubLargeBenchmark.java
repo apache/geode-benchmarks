@@ -16,13 +16,14 @@
  */
 package org.apache.geode.benchmark.redis.tests;
 
+import org.apache.geode.benchmark.tests.GeodeBenchmark;
 import org.apache.geode.perftest.TestConfig;
 
 public class RedisPubSubLargeBenchmark extends RedisBenchmark {
 
   @Override
   public TestConfig configure() {
-    final TestConfig testConfig = super.configure();
+    final TestConfig testConfig = GeodeBenchmark.createConfig();
     final PubSubBenchmarkConfiguration pubSubConfig = new PubSubLargeBenchmarkConfiguration();
     pubSubConfig.configurePubSubTest(this, testConfig);
     return testConfig;

@@ -19,20 +19,13 @@ package org.apache.geode.benchmark.redis.tasks;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.apache.geode.benchmark.redis.tests.PubSubBenchmarkConfiguration;
 import org.apache.geode.perftest.Task;
 import org.apache.geode.perftest.TestContext;
 
-public class PubSubEndRedisTask implements Task {
-  private static final Logger logger = LoggerFactory.getLogger(PubSubEndRedisTask.class);
+public class StopPubSubRedisTask implements Task {
+  private static final Logger logger = LoggerFactory.getLogger(StopPubSubRedisTask.class);
 
-  private final PubSubBenchmarkConfiguration pubSubConfig;
-  private final RedisClientManager redisClientManager;
-
-  public PubSubEndRedisTask(final PubSubBenchmarkConfiguration pubSubConfig,
-      final RedisClientManager redisClientManager) {
-    this.pubSubConfig = pubSubConfig;
-    this.redisClientManager = redisClientManager;
+  public StopPubSubRedisTask() {
     logger.info("Initialized: PubSubEndRedisTask");
   }
 

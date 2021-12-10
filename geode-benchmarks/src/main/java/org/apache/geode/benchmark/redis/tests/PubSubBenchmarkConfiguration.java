@@ -18,6 +18,7 @@ package org.apache.geode.benchmark.redis.tests;
 import static org.apache.geode.benchmark.Config.after;
 import static org.apache.geode.benchmark.Config.before;
 import static org.apache.geode.benchmark.Config.workload;
+import static org.apache.geode.benchmark.redis.tests.RedisBenchmark.RedisClusterImplementation.Manual;
 import static org.apache.geode.benchmark.topology.Roles.CLIENT;
 
 import java.io.Serializable;
@@ -28,11 +29,13 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import org.apache.geode.benchmark.redis.tasks.FlushDbTask;
 import org.apache.geode.benchmark.redis.tasks.JedisClientManager;
 import org.apache.geode.benchmark.redis.tasks.LettucePubSubClientManager;
-import org.apache.geode.benchmark.redis.tasks.PubSubEndRedisTask;
 import org.apache.geode.benchmark.redis.tasks.PublishRedisTask;
 import org.apache.geode.benchmark.redis.tasks.RedisClientManager;
+import org.apache.geode.benchmark.redis.tasks.StartRedisClient;
+import org.apache.geode.benchmark.redis.tasks.StopPubSubRedisTask;
 import org.apache.geode.benchmark.redis.tasks.StopRedisClient;
 import org.apache.geode.benchmark.redis.tasks.SubscribeRedisTask;
 import org.apache.geode.perftest.TestConfig;
@@ -67,6 +70,8 @@ public abstract class PubSubBenchmarkConfiguration implements Serializable {
   public void configurePubSubTest(final RedisBenchmark benchmark,
       final TestConfig config) {
 
+    benchmark.configureClusterTopology(config);
+
     // By design this benchmark is run with a single publisher,
     // the subscriber threads are configured separately
     config.threads(1);
@@ -83,21 +88,33 @@ public abstract class PubSubBenchmarkConfiguration implements Serializable {
         throw new AssertionError("unexpected RedisClientImplementation");
     }
 
+    // client manager for publisher
+    benchmark.redisClientManager = clientManagerSupplier.get();
+
+    // client managers for subscribers
     final List<RedisClientManager> subscriberClients =
         Stream.generate(clientManagerSupplier).limit(getNumSubscribers())
             .collect(Collectors.toList());
+
+
+    before(config, new StartRedisClient(benchmark.redisClientManager), CLIENT);
 
     before(config,
         new SubscribeRedisTask(this, subscriberClients,
             benchmark.isValidationEnabled()),
         CLIENT);
+
+    if (Manual == benchmark.getRedisClusterImplementation()) {
+      before(config, new FlushDbTask(benchmark.redisClientManager), CLIENT);
+    }
+
     workload(config,
         new PublishRedisTask(this, benchmark.redisClientManager),
         CLIENT);
 
-    // it's no use trying to shutdown the thread pool, the StopRedisClient after task
-    // runs in parallel with other after tasks introducing a race condition
-    after(config, new PubSubEndRedisTask(this, benchmark.redisClientManager), CLIENT);
+    after(config, new StopPubSubRedisTask(), CLIENT);
+
+    after(config, new StopRedisClient(benchmark.redisClientManager), CLIENT);
     subscriberClients.forEach(c -> after(config, new StopRedisClient(c), CLIENT));
   }
 
