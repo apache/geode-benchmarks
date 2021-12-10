@@ -23,9 +23,16 @@ public class PubSubLargeBenchmarkConfiguration extends PubSubBenchmarkConfigurat
   private static final int NUM_MESSAGES_PER_CHANNEL_OPERATION = 20;
   private static final int MESSAGE_LENGTH = 500;
   private static final String CONTROL_CHANNEL = "__control__";
+  private static final String END_MESSAGE = "END";
 
   private static final CyclicBarrier BARRIER = new CyclicBarrier(NUM_SUBSCRIBERS + 1);
 
+  @Override
+  public String getEndMessage() {
+    return END_MESSAGE;
+  }
+
+  @Override
   public CyclicBarrier getCyclicBarrier() {
     return BARRIER;
   }

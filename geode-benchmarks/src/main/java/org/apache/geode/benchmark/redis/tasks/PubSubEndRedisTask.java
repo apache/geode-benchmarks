@@ -16,13 +16,31 @@
  */
 package org.apache.geode.benchmark.redis.tasks;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import org.apache.geode.benchmark.redis.tests.PubSubBenchmarkConfiguration;
 import org.apache.geode.perftest.Task;
 import org.apache.geode.perftest.TestContext;
 
 public class PubSubEndRedisTask implements Task {
+  private static final Logger logger = LoggerFactory.getLogger(PubSubEndRedisTask.class);
+
+  private final PubSubBenchmarkConfiguration pubSubConfig;
+  private final RedisClientManager redisClientManager;
+
+  public PubSubEndRedisTask(final PubSubBenchmarkConfiguration pubSubConfig,
+      final RedisClientManager redisClientManager) {
+    this.pubSubConfig = pubSubConfig;
+    this.redisClientManager = redisClientManager;
+    logger.info("Initialized: PubSubEndRedisTask");
+  }
 
   @Override
-  public void run(TestContext context) throws Exception {
+  public void run(final TestContext context) throws Exception {
+    logger.info("PublishRedisTask: Sending END message");
+    redisClientManager.get().publish(pubSubConfig.getControlChannel(),
+        pubSubConfig.getEndMessage());
     SubscribeRedisTask.shutdown(context);
   }
 }

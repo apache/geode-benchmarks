@@ -60,22 +60,22 @@ public final class JedisClientManager implements RedisClientManager {
     }
 
     @Override
-    public long zadd(String key, double score, String value) {
+    public long zadd(final String key, final double score, final String value) {
       return jedisCluster.zadd(key, score, value);
     }
 
     @Override
-    public long zrem(String key, String value) {
+    public long zrem(final String key, final String value) {
       return jedisCluster.zrem(key, value);
     }
 
     @Override
-    public Set<String> zrange(String key, long start, long stop) {
+    public Set<String> zrange(final String key, final long start, final long stop) {
       return jedisCluster.zrange(key, start, stop);
     }
 
     @Override
-    public Set<String> zrangeByScore(String key, long start, long stop) {
+    public Set<String> zrangeByScore(final String key, final long start, final long stop) {
       return jedisCluster.zrangeByScore(key, start, stop);
     }
 
@@ -93,18 +93,18 @@ public final class JedisClientManager implements RedisClientManager {
     }
 
     @Override
-    public void subscribe(SubscriptionListener listener, String... channels) {
+    public void subscribe(final SubscriptionListener listener, final String... channels) {
       jedisCluster.subscribe(((JedisSubscriptionListener) listener).getJedisPubSub(), channels);
     }
 
     @Override
-    public void publish(String channel, String message) {
+    public void publish(final String channel, final String message) {
       jedisCluster.publish(channel, message);
     }
 
     @Override
     public void flushdb() {
-      Set<String> seen = new HashSet<>();
+      final Set<String> seen = new HashSet<>();
       for (int i = 0; i < HASHSLOTS; ++i) {
         try (final Jedis connectionFromSlot = jedisCluster.getConnectionFromSlot(i)) {
           if (seen.add(connectionFromSlot.getClient().getHost())) {
@@ -129,7 +129,7 @@ public final class JedisClientManager implements RedisClientManager {
     poolConfig.setLifo(false);
     final JedisCluster jedisCluster = new JedisCluster(nodes, Integer.MAX_VALUE, poolConfig);
 
-    long start = System.nanoTime();
+    final long start = System.nanoTime();
     while (true) {
       try (final Jedis jedis = jedisCluster.getConnectionFromSlot(0)) {
         logger.info("Waiting for cluster to come up.");
@@ -138,13 +138,13 @@ public final class JedisClientManager implements RedisClientManager {
           break;
         }
         logger.debug(clusterInfo);
-      } catch (Exception e) {
+      } catch (final Exception e) {
         if (System.nanoTime() - start > CONNECT_TIMEOUT.toNanos()) {
           throw e;
         }
         try {
           Thread.sleep(50);
-        } catch (InterruptedException interruptedException) {
+        } catch (final InterruptedException interruptedException) {
           throw new RuntimeException(e);
         }
         logger.info("Failed connecting.", e);
@@ -171,7 +171,7 @@ public final class JedisClientManager implements RedisClientManager {
   static class JedisSubscriptionListener implements RedisClient.SubscriptionListener {
     private final JedisPubSub jedisPubSub;
 
-    public JedisSubscriptionListener(JedisPubSub jedisPubSub) {
+    public JedisSubscriptionListener(final JedisPubSub jedisPubSub) {
       this.jedisPubSub = jedisPubSub;
     }
 

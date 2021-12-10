@@ -70,8 +70,7 @@ public class SubscribeRedisTask implements Task {
     // save subscribers in the TestContext, as this will be shared with
     // the after tasks which will call shutdown()
     final List<Subscriber> subscribers = subscriberClientManagers.stream()
-        .map(cm -> new Subscriber(cm.get(), pubSubConfig.getAllChannels(),
-            numMessagesExpected, barrier, context))
+        .map(cm -> new Subscriber(cm.get(), barrier, context))
         .collect(Collectors.toList());
     context.setAttribute(SUBSCRIBERS_CONTEXT_KEY, subscribers);
 
@@ -113,27 +112,19 @@ public class SubscribeRedisTask implements Task {
     private final int numMessagesExpected;
     private final RedisClient client;
     private final RedisClient.SubscriptionListener listener;
-    private final List<String> channels;
     private CompletableFuture<Void> future;
 
-    /**
-     *
-     * @param client the RedisClient
-     * @param channels list of channels to subscribe to
-     * @param numMessagesExpected total number of messages expected
-     * @param barrier Wait on this when received all messages
-     */
-    Subscriber(final RedisClient client, final List<String> channels,
-        final int numMessagesExpected, final CyclicBarrier barrier, final TestContext context) {
-      this.channels = channels;
+    Subscriber(final RedisClient client, final CyclicBarrier barrier, final TestContext context) {
       this.messagesReceived = new AtomicInteger(0);
-      this.numMessagesExpected = numMessagesExpected;
       this.client = client;
+
+      numMessagesExpected =
+          pubSubConfig.getNumChannels() * pubSubConfig.getNumMessagesPerChannelOperation();
 
       listener = client.createSubscriptionListener(
           (String channel, String message, RedisClient.Unsubscriber unsubscriber) -> {
             if (channel.equals(pubSubConfig.getControlChannel())) {
-              if (message.equals("END")) {
+              if (message.equals(pubSubConfig.getEndMessage())) {
                 context.logProgress("Received END message, unsubscribing");
                 unsubscriber.unsubscribe(pubSubConfig.getAllChannels());
               } else {
@@ -154,7 +145,11 @@ public class SubscribeRedisTask implements Task {
 
     public void subscribeAsync(final ExecutorService threadPool, final TestContext context) {
       future = CompletableFuture.runAsync(
-          () -> client.subscribe(listener, channels.toArray(new String[] {})), threadPool);
+          () -> {
+            final List<String> channels = pubSubConfig.getAllChannels();
+            context.logProgress("Subscribing to channels " + channels);
+            client.subscribe(listener, channels.toArray(new String[] {}));
+          }, threadPool);
     }
 
     public void waitForCompletion(final TestContext ctx) throws Exception {
@@ -163,7 +158,7 @@ public class SubscribeRedisTask implements Task {
       }
       ctx.logProgress("Waiting for completion");
       assertThat(future.get(10, TimeUnit.SECONDS)).isNull();
-      ctx.logProgress("Joined with subscriber thread");
+      ctx.logProgress("Subscriber thread completed");
     }
 
     // Receive a message and return true if all messages have been received

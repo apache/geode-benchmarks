@@ -51,6 +51,8 @@ public abstract class PubSubBenchmarkConfiguration implements Serializable {
 
   public abstract String getControlChannel();
 
+  public abstract String getEndMessage();
+
   public List<String> getChannels() {
     return IntStream.range(0, getNumChannels()).mapToObj(n -> "channel" + n)
         .collect(Collectors.toList());
@@ -87,7 +89,8 @@ public abstract class PubSubBenchmarkConfiguration implements Serializable {
     workload(config,
         new PublishRedisTask(this, benchmark.redisClientManager),
         CLIENT);
-    after(config, new PubSubEndRedisTask(), CLIENT);
+    after(config, new PubSubEndRedisTask(this, benchmark.redisClientManager), CLIENT);
     subscriberClients.forEach(c -> after(config, new StopRedisClient(c), CLIENT));
   }
+
 }
