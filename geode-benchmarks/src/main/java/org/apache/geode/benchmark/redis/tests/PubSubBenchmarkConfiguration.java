@@ -92,7 +92,7 @@ public abstract class PubSubBenchmarkConfiguration implements Serializable {
     // it's no use trying to shutdown the thread pool, the StopRedisClient after task
     // runs in parallel with other after tasks introducing a race condition
     // after(config, new PubSubEndRedisTask(this, benchmark.redisClientManager), CLIENT);
-    subscriberClients.forEach(c -> after(config, new StopRedisClient(c), CLIENT));
+    //subscriberClients.forEach(c -> after(config, new StopRedisClient(c), CLIENT));
   }
 
 }
