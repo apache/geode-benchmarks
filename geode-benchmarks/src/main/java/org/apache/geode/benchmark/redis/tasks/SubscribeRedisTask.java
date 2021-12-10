@@ -95,7 +95,6 @@ public class SubscribeRedisTask implements Task {
     cxt.logProgress("Shutting down subscribers");
 
     for (final SubscribeRedisTask.Subscriber subscriber : subscribers) {
-      subscriber.unsubscribeAllChannels(cxt);
       subscriber.waitForCompletion(cxt);
     }
 
@@ -135,9 +134,7 @@ public class SubscribeRedisTask implements Task {
           (String channel, String message, RedisClient.Unsubscriber unsubscriber) -> {
             if (channel.equals(pubSubConfig.getControlChannel())) {
               if (message.equals("END")) {
-                context.logProgress(String.format(
-                    "Received END message, unsubscribing",
-                    message, message.length(), channel, messagesReceived.get() + 1, numMessagesExpected));
+                context.logProgress("Received END message, unsubscribing");
                 unsubscriber.unsubscribe(pubSubConfig.getAllChannels());
               } else {
                 throw new AssertionError("Unrecognized control message: " + message);
@@ -160,29 +157,13 @@ public class SubscribeRedisTask implements Task {
           () -> client.subscribe(listener, channels.toArray(new String[] {})), threadPool);
     }
 
-    public void unsubscribeAllChannels(final TestContext ctx) {
+    public void waitForCompletion(final TestContext ctx) throws Exception {
       if (future == null) {
         return;
       }
-      ctx.logProgress("Unsubscribing to channels " + channels);
-
-      // TODO unsubscribe is not working, getting connection exception
-      // listener.unsubscribe(channels.toArray(new String[] {}));
-      ctx.logProgress("(Unsubscribe was no-opped out)");
-    }
-
-    public void waitForCompletion(final TestContext ctx) throws Exception {
-      // TODO Getting an unexpected end of stream error from the subscriber thread
-      // I believe the problem is that pubsub is not thread-safe, so requires
-      // the subscriber thread to (somehow) unsubscribe itself.
-      /*
-       * if (future == null) {
-       * return;
-       * }
-       * ctx.logProgress("Waiting for completion");
-       * assertThat(future.get(2, TimeUnit.SECONDS)).isNull();
-       * ctx.logProgress("Joined with subscriber thread");
-       */
+      ctx.logProgress("Waiting for completion");
+      assertThat(future.get(2, TimeUnit.SECONDS)).isNull();
+      ctx.logProgress("Joined with subscriber thread");
     }
 
     // Receive a message and return true if all messages have been received
