@@ -152,9 +152,9 @@ public class SubscribeRedisTask implements Task {
             context.logProgress("Subscribing to channels " + channels);
             client.subscribe(listener, channels.toArray(new String[] {}));
           }, threadPool);
-      future.whenComplete((result, ex) ->
-          context.logProgress(
-              String.format("Subscriber completed with result and exception %s ; %s", result, ex)));
+      future.whenComplete((result, ex) -> context.logProgress(
+          String.format("Subscriber completed with result and exception (%s ; %s)",
+              result, ex)));
     }
 
     public void waitForCompletion(final TestContext ctx) throws Exception {
