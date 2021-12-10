@@ -126,7 +126,9 @@ public class SubscribeRedisTask implements Task {
             if (channel.equals(pubSubConfig.getControlChannel())) {
               if (message.equals(pubSubConfig.getEndMessage())) {
                 context.logProgress("Received END message, unsubscribing");
+                logger.info("Received END message, unsubscribing");
                 unsubscriber.unsubscribe(pubSubConfig.getAllChannels());
+                context.logProgress("Subscriber thread unsubscribed.");
               } else {
                 throw new AssertionError("Unrecognized control message: " + message);
               }
@@ -139,7 +141,6 @@ public class SubscribeRedisTask implements Task {
               } catch (final InterruptedException | BrokenBarrierException ignored) {
               }
             }
-            context.logProgress("Subscriber thread finished.");
             return null;
           });
     }
@@ -151,6 +152,9 @@ public class SubscribeRedisTask implements Task {
             context.logProgress("Subscribing to channels " + channels);
             client.subscribe(listener, channels.toArray(new String[] {}));
           }, threadPool);
+      future.whenComplete((result, ex) ->
+          context.logProgress(
+              String.format("Subscriber completed with result and exception %s ; %s", result, ex)));
     }
 
     public void waitForCompletion(final TestContext ctx) throws Exception {

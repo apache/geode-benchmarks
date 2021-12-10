@@ -63,7 +63,10 @@ public class PublishRedisTask extends BenchmarkDriverAdapter implements Serializ
   @Override
   public void tearDown() throws Exception {
     super.tearDown();
-    logger.info("PublishRedisTask: Sending END message");
+    logger.info(String.format(
+        "PublishRedisTask: Sending END message; barrier num waiting=%d;isBroken=%s",
+        pubSubConfig.getCyclicBarrier().getNumberWaiting(),
+        pubSubConfig.getCyclicBarrier().isBroken()));
     publisherClientManager.get().publish(pubSubConfig.getControlChannel(),
         pubSubConfig.getEndMessage());
 
