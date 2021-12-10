@@ -128,7 +128,7 @@ public class SubscribeRedisTask implements Task {
               if (message.equals(pubSubConfig.getEndMessage())) {
                 context.logProgress("Received END message, unsubscribing");
                 logger.info("Received END message, unsubscribing");
-                unsubscriber.unsubscribe(pubSubConfig.getAllChannels());
+                //unsubscriber.unsubscribe(pubSubConfig.getAllChannels());
                 context.logProgress("Subscriber thread unsubscribed.");
               } else {
                 throw new AssertionError("Unrecognized control message: " + message);
@@ -155,9 +155,10 @@ public class SubscribeRedisTask implements Task {
           }, threadPool);
       future.whenComplete((result, ex) -> {
         context.logProgress("Subscriber thread complete");
+        logger.info("Subscriber thread complete");
         if (ex != null) {
           ex.printStackTrace();
-          context.logProgress(String.format("Subscriber completed with  and exception '%s')",ex));
+          context.logProgress(String.format("Subscriber completed with exception '%s')",ex));
         }
       });
     }
