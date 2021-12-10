@@ -24,10 +24,6 @@ public class RedisPubSubSmallBenchmark extends RedisBenchmark {
   @Override
   public TestConfig configure() {
     final TestConfig testConfig = super.configure();
-
-    // PubSub is not "thread-safe" so must be run single-threaded
-    testConfig.threads(1);
-
     final PubSubSmallBenchmarkConfiguration pubsubConfig = new PubSubSmallBenchmarkConfiguration();
     pubsubConfig.configurePubSubTest(this, testConfig);
     return testConfig;
