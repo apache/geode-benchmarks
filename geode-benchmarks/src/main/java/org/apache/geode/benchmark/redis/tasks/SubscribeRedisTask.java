@@ -136,7 +136,7 @@ public class SubscribeRedisTask implements Task {
             } else if (receiveMessageAndIsComplete(channel, message, context)) {
               try {
                 reset();
-                barrier.await(2, TimeUnit.SECONDS);
+                barrier.await(10, TimeUnit.SECONDS);
               } catch (final TimeoutException e) {
                 throw new RuntimeException("Subscriber timed out while waiting on barrier");
               } catch (final InterruptedException | BrokenBarrierException ignored) {

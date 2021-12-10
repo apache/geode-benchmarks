@@ -56,7 +56,7 @@ public class PublishRedisTask extends BenchmarkDriverAdapter implements Serializ
 
     // waits for all subscribers to receive all messages, then barrier is reset automatically
     // for the next test iteration; fails test if times out
-    barrier.await(2, TimeUnit.SECONDS);
+    barrier.await(10, TimeUnit.SECONDS);
     return true;
   }
 
