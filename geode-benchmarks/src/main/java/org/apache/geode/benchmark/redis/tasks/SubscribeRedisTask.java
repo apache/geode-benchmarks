@@ -128,7 +128,7 @@ public class SubscribeRedisTask implements Task {
               if (message.equals(pubSubConfig.getEndMessage())) {
                 context.logProgress("Received END message, unsubscribing");
                 logger.info("Received END message, unsubscribing");
-                //unsubscriber.unsubscribe(pubSubConfig.getAllChannels());
+                unsubscriber.unsubscribe(pubSubConfig.getAllChannels());
                 context.logProgress("Subscriber thread unsubscribed.");
               } else {
                 throw new AssertionError("Unrecognized control message: " + message);

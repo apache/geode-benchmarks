@@ -54,10 +54,6 @@ public class PublishRedisTask extends BenchmarkDriverAdapter implements Serializ
       }
     }
 
-    // debug
-    publisherClientManager.get().publish(pubSubConfig.getControlChannel(),
-        pubSubConfig.getEndMessage());
-
     // waits for all subscribers to receive all messages, then barrier is reset automatically
     // for the next test iteration; fails test if times out
     barrier.await(10, TimeUnit.SECONDS);
