@@ -151,7 +151,7 @@ public class SubscribeRedisTask implements Task {
             client.subscribe(listener, channels.toArray(new String[] {}));
           }, threadPool);
       future.whenComplete((result, ex) -> {
-        logger.info("Subscriber thread complete");
+        logger.info("Subscriber thread completed");
         if (ex != null) {
           ex.printStackTrace();
           context.logProgress(String.format("Subscriber completed with exception '%s')",ex));
@@ -163,7 +163,6 @@ public class SubscribeRedisTask implements Task {
       if (future == null) {
         return;
       }
-      ctx.logProgress("Waiting for completion");
       assertThat(future.get(10, TimeUnit.SECONDS)).isNull();
       ctx.logProgress("Subscriber thread completed");
     }

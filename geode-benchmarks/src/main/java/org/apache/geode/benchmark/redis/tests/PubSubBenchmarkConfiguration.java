@@ -67,7 +67,8 @@ public abstract class PubSubBenchmarkConfiguration implements Serializable {
   public void configurePubSubTest(final RedisBenchmark benchmark,
       final TestConfig config) {
 
-    // By design this benchmark must be run single-threaded
+    // By design this benchmark is run with a single publisher,
+    // the subscriber threads are configured separately
     config.threads(1);
 
     final Supplier<RedisClientManager> clientManagerSupplier;
