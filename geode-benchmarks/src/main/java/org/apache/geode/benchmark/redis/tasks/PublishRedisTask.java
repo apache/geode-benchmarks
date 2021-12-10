@@ -69,6 +69,8 @@ public class PublishRedisTask extends BenchmarkDriverAdapter implements Serializ
         pubSubConfig.getCyclicBarrier().isBroken()));
     publisherClientManager.get().publish(pubSubConfig.getControlChannel(),
         pubSubConfig.getEndMessage());
+    // wait for subscribers to complete cleanly before continuing
+    Thread.sleep(30*1000);
 
   }
 }
