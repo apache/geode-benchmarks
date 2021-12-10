@@ -65,6 +65,7 @@ public class PublishRedisTask extends BenchmarkDriverAdapter implements Serializ
     super.tearDown();
     // notify subscribers to unsubscribe
     final RedisClient redisClient = publisherClientManager.get();
+    logger.info("PublishRedisTask: Sending END message");
     redisClient.publish(pubSubConfig.getControlChannel(), "END");
   }
 }

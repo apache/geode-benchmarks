@@ -162,7 +162,7 @@ public class SubscribeRedisTask implements Task {
         return;
       }
       ctx.logProgress("Waiting for completion");
-      assertThat(future.get(2, TimeUnit.SECONDS)).isNull();
+      assertThat(future.get(10, TimeUnit.SECONDS)).isNull();
       ctx.logProgress("Joined with subscriber thread");
     }
 
