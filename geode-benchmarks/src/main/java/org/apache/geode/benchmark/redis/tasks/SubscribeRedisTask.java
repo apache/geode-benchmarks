@@ -62,9 +62,6 @@ public class SubscribeRedisTask implements Task {
 
   @Override
   public void run(final TestContext context) throws Exception {
-    final int numMessagesExpected =
-        pubSubConfig.getNumChannels() * pubSubConfig.getNumMessagesPerChannelOperation();
-
     final CyclicBarrier barrier = pubSubConfig.getCyclicBarrier();
 
     // save subscribers in the TestContext, as this will be shared with
@@ -154,7 +151,6 @@ public class SubscribeRedisTask implements Task {
             client.subscribe(listener, channels.toArray(new String[] {}));
           }, threadPool);
       future.whenComplete((result, ex) -> {
-        context.logProgress("Subscriber thread complete");
         logger.info("Subscriber thread complete");
         if (ex != null) {
           ex.printStackTrace();

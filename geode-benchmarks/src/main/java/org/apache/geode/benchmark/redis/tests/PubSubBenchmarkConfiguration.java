@@ -67,9 +67,8 @@ public abstract class PubSubBenchmarkConfiguration implements Serializable {
   public void configurePubSubTest(final RedisBenchmark benchmark,
       final TestConfig config) {
 
-    // Publish is not thread-safe; the publisher must be run single-threaded
+    // By design this benchmark must be run single-threaded
     config.threads(1);
-
 
     final Supplier<RedisClientManager> clientManagerSupplier;
     switch (benchmark.getRedisClientImplementation()) {
