@@ -88,20 +88,18 @@ public class SubscribeRedisTask implements Task {
     final List<Subscriber> subscribers =
         (List<Subscriber>) cxt.getAttribute(SUBSCRIBERS_CONTEXT_KEY);
 
-    cxt.logProgress("Shutting down subscribers");
-
     for (final SubscribeRedisTask.Subscriber subscriber : subscribers) {
       subscriber.waitForCompletion(cxt);
     }
 
-    cxt.logProgress("Shutting down thread pool…");
+    logger.info("Shutting down thread pool…");
 
     final ExecutorService threadPool = (ExecutorService) cxt.getAttribute(SUBSCRIBERS_THREAD_POOL);
     threadPool.shutdownNow();
     // noinspection ResultOfMethodCallIgnored
     threadPool.awaitTermination(5, TimeUnit.MINUTES);
 
-    cxt.logProgress("Thread pool terminated");
+    logger.info("Thread pool terminated");
   }
 
   public class Subscriber {
@@ -121,12 +119,9 @@ public class SubscribeRedisTask implements Task {
       listener = client.createSubscriptionListener(
           (String channel, String message, RedisClient.Unsubscriber unsubscriber) -> {
             if (channel.equals(pubSubConfig.getControlChannel())) {
-              context.logProgress("Received control message");
               if (message.equals(pubSubConfig.getEndMessage())) {
-                context.logProgress("Received END message, unsubscribing");
-                logger.info("Received END message, unsubscribing");
                 unsubscriber.unsubscribe(pubSubConfig.getAllChannels());
-                context.logProgress("Subscriber thread unsubscribed.");
+                logger.info("Subscriber thread unsubscribed.");
               } else {
                 throw new AssertionError("Unrecognized control message: " + message);
               }
@@ -164,7 +159,6 @@ public class SubscribeRedisTask implements Task {
         return;
       }
       assertThat(future.get(10, TimeUnit.SECONDS)).isNull();
-      ctx.logProgress("Subscriber thread completed");
     }
 
     // Receive a message and return true if all messages have been received
