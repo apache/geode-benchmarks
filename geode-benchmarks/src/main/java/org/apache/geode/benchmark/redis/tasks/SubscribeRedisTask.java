@@ -27,7 +27,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -133,10 +132,10 @@ public class SubscribeRedisTask implements Task {
       this.client = client;
 
       listener = client.createSubscriptionListener(
-          (String channel, String message, Consumer<List<String>> unsubscriber) -> {
+          (String channel, String message, RedisClient.Unsubscriber unsubscriber) -> {
             if (channel.equals(pubSubConfig.getControlChannel())) {
               if (message.equals("END")) {
-                unsubscriber.accept(pubSubConfig.getAllChannels());
+                unsubscriber.unsubscribe(pubSubConfig.getAllChannels());
               } else {
                 throw new AssertionError("Unrecognized control message: " + message);
               }

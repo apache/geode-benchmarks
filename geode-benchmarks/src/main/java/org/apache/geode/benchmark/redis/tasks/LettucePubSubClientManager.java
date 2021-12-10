@@ -22,7 +22,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import io.lettuce.core.Range;
@@ -97,7 +96,7 @@ public final class LettucePubSubClientManager implements RedisClientManager {
 
     @Override
     public SubscriptionListener createSubscriptionListener(
-        final Function3<String, String, Consumer<List<String>>, Void> channelMessageConsumer) {
+        final Function3<String, String, Unsubscriber, Void> channelMessageConsumer) {
       return new LettuceSubscriptionListener(new RedisPubSubAdapter<String, String>() {
         @Override
         public void message(final String channel, final String message) {
@@ -109,8 +108,8 @@ public final class LettucePubSubClientManager implements RedisClientManager {
     }
 
     @Override
-    public void subscribe(SubscriptionListener listener, String... channels) {
-      StatefulRedisPubSubConnection<String, String> connection =
+    public void subscribe(final SubscriptionListener listener, final String... channels) {
+      final StatefulRedisPubSubConnection<String, String> connection =
           LettucePubSubClientManager.redisClusterCommands.get().getStatefulConnection();
 
       connection.addListener(((LettuceSubscriptionListener) listener).getListener());

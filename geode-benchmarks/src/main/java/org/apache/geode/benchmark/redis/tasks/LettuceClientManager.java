@@ -22,7 +22,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import io.lettuce.core.Range;
@@ -94,7 +93,7 @@ public final class LettuceClientManager implements RedisClientManager {
 
     @Override
     public SubscriptionListener createSubscriptionListener(
-        final Function3<String, String, Consumer<List<String>>, Void> channelMessageConsumer) {
+        final Function3<String, String, Unsubscriber, Void> channelMessageConsumer) {
       throw new UnsupportedOperationException("not a pubsub client");
     }
 

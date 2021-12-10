@@ -21,9 +21,7 @@ import static redis.clients.jedis.BinaryJedisCluster.HASHSLOTS;
 import java.net.InetSocketAddress;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import io.vavr.Function3;
@@ -83,7 +81,7 @@ public final class JedisClientManager implements RedisClientManager {
 
     @Override
     public SubscriptionListener createSubscriptionListener(
-        final Function3<String, String, Consumer<List<String>>, Void> channelMessageConsumer) {
+        final Function3<String, String, Unsubscriber, Void> channelMessageConsumer) {
       return new JedisSubscriptionListener(new JedisPubSub() {
         @Override
         public void onMessage(final String channel, final String message) {

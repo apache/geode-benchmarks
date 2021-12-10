@@ -17,7 +17,6 @@ package org.apache.geode.benchmark.redis.tasks;
 
 import java.util.List;
 import java.util.Set;
-import java.util.function.Consumer;
 
 import io.vavr.Function3;
 
@@ -49,12 +48,17 @@ public interface RedisClient {
    * @return the subscription listener
    */
   SubscriptionListener createSubscriptionListener(
-      Function3<String, String, Consumer<List<String>>, Void> channelMessageConsumer);
+      Function3<String, String, Unsubscriber, Void> channelMessageConsumer);
 
   void subscribe(SubscriptionListener control, String... channels);
 
   void publish(String channel, String message);
 
   interface SubscriptionListener {
+  }
+
+  @FunctionalInterface
+  interface Unsubscriber {
+    void unsubscribe(List<String> channels);
   }
 }
