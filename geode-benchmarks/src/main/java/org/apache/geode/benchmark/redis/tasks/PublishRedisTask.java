@@ -17,6 +17,8 @@
 
 package org.apache.geode.benchmark.redis.tasks;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.io.Serializable;
 import java.util.Map;
 import java.util.concurrent.CyclicBarrier;
@@ -63,10 +65,9 @@ public class PublishRedisTask extends BenchmarkDriverAdapter implements Serializ
   @Override
   public void tearDown() throws Exception {
     super.tearDown();
-    logger.info(String.format(
-        "PublishRedisTask: Sending END message; barrier num waiting=%d;isBroken=%s",
-        pubSubConfig.getCyclicBarrier().getNumberWaiting(),
-        pubSubConfig.getCyclicBarrier().isBroken()));
+    logger.info("PublishRedisTask: Sending END message");
+    assertThat(pubSubConfig.getCyclicBarrier().getNumberWaiting()).isZero();
+    assertThat(pubSubConfig.getCyclicBarrier().isBroken()).isFalse();
     publisherClientManager.get().publish(pubSubConfig.getControlChannel(),
         pubSubConfig.getEndMessage());
   }
