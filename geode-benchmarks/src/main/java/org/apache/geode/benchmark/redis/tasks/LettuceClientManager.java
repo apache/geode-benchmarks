@@ -34,6 +34,8 @@ import io.vavr.Function3;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.apache.geode.benchmark.redis.tests.PubSubBenchmarkConfiguration;
+
 public final class LettuceClientManager implements RedisClientManager {
   private static final Logger logger = LoggerFactory.getLogger(LettuceClientManager.class);
 
@@ -93,17 +95,23 @@ public final class LettuceClientManager implements RedisClientManager {
 
     @Override
     public SubscriptionListener createSubscriptionListener(
+        final PubSubBenchmarkConfiguration pubSubConfig,
         final Function3<String, String, Unsubscriber, Void> channelMessageConsumer) {
       throw new UnsupportedOperationException("not a pubsub client");
     }
 
     @Override
-    public void subscribe(SubscriptionListener listener, String... channels) {
+    public void subscribe(final SubscriptionListener listener, final String... channels) {
       throw new UnsupportedOperationException("not a pubsub client");
     }
 
     @Override
-    public void publish(String channel, String message) {
+    public void psubscribe(final SubscriptionListener listener, final String... channelPatterns) {
+      throw new UnsupportedOperationException("not a pubsub client");
+    }
+
+    @Override
+    public void publish(final String channel, final String message) {
       throw new UnsupportedOperationException("not a pubsub client");
     }
 

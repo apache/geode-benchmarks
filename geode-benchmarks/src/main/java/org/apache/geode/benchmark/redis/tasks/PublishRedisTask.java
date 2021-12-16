@@ -48,7 +48,7 @@ public class PublishRedisTask extends BenchmarkDriverAdapter implements Serializ
     final CyclicBarrier barrier = pubSubConfig.getCyclicBarrier();
     final RedisClient redisClient = publisherClientManager.get();
 
-    for (final String channel : pubSubConfig.getChannels()) {
+    for (final String channel : pubSubConfig.getBenchmarkChannels()) {
       for (int i = 0; i < pubSubConfig.getNumMessagesPerChannelOperation(); i++) {
         final String message = Strings.repeat(String.valueOf((char) ('A' + i)),
             pubSubConfig.getMessageLength());

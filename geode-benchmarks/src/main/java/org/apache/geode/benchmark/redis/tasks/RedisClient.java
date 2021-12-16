@@ -20,6 +20,8 @@ import java.util.Set;
 
 import io.vavr.Function3;
 
+import org.apache.geode.benchmark.redis.tests.PubSubBenchmarkConfiguration;
+
 public interface RedisClient {
   String get(String key);
 
@@ -47,10 +49,12 @@ public interface RedisClient {
    *        passed in.
    * @return the subscription listener
    */
-  SubscriptionListener createSubscriptionListener(
+  SubscriptionListener createSubscriptionListener(PubSubBenchmarkConfiguration pubSubConfig,
       Function3<String, String, Unsubscriber, Void> channelMessageConsumer);
 
   void subscribe(SubscriptionListener control, String... channels);
+
+  void psubscribe(SubscriptionListener control, String... channelPatterns);
 
   void publish(String channel, String message);
 

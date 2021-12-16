@@ -33,6 +33,8 @@ import redis.clients.jedis.JedisCluster;
 import redis.clients.jedis.JedisPoolConfig;
 import redis.clients.jedis.JedisPubSub;
 
+import org.apache.geode.benchmark.redis.tests.PubSubBenchmarkConfiguration;
+
 public final class JedisClientManager implements RedisClientManager {
   private static final Logger logger = LoggerFactory.getLogger(RedisClientManager.class);
 
@@ -81,13 +83,20 @@ public final class JedisClientManager implements RedisClientManager {
 
     @Override
     public SubscriptionListener createSubscriptionListener(
+        final PubSubBenchmarkConfiguration pubSubConfig,
         final Function3<String, String, Unsubscriber, Void> channelMessageConsumer) {
       return new JedisSubscriptionListener(new JedisPubSub() {
         @Override
         public void onMessage(final String channel, final String message) {
           super.onMessage(channel, message);
-          channelMessageConsumer.apply(channel, message,
-              channels -> unsubscribe(channels.toArray(new String[] {})));
+          final Unsubscriber unsubscriber = channels -> {
+            if (pubSubConfig.useChannelPattern()) {
+              punsubscribe(channels.toArray(new String[]{}));
+            } else {
+              unsubscribe(channels.toArray(new String[]{}));
+            }
+          };
+          channelMessageConsumer.apply(channel, message, unsubscriber);
         }
       });
     }
@@ -95,6 +104,11 @@ public final class JedisClientManager implements RedisClientManager {
     @Override
     public void subscribe(final SubscriptionListener listener, final String... channels) {
       jedisCluster.subscribe(((JedisSubscriptionListener) listener).getJedisPubSub(), channels);
+    }
+
+    @Override
+    public void psubscribe(final SubscriptionListener listener, final String... channelPatterns) {
+      jedisCluster.psubscribe(((JedisSubscriptionListener) listener).getJedisPubSub(), channelPatterns);
     }
 
     @Override

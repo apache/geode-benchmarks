@@ -116,7 +116,7 @@ public class SubscribeRedisTask implements Task {
       numMessagesExpected =
           pubSubConfig.getNumChannels() * pubSubConfig.getNumMessagesPerChannelOperation();
 
-      listener = client.createSubscriptionListener(
+      listener = client.createSubscriptionListener(pubSubConfig,
           (String channel, String message, RedisClient.Unsubscriber unsubscriber) -> {
             if (channel.equals(pubSubConfig.getControlChannel())) {
               if (message.equals(pubSubConfig.getEndMessage())) {
@@ -143,7 +143,11 @@ public class SubscribeRedisTask implements Task {
           () -> {
             final List<String> channels = pubSubConfig.getAllChannels();
             context.logProgress("Subscribing to channels " + channels);
-            client.subscribe(listener, channels.toArray(new String[] {}));
+            if (pubSubConfig.useChannelPattern()) {
+              client.psubscribe(listener, channels.toArray(new String[]{}));
+            } else {
+              client.subscribe(listener, channels.toArray(new String[]{}));
+            }
           }, threadPool);
       future.whenComplete((result, ex) -> {
         logger.info("Subscriber thread completed");

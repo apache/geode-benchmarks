@@ -36,6 +36,8 @@ import io.vavr.Function3;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.apache.geode.benchmark.redis.tests.PubSubBenchmarkConfiguration;
+
 public final class LettucePubSubClientManager implements RedisClientManager {
   private static final Logger logger = LoggerFactory.getLogger(LettucePubSubClientManager.class);
 
@@ -96,13 +98,22 @@ public final class LettucePubSubClientManager implements RedisClientManager {
 
     @Override
     public SubscriptionListener createSubscriptionListener(
+        final PubSubBenchmarkConfiguration pubSubConfig,
         final Function3<String, String, Unsubscriber, Void> channelMessageConsumer) {
       return new LettuceSubscriptionListener(new RedisPubSubAdapter<String, String>() {
         @Override
         public void message(final String channel, final String message) {
-          channelMessageConsumer.apply(channel, message,
-              channels -> LettucePubSubClientManager.redisClusterCommands.get()
-                  .unsubscribe(channels.toArray(new String[] {})));
+          final Unsubscriber unsubscriber =
+              channels -> {
+                if (pubSubConfig.useChannelPattern()) {
+                  LettucePubSubClientManager.redisClusterCommands.get()
+                      .unsubscribe(channels.toArray(new String[]{}));
+                } else {
+                  LettucePubSubClientManager.redisClusterCommands.get()
+                      .punsubscribe(channels.toArray(new String[]{}));
+                }
+              };
+          channelMessageConsumer.apply(channel, message, unsubscriber);
         }
       });
     }
@@ -114,6 +125,15 @@ public final class LettucePubSubClientManager implements RedisClientManager {
 
       connection.addListener(((LettuceSubscriptionListener) listener).getListener());
       LettucePubSubClientManager.redisClusterCommands.get().subscribe(channels);
+    }
+
+    @Override
+    public void psubscribe(final SubscriptionListener listener, final String... channels) {
+      final StatefulRedisPubSubConnection<String, String> connection =
+          LettucePubSubClientManager.redisClusterCommands.get().getStatefulConnection();
+
+      connection.addListener(((LettuceSubscriptionListener) listener).getListener());
+      LettucePubSubClientManager.redisClusterCommands.get().psubscribe(channels);
     }
 
     @Override
