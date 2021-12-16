@@ -120,7 +120,7 @@ public class SubscribeRedisTask implements Task {
           (String channel, String message, RedisClient.Unsubscriber unsubscriber) -> {
             if (channel.equals(pubSubConfig.getControlChannel())) {
               if (message.equals(pubSubConfig.getEndMessage())) {
-                unsubscriber.unsubscribe(pubSubConfig.getAllChannels());
+                unsubscriber.unsubscribe(pubSubConfig.getAllSubscribeChannels());
                 logger.info("Subscriber thread unsubscribed.");
               } else {
                 throw new AssertionError("Unrecognized control message: " + message);
@@ -141,7 +141,7 @@ public class SubscribeRedisTask implements Task {
     public void subscribeAsync(final ExecutorService threadPool, final TestContext context) {
       future = CompletableFuture.runAsync(
           () -> {
-            final List<String> channels = pubSubConfig.getAllChannels();
+            final List<String> channels = pubSubConfig.getAllSubscribeChannels();
             if (pubSubConfig.useChannelPattern()) {
               context.logProgress("Subscribing to channel patterns " + channels);
               client.psubscribe(listener, channels.toArray(new String[]{}));

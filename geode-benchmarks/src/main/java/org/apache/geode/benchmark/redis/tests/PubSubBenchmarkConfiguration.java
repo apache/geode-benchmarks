@@ -61,15 +61,19 @@ public abstract class PubSubBenchmarkConfiguration implements Serializable {
     return false;
   }
 
-  public List<String> getBenchmarkChannels() {
+  public List<String> getBenchmarkSubscribeChannels() {
     return useChannelPattern() ? Collections.singletonList("channel*")
-        : IntStream.range(0, getNumChannels()).mapToObj(n -> "channel" + n)
-            .collect(Collectors.toList());
+        : getBenchmarkPublishChannels();
   }
 
-  /** Return list of all channels including the control channel. */
-  public List<String> getAllChannels() {
-    return Stream.concat(getBenchmarkChannels().stream(),
+  public List<String> getBenchmarkPublishChannels() {
+    return IntStream.range(0, getNumChannels()).mapToObj(n -> "channel" + n)
+        .collect(Collectors.toList());
+  }
+
+  /** Return list of all channels for subscribing including the control channel. */
+  public List<String> getAllSubscribeChannels() {
+    return Stream.concat(getBenchmarkSubscribeChannels().stream(),
         Stream.of(getControlChannel())).collect(Collectors.toList());
   }
 
