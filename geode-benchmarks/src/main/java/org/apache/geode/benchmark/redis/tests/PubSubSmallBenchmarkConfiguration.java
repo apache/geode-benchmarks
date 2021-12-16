@@ -28,6 +28,20 @@ public class PubSubSmallBenchmarkConfiguration extends PubSubBenchmarkConfigurat
 
   private static final CyclicBarrier BARRIER = new CyclicBarrier(NUM_SUBSCRIBERS + 1);
 
+  private final boolean useChannelPattern;
+
+  public PubSubSmallBenchmarkConfiguration() {
+    this(false);
+  }
+
+  public PubSubSmallBenchmarkConfiguration(final boolean useChannelPattern) {
+    this.useChannelPattern = useChannelPattern;
+  }
+
+  @Override
+  public boolean useChannelPattern() {
+    return useChannelPattern;
+  }
 
   @Override
   public String getEndMessage() {

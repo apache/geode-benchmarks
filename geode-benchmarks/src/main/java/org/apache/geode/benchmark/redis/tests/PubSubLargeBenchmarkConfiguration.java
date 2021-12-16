@@ -26,6 +26,7 @@ public class PubSubLargeBenchmarkConfiguration extends PubSubBenchmarkConfigurat
   private static final String END_MESSAGE = "END";
 
   private static final CyclicBarrier BARRIER = new CyclicBarrier(NUM_SUBSCRIBERS + 1);
+
   private final boolean useChannelPattern;
 
   public PubSubLargeBenchmarkConfiguration() {
