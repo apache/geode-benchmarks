@@ -24,7 +24,7 @@ public class RedisPubSubPatternSmallBenchmark extends RedisBenchmark {
   @Override
   public TestConfig configure() {
     final TestConfig testConfig = GeodeBenchmark.createConfig();
-    final PubSubBenchmarkConfiguration pubSubConfig = new PubSubSmallBenchmarkConfiguration(true);
+    final PubSubBenchmarkConfiguration pubSubConfig = new PubSubSmallBenchmarkConfiguration(false);
     pubSubConfig.configurePubSubTest(this, testConfig);
     return testConfig;
   }

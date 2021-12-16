@@ -107,10 +107,10 @@ public final class LettucePubSubClientManager implements RedisClientManager {
               channels -> {
                 if (pubSubConfig.useChannelPattern()) {
                   LettucePubSubClientManager.redisClusterCommands.get()
-                      .unsubscribe(channels.toArray(new String[]{}));
+                      .punsubscribe(channels.toArray(new String[]{}));
                 } else {
                   LettucePubSubClientManager.redisClusterCommands.get()
-                      .punsubscribe(channels.toArray(new String[]{}));
+                      .unsubscribe(channels.toArray(new String[]{}));
                 }
               };
           channelMessageConsumer.apply(channel, message, unsubscriber);
