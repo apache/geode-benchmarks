@@ -142,10 +142,11 @@ public class SubscribeRedisTask implements Task {
       future = CompletableFuture.runAsync(
           () -> {
             final List<String> channels = pubSubConfig.getAllChannels();
-            context.logProgress("Subscribing to channels " + channels);
             if (pubSubConfig.useChannelPattern()) {
+              context.logProgress("Subscribing to channel patterns " + channels);
               client.psubscribe(listener, channels.toArray(new String[]{}));
             } else {
+              context.logProgress("Subscribing to channels " + channels);
               client.subscribe(listener, channels.toArray(new String[]{}));
             }
           }, threadPool);
