@@ -91,9 +91,9 @@ public final class JedisClientManager implements RedisClientManager {
           super.onMessage(channel, message);
           final Unsubscriber unsubscriber = channels -> {
             if (pubSubConfig.useChannelPattern()) {
-              punsubscribe(channels.toArray(new String[]{}));
+              punsubscribe(channels.toArray(new String[] {}));
             } else {
-              unsubscribe(channels.toArray(new String[]{}));
+              unsubscribe(channels.toArray(new String[] {}));
             }
           };
           channelMessageConsumer.apply(channel, message, unsubscriber);
@@ -108,7 +108,8 @@ public final class JedisClientManager implements RedisClientManager {
 
     @Override
     public void psubscribe(final SubscriptionListener listener, final String... channelPatterns) {
-      jedisCluster.psubscribe(((JedisSubscriptionListener) listener).getJedisPubSub(), channelPatterns);
+      jedisCluster.psubscribe(((JedisSubscriptionListener) listener).getJedisPubSub(),
+          channelPatterns);
     }
 
     @Override

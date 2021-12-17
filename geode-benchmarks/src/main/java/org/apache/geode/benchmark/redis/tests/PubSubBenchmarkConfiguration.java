@@ -22,6 +22,7 @@ import static org.apache.geode.benchmark.redis.tests.RedisBenchmark.RedisCluster
 import static org.apache.geode.benchmark.topology.Roles.CLIENT;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CyclicBarrier;
 import java.util.function.Supplier;
@@ -59,11 +60,8 @@ public abstract class PubSubBenchmarkConfiguration implements Serializable {
   public abstract boolean useChannelPattern();
 
   public List<String> getBenchmarkSubscribeChannels() {
-/*
     return useChannelPattern() ? Collections.singletonList("channel*")
         : getBenchmarkPublishChannels();
-*/
-    return getBenchmarkPublishChannels();
   }
 
   public List<String> getBenchmarkPublishChannels() {
