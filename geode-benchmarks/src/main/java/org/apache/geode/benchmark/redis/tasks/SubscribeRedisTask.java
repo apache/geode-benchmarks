@@ -79,6 +79,9 @@ public class SubscribeRedisTask implements Task {
     for (final Subscriber subscriber : subscribers) {
       subscriber.subscribeAsync(subscriberThreadPool, context);
     }
+
+    // sleep to try to make sure subscribe is complete before continuing
+    Thread.sleep(1000);
   }
 
   public static void shutdown(final TestContext cxt) throws Exception {
