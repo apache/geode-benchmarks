@@ -102,17 +102,20 @@ public final class LettucePubSubClientManager implements RedisClientManager {
         final Function3<String, String, Unsubscriber, Void> channelMessageConsumer) {
       return new LettuceSubscriptionListener(new RedisPubSubAdapter<String, String>() {
         @Override
-        public void message(final String channel, final String message) {
+        public void message(final String pattern, final String channel, final String message) {
+          super.message(pattern, channel, message);
           final Unsubscriber unsubscriber =
-              channels -> {
-                if (pubSubConfig.useChannelPattern()) {
-                  LettucePubSubClientManager.redisClusterCommands.get()
-                      .punsubscribe(channels.toArray(new String[]{}));
-                } else {
-                  LettucePubSubClientManager.redisClusterCommands.get()
-                      .unsubscribe(channels.toArray(new String[]{}));
-                }
-              };
+              channels -> LettucePubSubClientManager.redisClusterCommands.get()
+                  .punsubscribe(channels.toArray(new String[] {}));
+          channelMessageConsumer.apply(channel, message, unsubscriber);
+        }
+
+        @Override
+        public void message(final String channel, final String message) {
+          super.message(channel, message);
+          final Unsubscriber unsubscriber =
+              channels -> LettucePubSubClientManager.redisClusterCommands.get()
+                  .unsubscribe(channels.toArray(new String[] {}));
           channelMessageConsumer.apply(channel, message, unsubscriber);
         }
       });

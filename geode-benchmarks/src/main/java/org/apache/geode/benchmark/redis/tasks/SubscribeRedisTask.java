@@ -121,7 +121,6 @@ public class SubscribeRedisTask implements Task {
 
       listener = client.createSubscriptionListener(pubSubConfig,
           (String channel, String message, RedisClient.Unsubscriber unsubscriber) -> {
-            context.logProgress(String.format("Received message on channel %s", channel));
             if (channel.equals(pubSubConfig.getControlChannel())) {
               if (message.equals(pubSubConfig.getEndMessage())) {
                 unsubscriber.unsubscribe(pubSubConfig.getAllSubscribeChannels());
@@ -148,10 +147,10 @@ public class SubscribeRedisTask implements Task {
             final List<String> channels = pubSubConfig.getAllSubscribeChannels();
             if (pubSubConfig.useChannelPattern()) {
               context.logProgress("Subscribing to channel patterns " + channels);
-              client.psubscribe(listener, channels.toArray(new String[]{}));
+              client.psubscribe(listener, channels.toArray(new String[] {}));
             } else {
               context.logProgress("Subscribing to channels " + channels);
-              client.subscribe(listener, channels.toArray(new String[]{}));
+              client.subscribe(listener, channels.toArray(new String[] {}));
             }
           }, threadPool);
       future.whenComplete((result, ex) -> {
