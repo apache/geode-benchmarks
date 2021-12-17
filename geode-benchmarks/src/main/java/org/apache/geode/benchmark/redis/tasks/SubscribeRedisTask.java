@@ -53,9 +53,9 @@ public class SubscribeRedisTask implements Task {
       final boolean validate) {
     this.pubSubConfig = pubSubConfig;
     logger.info(
-        "Initialized: SubscribeRedisTask numChannels={}, numMessagesPerChannel={}, messageLength={}, validate={}",
+        "Initialized: SubscribeRedisTask numChannels={}, numMessagesPerChannel={}, messageLength={}, validate={}, useChannelPattern={}",
         pubSubConfig.getNumChannels(), pubSubConfig.getNumMessagesPerChannelOperation(),
-        pubSubConfig.getMessageLength(), validate);
+        pubSubConfig.getMessageLength(), validate, pubSubConfig.useChannelPattern());
     this.subscriberClientManagers = subscriberClientManagers;
     this.validate = validate;
   }
