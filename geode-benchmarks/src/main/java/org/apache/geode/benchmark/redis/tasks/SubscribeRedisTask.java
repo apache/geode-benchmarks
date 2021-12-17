@@ -118,6 +118,7 @@ public class SubscribeRedisTask implements Task {
 
       listener = client.createSubscriptionListener(pubSubConfig,
           (String channel, String message, RedisClient.Unsubscriber unsubscriber) -> {
+            context.logProgress(String.format("Received message on channel %s", channel));
             if (channel.equals(pubSubConfig.getControlChannel())) {
               if (message.equals(pubSubConfig.getEndMessage())) {
                 unsubscriber.unsubscribe(pubSubConfig.getAllSubscribeChannels());
