@@ -20,7 +20,7 @@ public class PubSubLargeBenchmarkConfiguration extends PubSubBenchmarkConfigurat
 
   private static final int NUM_SUBSCRIBERS = 10;
   private static final int NUM_CHANNELS = 5;
-  private static final int NUM_MESSAGES_PER_CHANNEL_OPERATION = 2000;
+  private static final int NUM_MESSAGES_PER_CHANNEL_OPERATION = 5000;
   private static final int MESSAGE_LENGTH = 500;
   private static final String CONTROL_CHANNEL = "__control__";
   private static final String END_MESSAGE = "END";

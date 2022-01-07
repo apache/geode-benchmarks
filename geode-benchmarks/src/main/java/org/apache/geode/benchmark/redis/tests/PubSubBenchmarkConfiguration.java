@@ -15,6 +15,7 @@
 
 package org.apache.geode.benchmark.redis.tests;
 
+import static java.util.concurrent.TimeUnit.MINUTES;
 import static org.apache.geode.benchmark.Config.after;
 import static org.apache.geode.benchmark.Config.before;
 import static org.apache.geode.benchmark.Config.workload;
@@ -42,6 +43,8 @@ import org.apache.geode.benchmark.redis.tasks.SubscribeRedisTask;
 import org.apache.geode.perftest.TestConfig;
 
 public abstract class PubSubBenchmarkConfiguration implements Serializable {
+
+  public static final long DURATION_SECONDS = MINUTES.toSeconds(10);
 
   public abstract CyclicBarrier getCyclicBarrier();
 
@@ -83,6 +86,9 @@ public abstract class PubSubBenchmarkConfiguration implements Serializable {
     // By design this benchmark is run with a single publisher,
     // the subscriber threads are configured separately
     config.threads(1);
+
+    // Run twice as long due to longer operations than typical benchmarks
+    config.durationSeconds(DURATION_SECONDS);
 
     final Supplier<RedisClientManager> clientManagerSupplier;
     switch (benchmark.getRedisClientImplementation()) {
