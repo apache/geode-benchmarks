@@ -22,14 +22,13 @@ import org.apache.geode.benchmark.tests.GeodeBenchmark;
 import org.apache.geode.perftest.TestConfig;
 
 @Disabled("Disabled due to high variation in average latency")
-public class RedisPubSubLargeBenchmark extends RedisBenchmark {
+public class RedisPubSubPatternSmallBenchmark extends RedisBenchmark {
 
   @Override
   public TestConfig configure() {
     final TestConfig testConfig = GeodeBenchmark.createConfig();
-    final PubSubBenchmarkConfiguration pubSubConfig = new PubSubLargeBenchmarkConfiguration();
+    final PubSubBenchmarkConfiguration pubSubConfig = new PubSubSmallBenchmarkConfiguration(true);
     pubSubConfig.configurePubSubTest(this, testConfig);
     return testConfig;
   }
-
 }

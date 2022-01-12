@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.apache.geode.benchmark.redis.tests;
 
 import org.junit.jupiter.api.Disabled;
@@ -22,14 +23,13 @@ import org.apache.geode.benchmark.tests.GeodeBenchmark;
 import org.apache.geode.perftest.TestConfig;
 
 @Disabled("Disabled due to high variation in average latency")
-public class RedisPubSubLargeBenchmark extends RedisBenchmark {
+public class RedisPubSubSmallBenchmark extends RedisBenchmark {
 
   @Override
   public TestConfig configure() {
     final TestConfig testConfig = GeodeBenchmark.createConfig();
-    final PubSubBenchmarkConfiguration pubSubConfig = new PubSubLargeBenchmarkConfiguration();
-    pubSubConfig.configurePubSubTest(this, testConfig);
+    final PubSubSmallBenchmarkConfiguration pubsubConfig = new PubSubSmallBenchmarkConfiguration();
+    pubsubConfig.configurePubSubTest(this, testConfig);
     return testConfig;
   }
-
 }
