@@ -44,7 +44,7 @@ import org.apache.geode.perftest.TestConfig;
 
 public abstract class PubSubBenchmarkConfiguration implements Serializable {
 
-  public static final long DURATION_SECONDS = MINUTES.toSeconds(10);
+  public static final long DURATION_SECONDS = MINUTES.toSeconds(20);
 
   public abstract CyclicBarrier getCyclicBarrier();
 
