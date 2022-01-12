@@ -16,9 +16,12 @@
  */
 package org.apache.geode.benchmark.redis.tests;
 
+import org.junit.jupiter.api.Disabled;
+
 import org.apache.geode.benchmark.tests.GeodeBenchmark;
 import org.apache.geode.perftest.TestConfig;
 
+@Disabled("Disabled due to too much variation in average latency")
 public class RedisPubSubPatternLargeBenchmark extends RedisBenchmark {
 
   @Override
