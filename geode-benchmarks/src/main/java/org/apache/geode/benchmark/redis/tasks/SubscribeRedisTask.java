@@ -55,7 +55,7 @@ public class SubscribeRedisTask implements Task {
     logger.info(
         "Initialized: SubscribeRedisTask numChannels={}, numMessagesPerChannel={}, messageLength={}, validate={}, useChannelPattern={}",
         pubSubConfig.getNumChannels(), pubSubConfig.getNumMessagesPerChannelOperation(),
-        pubSubConfig.getMessageLength(), validate, pubSubConfig.useChannelPattern());
+        pubSubConfig.getMessageLength(), validate, pubSubConfig.shouldUseChannelPattern());
     this.subscriberClientManagers = subscriberClientManagers;
     this.validate = validate;
   }
@@ -145,7 +145,7 @@ public class SubscribeRedisTask implements Task {
       future = CompletableFuture.runAsync(
           () -> {
             final List<String> channels = pubSubConfig.getAllSubscribeChannels();
-            if (pubSubConfig.useChannelPattern()) {
+            if (pubSubConfig.shouldUseChannelPattern()) {
               context.logProgress("Subscribing to channel patterns " + channels);
               client.psubscribe(listener, channels.toArray(new String[] {}));
             } else {

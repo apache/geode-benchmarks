@@ -60,10 +60,10 @@ public abstract class PubSubBenchmarkConfiguration implements Serializable {
 
   public abstract String getEndMessage();
 
-  public abstract boolean useChannelPattern();
+  public abstract boolean shouldUseChannelPattern();
 
   public List<String> getBenchmarkSubscribeChannels() {
-    return useChannelPattern() ? Collections.singletonList("channel*")
+    return shouldUseChannelPattern() ? Collections.singletonList("channel*")
         : getBenchmarkPublishChannels();
   }
 
