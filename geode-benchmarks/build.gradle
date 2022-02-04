@@ -80,6 +80,8 @@ dependencies {
   implementation(group: 'io.lettuce', name: 'lettuce-core', version: project.'lettuce.version') {
     exclude group: 'io.netty'
   }
+  implementation(group: 'io.vavr', name: 'vavr', version: project.'vavr.version')
+
 
   if (VersionNumber.parse(geodeVersion) >= VersionNumber.parse("1.15.0.+")) {
     runtimeOnly(group: 'org.apache.geode', name: 'geode-for-redis')

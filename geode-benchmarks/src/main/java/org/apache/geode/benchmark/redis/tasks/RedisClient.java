@@ -15,7 +15,12 @@
 
 package org.apache.geode.benchmark.redis.tasks;
 
+import java.util.List;
 import java.util.Set;
+
+import io.vavr.Function3;
+
+import org.apache.geode.benchmark.redis.tests.PubSubBenchmarkConfiguration;
 
 public interface RedisClient {
   String get(String key);
@@ -35,4 +40,29 @@ public interface RedisClient {
   Set<String> zrange(String key, long start, long stop);
 
   Set<String> zrangeByScore(String key, long start, long stop);
+
+  /**
+   * Create a subscription listener.
+   *
+   * @param channelMessageConsumer a function that accepts the channel, the message, and
+   *        a consumer that will unsubscribe the listener from the list of channels
+   *        passed in.
+   * @return the subscription listener
+   */
+  SubscriptionListener createSubscriptionListener(PubSubBenchmarkConfiguration pubSubConfig,
+      Function3<String, String, Unsubscriber, Void> channelMessageConsumer);
+
+  void subscribe(SubscriptionListener control, String... channels);
+
+  void psubscribe(SubscriptionListener control, String... channelPatterns);
+
+  void publish(String channel, String message);
+
+  interface SubscriptionListener {
+  }
+
+  @FunctionalInterface
+  interface Unsubscriber {
+    void unsubscribe(List<String> channels);
+  }
 }
