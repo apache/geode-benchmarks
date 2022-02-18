@@ -59,7 +59,9 @@ dependencies {
   geodeVersion = configurations.geodeVersionResolver.resolvedConfiguration.resolvedArtifacts.find {it.name == 'geode-core'}.moduleVersion.id.version
   logger.info("Building with Geode ${geodeVersion}.")
 
-  implementation platform("org.apache.geode:geode-all-bom:${geodeVersion}")
+  implementation platform("org.apache.geode:geode-all-bom:${geodeVersion}") {
+    exclude group: 'redis.clients'
+  }
 
   implementation(project(':harness'))
 
