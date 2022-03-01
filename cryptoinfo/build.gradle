@@ -24,3 +24,11 @@ compileJava {
   options.compilerArgs << '-Xlint:unchecked' << "-Werror"
   options.deprecation = true
 }
+
+jar {
+  manifest {
+    attributes(
+        'Main-Class': 'org.apache.geode.benchmarks.cryptoinfo.Main'
+    )
+  }
+}
