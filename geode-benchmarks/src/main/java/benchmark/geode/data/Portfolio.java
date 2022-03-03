@@ -17,6 +17,8 @@
 
 package benchmark.geode.data;
 
+import static java.lang.Math.abs;
+
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -67,17 +69,17 @@ public class Portfolio {
     pkid = "" + i;
     status = i % 2 == 0 ? "active" : "inactive";
     type = "type" + (i % 3);
-    position1 = new Position(secIds[Position.cnt % secIds.length], Position.cnt * 1000L);
+    position1 = new Position(secIds[getPositionIndex()], Position.cnt * 1000L);
     if (i % 2 != 0) {
-      position2 = new Position(secIds[Position.cnt % secIds.length], Position.cnt * 1000L);
+      position2 = new Position(secIds[getPositionIndex()], Position.cnt * 1000L);
     } else {
       position2 = null;
     }
 
-    positions.put(secIds[Position.cnt % secIds.length],
-        new Position(secIds[Position.cnt % secIds.length], Position.cnt * 1000L));
-    positions.put(secIds[Position.cnt % secIds.length],
-        new Position(secIds[Position.cnt % secIds.length], Position.cnt * 1000L));
+    positions.put(secIds[getPositionIndex()],
+        new Position(secIds[getPositionIndex()], Position.cnt * 1000L));
+    positions.put(secIds[getPositionIndex()],
+        new Position(secIds[getPositionIndex()], Position.cnt * 1000L));
 
     collectionHolderMap.put("0", new CollectionHolder());
     collectionHolderMap.put("1", new CollectionHolder());
@@ -85,6 +87,10 @@ public class Portfolio {
     collectionHolderMap.put("3", new CollectionHolder());
 
     unicodeṤtring = i % 2 == 0 ? "ṤṶẐ" : "ṤẐṶ";
+  }
+
+  private int getPositionIndex() {
+    return abs(Position.cnt % secIds.length);
   }
 
   public Portfolio(int i, int j) {
