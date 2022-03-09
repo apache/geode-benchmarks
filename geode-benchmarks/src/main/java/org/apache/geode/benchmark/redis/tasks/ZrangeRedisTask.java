@@ -21,8 +21,8 @@ import static org.apache.geode.benchmark.redis.tasks.RedisSplitKey.toKey;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 import java.util.stream.LongStream;
@@ -72,16 +72,16 @@ public class ZrangeRedisTask extends BenchmarkDriverAdapter implements Serializa
         .nextLong(0, RedisSplitKey.NUM_PARTS_PER_KEY - start);
     final long stop = start + len;
 
-    final Set<String> values = redisClient.zrange(key, start, stop);
+    final List<String> values = redisClient.zrange(key, start, stop);
     if (validate) {
       final LongRange range =
           new LongRange(start, stop);
 
-      final Set<String> expectedValues =
+      final List<String> expectedValues =
           LongStream.range(range.getMin(), range.getMax())
               .boxed()
               .map(keyCache::valueOf)
-              .collect(Collectors.toSet());
+              .collect(Collectors.toList());
 
       assertThat(values).isEqualTo(expectedValues);
     }
