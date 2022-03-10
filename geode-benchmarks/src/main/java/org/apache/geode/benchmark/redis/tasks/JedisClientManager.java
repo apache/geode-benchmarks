@@ -16,21 +16,20 @@
 package org.apache.geode.benchmark.redis.tasks;
 
 import static java.lang.Thread.currentThread;
-import static redis.clients.jedis.BinaryJedisCluster.HASHSLOTS;
 
 import java.net.InetSocketAddress;
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import io.vavr.Function3;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import redis.clients.jedis.ConnectionPoolConfig;
 import redis.clients.jedis.HostAndPort;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisCluster;
-import redis.clients.jedis.JedisPoolConfig;
 import redis.clients.jedis.JedisPubSub;
 
 import org.apache.geode.benchmark.redis.tests.PubSubBenchmarkConfiguration;
@@ -72,12 +71,12 @@ public final class JedisClientManager implements RedisClientManager {
     }
 
     @Override
-    public Set<String> zrange(final String key, final long start, final long stop) {
+    public List<String> zrange(final String key, final long start, final long stop) {
       return jedisCluster.zrange(key, start, stop);
     }
 
     @Override
-    public Set<String> zrangeByScore(final String key, final long start, final long stop) {
+    public List<String> zrangeByScore(final String key, final long start, final long stop) {
       return jedisCluster.zrangeByScore(key, start, stop);
     }
 
@@ -122,15 +121,8 @@ public final class JedisClientManager implements RedisClientManager {
 
     @Override
     public void flushdb() {
-      final Set<String> seen = new HashSet<>();
-      for (int i = 0; i < HASHSLOTS; ++i) {
-        try (final Jedis connectionFromSlot = jedisCluster.getConnectionFromSlot(i)) {
-          if (seen.add(connectionFromSlot.getClient().getHost())) {
-            logger.info("Executing flushdb on {}", connectionFromSlot.getClient().getHost());
-            connectionFromSlot.flushDB();
-          }
-        }
-      }
+      jedisCluster.getClusterNodes()
+          .forEach((nodeKey, nodePool) -> new Jedis(nodePool.getResource()).flushDB());
     }
   };
 
@@ -141,7 +133,7 @@ public final class JedisClientManager implements RedisClientManager {
     final Set<HostAndPort> nodes = servers.stream()
         .map(i -> new HostAndPort(i.getHostString(), i.getPort())).collect(Collectors.toSet());
 
-    final JedisPoolConfig poolConfig = new JedisPoolConfig();
+    final ConnectionPoolConfig poolConfig = new ConnectionPoolConfig();
     poolConfig.setMaxTotal(-1);
     poolConfig.setMaxIdle(-1);
     poolConfig.setLifo(false);
@@ -149,7 +141,7 @@ public final class JedisClientManager implements RedisClientManager {
 
     final long start = System.nanoTime();
     while (true) {
-      try (final Jedis jedis = jedisCluster.getConnectionFromSlot(0)) {
+      try (final Jedis jedis = new Jedis(jedisCluster.getConnectionFromSlot(0))) {
         logger.info("Waiting for cluster to come up.");
         final String clusterInfo = jedis.clusterInfo();
         if (clusterInfo.contains("cluster_state:ok")) {

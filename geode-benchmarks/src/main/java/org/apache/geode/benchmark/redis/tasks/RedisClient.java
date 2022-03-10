@@ -16,7 +16,6 @@
 package org.apache.geode.benchmark.redis.tasks;
 
 import java.util.List;
-import java.util.Set;
 
 import io.vavr.Function3;
 
@@ -37,9 +36,9 @@ public interface RedisClient {
 
   long zrem(String key, String value);
 
-  Set<String> zrange(String key, long start, long stop);
+  List<String> zrange(String key, long start, long stop);
 
-  Set<String> zrangeByScore(String key, long start, long stop);
+  List<String> zrangeByScore(String key, long start, long stop);
 
   /**
    * Create a subscription listener.

@@ -19,9 +19,7 @@ import static java.lang.Thread.currentThread;
 
 import java.net.InetSocketAddress;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import io.lettuce.core.Range;
@@ -83,14 +81,13 @@ public final class LettuceClientManager implements RedisClientManager {
     }
 
     @Override
-    public Set<String> zrange(String key, long start, long stop) {
-      return new HashSet<>(redisAdvancedClusterCommands.get().zrange(key, start, stop));
+    public List<String> zrange(String key, long start, long stop) {
+      return redisAdvancedClusterCommands.get().zrange(key, start, stop);
     }
 
     @Override
-    public Set<String> zrangeByScore(String key, long start, long stop) {
-      return new HashSet<>(
-          redisAdvancedClusterCommands.get().zrangebyscore(key, Range.create(start, stop)));
+    public List<String> zrangeByScore(String key, long start, long stop) {
+      return redisAdvancedClusterCommands.get().zrangebyscore(key, Range.create(start, stop));
     }
 
     @Override
