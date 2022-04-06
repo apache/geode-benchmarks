@@ -21,7 +21,6 @@ package org.apache.geode.benchmark.redis.tasks;
 import static java.lang.String.valueOf;
 
 import org.apache.geode.benchmark.tasks.StartServer;
-import org.apache.geode.cache.CacheFactory;
 import org.apache.geode.cache.server.CacheServer;
 import org.apache.geode.perftest.TestContext;
 
@@ -35,13 +34,15 @@ public class StartGeodeServer extends StartServer {
   }
 
   @Override
-  protected CacheFactory configureCacheFactory(final CacheFactory cacheFactory,
-      final TestContext context)
-      throws Exception {
-
-    return super.configureCacheFactory(cacheFactory, context)
-        .set("geode-for-redis-enabled", valueOf(true))
-        .set("geode-for-redis-port", valueOf(redisPort));
+  public void run(TestContext context) throws Exception {
+    try {
+      System.setProperty("gemfire.geode-for-redis-port", valueOf(redisPort));
+      System.setProperty("gemfire.geode-for-redis-enabled", valueOf(true));
+      super.run(context);
+    } finally {
+      System.clearProperty("gemfire.geode-for-redis-port");
+      System.clearProperty("gemfire.geode-for-redis-enabled");
+    }
   }
 
   @Override
