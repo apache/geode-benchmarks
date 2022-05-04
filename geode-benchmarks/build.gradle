@@ -59,9 +59,7 @@ dependencies {
   geodeVersion = configurations.geodeVersionResolver.resolvedConfiguration.resolvedArtifacts.find {it.name == 'geode-core'}.moduleVersion.id.version
   logger.info("Building with Geode ${geodeVersion}.")
 
-  implementation platform("org.apache.geode:geode-all-bom:${geodeVersion}") {
-    exclude group: 'redis.clients'
-  }
+  implementation platform("org.apache.geode:geode-all-bom:${geodeVersion}")
 
   implementation(project(':harness'))
 
@@ -76,17 +74,6 @@ dependencies {
     runtimeOnly(group: 'org.apache.geode', name: 'geode-log4j')
   } else {
     runtimeOnly(group: 'org.apache.logging.log4j', name: 'log4j-core')
-  }
-
-  implementation(group: 'redis.clients', name: 'jedis', version: project.'jedis.version')
-  implementation(group: 'io.lettuce', name: 'lettuce-core', version: project.'lettuce.version') {
-    exclude group: 'io.netty'
-  }
-  implementation(group: 'io.vavr', name: 'vavr', version: project.'vavr.version')
-
-
-  if (VersionNumber.parse(geodeVersion) >= VersionNumber.parse("1.15.0.+")) {
-    runtimeOnly(group: 'org.apache.geode', name: 'geode-for-redis')
   }
 
   // Required for missing dependency on geode-core.
