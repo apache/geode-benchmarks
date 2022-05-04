@@ -94,15 +94,6 @@ These options only apply to Geode benchmarks.
 | withRouter            | Use router with SNI proxy topology. |
 | withRouterImage       | Provide an alternative Docker image coordinate for router. |
 
-##### Redis Benchmarks
-These options only apply to Redis benchmarks.
-
-| Option                | Description |
-| --------------------- | ----------- |
-| withRedisClient       | Redis client to use. May be 'jedis' (default) or 'lettuce'. |
-| withRedisCluster      | Redis cluster implementation. May be 'geode' (default), 'redis', 'manual'. |
-| withRedisServers      | A semicolon delimited list of Redis host:port pairs for manual cluster mode. |
-
 ##### Debugging
 These options should not be used when measuring benchmarks.
 
@@ -233,42 +224,3 @@ Example:
 ```console
 ./run_tests.sh -t anytagname -- -Pbenchmark.withRouter --tests=PartitionedGetBenchmark
 ```
-
-## Redis Benchmarking
-
-You can run benchmarks utilizing the Redis protocol with various clients and backends. All Redis
-benchmarks take the pattern `Redis*Benchmark`. They expect 3 shards with 1 replica per shard, which
-when combined with 1 Geode locator and the benchmarking client needs a total of 8 hosts 
-(`./launch_cluster ... -c 8`).
-
-The `withRedisClient` property accepts:
-* `Jedis` for using the [Jedis](https://github.com/redis/jedis) library (default).
-* `Lettuce` for using the [Lettuce](https://lettuce.io) library.
-
-The `withRedisCluster` property accepts:
-* `Geode` for using the [Geode](https://geode.apache.org) server backend (default). Builds a Geode
-  cluster utilizing 7 hosts, 1 locator and 6 servers.
-* `Redis` for using the [Redis](https://redis.io) server backend. Builds a Redis cluster utilizing
-  6 hosts and the [Bitnami Redis image](https://hub.docker.com/r/bitnami/redis/).
-* `Manual` for using a manually configured Redis server backend, like [Elasticache](https://aws.amazon.com/elasticache/).
-  Use `withRedisServers` to specify the address(es) to the Redis server endpoints.
-  
-Examples:
-
-* Runs the `RedisGetBenchmark` against a Geode cluster using the Jedis client.
-    ```console
-    ./run_tests.sh -t anytagname -- --tests=RedisGetBenchmark
-    ```
-* Runs the `RedisGetBenchmark` against a Geode cluster using the Lettuce client.
-    ```console
-    ./run_tests.sh -t anytagname -- -Pbenchmark.withRedisClient=lettuce --tests=RedisGetBenchmark
-    ```
-* Runs the `RedisGetBenchmark` against a Redis cluster using the Jedis client.
-    ```console
-    ./run_tests.sh -t anytagname -- -Pbenchmark.withRedisCluster=redis --tests=RedisGetBenchmark
-    ```
-* Runs the `RedisGetBenchmark` against an Elasticache cluster using the Jedis client.
-    ```console
-    ./run_tests.sh -t anytagname -- -Pbenchmark.withRedisCluster=manual -Pbenchmark.withRedisServers=my-cluster...clustercfg.usw2.cache.amazonaws.com:6379 --tests=RedisGetBenchmark
-    ```
-  
