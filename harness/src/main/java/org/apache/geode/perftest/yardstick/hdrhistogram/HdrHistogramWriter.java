@@ -51,12 +51,13 @@ public class HdrHistogramWriter implements Consumer<Histogram> {
         writer.close();
       }
       HistogramLogProcessor histogramLogProcessor =
-          new HistogramLogProcessor(new String[] {"-i", outputFile.getAbsolutePath(), "-o",
+          new HistogramLogProcessor(new String[] {"-v", "-i", outputFile.getAbsolutePath(), "-o",
               outputHDRFile.getAbsolutePath()});
       histogramLogProcessor.run();
       HistogramLogProcessor histogramLogProcessorCSV =
-          new HistogramLogProcessor(new String[] {"-csv", "-i", outputFile.getAbsolutePath(), "-o",
-              outputCSVFile.getAbsolutePath()});
+          new HistogramLogProcessor(
+              new String[] {"-v", "-csv", "-i", outputFile.getAbsolutePath(), "-o",
+                  outputCSVFile.getAbsolutePath()});
       histogramLogProcessorCSV.run();
     } catch (FileNotFoundException e) {
       throw new UncheckedIOException(e);
