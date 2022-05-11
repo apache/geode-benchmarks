@@ -34,9 +34,11 @@ public class Main {
     indentedPrintLine(out, 0, "Provider: ");
     printProvider(out, 1, context.getProvider());
     indentedPrintLine(out, 0, "SSL Parameters: ");
-    printSSLParameters(out, 1,  context.getSupportedSSLParameters());
+    printSSLParameters(out, 1, context.getSupportedSSLParameters());
+
     indentedPrintLine(out, 0, "SSL Engine: ");
-    printSSLEngine(out, 1, context.createSSLEngine());
+    final SSLEngine sslEngine = context.createSSLEngine();
+    printSSLEngine(out, 1, sslEngine);
   }
 
   private static void indentedPrintLine(final PrintStream out, final int depth, final String x) {
@@ -46,24 +48,57 @@ public class Main {
     out.println(x);
   }
 
-  private static void printSSLEngine(final PrintStream out, final int depth, final SSLEngine sslEngine) {
-    indentedPrintLine(out, depth, "Enabled Protocols: ");
-    printStrings(out, depth + 1, sslEngine.getEnabledProtocols());
-    indentedPrintLine(out, depth, "Enabled Cipher Suites: ");
-    printStrings(out, depth + 1, sslEngine.getEnabledCipherSuites());
+  private static void printSSLEngine(final PrintStream out, final int depth,
+      final SSLEngine sslEngine) {
+    indentedPrintLine(out, depth,
+        "Default Mode: " + (sslEngine.getUseClientMode() ? "Client" : "Server"));
+    indentedPrintLine(out, depth, "Client Mode: ");
+    printSSLEngine(out, depth + 1, sslEngine, true);
+    indentedPrintLine(out, depth, "Server Mode: ");
+    printSSLEngine(out, depth + 1, sslEngine, false);
+  }
+
+  private static void printSSLEngine(final PrintStream out, final int depth,
+      final SSLEngine sslEngine, final boolean clientMode) {
+    sslEngine.setUseClientMode(clientMode);
+    indentedPrintLine(out, depth, "Supported Protocols: ");
+    printStrings(out, depth + 1, sslEngine.getSupportedProtocols());
+    indentedPrintLine(out, depth, "Supported Cipher Suites: ");
+    printStrings(out, depth + 1, sslEngine.getSupportedCipherSuites());
+    indentedPrintLine(out, depth, "SSLParameters: ");
+    printSSLParameters(out, depth + 1, sslEngine.getSSLParameters());
   }
 
   private static void printJavaInfo(final PrintStream out, final int depth) {
-    indentedPrintLine(out, depth, getProperty("java.home"));
-    indentedPrintLine(out,depth , getProperty("java.vendor"));
-    indentedPrintLine(out,depth , getProperty("java.version"));
+    indentedPrintLine(out, depth, "Home: " + getProperty("java.home"));
+    indentedPrintLine(out, depth, "Vendor: " + getProperty("java.vendor"));
+    indentedPrintLine(out, depth, "Version: " + getProperty("java.version"));
   }
 
-  private static void printSSLParameters(final PrintStream out, final int depth, final SSLParameters sslParameters) {
+  private static void printSSLParameters(final PrintStream out, final int depth,
+      final SSLParameters sslParameters) {
+    indentedPrintLine(out, depth,
+        "Use Cipher Suites Order: " + sslParameters.getUseCipherSuitesOrder());
+    final String
+        endpointIdentificationAlgorithm =
+        sslParameters.getEndpointIdentificationAlgorithm();
+    if (null != endpointIdentificationAlgorithm) {
+      indentedPrintLine(out, depth,
+          "Endpoint Identification Algorithm: " + endpointIdentificationAlgorithm);
+    }
+    indentedPrintLine(out, depth,
+        "Need Client Authentication: " + sslParameters.getNeedClientAuth());
+    indentedPrintLine(out, depth,
+        "Want Client Authentication: " + sslParameters.getWantClientAuth());
     indentedPrintLine(out, depth, "Protocols:");
-    printStrings(out, depth + 1,  sslParameters.getProtocols());
+    printStrings(out, depth + 1, sslParameters.getProtocols());
     indentedPrintLine(out, depth, "Cipher Suites:");
-    printStrings(out, depth+1, sslParameters.getCipherSuites());
+    printStrings(out, depth + 1, sslParameters.getCipherSuites());
+    final String[] applicationProtocols = sslParameters.getApplicationProtocols();
+    if (applicationProtocols.length > 0) {
+      indentedPrintLine(out, depth, "Application Protocols:");
+      printStrings(out, depth + 1, applicationProtocols);
+    }
   }
 
   private static void printStrings(PrintStream out, final int depth, String[] strings) {
@@ -72,7 +107,8 @@ public class Main {
     }
   }
 
-  private static void printProvider(final PrintStream out, final int depth, final Provider provider) {
+  private static void printProvider(final PrintStream out, final int depth,
+      final Provider provider) {
     indentedPrintLine(out, depth, "Name: " + provider.getName());
     indentedPrintLine(out, depth, "Info: " + provider.getInfo());
     indentedPrintLine(out, depth, "Version: " + provider.getVersion());
