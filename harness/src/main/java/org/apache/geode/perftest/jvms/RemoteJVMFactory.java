@@ -18,6 +18,7 @@
 package org.apache.geode.perftest.jvms;
 
 
+import static java.util.Collections.singletonList;
 import static java.util.concurrent.TimeUnit.DAYS;
 
 import java.io.File;
@@ -126,6 +127,8 @@ public class RemoteJVMFactory {
     File file = new File("security.json");
     FileUtils.copyInputStreamToFile(inputStream, file);
     infra.copyToNodes(Arrays.asList(file), node -> getLibDir(mapping, node), false);
+
+    infra.copyToNodes(singletonList(new File("/home/geode/geode/geode-assembly/build/install/apache-geode/config/open-all-jdk-packages-linux-openjdk-17")), node -> getLibDir(mapping, node), false);
 
     CompletableFuture<Void> processesExited = jvmLauncher.launchProcesses(infra, RMI_PORT, mapping);
 
