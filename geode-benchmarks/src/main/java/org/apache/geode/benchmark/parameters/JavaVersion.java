@@ -33,6 +33,8 @@ public enum JavaVersion {
       return v13;
     } else if (javaVersion.matches("^16\\b.*")) {
       return v16;
+    } else if (javaVersion.matches("^17\\b.*")) {
+      return v16;
     }
     throw new IllegalStateException("Unknown version " + javaVersion);
   }
