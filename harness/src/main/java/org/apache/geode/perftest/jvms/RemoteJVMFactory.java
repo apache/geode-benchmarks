@@ -18,6 +18,7 @@
 package org.apache.geode.perftest.jvms;
 
 
+import static java.util.Arrays.asList;
 import static java.util.concurrent.TimeUnit.DAYS;
 
 import java.io.File;
@@ -119,13 +120,15 @@ public class RemoteJVMFactory {
         controllerFactory.createController(new SharedContext(mapping), numWorkers);
 
     classPathCopier.copyToNodes(infra, node -> getLibDir(mapping, node));
-    File keyStore = createKeystore();
-    infra.copyToNodes(Arrays.asList(keyStore), node -> getLibDir(mapping, node), false);
+    final File keyStore = createKeystore();
 
-    InputStream inputStream = getClass().getClassLoader().getResourceAsStream("security.json");
-    File file = new File("security.json");
-    FileUtils.copyInputStreamToFile(inputStream, file);
-    infra.copyToNodes(Arrays.asList(file), node -> getLibDir(mapping, node), false);
+    final File securityJsonFile = new File("security.json");
+    FileUtils.copyURLToFile(getClass().getClassLoader().getResource("security.json"), securityJsonFile);
+
+    final File javaArgsFile = new File("java.args");
+    FileUtils.copyURLToFile(getClass().getClassLoader().getResource("open-all-jdk-packages-linux-openjdk-17"), javaArgsFile);
+
+    infra.copyToNodes(asList(keyStore, securityJsonFile, javaArgsFile), node -> getLibDir(mapping, node), false);
 
     CompletableFuture<Void> processesExited = jvmLauncher.launchProcesses(infra, RMI_PORT, mapping);
 
