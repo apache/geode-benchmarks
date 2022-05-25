@@ -38,15 +38,15 @@ public class JvmParameters {
 
     final JavaVersion javaVersion = JavaVersion.current();
 
-    if (javaVersion.atLeast(JavaVersion.v11)) {
-      if (javaVersion.olderThan(JavaVersion.v16)) {
-        configureGeodeProductJvms(testConfig, "-XX:-ThreadLocalHandshakes");
-      }
-
-      configureGeodeProductJvms(testConfig,
-          "-XX:+UnlockExperimentalVMOptions",
-          "-XX:MonitorUsedDeflationThreshold=0");
-    }
+//    if (javaVersion.atLeast(JavaVersion.v11)) {
+//      if (javaVersion.olderThan(JavaVersion.v16)) {
+//        configureGeodeProductJvms(testConfig, "-XX:-ThreadLocalHandshakes");
+//      }
+//
+//      configureGeodeProductJvms(testConfig,
+//          "-XX:+UnlockExperimentalVMOptions",
+//          "-XX:MonitorUsedDeflationThreshold=0");
+//    }
   }
 
 }
