@@ -37,9 +37,13 @@ public class JvmParameters {
         "-XX:+DisableExplicitGC");
 
     final JavaVersion javaVersion = JavaVersion.current();
+
     if (javaVersion.atLeast(JavaVersion.v11)) {
+      if (javaVersion.olderThan(JavaVersion.v16)) {
+        configureGeodeProductJvms(testConfig, "-XX:-ThreadLocalHandshakes");
+      }
+
       configureGeodeProductJvms(testConfig,
-          "-XX:-ThreadLocalHandshakes",
           "-XX:+UnlockExperimentalVMOptions",
           "-XX:MonitorUsedDeflationThreshold=0");
     }
