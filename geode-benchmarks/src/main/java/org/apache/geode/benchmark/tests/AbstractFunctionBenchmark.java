@@ -15,7 +15,10 @@
 
 package org.apache.geode.benchmark.tests;
 
+import static java.lang.Long.getLong;
 import static org.apache.geode.benchmark.Config.before;
+import static org.apache.geode.benchmark.tests.GeodeBenchmark.WITH_MAX_KEY;
+import static org.apache.geode.benchmark.tests.GeodeBenchmark.WITH_MIN_KEY;
 import static org.apache.geode.benchmark.topology.Roles.CLIENT;
 import static org.apache.geode.benchmark.topology.Roles.SERVER;
 
@@ -28,7 +31,8 @@ import org.apache.geode.benchmark.tasks.RegisterFunction;
 import org.apache.geode.perftest.TestConfig;
 
 abstract class AbstractFunctionBenchmark extends AbstractPerformanceTest {
-  private LongRange keyRange = new LongRange(0, 1000000);
+  private LongRange keyRange =
+      new LongRange(getLong(WITH_MIN_KEY, 0), getLong(WITH_MAX_KEY, 1_000_000));
 
   public final void setKeyRange(LongRange keyRange) {
     this.keyRange = keyRange;
