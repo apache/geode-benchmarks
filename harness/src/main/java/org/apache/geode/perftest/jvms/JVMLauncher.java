@@ -104,6 +104,7 @@ class JVMLauncher {
 
     List<String> command = new ArrayList<>();
     command.add(System.getProperty("java.home") + "/bin/java");
+    command.add("@" + jvmConfig.getLibDir() + "/java.args");
     command.add("-classpath");
     command.add(jvmConfig.getLibDir() + "/*");
     command.add("-Djava.library.path=" + System.getProperty("user.home") + "/META-INF/native");
