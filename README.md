@@ -50,61 +50,61 @@ For example:
 The benchmarks can take configuration options. Some using Gradle's `-P` flag and other, which adjust
 benchmark behavior, via Java system properties using `-D`.
 
-| Option                       | Description                                                                                                                                                                                                           |
-|------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `-Phosts`                    | Hosts used by benchmarks on the order of client,locator,server,server (-Phosts=localhost,localhost,localhost,localhost)                                                                                               |
-| `-PoutputDir`                | Results output directory (-PoutputDir=/tmp/results)                                                                                                                                                                   |
-| `-PwithTestToolchainVersion` | Version number of alternative JVM for running benchmarks.                                                                                                                                                             |
-| `-Pbenchmark.X`              | Where X is a benchmark configuration, defined below.                                                                                                                                                                  |
-| `-Pbenchmark.R.X`            | Applies properties to specific roles. Where R is the role, "client", "server", "locator", X is a benchmark configuration, defined below.                                                                              |
-| `--tests`                    | Specific benchmarks to run (--tests=PartitionedPutBenchmark)                                                                                                                                                          |
-| `-d`                         | Debug                                                                                                                                                                                                                 |
-| `-i`                         | Info                                                                                                                                                                                                                  |
-| `-PtestJVM`                  | (Deprecated, use `-PwithTestToolchainVersion`) Path to an alternative JVM for running the client, locator, and servers. If not specified JAVA_HOME will be used. Note all compilation tasks will still use JAVA_HOME. |
+| Option            | Description                                                                                                                                                                                                                     |
+|-------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `-Phosts`         | Hosts used by benchmarks on the order of client,locator,server,server (-Phosts=localhost,localhost,localhost,localhost)                                                                                                         |
+| `-PoutputDir`     | Results output directory (-PoutputDir=/tmp/results)                                                                                                                                                                             |
+| `-Pbenchmark.X`   | Where X is a benchmark configuration, defined below.                                                                                                                                                                            |
+| `-Pbenchmark.R.X` | Applies properties to specific roles. Where R is the role, "client", "server", "locator", X is a benchmark configuration, defined below.                                                                                        |
+| `--tests`         | Specific benchmarks to run (--tests=PartitionedPutBenchmark)                                                                                                                                                                    |
+| `-d`              | Debug                                                                                                                                                                                                                           |
+| `-i`              | Info                                                                                                                                                                                                                            |
+| ~~`-PtestJVM`~~   | (Deprecated, use `-Pbenchmark.withToolchainVersion`) ~~Path to an alternative JVM for running the client, locator, and servers. If not specified JAVA_HOME will be used. Note all compilation tasks will still use JAVA_HOME.~~ |
 
 #### Benchmark Configuration
 ##### Common
 These options may apply to all benchmarks.
 
-| Option                | Description |
-| --------------------- | ----------- |
-| withGc                | Select which GC to use. Valid values CMS (default), G1, Z, Shenandoah, Epsilon. |
-| withHeap              | Specify how large a heap the benchmark VMs should use, default "8g". Accepts any `-Xmx` value, like "32g". |
-| withThreads           | Specify how many threads to use when executing the benchmark. Default varies by benchmark. |
-| withWarmup            | Specify how long to warm up the benchmark in seconds. Default is 60 seconds. |
-| withDuration          | Specify how long to run the benchmark in seconds. Default is 300 seconds. |
-| withMinKey            | The minimum key value in the key range. Default is 0. |
-| withMaxKey            | The maximum key value in the key range. Default varies by benchmark. |
-| withLocatorCount      | Number of locators a topology should use. Typically defaults to 1. |
-| withServerCount       | Number of servers a topology should use. Typically defaults to 2. |
-| withClientCount       | Number of clients a topology should use. Typically defaults to 1. |
-| withReplicas          | Number of region replicas. |
-| withAsyncReplication  | Enable asynch region replication. |
-| withNettyThreads      | Number of threads Netty IO Services should have. |
+| Option               | Description                                                                                                                      |
+|----------------------|----------------------------------------------------------------------------------------------------------------------------------|
+| withToolchainVersion | Version number of alternative JVM for running benchmarks, 8 (default), 11, 17.                                                   |
+| withGc               | Select which GC to use. Valid values CMS (default), G1, Z, Shenandoah, Epsilon. (optionally per-role)                            |
+| withHeap             | Specify how large a heap the benchmark VMs should use, default "8g". Accepts any `-Xmx` value, like "32g". (optionally per-role) |
+| withThreads          | Specify how many threads to use when executing the benchmark. Default varies by benchmark.                                       |
+| withWarmup           | Specify how long to warm up the benchmark in seconds. Default is 60 seconds.                                                     |
+| withDuration         | Specify how long to run the benchmark in seconds. Default is 300 seconds.                                                        |
+| withMinKey           | The minimum key value in the key range. Default is 0.                                                                            |
+| withMaxKey           | The maximum key value in the key range. Default varies by benchmark.                                                             |
+| withLocatorCount     | Number of locators a topology should use. Typically defaults to 1.                                                               |
+| withServerCount      | Number of servers a topology should use. Typically defaults to 2.                                                                |
+| withClientCount      | Number of clients a topology should use. Typically defaults to 1.                                                                |
+| withReplicas         | Number of region replicas.                                                                                                       |
+| withAsyncReplication | Enable asynch region replication.                                                                                                |
+| withNettyThreads     | Number of threads Netty IO Services should have.                                                                                 |
 
 ##### Geode Benchmarks
 These options only apply to Geode benchmarks.
 
-| Option                | Description |
-| --------------------- | ----------- |
-| withSsl               | Flag to run geode with SSL. A self-signed certificate will be generated at runtime. |
-| withSslProtocols      | Specifies enabled SSL protocols. See Geode property `ssl-protocols` |
-| withSslCiphers        | Specifies enabled SSL chipher suites. See Geode property `ssl-ciphers` |
-| withSecurityManager   | Flag to start Geode with the example implementation of SecurityManager |
-| withSniProxy          | Use SNI proxy topology. |
-| withSniProxyImage     | Provide an alternative Docker image coordinate for SNI proxy. |
-| withRouter            | Use router with SNI proxy topology. |
-| withRouterImage       | Provide an alternative Docker image coordinate for router. |
+| Option              | Description                                                                         |
+|---------------------|-------------------------------------------------------------------------------------|
+| withSsl             | Flag to run geode with SSL. A self-signed certificate will be generated at runtime. |
+| withSslProtocols    | Specifies enabled SSL protocols. See Geode property `ssl-protocols`                 |
+| withSslCiphers      | Specifies enabled SSL chipher suites. See Geode property `ssl-ciphers`              |
+| withSecurityManager | Flag to start Geode with the example implementation of SecurityManager              |
+| withSniProxy        | Use SNI proxy topology.                                                             |
+| withSniProxyImage   | Provide an alternative Docker image coordinate for SNI proxy.                       |
+| withRouter          | Use router with SNI proxy topology.                                                 |
+| withRouterImage     | Provide an alternative Docker image coordinate for router.                          |
 
 ##### Debugging
 These options should not be used when measuring benchmarks.
 
-| Option                | Description |
-| --------------------- | ----------- |
-| withValidation        | Enable validation of operations. Default disabled.|
-| withGcLogging         | Enable GC logging. Default disabled.|
-| withSafepointLogging  | Enable Safepoint logging. Default disabled.|
-| withStrace            | Launch remote JVM via strace for tracing system calls. Default disabled.|
+| Option               | Description                                                              |
+|----------------------|--------------------------------------------------------------------------|
+| withValidation       | Enable validation of operations. Default disabled.                       |
+| withGcLogging        | Enable GC logging. Default disabled.                                     |
+| withSafepointLogging | Enable Safepoint logging. Default disabled.                              |
+| withStrace           | Launch remote JVM via strace for tracing system calls. Default disabled. |
 
 
 ### Scripts for running in aws and analyzing results

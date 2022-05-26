@@ -101,9 +101,9 @@ test{
 }
 
 task benchmark(type: Test) {
-  if (project.hasProperty("withTestToolchainVersion"))
+  if (project.hasProperty("benchmark.withToolchainVersion"))
     javaLauncher = javaToolchains.launcherFor {
-      languageVersion = JavaLanguageVersion.of(project.findProperty("withTestToolchainVersion"))
+      languageVersion = JavaLanguageVersion.of(project.findProperty("benchmark.withToolchainVersion"))
     }
   if (project.hasProperty('testJVM') && !testJVM.trim().isEmpty()) {
     logger.warn("-PtestJVM is deprecated. Use -PwithTestToolchainVersion.")
@@ -154,41 +154,30 @@ task benchmark(type: Test) {
   //prefix convention. They will be passed on to the JVM for now to not break
   //CI or peoples scripts. Remove these soon!
   //------------------------------------------------------------
-  if (project.hasProperty('withGc')) {
-    systemProperty 'benchmark.withGc', project.findProperty('withGc')
-  }
-  if (project.hasProperty('withHeap')) {
-    systemProperty 'benchmark.withHeap', project.findProperty('withHeap')
-  }
-  if (project.hasProperty('withThreads')) {
-    systemProperty 'benchmark.withThreads', project.findProperty('withThreads')
-  }
-  if (project.hasProperty('withWarmup')) {
-    systemProperty 'benchmark.withWarmup', project.findProperty('withWarmup')
-  }
-  if (project.hasProperty('withDuration')) {
-    systemProperty 'benchmark.withDuration', project.findProperty('withDuration')
-  }
-
-  systemProperty 'benchmark.withSsl', project.hasProperty('withSsl')
-  systemProperty 'benchmark.withSslProtocols', project.findProperty('withSslProtocols')
-  systemProperty 'benchmark.withSslCiphers', project.findProperty('withSslCiphers')
-
-  if (project.hasProperty('withSniProxy')) {
-    systemProperty 'benchmark.withSniProxy', project.findProperty('withSniProxy')
-  }
-  systemProperty 'benchmark.withSniProxyImage', project.findProperty('withSniProxyImage')
-
-  if (project.hasProperty('withRouter')) {
-    systemProperty 'benchmark.withRouter', project.findProperty('withRouter')
-  }
-  systemProperty 'benchmark.withRouterImage', project.findProperty('withRouterImage')
-
-  systemProperty 'benchmark.withSecurityManager', project.hasProperty('withSecurityManager')
+  legacyProperty("withGc")
+  legacyProperty("withHeap")
+  legacyProperty("withThreads")
+  legacyProperty("withWarmup")
+  legacyProperty("withDuration")
+  legacyProperty("withSsl")
+  legacyProperty("withSslProtocols")
+  legacyProperty("withSslCiphers")
+  legacyProperty("withSniProxy")
+  legacyProperty("withSniProxyImage")
+  legacyProperty("withRouter")
+  legacyProperty("withRouterImage")
+  legacyProperty("withSecurityManager")
 
   doFirst {
     if(!project.hasProperty('hosts')) {
       throw new GradleException("You must set the hosts property to a comma separated list of hosts. Eg ./gradlew benchmark -Phosts=localhost,localhost,localhost")
     }
+  }
+}
+
+private void legacyProperty(String key) {
+  if (project.hasProperty(key)) {
+    logger.warn("-P${key} is deprecated. Use -Pbenchmark.${key}.")
+    systemProperty "benchmark.${key}", project.findProperty(key)
   }
 }
