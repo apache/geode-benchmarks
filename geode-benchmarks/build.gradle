@@ -103,7 +103,7 @@ test{
 task benchmark(type: Test) {
   if (project.hasProperty("withTestToolchainVersion"))
   javaLauncher = javaToolchains.launcherFor {
-    languageVersion = JavaLanguageVersion.of(project.hasProperty("withTestToolchainVersion"))
+    languageVersion = JavaLanguageVersion.of(project.findProperty("withTestToolchainVersion"))
   }
   if (project.hasProperty('testJVM') && !testJVM.trim().isEmpty()) {
     executable = "${testJVM}/bin/java"
