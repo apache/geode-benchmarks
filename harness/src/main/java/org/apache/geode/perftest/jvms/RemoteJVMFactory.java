@@ -118,19 +118,24 @@ public class RemoteJVMFactory {
         controllerFactory.createController(new SharedContext(mapping), numWorkers);
 
     classPathCopier.copyToNodes(infra, node -> getLibDir(mapping, node));
-    final File keyStore = createKeystore();
+
+    final List<File> files = new ArrayList<>();
+    files.add(createKeystore());
 
     final File securityJsonFile = new File("security.json");
     FileUtils.copyURLToFile(getClass().getClassLoader().getResource("security.json"),
         securityJsonFile);
+    files.add(securityJsonFile);
 
-    final File javaArgsFile = new File("java.args");
-    FileUtils.copyURLToFile(
-        getClass().getClassLoader().getResource("open-all-jdk-packages-linux-openjdk-17"),
-        javaArgsFile);
+    if (JavaVersion.current().atLeast(JavaVersion.v17)) {
+      final File javaArgsFile = new File("java.args");
+      FileUtils.copyURLToFile(
+          getClass().getClassLoader().getResource("open-all-jdk-packages-linux-openjdk-17"),
+          javaArgsFile);
+      files.add(javaArgsFile);
+    }
 
-    infra.copyToNodes(asList(keyStore, securityJsonFile, javaArgsFile),
-        node -> getLibDir(mapping, node), false);
+    infra.copyToNodes(files, node -> getLibDir(mapping, node), false);
 
     CompletableFuture<Void> processesExited = jvmLauncher.launchProcesses(infra, RMI_PORT, mapping);
 
