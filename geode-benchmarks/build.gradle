@@ -154,19 +154,19 @@ task benchmark(type: Test) {
   //prefix convention. They will be passed on to the JVM for now to not break
   //CI or peoples scripts. Remove these soon!
   //------------------------------------------------------------
-  legacyProperty("withGc")
-  legacyProperty("withHeap")
-  legacyProperty("withThreads")
-  legacyProperty("withWarmup")
-  legacyProperty("withDuration")
-  legacyProperty("withSsl")
-  legacyProperty("withSslProtocols")
-  legacyProperty("withSslCiphers")
-  legacyProperty("withSniProxy")
-  legacyProperty("withSniProxyImage")
-  legacyProperty("withRouter")
-  legacyProperty("withRouterImage")
-  legacyProperty("withSecurityManager")
+  legacyProperty(this, "withGc")
+  legacyProperty(this, "withHeap")
+  legacyProperty(this, "withThreads")
+  legacyProperty(this, "withWarmup")
+  legacyProperty(this, "withDuration")
+  legacyProperty(this, "withSsl")
+  legacyProperty(this, "withSslProtocols")
+  legacyProperty(this, "withSslCiphers")
+  legacyProperty(this, "withSniProxy")
+  legacyProperty(this, "withSniProxyImage")
+  legacyProperty(this, "withRouter")
+  legacyProperty(this, "withRouterImage")
+  legacyProperty(this, "withSecurityManager")
 
   doFirst {
     if(!project.hasProperty('hosts')) {
@@ -175,9 +175,9 @@ task benchmark(type: Test) {
   }
 }
 
-private void legacyProperty(String key) {
+private void legacyProperty(Test test, String key) {
   if (project.hasProperty(key)) {
     logger.warn("-P${key} is deprecated. Use -Pbenchmark.${key}.")
-    systemProperty "benchmark.${key}", project.findProperty(key)
+    test.systemProperty "benchmark.${key}", project.findProperty(key)
   }
 }
