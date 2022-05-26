@@ -21,6 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.apache.geode.perftest.TestConfig;
+import org.apache.geode.perftest.jvms.JavaVersion;
 
 public class JvmParameters {
   private static final Logger logger = LoggerFactory.getLogger(JvmParameters.class);
@@ -37,10 +38,11 @@ public class JvmParameters {
         "-XX:+DisableExplicitGC");
 
     final JavaVersion javaVersion = JavaVersion.current();
+
     if (javaVersion.atLeast(JavaVersion.v11)) {
       configureGeodeProductJvms(testConfig,
-          "-XX:-ThreadLocalHandshakes",
           "-XX:+UnlockExperimentalVMOptions",
+          "-XX:+UnlockDiagnosticVMOptions",
           "-XX:MonitorUsedDeflationThreshold=0");
     }
   }

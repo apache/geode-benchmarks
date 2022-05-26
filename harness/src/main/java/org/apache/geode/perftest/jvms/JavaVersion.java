@@ -13,10 +13,10 @@
  * the License.
  */
 
-package org.apache.geode.benchmark.parameters;
+package org.apache.geode.perftest.jvms;
 
 public enum JavaVersion {
-  v8, v11, v12, v13, v16;
+  v8, v11, v12, v13, v16, v17;
 
   public static JavaVersion current() {
     return valueOfVersion(System.getProperty("java.runtime.version"));
@@ -33,6 +33,8 @@ public enum JavaVersion {
       return v13;
     } else if (javaVersion.matches("^16\\b.*")) {
       return v16;
+    } else if (javaVersion.matches("^17\\b.*")) {
+      return v17;
     }
     throw new IllegalStateException("Unknown version " + javaVersion);
   }

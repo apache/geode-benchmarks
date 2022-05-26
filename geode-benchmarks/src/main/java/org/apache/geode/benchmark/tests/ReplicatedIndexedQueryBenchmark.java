@@ -14,8 +14,11 @@
  */
 package org.apache.geode.benchmark.tests;
 
+import static java.lang.Long.getLong;
 import static org.apache.geode.benchmark.Config.before;
 import static org.apache.geode.benchmark.Config.workload;
+import static org.apache.geode.benchmark.tests.GeodeBenchmark.WITH_MAX_KEY;
+import static org.apache.geode.benchmark.tests.GeodeBenchmark.WITH_MIN_KEY;
 import static org.apache.geode.benchmark.topology.Roles.CLIENT;
 import static org.apache.geode.benchmark.topology.Roles.SERVER;
 
@@ -31,7 +34,8 @@ import org.apache.geode.perftest.TestConfig;
 import org.apache.geode.perftest.TestRunners;
 
 public class ReplicatedIndexedQueryBenchmark extends AbstractPerformanceTest {
-  private LongRange keyRange = new LongRange(0, 500000);
+  private LongRange keyRange =
+      new LongRange(getLong(WITH_MIN_KEY, 0), getLong(WITH_MAX_KEY, 500_000));
   private long queryRange = 100;
 
   public ReplicatedIndexedQueryBenchmark() {}

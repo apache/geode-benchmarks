@@ -15,7 +15,10 @@
 
 package org.apache.geode.benchmark.parameters;
 
-import static org.apache.geode.benchmark.parameters.Utils.configureGeodeProductJvms;
+import static java.lang.System.getProperty;
+import static org.apache.geode.benchmark.Config.jvmArgs;
+import static org.apache.geode.benchmark.topology.RoleKinds.GEODE_PRODUCT;
+import static org.apache.geode.benchmark.topology.Roles.rolesFor;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,9 +29,15 @@ public class HeapParameters {
   private static final Logger logger = LoggerFactory.getLogger(HeapParameters.class);
 
   public static void configure(final TestConfig testConfig) {
-    final String heap = System.getProperty("benchmark.withHeap", "8g");
-    logger.info("Configuring heap parameters {}.", heap);
-    configureGeodeProductJvms(testConfig, "-Xmx" + heap, "-Xms" + heap);
+    final String defaultHeap = getProperty("benchmark.withHeap", "8g");
+
+    rolesFor(GEODE_PRODUCT).forEach(role -> {
+      final String roleName = role.toString().toLowerCase();
+      final String heap = getProperty("benchmark." + roleName + ".withHeap", defaultHeap);
+
+      logger.info("Configuring {} with heap {}.", roleName, heap);
+      jvmArgs(testConfig, role, "-Xmx" + heap, "-Xms" + heap);
+    });
   }
 
 }

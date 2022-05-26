@@ -23,7 +23,6 @@ import static java.util.concurrent.TimeUnit.DAYS;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.security.InvalidKeyException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -34,7 +33,6 @@ import java.security.SignatureException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -119,13 +117,24 @@ public class RemoteJVMFactory {
         controllerFactory.createController(new SharedContext(mapping), numWorkers);
 
     classPathCopier.copyToNodes(infra, node -> getLibDir(mapping, node));
-    File keyStore = createKeystore();
-    infra.copyToNodes(Arrays.asList(keyStore), node -> getLibDir(mapping, node), false);
 
-    InputStream inputStream = getClass().getClassLoader().getResourceAsStream("security.json");
-    File file = new File("security.json");
-    FileUtils.copyInputStreamToFile(inputStream, file);
-    infra.copyToNodes(Arrays.asList(file), node -> getLibDir(mapping, node), false);
+    final List<File> files = new ArrayList<>();
+    files.add(createKeystore());
+
+    final File securityJsonFile = new File("security.json");
+    FileUtils.copyURLToFile(getClass().getClassLoader().getResource("security.json"),
+        securityJsonFile);
+    files.add(securityJsonFile);
+
+    if (JavaVersion.current().atLeast(JavaVersion.v17)) {
+      final File javaArgsFile = new File("java.args");
+      FileUtils.copyURLToFile(
+          getClass().getClassLoader().getResource("open-all-jdk-packages-linux-openjdk-17"),
+          javaArgsFile);
+      files.add(javaArgsFile);
+    }
+
+    infra.copyToNodes(files, node -> getLibDir(mapping, node), false);
 
     CompletableFuture<Void> processesExited = jvmLauncher.launchProcesses(infra, RMI_PORT, mapping);
 
