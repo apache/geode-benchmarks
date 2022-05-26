@@ -154,19 +154,19 @@ task benchmark(type: Test) {
   //prefix convention. They will be passed on to the JVM for now to not break
   //CI or peoples scripts. Remove these soon!
   //------------------------------------------------------------
-  legacyProperty(this, "withGc")
-  legacyProperty(this, "withHeap")
-  legacyProperty(this, "withThreads")
-  legacyProperty(this, "withWarmup")
-  legacyProperty(this, "withDuration")
-  legacyProperty(this, "withSsl")
-  legacyProperty(this, "withSslProtocols")
-  legacyProperty(this, "withSslCiphers")
-  legacyProperty(this, "withSniProxy")
-  legacyProperty(this, "withSniProxyImage")
-  legacyProperty(this, "withRouter")
-  legacyProperty(this, "withRouterImage")
-  legacyProperty(this, "withSecurityManager")
+  legacyProperty(owner, "withGc")
+  legacyProperty(owner, "withHeap")
+  legacyProperty(owner, "withThreads")
+  legacyProperty(owner, "withWarmup")
+  legacyProperty(owner, "withDuration")
+  legacyProperty(owner, "withSsl")
+  legacyProperty(owner, "withSslProtocols")
+  legacyProperty(owner, "withSslCiphers")
+  legacyProperty(owner, "withSniProxy")
+  legacyProperty(owner, "withSniProxyImage")
+  legacyProperty(owner, "withRouter")
+  legacyProperty(owner, "withRouterImage")
+  legacyProperty(owner, "withSecurityManager")
 
   doFirst {
     if(!project.hasProperty('hosts')) {
