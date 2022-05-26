@@ -21,7 +21,6 @@ import static org.apache.geode.distributed.ConfigurationProperties.SSL_KEYSTORE;
 import static org.apache.geode.distributed.ConfigurationProperties.SSL_KEYSTORE_PASSWORD;
 import static org.apache.geode.distributed.ConfigurationProperties.SSL_TRUSTSTORE;
 import static org.apache.geode.distributed.ConfigurationProperties.SSL_TRUSTSTORE_PASSWORD;
-import static org.apache.geode.perftest.jvms.JavaVersion.v16;
 import static org.apache.geode.perftest.jvms.JavaVersion.v17;
 
 import java.net.InetAddress;

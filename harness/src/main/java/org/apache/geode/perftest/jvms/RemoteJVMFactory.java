@@ -18,7 +18,6 @@
 package org.apache.geode.perftest.jvms;
 
 
-import static java.util.Arrays.asList;
 import static java.util.concurrent.TimeUnit.DAYS;
 
 import java.io.File;
