@@ -106,6 +106,7 @@ task benchmark(type: Test) {
       languageVersion = JavaLanguageVersion.of(project.findProperty("withTestToolchainVersion"))
     }
   if (project.hasProperty('testJVM') && !testJVM.trim().isEmpty()) {
+    logger.warn("-PtestJVM is deprecated. Use -PwithTestToolchainVersion.")
     executable = "${testJVM}/bin/java"
   }
   outputs.upToDateWhen { false }
