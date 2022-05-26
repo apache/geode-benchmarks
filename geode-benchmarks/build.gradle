@@ -123,8 +123,12 @@ task benchmark(type: Test) {
   forkEvery 1
   failFast = true
 
-  if (javaLauncher.getOrNull().getMetadata().languageVersion >= JavaLanguageVersion.of(17)) {
-    jvmArgs += "@${project.projectDir}/src/main/resources/open-all-jdk-packages-linux-openjdk-17"
+
+  def resolvedJavaLauncher = javaLauncher.getOrNull()
+  if (resolvedJavaLauncher != null) {
+    if (resolvedJavaLauncher.getMetadata().languageVersion >= JavaLanguageVersion.of(17)) {
+      jvmArgs += "@${project.projectDir}/src/main/resources/open-all-jdk-packages-linux-openjdk-17"
+    }
   }
 
   systemProperty 'org.slf4j.simpleLogger.showDateTime', 'true'
