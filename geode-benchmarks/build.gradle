@@ -123,7 +123,7 @@ task benchmark(type: Test) {
   forkEvery 1
   failFast = true
 
-  if (javaLauncher.get().getMetadata().languageVersion >= JavaLanguageVersion.of(17)) {
+  if (javaLauncher.getOrNull().getMetadata().languageVersion >= JavaLanguageVersion.of(17)) {
     jvmArgs += "@${project.projectDir}/src/main/resources/open-all-jdk-packages-linux-openjdk-17"
   }
 
