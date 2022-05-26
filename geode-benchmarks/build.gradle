@@ -154,7 +154,7 @@ task benchmark(type: Test) {
   //prefix convention. They will be passed on to the JVM for now to not break
   //CI or peoples scripts. Remove these soon!
   //------------------------------------------------------------
-  legacyProperty(owner, "withGc")
+  legacyProperty(delegate, "withGc")
   legacyProperty(owner, "withHeap")
   legacyProperty(owner, "withThreads")
   legacyProperty(owner, "withWarmup")
