@@ -155,18 +155,18 @@ task benchmark(type: Test) {
   //CI or peoples scripts. Remove these soon!
   //------------------------------------------------------------
   legacyProperty(delegate, "withGc")
-  legacyProperty(owner, "withHeap")
-  legacyProperty(owner, "withThreads")
-  legacyProperty(owner, "withWarmup")
-  legacyProperty(owner, "withDuration")
-  legacyProperty(owner, "withSsl")
-  legacyProperty(owner, "withSslProtocols")
-  legacyProperty(owner, "withSslCiphers")
-  legacyProperty(owner, "withSniProxy")
-  legacyProperty(owner, "withSniProxyImage")
-  legacyProperty(owner, "withRouter")
-  legacyProperty(owner, "withRouterImage")
-  legacyProperty(owner, "withSecurityManager")
+  legacyProperty(delegate, "withHeap")
+  legacyProperty(delegate, "withThreads")
+  legacyProperty(delegate, "withWarmup")
+  legacyProperty(delegate, "withDuration")
+  legacyProperty(delegate, "withSsl")
+  legacyProperty(delegate, "withSslProtocols")
+  legacyProperty(delegate, "withSslCiphers")
+  legacyProperty(delegate, "withSniProxy")
+  legacyProperty(delegate, "withSniProxyImage")
+  legacyProperty(delegate, "withRouter")
+  legacyProperty(delegate, "withRouterImage")
+  legacyProperty(delegate, "withSecurityManager")
 
   doFirst {
     if(!project.hasProperty('hosts')) {
