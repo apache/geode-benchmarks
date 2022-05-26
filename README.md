@@ -50,15 +50,17 @@ For example:
 The benchmarks can take configuration options. Some using Gradle's `-P` flag and other, which adjust
 benchmark behavior, via Java system properties using `-D`.
 
-| Option                | Description |
-| --------------------- | ----------- |
-| `-Phosts`               | Hosts used by benchmarks on the order of client,locator,server,server (-Phosts=localhost,localhost,localhost,localhost) |
-| `-PoutputDir`           | Results output directory (-PoutputDir=/tmp/results) |
-| `-PtestJVM`             | Path to an alternative JVM for running the client, locator, and servers. If not specified JAVA_HOME will be used. Note all compilation tasks will still use JAVA_HOME. |
-| `-Pbenchmark.X`         | Where X is a benchmark configuration, defined below. |
-| `--tests`               | Specific benchmarks to run (--tests=PartitionedPutBenchmark) |
-| `-d`                    | Debug |
-| `-i`                    | Info |
+| Option                       | Description                                                                                                                                                                                                           |
+|------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `-Phosts`                    | Hosts used by benchmarks on the order of client,locator,server,server (-Phosts=localhost,localhost,localhost,localhost)                                                                                               |
+| `-PoutputDir`                | Results output directory (-PoutputDir=/tmp/results)                                                                                                                                                                   |
+| `-PwithTestToolchainVersion` | Version number of alternative JVM for running benchmarks.                                                                                                                                                             |
+| `-Pbenchmark.X`              | Where X is a benchmark configuration, defined below.                                                                                                                                                                  |
+| `-Pbenchmark.R.X`            | Applies properties to specific roles. Where R is the role, "client", "server", "locator", X is a benchmark configuration, defined below.                                                                              |
+| `--tests`                    | Specific benchmarks to run (--tests=PartitionedPutBenchmark)                                                                                                                                                          |
+| `-d`                         | Debug                                                                                                                                                                                                                 |
+| `-i`                         | Info                                                                                                                                                                                                                  |
+| `-PtestJVM`                  | (Deprecated, use `-PwithTestToolchainVersion`) Path to an alternative JVM for running the client, locator, and servers. If not specified JAVA_HOME will be used. Note all compilation tasks will still use JAVA_HOME. |
 
 #### Benchmark Configuration
 ##### Common
