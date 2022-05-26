@@ -18,7 +18,6 @@ package org.apache.geode.benchmark.parameters;
 import static java.lang.System.getProperty;
 import static org.apache.geode.benchmark.Config.jvmArgs;
 import static org.apache.geode.benchmark.parameters.JavaVersion.v11;
-import static org.apache.geode.benchmark.parameters.Utils.configureGeodeProductJvms;
 import static org.apache.geode.benchmark.topology.RoleKinds.GEODE_PRODUCT;
 import static org.apache.geode.benchmark.topology.Roles.rolesFor;
 

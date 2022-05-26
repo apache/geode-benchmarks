@@ -24,7 +24,6 @@ import static java.util.concurrent.TimeUnit.DAYS;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.security.InvalidKeyException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -35,7 +34,6 @@ import java.security.SignatureException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -123,12 +121,16 @@ public class RemoteJVMFactory {
     final File keyStore = createKeystore();
 
     final File securityJsonFile = new File("security.json");
-    FileUtils.copyURLToFile(getClass().getClassLoader().getResource("security.json"), securityJsonFile);
+    FileUtils.copyURLToFile(getClass().getClassLoader().getResource("security.json"),
+        securityJsonFile);
 
     final File javaArgsFile = new File("java.args");
-    FileUtils.copyURLToFile(getClass().getClassLoader().getResource("open-all-jdk-packages-linux-openjdk-17"), javaArgsFile);
+    FileUtils.copyURLToFile(
+        getClass().getClassLoader().getResource("open-all-jdk-packages-linux-openjdk-17"),
+        javaArgsFile);
 
-    infra.copyToNodes(asList(keyStore, securityJsonFile, javaArgsFile), node -> getLibDir(mapping, node), false);
+    infra.copyToNodes(asList(keyStore, securityJsonFile, javaArgsFile),
+        node -> getLibDir(mapping, node), false);
 
     CompletableFuture<Void> processesExited = jvmLauncher.launchProcesses(infra, RMI_PORT, mapping);
 
