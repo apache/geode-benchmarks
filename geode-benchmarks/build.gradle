@@ -101,6 +101,10 @@ test{
 }
 
 task benchmark(type: Test) {
+  if (project.hasProperty("withTestToolchainVersion"))
+  javaLauncher = javaToolchains.launcherFor {
+    languageVersion = JavaLanguageVersion.of(project.hasProperty("withTestToolchainVersion"))
+  }
   if (project.hasProperty('testJVM') && !testJVM.trim().isEmpty()) {
     executable = "${testJVM}/bin/java"
   }
@@ -119,7 +123,9 @@ task benchmark(type: Test) {
   forkEvery 1
   failFast = true
 
-  jvmArgs += "@${project.projectDir}/src/main/resources/open-all-jdk-packages-linux-openjdk-17"
+  if (javaLauncher.get().getMetadata().languageVersion >= 17) {
+    jvmArgs += "@${project.projectDir}/src/main/resources/open-all-jdk-packages-linux-openjdk-17"
+  }
 
   systemProperty 'org.slf4j.simpleLogger.showDateTime', 'true'
   systemProperty 'org.slf4j.simpleLogger.dateTimeFormat', 'yyyy-MM-dd HH:mm:ss.SSS'
