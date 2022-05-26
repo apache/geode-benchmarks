@@ -22,6 +22,7 @@ import static org.apache.geode.distributed.ConfigurationProperties.SSL_KEYSTORE_
 import static org.apache.geode.distributed.ConfigurationProperties.SSL_TRUSTSTORE;
 import static org.apache.geode.distributed.ConfigurationProperties.SSL_TRUSTSTORE_PASSWORD;
 import static org.apache.geode.perftest.jvms.JavaVersion.v16;
+import static org.apache.geode.perftest.jvms.JavaVersion.v17;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -107,7 +108,7 @@ class JVMLauncher {
 
     List<String> command = new ArrayList<>();
     command.add(System.getProperty("java.home") + "/bin/java");
-    if (javaVersion.atLeast(v16)) {
+    if (javaVersion.atLeast(v17)) {
       command.add("@" + jvmConfig.getLibDir() + "/java.args");
     }
     command.add("-classpath");
