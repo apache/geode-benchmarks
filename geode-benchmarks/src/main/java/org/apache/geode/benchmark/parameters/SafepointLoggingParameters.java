@@ -16,13 +16,14 @@
 package org.apache.geode.benchmark.parameters;
 
 import static java.lang.Boolean.getBoolean;
-import static org.apache.geode.benchmark.parameters.JavaVersion.v11;
 import static org.apache.geode.benchmark.parameters.Utils.configureGeodeProductJvms;
+import static org.apache.geode.perftest.jvms.JavaVersion.v11;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.apache.geode.perftest.TestConfig;
+import org.apache.geode.perftest.jvms.JavaVersion;
 
 public class SafepointLoggingParameters {
   private static final Logger logger = LoggerFactory.getLogger(SafepointLoggingParameters.class);

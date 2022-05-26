@@ -21,6 +21,7 @@ import static org.apache.geode.distributed.ConfigurationProperties.SSL_KEYSTORE;
 import static org.apache.geode.distributed.ConfigurationProperties.SSL_KEYSTORE_PASSWORD;
 import static org.apache.geode.distributed.ConfigurationProperties.SSL_TRUSTSTORE;
 import static org.apache.geode.distributed.ConfigurationProperties.SSL_TRUSTSTORE_PASSWORD;
+import static org.apache.geode.perftest.jvms.JavaVersion.v16;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -102,9 +103,13 @@ class JVMLauncher {
 
   String[] buildCommand(String rmiHost, int rmiPort, JVMMapping jvmConfig) {
 
+    final JavaVersion javaVersion = JavaVersion.current();
+
     List<String> command = new ArrayList<>();
     command.add(System.getProperty("java.home") + "/bin/java");
-    command.add("@" + jvmConfig.getLibDir() + "/java.args");
+    if (javaVersion.atLeast(v16)) {
+      command.add("@" + jvmConfig.getLibDir() + "/java.args");
+    }
     command.add("-classpath");
     command.add(jvmConfig.getLibDir() + "/*");
     command.add("-Djava.library.path=" + System.getProperty("user.home") + "/META-INF/native");

@@ -13,7 +13,7 @@
  * the License.
  */
 
-package org.apache.geode.benchmark.parameters;
+package org.apache.geode.perftest.jvms;
 
 public enum JavaVersion {
   v8, v11, v12, v13, v16;

@@ -17,15 +17,16 @@ package org.apache.geode.benchmark.parameters;
 
 import static java.lang.System.getProperty;
 import static org.apache.geode.benchmark.Config.jvmArgs;
-import static org.apache.geode.benchmark.parameters.JavaVersion.v11;
 import static org.apache.geode.benchmark.topology.RoleKinds.GEODE_PRODUCT;
 import static org.apache.geode.benchmark.topology.Roles.rolesFor;
+import static org.apache.geode.perftest.jvms.JavaVersion.v11;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.apache.geode.benchmark.topology.Roles;
 import org.apache.geode.perftest.TestConfig;
+import org.apache.geode.perftest.jvms.JavaVersion;
 
 public class GcParameters {
   private static final Logger logger = LoggerFactory.getLogger(GcParameters.class);
