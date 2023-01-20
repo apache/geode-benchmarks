@@ -1,3 +1,4 @@
+#
 # Licensed to the Apache Software Foundation (ASF) under one or more
 # contributor license agreements.  See the NOTICE file distributed with
 # this work for additional information regarding copyright ownership.
@@ -12,21 +13,35 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+#
 
-language: java
+name: develop
 
-jdk:
-  - openjdk8
+on:
+  push:
+    branches: [ "develop" ]
+  pull_request:
+    branches: [ "develop" ]
 
-#Added to cache gradle dependencies, from the travis java manual
-before_cache:
-  - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
-  - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
-cache:
-  directories:
-    - $HOME/.gradle/caches/
-    - $HOME/.gradle/wrapper/
+permissions:
+  contents: read
 
-script:
- - ssh-keygen -N "" -f ~/.ssh/id_rsa
- - ./gradlew check
+jobs:
+  check:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+        distribution: ['temurin']
+    runs-on: ${{ matrix.os }}
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up JDK
+      uses: actions/setup-java@v3
+      with:
+        distribution: ${{ matrix.distribution }}
+        java-version: '8'
+    - name: Run All
+      uses: gradle/gradle-build-action@v2
+      with:
+        arguments: check --console=plain
