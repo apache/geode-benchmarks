@@ -45,5 +45,5 @@ jobs:
       uses: gradle/gradle-build-action@v2
     - name: check
       run: |
-        ssh-keygen -N "" -f ~/.ssh/id_rsa \
-        arguments: check --console=plain
+        ssh-keygen -N "" -f ~/.ssh/id_rsa
+        ./gradlew check --console=plain
